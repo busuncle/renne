@@ -11,4 +11,4 @@ Esc is the exit button.
 enjoy your geek life
 ----------------------
 Copyright 2012 busuncle.
-http://code.google.com/p/renne/
+https://github.com/busuncle/renne
