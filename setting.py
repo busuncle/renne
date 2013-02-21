@@ -210,7 +210,7 @@ class ThickGrass(object):
 
 
 class WayPoint(object):
-    DIR = "res/waypoints"
+    DIR = "etc/waypoints"
     STEP_WIDTH = 24
     BOUNDING_BOX_RECT = (0, 0, 48, 48)
 
