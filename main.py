@@ -5,6 +5,7 @@ from gamesprites import Renne, Enemy, GameSpritesGroup, enemy_in_one_screen
 import etc.setting as sfg
 import etc.constant as cfg
 import os
+import json
 import math
 import random
 from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObject
@@ -19,30 +20,41 @@ pygame.display.set_caption("Renne")
 pygame.display.set_icon(pygame.image.load("renne.png").convert_alpha())
 
 
+def load_map_setting(chapter):
+    with open(os.path.join("etc", "maps", "%s.js" % chapter)) as fp:
+        res = json.load(fp)
+    return res
+
+
+
 def main():
     clock = pygame.time.Clock()
 
     chapter = 1
+    map_setting = load_map_setting(chapter)
 
-    camera = Camera(screen, map_size=sfg.GameMap.SIZE[chapter])
+    camera = Camera(screen, map_size=map_setting["size"])
     game_world = GameWorld()
     allsprites = GameSpritesGroup()
     enemies = GameSpritesGroup()
     static_objects = GameStaticObjectGroup()
     game_map = GameMap(chapter)
-    game_map.set_map_titles(sfg.GameMap.TILES[chapter])
+    game_map.set_map_titles(map_setting["tiles"])
 
-    hero_init = sfg.GameMap.HERO_INIT[chapter]
+    # load hero
+    hero_init = map_setting["hero"]
     renne = Renne(hero_init[0], hero_init[1], allsprites, enemies, static_objects, game_map)
 
-    monster_init = sfg.GameMap.MONSTER_INIT[chapter]
+    # load monsters
+    monster_init = map_setting["monsters"]
     for monster_id, pos, direct in monster_init:
         monster = Enemy(sfg.SPRITE_SETTING_MAPPING[monster_id], pos, direct, allsprites, 
             renne, static_objects, game_map)
 
         enemies.add(monster)
 
-    chapter_static_objects = sfg.GameMap.STATIC_OBJECTS[chapter]
+    # load static objects
+    chapter_static_objects = map_setting["static_objects"]
     for t, p in chapter_static_objects:
         static_obj = GameStaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[t], p)
         static_objects.add(static_obj)
