@@ -1,6 +1,6 @@
 from gameobjects.vector2 import Vector2
-import constant as cfg
-import setting as sfg
+import etc.constant as cfg
+import etc.setting as sfg
 from time import time
 from random import randint, choice, gauss
 import math

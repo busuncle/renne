@@ -3,8 +3,8 @@ import pygame
 from pygame.locals import *
 from pygame.transform import smoothscale
 from util import ImageController
-import setting as sfg
-import constant as cfg
+import etc.setting as sfg
+import etc.constant as cfg
 
 
 

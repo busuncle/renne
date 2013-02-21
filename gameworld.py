@@ -3,7 +3,7 @@ from pygame.locals import *
 from gameobjects.vector2 import Vector2
 from pygame.transform import smoothscale
 from util import ImageController
-import setting as sfg
+import etc.setting as sfg
 
 
 

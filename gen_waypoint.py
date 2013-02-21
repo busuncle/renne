@@ -1,8 +1,8 @@
 import pygame
 from pygame.locals import *
 from gameobjects.vector2 import Vector2
-import setting as sfg
-import constant as cfg
+import etc.setting as sfg
+import etc.constant as cfg
 import os
 
 pygame.init()

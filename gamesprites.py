@@ -5,8 +5,8 @@ import simulator
 import pathfinding
 from animation import SpriteAnimator, SpriteEmotionAnimator
 from controller import SpriteBrain
-import constant as cfg
-import setting as sfg
+import etc.constant as cfg
+import etc.setting as sfg
 
 
 

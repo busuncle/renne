@@ -1,5 +1,5 @@
 from util import LineSegment, line_segment_intersect_with_rect, cos_for_vec, manhattan_distance
-import constant as cfg
+import etc.constant as cfg
 import math
 from math import pow, radians, sqrt, tan, cos
 from time import time
