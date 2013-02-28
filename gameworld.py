@@ -8,17 +8,16 @@ import etc.setting as sfg
 
 
 class GameMap(object):
-    setting = sfg.GameMap
     tile_images = ImageController(sfg.TILE_IMAGES[0])
-    def __init__(self, chapter):
+    def __init__(self, chapter, size, tiles_setting):
         self.chapter = chapter
+        self.size = size
         self.map_tiles = []
         self.tile_images.add_from_list(sfg.TILE_IMAGES[1])
-        self.size = self.setting.SIZE[chapter]
+        self.init_map_titles(tiles_setting)
 
 
-    def set_map_titles(self, map_tile_setting):
-        self.map_tiles = []
+    def init_map_titles(self, map_tile_setting):
         tile_cache = {}
         for y, tile_row in enumerate(map_tile_setting): 
             for x, tile_id in enumerate(tile_row):

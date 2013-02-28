@@ -12,6 +12,7 @@ from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObjec
 from gamestatus import GameStatus
 from renderer import Camera
 import debug_tools
+import util
 
 
 
@@ -20,26 +21,20 @@ pygame.display.set_caption("Renne")
 pygame.display.set_icon(pygame.image.load("renne.png").convert_alpha())
 
 
-def load_map_setting(chapter):
-    with open(os.path.join("etc", "maps", "%s.js" % chapter)) as fp:
-        res = json.load(fp)
-    return res
-
 
 
 def main():
     clock = pygame.time.Clock()
 
     chapter = 1
-    map_setting = load_map_setting(chapter)
+    map_setting = util.load_map_setting(chapter)
 
     camera = Camera(screen, map_size=map_setting["size"])
     game_world = GameWorld()
     allsprites = GameSpritesGroup()
     enemies = GameSpritesGroup()
     static_objects = GameStaticObjectGroup()
-    game_map = GameMap(chapter)
-    game_map.set_map_titles(map_setting["tiles"])
+    game_map = GameMap(chapter, map_setting["size"], map_setting["tiles"])
 
     # load hero
     hero_init = map_setting["hero"]

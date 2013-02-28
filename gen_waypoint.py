@@ -4,6 +4,7 @@ from gameobjects.vector2 import Vector2
 import etc.setting as sfg
 import etc.constant as cfg
 import os
+import util
 
 pygame.init()
 
@@ -13,11 +14,12 @@ bounding_box = pygame.Rect(sfg.WayPoint.BOUNDING_BOX_RECT)
 
 
 if __name__ == "__main__":
-    for n, static_objs_desc in sfg.GameMap.STATIC_OBJECTS.iteritems():
+    for chapter in sfg.GameMap.CHAPTERS:
         blocks = []
         waypoints = []
 
-        for t, p in static_objs_desc:
+        map_setting = util.load_map_setting(chapter)
+        for t, p in map_setting["static_objects"]:
             static_obj_setting = sfg.STATIC_OBJECT_SETTING_MAPPING[t]
             if not static_obj_setting.IS_BLOCK:
                 continue
@@ -27,16 +29,15 @@ if __name__ == "__main__":
             rect.center = pos
             blocks.append(rect)
 
-
-        for x in xrange(0, sfg.GameMap.SIZE[n][0], sfg.WayPoint.STEP_WIDTH):
-            for y in xrange(0, sfg.GameMap.SIZE[n][1], sfg.WayPoint.STEP_WIDTH):
+        for x in xrange(0, map_setting["size"][0], sfg.WayPoint.STEP_WIDTH):
+            for y in xrange(0, map_setting["size"][1], sfg.WayPoint.STEP_WIDTH):
                 fx, fy = map(float, (x, y))
                 bounding_box.center = (fx, fy)
                 if bounding_box.collidelist(blocks) == -1:
                     waypoints.append((fx, fy))
 
 
-        filename = "%s.txt" % n
+        filename = "%s.txt" % chapter
         fp = open(os.path.join(WAYPOINTS_DIR, filename), "w")
         for wp in waypoints:
             fp.write("%s\t%s\n" % wp)

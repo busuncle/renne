@@ -3,6 +3,14 @@ from pygame.locals import *
 from gameobjects.vector2 import Vector2
 import weakref
 import os
+import json
+
+
+
+def load_map_setting(chapter):
+    with open(os.path.join("etc", "maps", "%s.js" % chapter)) as fp:
+        res = json.load(fp)
+    return res
 
 
 class ResourceController(object):
