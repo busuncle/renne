@@ -4,7 +4,7 @@ from gameobjects.vector2 import Vector2
 import etc.setting as sfg
 import etc.constant as cfg
 import os
-import util
+from base import util
 
 pygame.init()
 

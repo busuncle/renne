@@ -4,7 +4,7 @@ import etc.setting as sfg
 from time import time
 from random import randint, choice, gauss
 import math
-from util import cos_for_vec
+from base.util import cos_for_vec
 
 
 

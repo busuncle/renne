@@ -12,7 +12,7 @@ from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObjec
 from gamestatus import GameStatus
 from renderer import Camera
 import debug_tools
-import util
+from base import util
 
 
 

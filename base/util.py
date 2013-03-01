@@ -7,8 +7,17 @@ import json
 
 
 
+def get_project_root():
+    filepath = os.path.abspath(__file__)
+    dirname = os.path.split(filepath)[0]
+    # filepath here is $PROJECT_ROOT/base/util.py, 
+    # so return the joined path except last two
+    return os.path.split(dirname)[0]
+
+
 def load_map_setting(chapter):
-    with open(os.path.join("etc", "maps", "%s.js" % chapter)) as fp:
+    project_root = get_project_root()
+    with open(os.path.join(project_root, "etc", "maps", "%s.js" % chapter)) as fp:
         res = json.load(fp)
     return res
 
@@ -192,7 +201,7 @@ def manhattan_distance(p1, p2):
     return abs(p1.x - p2.x) + abs(p1.y - p2.y)
 
 
-if __name__ == "__main__":
+def test_geometry():
     p1 = Point(2, 3)
     p2 = Point(2, 5)
     p3 = Point(1, 4)
@@ -207,3 +216,9 @@ if __name__ == "__main__":
         v2 = Vector2(p)
         cosine = dot_mul(v, v2) / (v.get_length() * v2.get_length())
         print v, v2, cosine
+
+
+
+if __name__ == "__main__":
+    res = load_map_setting(1)
+    print res["size"]
