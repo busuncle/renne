@@ -19,7 +19,7 @@ class Camera(object):
         self.rect = pygame.Rect((0, 0), size)
 
     
-    def set_rect(self, hero_pos):
+    def screen_follow(self, hero_pos):
         # set rect according the position of hero
         hero_screen_x, hero_screen_y = hero_pos[0], hero_pos[1] / 2
         # delta between hero_screen_x(y) and screen center
@@ -33,3 +33,10 @@ class Camera(object):
             new_y = min(max(self.y_min, new_y), self.y_max)
             self.rect.centery = new_y
 
+
+    def screen_move(self, key_vec, speed, passed_seconds):
+        key_vec.normalize()
+        self.rect.centerx = min(max(self.x_min, self.rect.centerx + key_vec.x * speed * passed_seconds),
+            self.x_max)
+        self.rect.centery = min(max(self.y_min, self.rect.centery + key_vec.y * speed * passed_seconds),
+            self.y_max)

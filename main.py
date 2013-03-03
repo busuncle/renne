@@ -1,13 +1,8 @@
 import pygame
 from pygame.locals import *
-from gameobjects.vector2 import Vector2
 from gamesprites import Renne, Enemy, GameSpritesGroup, enemy_in_one_screen
 import etc.setting as sfg
 import etc.constant as cfg
-import os
-import json
-import math
-import random
 from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObject
 from gamestatus import GameStatus
 from renderer import Camera
@@ -87,7 +82,7 @@ def main():
 
         game_status.update()
 
-        camera.set_rect(renne.pos)
+        camera.screen_follow(renne.pos)
 
         game_world.draw(camera)
         game_status.draw(camera)

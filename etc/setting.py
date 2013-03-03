@@ -226,6 +226,11 @@ class GameStatus(object):
 
 
 
+class MapEditor(object):
+    SCREEN_MOVE_SPEED = 400
+
+
+
 ######### mapping for factory ########
 SPRITE_SETTING_MAPPING = {
     0: Renne,

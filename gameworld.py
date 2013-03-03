@@ -55,12 +55,8 @@ class GameStaticObject(pygame.sprite.DirtySprite):
         self.area.center = pos
 
 
-    def debug_draw(self, surface):
-        def test_area():
-            r = pygame.Rect(0, 0, self.area.width, self.area.height / 2)
-            r.center = (self.pos.x, self.pos.y / 2)
-            pygame.draw.rect(surface, pygame.Color("red"), r, 1)
-        test_area()
+    def adjust_rect(self):
+        self.rect.center = (self.pos[0], self.pos[1] / 2 + self.setting.IMAGE_POS_DELTA_Y)
 
 
     def draw(self, camera):
