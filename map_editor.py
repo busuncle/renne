@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from gamesprites import Renne, Enemy, GameSpritesGroup, enemy_in_one_screen
+from gamesprites import Renne, Enemy, GameSpritesGroup
 from gameobjects.vector2 import Vector2
 import etc.setting as sfg
 import etc.constant as cfg
@@ -38,6 +38,23 @@ def put_selected_unit(selected_unit, game_objects):
         if selected_unit.area.colliderect(sp.area):
             return False
     return True
+
+
+def change_map_setting(map_setting, game_world):
+    res = {"hero": None, "monsters": [], "static_objects": []}
+    for sp in game_world.sprites():
+        x, y = sp.pos
+        if issubclass(sp.setting, sfg.StaticObject):
+            res["static_objects"].append([sp.setting.ID, [x, y]])
+        elif issubclass(sp.setting, sfg.GameRole):
+            direct = sp.direction
+            if isinstance(sp, Renne):
+                res["hero"] = [[x, y], direct]
+            else:
+                res["monsters"].append([sp.setting.ID, [x, y], direct])
+
+    map_setting.update(res)
+
 
 
 def run(chapter):
@@ -97,6 +114,11 @@ def run(chapter):
             key_vec.y -= 1.0
         if pressed_keys[sfg.UserKey.DOWN]:
             key_vec.y += 1.0
+
+        if pressed_keys[K_q] and selected_unit is None:
+            change_map_setting(map_setting, game_world)
+            util.save_map_setting(chapter, map_setting)
+            print "save %s map setting" % chapter
 
         pressed_mouse = pygame.mouse.get_pressed()
         mouse_pos = pygame.mouse.get_pos()

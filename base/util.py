@@ -22,6 +22,13 @@ def load_map_setting(chapter):
     return res
 
 
+def save_map_setting(chapter, map_setting):
+    project_root = get_project_root()
+    res = json.dumps(map_setting, indent=4)
+    with open(os.path.join(project_root, "etc", "maps", "%s.js" % chapter), "w") as fp:
+        fp.write(res)
+
+
 class ResourceController(object):
     def __init__(self, loader):
         self.res_mapping = {}

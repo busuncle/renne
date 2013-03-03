@@ -25,7 +25,11 @@ class Screen(object):
     INNER_SIZE = [SIZE[0] / 4, SIZE[1] / 4]
 
 
-class Renne(object):
+class GameRole(object):
+    pass
+
+
+class Renne(GameRole):
     ID = 0
     NAME = "Renne"
     HP = 300
@@ -71,7 +75,7 @@ class Renne(object):
 
 
                 
-class SkeletonWarrior(object):
+class SkeletonWarrior(GameRole):
     ID = 1
     NAME = "SkeletonWarrior"
     HP = 200
@@ -116,7 +120,12 @@ class GameMap(object):
 
 
 
-class WoodenCase(object):
+class StaticObject(object):
+    pass
+
+
+
+class WoodenCase(StaticObject):
     ID = 1
     NAME = "WoodenCase"
     IMAGE_KEY = "s1"
@@ -128,7 +137,7 @@ class WoodenCase(object):
 
 
 
-class IronCase(object):
+class IronCase(StaticObject):
     ID = 2
     NAME = "IronCase"
     IMAGE_KEY = "s2"
@@ -140,7 +149,7 @@ class IronCase(object):
 
     
 
-class ThickGrass(object):
+class ThickGrass(StaticObject):
     ID = 3
     NAME = "ThickGrass"
     IMAGE_KEY = "s3"
