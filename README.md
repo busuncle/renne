@@ -8,5 +8,5 @@ Renne
 * Esc is the exit button.
   
 > enjoy your geek life
-Copyright 2013 busuncle.
-https://github.com/busuncle/renne
+> Copyright 2013 busuncle.
+> https://github.com/busuncle/renne
