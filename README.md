@@ -7,11 +7,9 @@ Renne
 * U is useless, don't press it!
 * Esc is the exit button.
   
-__enjoy your geek life__ 
-
-__Copyright 2013 busuncle__ 
-
-__https://github.com/busuncle/renne__ 
+__enjoy your geek life
+__Copyright 2013 busuncle
+__https://github.com/busuncle/renne
 
 
 
