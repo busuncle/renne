@@ -1,4 +1,4 @@
-"Renne"
+Renne
 
 I have no time on writing this in detail!
 
@@ -7,8 +7,7 @@ J is attack, L is run.
 U is useless, don't press it!
 Esc is the exit button.
 
-
 enjoy your geek life
-----------------------
+---------------------
 Copyright 2013 busuncle.
 https://github.com/busuncle/renne
