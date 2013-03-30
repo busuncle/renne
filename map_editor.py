@@ -1,3 +1,4 @@
+import os
 import pygame
 from pygame.locals import *
 from gamesprites import Renne, Enemy, GameSpritesGroup
@@ -13,9 +14,12 @@ import debug_tools
 
 
 
+PROJECT_ROOT = util.get_project_root()
+assert os.path.basename(PROJECT_ROOT) == "renne"
 
 screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption("Renne Map Editor")
+
 
 
 def get_map_pos_for_mouse(camera_rect, mouse_pos):

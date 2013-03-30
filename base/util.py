@@ -4,6 +4,8 @@ from gameobjects.vector2 import Vector2
 import weakref
 import os
 import json
+import pprint
+
 
 
 
@@ -16,15 +18,26 @@ def get_project_root():
 
 
 def load_map_setting(chapter):
+    def convert(input):
+        if isinstance(input, dict):
+            return {convert(k): convert(v) for k, v in input.iteritems()}
+        elif isinstance(input, list):
+            return [convert(v) for v in input]
+        elif isinstance(input, unicode):
+            return input.encode("utf-8")
+        else:
+            return input
+
     project_root = get_project_root()
     with open(os.path.join(project_root, "etc", "maps", "%s.js" % chapter)) as fp:
-        res = json.load(fp)
+        res = json.load(fp, object_hook=convert)
+
     return res
 
 
 def save_map_setting(chapter, map_setting):
     project_root = get_project_root()
-    res = json.dumps(map_setting, indent=4)
+    res = pprint.pformat(map_setting)
     with open(os.path.join(project_root, "etc", "maps", "%s.js" % chapter), "w") as fp:
         fp.write(res)
 
