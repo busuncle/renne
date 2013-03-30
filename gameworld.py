@@ -50,7 +50,7 @@ class GameStaticObject(pygame.sprite.DirtySprite):
             Rect(setting.IMAGE_RECT)
         )
         self.rect = self.image.get_rect()
-        self.rect.center = (pos[0], pos[1] / 2 + setting.IMAGE_POS_DELTA_Y)
+        self.adjust_rect()
         self.area = pygame.Rect(setting.AREA_RECT)
         self.area.center = pos
 

@@ -47,7 +47,7 @@ def put_selected_unit(selected_unit, game_objects):
 def change_map_setting(map_setting, game_world):
     res = {"hero": None, "monsters": [], "static_objects": []}
     for sp in game_world.sprites():
-        x, y = sp.pos
+        x, y = map(int, sp.pos)
         if issubclass(sp.setting, sfg.StaticObject):
             res["static_objects"].append([sp.setting.ID, [x, y]])
         elif issubclass(sp.setting, sfg.GameRole):
@@ -58,6 +58,34 @@ def change_map_setting(map_setting, game_world):
                 res["monsters"].append([sp.setting.ID, [x, y], direct])
 
     map_setting.update(res)
+
+
+def set_selected_unit_follow_mouse(map_pos_for_mouse, selected_unit):
+    selected_unit.area.center = map_pos_for_mouse
+    selected_unit.pos.x, selected_unit.pos.y = map_pos_for_mouse
+    if isinstance(selected_unit, GameStaticObject):
+        selected_unit.adjust_rect()
+
+
+def change_mouse_select(selected_unit, game_world):
+    # None -> Enemy -> GameStaticObject -> None ... change in this circle
+    new_selected = None
+    if isinstance(selected_unit, Renne):
+        # Renne is not under this loop, do nothing and return it immediately
+        return selected_unit
+
+    if selected_unit is None:
+        new_selected = Enemy(sfg.SPRITE_SETTING_MAPPING[1], (-1000, -1000), 0)
+        game_world.add(new_selected)
+    elif isinstance(selected_unit, Enemy):
+        game_world.remove(selected_unit)
+        new_selected = GameStaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[1], (-1000, -1000))
+        game_world.add(new_selected)
+    elif isinstance(selected_unit, GameStaticObject):
+        game_world.remove(selected_unit)
+        new_selected = None
+
+    return new_selected
 
 
 
@@ -98,8 +126,14 @@ def run(chapter):
     running = True
     key_vec = Vector2()
     selected_unit = None
-    left_click_begin = None
+    persist_begin = None
     while running:
+        if persist_begin is not None:
+            if time() - persist_begin < 0.5:
+                continue
+            else:
+                persist_begin = None
+
         key_vec.x = key_vec.y = 0.0
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 
@@ -108,6 +142,14 @@ def run(chapter):
                     running = False
 
         pressed_keys = pygame.key.get_pressed()
+        if pygame.key.get_mods() & KMOD_CTRL and pressed_keys[K_s] and selected_unit is None:
+            # ctrl+s to save map setting
+            change_map_setting(map_setting, game_world)
+            util.save_map_setting(chapter, map_setting)
+            persist_begin = time()
+            print "save %s map setting" % chapter
+            continue
+
         if pressed_keys[sfg.UserKey.LEFT]:
             key_vec.x -= 1.0
         if pressed_keys[sfg.UserKey.RIGHT]:
@@ -117,35 +159,33 @@ def run(chapter):
         if pressed_keys[sfg.UserKey.DOWN]:
             key_vec.y += 1.0
 
-        if pressed_keys[K_q] and selected_unit is None:
-            change_map_setting(map_setting, game_world)
-            util.save_map_setting(chapter, map_setting)
-            print "save %s map setting" % chapter
-
-        pressed_mouse = pygame.mouse.get_pressed()
         mouse_pos = pygame.mouse.get_pos()
+        map_pos_for_mouse = get_map_pos_for_mouse(camera.rect, mouse_pos)
+
+        if pressed_keys[K_q]:
+            selected_unit = change_mouse_select(selected_unit, game_world)
+            persist_begin = time()
 
         time_passed = clock.tick(sfg.FPS)
         passed_seconds = time_passed / 1000.0
 
-        map_pos_for_mouse = get_map_pos_for_mouse(camera.rect, mouse_pos)
-
         camera.screen_move(key_vec, sfg.MapEditor.SCREEN_MOVE_SPEED, passed_seconds)
 
+        pressed_mouse = pygame.mouse.get_pressed()
         if pressed_mouse[0]:
+            # left click to pick up some unit
             if selected_unit is None:
                 selected_unit = select_unit(map_pos_for_mouse, game_world.sprites())
         elif pressed_mouse[2]:
+            # right click to put down some unit
             if selected_unit and put_selected_unit(selected_unit, game_world.sprites()):
                 selected_unit = None
 
         game_map.draw(camera)
         game_world.draw(camera)
+
         if selected_unit is not None:
-            selected_unit.area.center = map_pos_for_mouse
-            selected_unit.pos.x, selected_unit.pos.y = map_pos_for_mouse
-            if isinstance(selected_unit, GameStaticObject):
-                selected_unit.adjust_rect()
+            set_selected_unit_follow_mouse(map_pos_for_mouse, selected_unit)
             debug_tools.draw_area(selected_unit, camera)
 
         pygame.display.flip()
