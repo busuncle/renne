@@ -2,7 +2,7 @@ from gameobjects.vector2 import Vector2
 import etc.constant as cfg
 import etc.setting as sfg
 from time import time
-from random import randint, choice, gauss
+from random import randint, choice, gauss, random
 import math
 from base.util import cos_for_vec
 
@@ -25,6 +25,12 @@ def cal_face_direct(sprite, target):
     return best_direct
 
 
+def happen(probability):
+    # calculate whether the event will happen according the probability
+    assert 0 <= probability <= 1
+    return random() <= probability
+
+
 
 ########### state machine ####################
 class State(object):
@@ -45,8 +51,9 @@ class State(object):
 
 
 class StateMachine(object):
-    def __init__(self, sprite):
+    def __init__(self, sprite, tick):
         self.sprite = sprite
+        self.tick = tick
         self.states = {}
         self.active_state = None
         self.last_state = None
@@ -63,8 +70,8 @@ class StateMachine(object):
 
         new_state_id = None
         current_time = time()
-        # 0.5 seconds for a loop, interrupt event will trigger condition calculation at once
-        if self.sprite.brain.interrupt or current_time - self.last_time > 0.5:
+        # ai event tick, interrupt event will trigger condition calculation at once
+        if self.sprite.brain.interrupt or current_time - self.last_time > self.tick:
             self.last_time = current_time
             new_state_id = self.active_state.check_conditions()
         
@@ -85,8 +92,9 @@ class StateMachine(object):
 
 
 class SpriteBrain(object):
-    def __init__(self, sprite):
+    def __init__(self, sprite, ai):
         self.sprite = sprite
+        self.ai = ai
         self.target = None
         self.destination = None
         self.path = None
@@ -94,12 +102,12 @@ class SpriteBrain(object):
         self.persistent = False
         self.actions = ()
 
-        self.state_machine = StateMachine(sprite)
+        self.state_machine = StateMachine(sprite, ai.TICK)
 
-        stay_state = SpriteStay(sprite)
-        patrol_state = SpritePatrol(sprite)
-        chase_state = SpriteChase(sprite)
-        offence_state = SpriteOffence(sprite)
+        stay_state = SpriteStay(sprite, ai)
+        patrol_state = SpritePatrol(sprite, ai)
+        chase_state = SpriteChase(sprite, ai)
+        offence_state = SpriteOffence(sprite, ai)
 
         self.state_machine.add_state(stay_state)
         self.state_machine.add_state(patrol_state)
@@ -119,18 +127,19 @@ class SpriteBrain(object):
 
 
 class SpriteStay(State):
-    def __init__(self, sprite):
+    def __init__(self, sprite, ai):
         super(SpriteStay, self).__init__(cfg.SpriteState.STAY)
         self.sprite = sprite
+        self.ai = ai
 
 
     def enter(self, last_state):
         self.begin_time = time()
-        self.stay_time = gauss(1, 0.1)   # stay here for about 1 second
+        self.stay_time = gauss(self.ai.STAY_TIME_MU, self.ai.STAY_TIME_SIGMA)   
         # turn for a random direction if the last state is the same "stay"
         if last_state and last_state.id == cfg.SpriteState.STAY:
             self.sprite.direction = choice(cfg.Direction.ALL)   # a random direction from "all"
-            if randint(0, 1) == 0:
+            if happen(self.ai.EMOTION_SILENT_PROB):
                 self.sprite.set_emotion(cfg.SpriteEmotion.SILENT)
 
 
@@ -150,8 +159,7 @@ class SpriteStay(State):
             return cfg.SpriteState.CHASE
 
         if time() - self.begin_time >= self.stay_time:
-            if randint(1, 3) == 1:
-                # 1/3 probability turn to patrol
+            if happen(self.ai.STAY_TO_PATROL_PROB):
                 print "stay to patrol"
                 return cfg.SpriteState.PATROL
             else:
@@ -164,18 +172,23 @@ class SpriteStay(State):
 
 
 class SpritePatrol(State):
-    def __init__(self, sprite):
+    def __init__(self, sprite, ai):
         super(SpritePatrol, self).__init__(cfg.SpriteState.PATROL)
         self.sprite = sprite
+        self.ai = ai
+
+
+    def choose_a_backside_direction(self, current_direction):
+        total = cfg.Direction.TOTAL
+        opposite_direction = (current_direction + 4) % total
+        return choice([(opposite_direction - 1) % total, opposite_direction,
+            (opposite_direction + 1) % total])
 
 
     def enter(self, last_state):
         self.begin_time = time()
-        self.walk_time = gauss(0.8, 0.1)   # walk straight for about 1 second
-        # choose a opposite direction 
-        d_num = cfg.Direction.TOTAL
-        opp_d = (self.sprite.direction + 4) % d_num
-        self.sprite.direction = choice(((opp_d -1) % d_num, opp_d, (opp_d + 1) % d_num))
+        self.walk_time = gauss(self.ai.WALK_TIME_MU, self.ai.WALK_TIME_SIGMA)   
+        self.sprite.direction = self.choose_a_backside_direction(self.sprite.direction)
 
     
     def send_actions(self):
@@ -205,10 +218,12 @@ class SpritePatrol(State):
         self.begin_time, self.walk_time = None, None
 
 
+
 class SpriteChase(State):
-    def __init__(self, sprite):
+    def __init__(self, sprite, ai):
         super(SpriteChase, self).__init__(cfg.SpriteState.CHASE)
         self.sprite = sprite
+        self.ai = ai
         self.see_hero_time = None
 
 
@@ -240,7 +255,7 @@ class SpriteChase(State):
 
     def send_actions(self):
         if self.see_hero_time is not None:
-            if time() - self.see_hero_time < 0.5:
+            if time() - self.see_hero_time < self.ai.CHASE_GO_DELAY_TIME:
                 # delay chase action for a more real effect
                 return (cfg.EnemyAction.STAND, )
 
@@ -275,19 +290,21 @@ class SpriteChase(State):
 
 
 class SpriteOffence(State):
-    def __init__(self, sprite):
+    def __init__(self, sprite, ai):
         super(SpriteOffence, self).__init__(cfg.SpriteState.OFFENCE)
         self.sprite = sprite
+        self.ai = ai
 
     def enter(self, last_state):
         sp = self.sprite
         sp.brain.persistent = True
         sp.direction = cal_face_direct(sp, sp.brain.target)
         self.enter_time = time()
+        self.delay_time = gauss(self.ai.OFFENCE_GO_DELAY_TIME_MU, self.ai.OFFENCE_GO_DELAY_TIME_SIGMA)
 
 
     def send_actions(self):
-        if time() - self.enter_time < 0.2:
+        if time() - self.enter_time < self.delay_time:
             # add delay time for attack
             return (cfg.EnemyAction.STAND, )
 

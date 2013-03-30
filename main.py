@@ -3,6 +3,7 @@ from pygame.locals import *
 from gamesprites import Renne, Enemy, GameSpritesGroup, enemy_in_one_screen
 import etc.setting as sfg
 import etc.constant as cfg
+import etc.ai_setting as ai
 from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObject
 from gamestatus import GameStatus
 from renderer import Camera
@@ -38,7 +39,7 @@ def main():
     # load monsters
     monster_init = map_setting["monsters"]
     for monster_id, pos, direct in monster_init:
-        monster = Enemy(sfg.SPRITE_SETTING_MAPPING[monster_id], pos, direct, allsprites, 
+        monster = Enemy(sfg.SPRITE_SETTING_MAPPING[monster_id], ai.NormalAI, pos, direct, allsprites, 
             renne, static_objects, game_map)
 
         enemies.add(monster)

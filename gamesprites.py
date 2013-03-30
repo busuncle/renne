@@ -254,7 +254,7 @@ class Renne(GameSprite):
 
 
 class Enemy(GameSprite):
-    def __init__(self, setting, pos, direction, allsprites, hero, static_objects, game_map):
+    def __init__(self, setting, ai, pos, direction, allsprites, hero, static_objects, game_map):
         self.setting = setting
 
         super(Enemy, self).__init__(setting.NAME, setting.HP, setting.ATK, setting.DFS, pos, direction)
@@ -275,7 +275,7 @@ class Enemy(GameSprite):
         self.view_sensor = simulator.ViewSensor(self, angle=setting.VIEW_ANGLE)
         self.pathfinder = pathfinding.Astar(self)
         self.steerer = simulator.Steerer(self)
-        self.brain = SpriteBrain(self)
+        self.brain = SpriteBrain(self, ai)
 
 
     def draw_emotion(self, camera):
@@ -418,7 +418,7 @@ class GameSpritesGroup(pygame.sprite.LayeredDirty):
     def notify_nearby_alliance_for_target(self, sprite, target):
         for nearby_sprite in filter(lambda sp: sp is not target and \
             sprite.pos.get_distance_to(sp.pos) <= sprite.setting.NEARBY_ALLIANCE_RANGE, self.sprites()):
-            if nearby_sprite.pos.get_distance_to(target.pos) < nearby_sprite.setting.CHASE_RANGE \
+            if nearby_sprite.pos.get_distance_to(target.pos) < nearby_sprite.setting.VIEW_RANGE \
                 and nearby_sprite.brain.target is None:
                 # found by alliance, and within chase range, chase it
                 nearby_sprite.brain.target = target
