@@ -3,8 +3,8 @@ from pygame.locals import *
 from gameobjects.vector2 import Vector2
 import weakref
 import os
-import json
 import pprint
+import imp
 
 
 
@@ -18,28 +18,19 @@ def get_project_root():
 
 
 def load_map_setting(chapter):
-    def convert(input):
-        if isinstance(input, dict):
-            return {convert(k): convert(v) for k, v in input.iteritems()}
-        elif isinstance(input, list):
-            return [convert(v) for v in input]
-        elif isinstance(input, unicode):
-            return input.encode("utf-8")
-        else:
-            return input
-
     project_root = get_project_root()
-    with open(os.path.join(project_root, "etc", "maps", "%s.js" % chapter)) as fp:
-        res = json.load(fp, object_hook=convert)
+    name = "chapter_%s" % chapter
+    path = os.path.join(project_root, "etc", "maps", "chapter_%s.py" % chapter)
+    m = imp.load_source(name, path)
 
-    return res
+    return getattr(m, "map_setting")
 
 
 def save_map_setting(chapter, map_setting):
     project_root = get_project_root()
     res = pprint.pformat(map_setting)
-    with open(os.path.join(project_root, "etc", "maps", "%s.js" % chapter), "w") as fp:
-        fp.write(res)
+    with open(os.path.join(project_root, "etc", "maps", "chapter_%s.py" % chapter), "w") as fp:
+        fp.write("map_setting = " + res)
 
 
 class ResourceController(object):
