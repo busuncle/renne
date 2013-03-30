@@ -70,14 +70,12 @@ def run(chapter):
     game_map = GameMap(chapter, map_setting["size"], map_setting["tiles"])
 
     # load hero
-    hero_init = map_setting["hero"]
-    renne = Renne(hero_init[0], hero_init[1], allsprites, enemies, static_objects, game_map)
+    renne = Renne(sfg.Renne, *map_setting["hero"])
 
     # load monsters
     monster_init = map_setting["monsters"]
     for monster_id, pos, direct in monster_init:
-        monster = Enemy(sfg.SPRITE_SETTING_MAPPING[monster_id], pos, direct, allsprites, 
-            renne, static_objects, game_map)
+        monster = Enemy(sfg.SPRITE_SETTING_MAPPING[monster_id], pos, direct)
 
         enemies.add(monster)
 

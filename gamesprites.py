@@ -100,12 +100,10 @@ class GameSprite(pygame.sprite.DirtySprite):
 
 
 class Renne(GameSprite):
-    setting = sfg.Renne
+    def __init__(self, setting, pos, direction):
+        super(Renne, self).__init__(setting.NAME, setting.HP, setting.ATK, setting.DFS, pos, direction)
 
-    def __init__(self, pos, direction, allsprites, enemies, static_objects, game_map):
-        super(Renne, self).__init__(self.setting.NAME, self.setting.HP, self.setting.ATK, self.setting.DFS,
-            pos, direction)
-
+        self.setting = setting
         self.stamina = self.setting.STAMINA
         self.level = 1
         self.exp = 0
@@ -116,6 +114,8 @@ class Renne(GameSprite):
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
         self.area.center = self.pos('xy')
 
+
+    def activate(self, allsprites, enemies, static_objects, game_map):
         self.allsprites = allsprites
         self.enemies = enemies
         self.static_objects = static_objects
@@ -254,10 +254,9 @@ class Renne(GameSprite):
 
 
 class Enemy(GameSprite):
-    def __init__(self, setting, ai, pos, direction, allsprites, hero, static_objects, game_map):
-        self.setting = setting
-
+    def __init__(self, setting, pos, direction):
         super(Enemy, self).__init__(setting.NAME, setting.HP, setting.ATK, setting.DFS, pos, direction)
+        self.setting = setting
         self.emotion = cfg.SpriteEmotion.NORMAL
         self.emotion_animation = SpriteEmotionAnimator(self)
 
@@ -266,16 +265,19 @@ class Enemy(GameSprite):
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
         self.area.center = self.pos('xy')
 
+
+    def activate(self, ai, allsprites, hero, static_objects, game_map):
+        # activate the enemy by passing all the nessary external information and ai to it
+        self.brain = SpriteBrain(self, ai)
         self.allsprites = allsprites
         self.hero = hero
         self.static_objects = static_objects
         self.game_map = game_map
-        self.attacker = simulator.AngleAttacker(self, angle=setting.ATTACK_ANGLE, 
+        self.attacker = simulator.AngleAttacker(self, angle=self.setting.ATTACK_ANGLE, 
             cal_frames=self.setting.ATTACK_CAL_FRAMES)
-        self.view_sensor = simulator.ViewSensor(self, angle=setting.VIEW_ANGLE)
+        self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
         self.pathfinder = pathfinding.Astar(self)
         self.steerer = simulator.Steerer(self)
-        self.brain = SpriteBrain(self, ai)
 
 
     def draw_emotion(self, camera):
