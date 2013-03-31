@@ -14,6 +14,8 @@ class Direction(object):
     SOUTH = 6
     SOUTH_WEST = 7
 
+    TOTAL = 8 # 8 directions totally
+
     ALL = [
         WEST,
         NORTH_WEST,
@@ -25,20 +27,19 @@ class Direction(object):
         SOUTH_WEST,
     ]
 
-    TOTAL = 8 # 8 directions totally
+    VEC_ALL = [
+        (-1.0, 0.0),
+        (-1.0, -1.0),
+        (0.0, -1.0),
+        (1.0, -1.0),
+        (1.0, 0.0),
+        (1.0, 1.0),
+        (0.0, 1.0),
+        (-1.0, 1.0),
+    ]
 
-    VEC_TO_DIRECT = {
-        (-1.0, 0.0): WEST,
-        (-1.0, -1.0): NORTH_WEST,
-        (0.0, -1.0): NORTH,
-        (1.0, -1.0): NORTH_EAST,
-        (1.0, 0.0): EAST,
-        (1.0, 1.0): SOUTH_EAST,
-        (0.0, 1.0): SOUTH,
-        (-1.0, 1.0): SOUTH_WEST,
-    }
-
-    DIRECT_TO_VEC = dict((v, k) for k, v in VEC_TO_DIRECT.iteritems())
+    DIRECT_TO_VEC = dict(zip(ALL, VEC_ALL))
+    VEC_TO_DIRECT = dict(zip(VEC_ALL, ALL))
 
 
 

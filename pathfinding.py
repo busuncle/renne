@@ -1,4 +1,5 @@
 import pygame
+import math
 from heapq import heappush, heappop
 import os
 from gameobjects.vector2 import Vector2
@@ -68,16 +69,8 @@ class Astar(object):
     # an empirical value for limiting the size of close list
     MAX_SEARCHING_STEP = 100
 
-    directs = {
-        (-1.0, 0.0): 1.0,
-        (-1.0, -1.0): 1.4,
-        (0.0, -1.0): 1.0,
-        (1.0, -1.0): 1.4,
-        (1.0, 0.0): 1.0,
-        (1.0, 1.0): 1.4,
-        (0.0, 1.0): 1.0,
-        (-1.0, 1.0): 1.4,
-    }
+    # unit cost in every direction
+    direct_vec_cost = dict((v, math.sqrt(v[0]**2 + v[1]**2)) for v in cfg.Direction.VEC_ALL)
 
     all_waypoints = {}
 
@@ -171,7 +164,7 @@ class Astar(object):
                 print "astar close list length: %s" % len(close_list)
                 return path
 
-            for vec, cost in self.directs.iteritems():
+            for vec, cost in self.direct_vec_cost.iteritems():
                 direct_vec.x, direct_vec.y = vec
                 direct_vec *= sfg.WayPoint.STEP_WIDTH
                 next_x, next_y = cur_x + direct_vec.x, cur_y + direct_vec.y
