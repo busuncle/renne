@@ -18,11 +18,13 @@ pygame.display.set_icon(pygame.image.load("renne.png").convert_alpha())
 
 
 
-
 def main():
-    clock = pygame.time.Clock()
+    for chapter in sfg.GameMap.CHAPTERS:
+        enter_chapter(chapter)
 
-    chapter = 1
+
+def enter_chapter(chapter):
+    clock = pygame.time.Clock()
     map_setting = util.load_map_setting(chapter)
 
     camera = Camera(screen, map_size=map_setting["size"])
@@ -94,5 +96,7 @@ def main():
         pygame.display.flip()
 
 
+
 if __name__ == "__main__":
     main()
+
