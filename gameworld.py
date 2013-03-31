@@ -9,11 +9,11 @@ import etc.setting as sfg
 
 class GameMap(object):
     tile_images = ImageController(sfg.TILE_IMAGES[0])
+    tile_images.add_from_list(sfg.TILE_IMAGES[1])
     def __init__(self, chapter, size, tiles_setting):
         self.chapter = chapter
         self.size = size
         self.map_tiles = []
-        self.tile_images.add_from_list(sfg.TILE_IMAGES[1])
         self.init_map_titles(tiles_setting)
 
 
@@ -34,6 +34,7 @@ class GameMap(object):
         for tile, tile_rect in self.map_tiles:
             if tile_rect.colliderect(camera.rect):
                 camera.screen.blit(tile, (tile_rect.left - camera.rect.left, tile_rect.top - camera.rect.top))
+
 
 
 class GameStaticObject(pygame.sprite.DirtySprite):
