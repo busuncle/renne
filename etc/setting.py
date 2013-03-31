@@ -30,7 +30,6 @@ class GameRole(object):
 
 
 class Renne(GameRole):
-    ID = 0
     NAME = "Renne"
     HP = 300
     STAMINA = 100
@@ -76,7 +75,6 @@ class Renne(GameRole):
 
                 
 class SkeletonWarrior(GameRole):
-    ID = 1
     NAME = "SkeletonWarrior"
     HP = 200
     ATK = 40
@@ -126,7 +124,6 @@ class StaticObject(object):
 
 
 class WoodenCase(StaticObject):
-    ID = 1
     NAME = "WoodenCase"
     IMAGE_KEY = "s1"
     IMAGE_RECT = (64, 64, 48, 64)
@@ -138,7 +135,6 @@ class WoodenCase(StaticObject):
 
 
 class IronCase(StaticObject):
-    ID = 2
     NAME = "IronCase"
     IMAGE_KEY = "s2"
     IMAGE_RECT = (174, 112, 70, 132)
@@ -150,7 +146,6 @@ class IronCase(StaticObject):
     
 
 class ThickGrass(StaticObject):
-    ID = 3
     NAME = "ThickGrass"
     IMAGE_KEY = "s3"
     IMAGE_RECT = (192, 64, 64, 64)
@@ -241,19 +236,26 @@ class MapEditor(object):
 
 
 ######### mapping for factory ########
-SPRITE_SETTING_MAPPING = {
-    0: Renne,
-    1: SkeletonWarrior,
-}
+# control all objects in list, their order will detemine the attribute "ID" of their own
+SPRITE_SETTING_LIST = [
+    SkeletonWarrior,
+]
 
+STATIC_OBJECT_SETTING_LIST = [
+    WoodenCase,
+    IronCase,
+    ThickGrass,
+]
 
+# set attribute "ID" for all objects, start from 1, Renne is special for 0
+Renne.ID = 0
+for i, cls in enumerate(SPRITE_SETTING_LIST):
+    cls.ID = i + 1
+for i, cls in enumerate(STATIC_OBJECT_SETTING_LIST):
+    cls.ID = i + 1
 
-STATIC_OBJECT_SETTING_MAPPING = {
-    1: WoodenCase,
-    2: IronCase,
-    3: ThickGrass,
-}
-
+SPRITE_SETTING_MAPPING = {cls.ID: cls for cls in SPRITE_SETTING_LIST}
+STATIC_OBJECT_SETTING_MAPPING = {cls.ID: cls for cls in STATIC_OBJECT_SETTING_LIST}
 
 
 ########### resource mapping ###########
