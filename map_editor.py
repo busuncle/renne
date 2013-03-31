@@ -126,60 +126,54 @@ def run(chapter):
     running = True
     key_vec = Vector2()
     selected_unit = None
-    persist_begin = None
     while running:
-        if persist_begin is not None:
-            if time() - persist_begin < 0.5:
-                continue
-            else:
-                persist_begin = None
-
-        key_vec.x = key_vec.y = 0.0
-        for event in pygame.event.get(): 
-            if event.type == pygame.QUIT: 
-                running = False
-            if event.type == KEYDOWN and event.key == K_ESCAPE:
-                    running = False
-
-        pressed_keys = pygame.key.get_pressed()
-        if pygame.key.get_mods() & KMOD_CTRL and pressed_keys[K_s] and selected_unit is None:
-            # ctrl+s to save map setting
-            change_map_setting(map_setting, game_world)
-            util.save_map_setting(chapter, map_setting)
-            persist_begin = time()
-            print "save %s map setting" % chapter
-            continue
-
-        if pressed_keys[sfg.UserKey.LEFT]:
-            key_vec.x -= 1.0
-        if pressed_keys[sfg.UserKey.RIGHT]:
-            key_vec.x += 1.0
-        if pressed_keys[sfg.UserKey.UP]:
-            key_vec.y -= 1.0
-        if pressed_keys[sfg.UserKey.DOWN]:
-            key_vec.y += 1.0
-
         mouse_pos = pygame.mouse.get_pos()
         map_pos_for_mouse = get_map_pos_for_mouse(camera.rect, mouse_pos)
 
-        if pressed_keys[K_q]:
-            selected_unit = change_mouse_select(selected_unit, game_world)
-            persist_begin = time()
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT: 
+                running = False
+
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
+
+                if event.key == K_q:
+                    selected_unit = change_mouse_select(selected_unit, game_world)
+
+                if pygame.key.get_mods() & KMOD_CTRL and event.key == K_s:
+                    # ctrl+s to save map setting
+                    change_map_setting(map_setting, game_world)
+                    util.save_map_setting(chapter, map_setting)
+                    print "save %s map setting" % chapter
+
+            elif event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    # left click
+                    if selected_unit is None:
+                        # pick up "this" unit if the mouse is over it
+                        selected_unit = select_unit(map_pos_for_mouse, game_world.sprites())
+                    else:
+                        # put down the current selected unit if no "collision" happen
+                        if put_selected_unit(selected_unit, game_world.sprites()):
+                            selected_unit = None
+
+
+        pressed_keys = pygame.key.get_pressed()
+        key_vec.x = key_vec.y = 0.0
+        if pressed_keys[K_LEFT]:
+           key_vec.x -= 1.0
+        if pressed_keys[K_RIGHT]:
+            key_vec.x += 1.0
+        if pressed_keys[K_UP]:
+            key_vec.y -= 1.0
+        if pressed_keys[K_DOWN]:
+            key_vec.y += 1.0
 
         time_passed = clock.tick(sfg.FPS)
         passed_seconds = time_passed / 1000.0
 
         camera.screen_move(key_vec, sfg.MapEditor.SCREEN_MOVE_SPEED, passed_seconds)
-
-        pressed_mouse = pygame.mouse.get_pressed()
-        if pressed_mouse[0]:
-            # left click to pick up some unit
-            if selected_unit is None:
-                selected_unit = select_unit(map_pos_for_mouse, game_world.sprites())
-        elif pressed_mouse[2]:
-            # right click to put down some unit
-            if selected_unit and put_selected_unit(selected_unit, game_world.sprites()):
-                selected_unit = None
 
         game_map.draw(camera)
         game_world.draw(camera)
