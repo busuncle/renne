@@ -1,7 +1,6 @@
 import pygame
 import math
 from heapq import heappush, heappop
-import os
 from gameobjects.vector2 import Vector2
 import etc.constant as cfg
 import etc.setting as sfg
@@ -65,33 +64,15 @@ class OpenList(object):
 
 
 class Astar(object):
-
     # an empirical value for limiting the size of close list
     MAX_SEARCHING_STEP = 100
-
     # unit cost in every direction
     direct_vec_cost = dict((v, math.sqrt(v[0]**2 + v[1]**2)) for v in cfg.Direction.VEC_ALL)
 
-    all_waypoints = {}
-
-    def __init__(self, sprite):
+    def __init__(self, sprite, waypoints):
         self.sprite = sprite
         self.chapter = sprite.game_map.chapter
-        self.waypoints = self.all_waypoints.get(self.chapter)
-        if self.waypoints is None:
-            # lazy loading waypoints
-            self.waypoints = self.load_waypoints(self.chapter)
-            self.all_waypoints[self.chapter] = self.waypoints
-
-
-    def load_waypoints(self, chapter):
-        res = set()
-        fp = open(os.path.join(sfg.WayPoint.DIR, "%s.txt" % chapter))
-        for line in fp:
-            x, y = line.strip().split("\t")
-            res.add((float(x), float(y)))
-
-        return res
+        self.waypoints = waypoints
 
 
     def gen_path(self, cur_node):

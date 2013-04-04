@@ -1,5 +1,6 @@
 from gameobjects.vector2 import Vector2
 import math
+import os
 from time import time
 from random import randint, choice, gauss, random
 import etc.constant as cfg
@@ -93,6 +94,7 @@ class StateMachine(object):
 
 
 class SpriteBrain(object):
+    waypoints = None
     def __init__(self, sprite, ai):
         self.sprite = sprite
         self.ai = ai
@@ -102,12 +104,14 @@ class SpriteBrain(object):
         self.interrupt = False
         self.persistent = False
         self.actions = ()
+        if SpriteBrain.waypoints is None:
+            SpriteBrain.waypoints = self.load_waypoints(sprite.game_map.chapter)
 
         self.state_machine = StateMachine(sprite, ai.TICK)
 
         stay_state = SpriteStay(sprite, ai)
         patrol_state = SpritePatrol(sprite, ai)
-        chase_state = SpriteChase(sprite, ai)
+        chase_state = SpriteChase(sprite, ai, SpriteBrain.waypoints)
         offence_state = SpriteOffence(sprite, ai)
 
         self.state_machine.add_state(stay_state)
@@ -115,6 +119,16 @@ class SpriteBrain(object):
         self.state_machine.add_state(chase_state)
         self.state_machine.add_state(offence_state)
         self.state_machine.set_state(cfg.SpriteState.STAY)
+
+
+    def load_waypoints(self, chapter):
+        res = set()
+        fp = open(os.path.join(sfg.WayPoint.DIR, "%s.txt" % chapter))
+        for line in fp:
+            x, y = line.strip().split("\t")
+            res.add((float(x), float(y)))
+
+        return res
 
 
     @property
@@ -221,12 +235,12 @@ class SpritePatrol(State):
 
 
 class SpriteChase(State):
-    def __init__(self, sprite, ai):
+    def __init__(self, sprite, ai, waypoints):
         super(SpriteChase, self).__init__(cfg.SpriteState.CHASE)
         self.sprite = sprite
         self.ai = ai
         self.see_hero_time = None
-        self.pathfinder = pathfinding.Astar(sprite)
+        self.pathfinder = pathfinding.Astar(sprite, waypoints)
 
 
     def add_noise_to_dest(self, target_pos):
