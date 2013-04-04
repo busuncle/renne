@@ -1,9 +1,10 @@
 from gameobjects.vector2 import Vector2
-import etc.constant as cfg
-import etc.setting as sfg
+import math
 from time import time
 from random import randint, choice, gauss, random
-import math
+import etc.constant as cfg
+import etc.setting as sfg
+import pathfinding
 from base.util import cos_for_vec
 
 
@@ -225,6 +226,7 @@ class SpriteChase(State):
         self.sprite = sprite
         self.ai = ai
         self.see_hero_time = None
+        self.pathfinder = pathfinding.Astar(sprite)
 
 
     def add_noise_to_dest(self, target_pos):
@@ -245,7 +247,7 @@ class SpriteChase(State):
         sp.direction = cal_face_direct(sp, sp.brain.target)
         self.target_move_threshold = sp.brain.target.setting.RADIUS * 4
         sp.brain.destination = self.add_noise_to_dest(sp.brain.target.pos)
-        path = sp.pathfinder.find(sp.brain.destination.as_tuple(), sp.setting.ATTACK_RANGE)
+        path = self.pathfinder.find(sp.brain.destination.as_tuple(), sp.setting.ATTACK_RANGE)
         if path and len(path) > 0:
             sp.steerer.steer_init(path)
             self.can_steer = True

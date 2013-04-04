@@ -2,7 +2,6 @@ import pygame
 from pygame.locals import *
 from gameobjects.vector2 import Vector2
 import simulator
-import pathfinding
 from animation import SpriteAnimator, SpriteEmotionAnimator
 from controller import SpriteBrain
 import etc.constant as cfg
@@ -268,16 +267,15 @@ class Enemy(GameSprite):
 
     def activate(self, ai, allsprites, hero, static_objects, game_map):
         # activate the enemy by passing all the nessary external information and ai to it
-        self.brain = SpriteBrain(self, ai)
+        self.game_map = game_map
         self.allsprites = allsprites
         self.hero = hero
         self.static_objects = static_objects
-        self.game_map = game_map
         self.attacker = simulator.AngleAttacker(self, angle=self.setting.ATTACK_ANGLE, 
             cal_frames=self.setting.ATTACK_CAL_FRAMES)
         self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
-        self.pathfinder = pathfinding.Astar(self)
         self.steerer = simulator.Steerer(self)
+        self.brain = SpriteBrain(self, ai)
 
 
     def draw_emotion(self, camera):
