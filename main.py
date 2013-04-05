@@ -100,9 +100,9 @@ def enter_chapter(chapter):
     while running:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 
-                running = False
+                exit(0)
             if event.type == KEYDOWN and event.key == K_ESCAPE:
-                running = False
+                exit(0)
 
         pressed_keys = pygame.key.get_pressed()
         renne.event_handle(pressed_keys, external_event=game_status.status)
