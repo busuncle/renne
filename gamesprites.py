@@ -275,7 +275,7 @@ class Enemy(GameSprite):
             cal_frames=self.setting.ATTACK_CAL_FRAMES)
         self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
         self.steerer = simulator.Steerer(self)
-        self.brain = SpriteBrain(self, ai)
+        self.brain = SpriteBrain(self, ai, game_map.waypoints)
 
 
     def draw_emotion(self, camera):

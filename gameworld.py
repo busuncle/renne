@@ -1,3 +1,4 @@
+import os
 import pygame
 from pygame.locals import *
 from gameobjects.vector2 import Vector2
@@ -15,7 +16,17 @@ class GameMap(object):
         self.size = size
         self.map_tiles = []
         self.init_map_titles(tiles_setting)
+        self.waypoints = self.load_waypoints(chapter)
 
+
+    def load_waypoints(self, chapter):
+        res = set()
+        fp = open(os.path.join(sfg.WayPoint.DIR, "%s.txt" % chapter))
+        for line in fp:
+            x, y = line.strip().split("\t")
+            res.add((float(x), float(y)))
+
+        return res
 
     def init_map_titles(self, map_tile_setting):
         tile_cache = {}
@@ -74,7 +85,9 @@ class GameStaticObjectGroup(pygame.sprite.LayeredDirty):
             obj.draw(surface)
 
 
+
 class GameWorld(pygame.sprite.LayeredDirty):
+    # containing all sprites in the world
     def __init__(self):
         super(GameWorld, self).__init__()
 
@@ -83,7 +96,5 @@ class GameWorld(pygame.sprite.LayeredDirty):
         objs = sorted(self.sprites(), key=lambda sp: sp.pos.y)
         for v in objs:
             v.draw(camera)
-
-
 
 

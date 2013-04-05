@@ -20,7 +20,14 @@ def draw_pos(sprite, camera):
     camera.screen.blit(info, r)
 
 
+def draw_waypoins(camera, waypoints):
+    for x, y in waypoints:
+        pygame.draw.circle(camera.screen, pygame.Color("red"), (x, y/2), 2)
+
+
 def all_model_display(camera, game_world):
+    draw_waypoins(camera, game_world.waypoints)
     for sp in game_world.sprites():
-        draw_area(sp, camera)
+        #draw_area(sp, camera)
         draw_pos(sp, camera)
+
