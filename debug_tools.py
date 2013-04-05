@@ -2,7 +2,7 @@ import pygame
 
 
 
-def draw_area(sprite, camera):
+def draw_area(camera, sprite):
     r = pygame.Rect(0, 0, sprite.area.width, sprite.area.height / 2)
     r.center = (sprite.pos.x, sprite.pos.y/2)
     r.top -= camera.rect.top
@@ -10,7 +10,7 @@ def draw_area(sprite, camera):
     pygame.draw.rect(camera.screen, pygame.Color("red"), r, 1)
 
 
-def draw_pos(sprite, camera):
+def draw_pos(camera, sprite):
     pos = "(%s, %s)" % tuple(map(int, sprite.pos))
     info = pygame.font.SysFont("arial", 16).render(pos, True, pygame.Color("red"))
     r = pygame.Rect(0, 0, 100, 20)
@@ -29,6 +29,7 @@ def draw_waypoins(camera, waypoints):
 def all_model_display(camera, game_world, game_map):
     draw_waypoins(camera, game_map.waypoints)
     for sp in game_world.sprites():
-        #draw_area(sp, camera)
-        draw_pos(sp, camera)
+        #draw_area(camera, sp)
+        #draw_pos(camera, sp)
+        pass
 

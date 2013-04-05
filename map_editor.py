@@ -1,3 +1,4 @@
+import argparse
 import os
 import copy
 import pygame
@@ -19,8 +20,11 @@ import debug_tools
 PROJECT_ROOT = util.get_project_root()
 assert os.path.basename(PROJECT_ROOT) == "renne"
 
-screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
-pygame.display.set_caption("Renne Map Editor")
+DEBUG_DRAW = {
+    "pos": False,
+    "area": False,
+    "waypoints": False,
+}
 
 
 
@@ -38,6 +42,8 @@ def select_unit(map_pos_for_mouse, game_objects):
 
 
 def put_selected_object(selected_object, game_objects):
+    if selected_object is None:
+        return True
     for sp in game_objects:
         if sp is selected_object:
             continue
@@ -129,6 +135,8 @@ def run(chapter):
 
     map_setting = util.load_map_setting(chapter)
 
+    screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
+    pygame.display.set_caption("Renne Map Editor")
     camera = Camera(screen, map_size=map_setting["size"])
     game_world = GameWorld()
     allsprites = GameSpritesGroup()
@@ -171,8 +179,8 @@ def run(chapter):
 
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    game_world.remove(selected_object)
-                    selected_object = None
+                    if put_selected_object(selected_object, game_world.sprites()):
+                        selected_object = None
 
                 if event.key == K_q:
                     selected_object = mouse_object_toggle(selected_object, game_world)
@@ -180,16 +188,29 @@ def run(chapter):
                 if event.key == K_w:
                     selected_object = selected_object_toggle(selected_object, game_world)
 
+                if event.key == K_e:
+                    game_world.remove(selected_object)
+                    selected_object = None
+
                 if event.key == K_t:
                     selected_object = turn_sprite_direction(selected_object)
 
-                if pygame.key.get_mods() & KMOD_CTRL and event.key == K_s:
+                key_mods = pygame.key.get_mods()
+                if key_mods & KMOD_CTRL and event.key == K_s:
                     # ctrl+s to save map setting
                     change_map_setting(map_setting, game_world)
                     util.save_map_setting(chapter, map_setting)
                     # a good chance for generating waypoints when saving the map setting
                     gen_chapter_waypoints(chapter)
                     print "save chapter %s map setting" % chapter
+
+                if key_mods & KMOD_ALT:
+                    if event.key == K_p:
+                        DEBUG_DRAW["pos"] = not DEBUG_DRAW["pos"]
+                    if event.key == K_a:
+                        DEBUG_DRAW["area"] = not DEBUG_DRAW["area"]
+                    if event.key == K_z:
+                        DEBUG_DRAW["waypoints"] = not DEBUG_DRAW["waypoints"]
 
             elif event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -222,6 +243,11 @@ def run(chapter):
         passed_seconds = time_passed / 1000.0
 
         camera.screen_move(key_vec, sfg.MapEditor.SCREEN_MOVE_SPEED, passed_seconds)
+        if selected_object is not None:
+            set_selected_object_follow_mouse(map_pos_for_mouse, selected_object)
+
+        game_map.draw(camera)
+        game_world.draw(camera)
 
         for sp in game_world:
             if isinstance(sp, Renne) or isinstance(sp, Enemy):
@@ -229,18 +255,22 @@ def run(chapter):
                 sp.animation.image = sp.animation.sprite_image_contoller.get_surface(
                     cfg.SpriteAction.STAND)[sp.direction]
 
-        game_map.draw(camera)
-        game_world.draw(camera)
+            if DEBUG_DRAW["pos"]:
+                debug_tools.draw_pos(camera, sp)
+            if DEBUG_DRAW["area"]:
+                debug_tools.draw_area(camera, sp)
 
-        if selected_object is not None:
-            set_selected_object_follow_mouse(map_pos_for_mouse, selected_object)
-            debug_tools.draw_area(selected_object, camera)
+        if DEBUG_DRAW["waypoints"]:
+            debug_tools.draw_waypoins(camera, game_map.waypoints)
 
         pygame.display.flip()
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print "please specify the only param chapter"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--chapter", dest="chapter", action="store")
+    args = parser.parse_args()
+    if args.chapter is None:
+        print "please specify the param chapter, using -c or --chapter option"
         exit(-1)
-    run(sys.argv[1])
+    run(args.chapter)
