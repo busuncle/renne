@@ -6,6 +6,7 @@ import etc.constant as cfg
 import etc.ai_setting as ai
 from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObject
 from gamestatus import GameStatus
+from animation import cg_image_controller
 from renderer import Camera
 import debug_tools
 from base import util
@@ -21,11 +22,17 @@ pygame.display.set_icon(pygame.image.load("renne.png").convert_alpha())
 def main():
     opening_cg()
     for chapter in sfg.GameMap.CHAPTERS:
+        img = cg_image_controller.get(2).convert_alpha()
+        r = img.get_rect()
+        r.center = map(lambda x: x/2, sfg.Screen.SIZE)
+        screen.blit(img, r)
+        screen.blit(sfg.GameStatus.WORDS["loading"], sfg.GameStatus.LOADING_BLIT_POS)
+        pygame.display.update()
+        pygame.time.wait(1000)
         enter_chapter(chapter)
 
 
 def opening_cg():
-    from animation import cg_image_controller
     opening = cg_image_controller.get(1).convert_alpha()
     r = opening.get_rect()
     r.center = map(lambda x: x/2, sfg.Screen.SIZE)
@@ -47,9 +54,6 @@ def opening_cg():
 
 
 def enter_chapter(chapter):
-    screen.blit(sfg.GameStatus.WORDS["loading"], sfg.GameStatus.LOADING_BLIT_POS)
-    pygame.display.update()
-
     clock = pygame.time.Clock()
     map_setting = util.load_map_setting(chapter)
 

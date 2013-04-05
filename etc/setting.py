@@ -310,5 +310,6 @@ BATTLE_IMAGES = ("battle", {
 
 CG_IMAGES = ("cg", {
     1: "1.png",
+    2: "2.png", 
 })
 
