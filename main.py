@@ -1,3 +1,4 @@
+import argparse
 import pygame
 from pygame.locals import *
 from gamesprites import Renne, Enemy, GameSpritesGroup, enemy_in_one_screen
@@ -17,6 +18,7 @@ screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption("Renne")
 pygame.display.set_icon(pygame.image.load("renne.png").convert_alpha())
 
+COMMAND_DEBUG_MODE = False
 
 
 def main():
@@ -120,7 +122,7 @@ def enter_chapter(chapter):
         game_world.draw(camera)
         game_status.draw(camera)
 
-        if sfg.DEBUG_MODE:
+        if COMMAND_DEBUG_MODE or sfg.DEBUG_MODE:
             debug_tools.all_model_display(camera, game_world, game_map)        
 
         pygame.display.flip()
@@ -128,5 +130,9 @@ def enter_chapter(chapter):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--debug", dest="debug", action="store_true")
+    args = parser.parse_args()
+    COMMAND_DEBUG_MODE = args.debug
     main()
 
