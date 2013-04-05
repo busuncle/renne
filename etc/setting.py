@@ -170,8 +170,8 @@ class StoneWall(StaticObject):
     NAME = "StoneWall"
     IMAGE_KEY = "s5"
     IMAGE_RECT = (192, 0, 64, 160)
-    IMAGE_POS_DELTA_Y = - 56
-    AREA_RECT = (0, 0, 64, 96)
+    IMAGE_POS_DELTA_Y = - 48
+    AREA_RECT = (0, 0, 64, 128)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
 

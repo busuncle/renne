@@ -1,4 +1,5 @@
 import os
+import copy
 import pygame
 from pygame.locals import *
 from gamesprites import Renne, Enemy, GameSpritesGroup
@@ -10,6 +11,7 @@ from time import time
 from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObject
 from renderer import Camera
 from base import util
+from gen_waypoint import gen_chapter_waypoints
 import debug_tools
 
 
@@ -105,6 +107,16 @@ def selected_object_toggle(selected_object, game_world):
     return new_object
 
 
+def create_new_instance(selected_object):
+    if isinstance(selected_object, Enemy):
+        return Enemy(sfg.SPRITE_SETTING_MAPPING[selected_object.setting.ID], 
+            selected_object.pos.as_tuple(), 0)
+    elif isinstance(selected_object, GameStaticObject):
+        return GameStaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[selected_object.setting.ID],
+            selected_object.pos.as_tuple())
+    raise Exception("invalid object to create")
+
+
 
 def run(chapter):
     clock = pygame.time.Clock()
@@ -165,7 +177,9 @@ def run(chapter):
                     # ctrl+s to save map setting
                     change_map_setting(map_setting, game_world)
                     util.save_map_setting(chapter, map_setting)
-                    print "save %s map setting" % chapter
+                    # a good chance for generating waypoints when saving the map setting
+                    gen_chapter_waypoints(chapter)
+                    print "save chapter %s map setting" % chapter
 
             elif event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -176,7 +190,11 @@ def run(chapter):
                     else:
                         # put down the current selected unit if no "collision" happen
                         if put_selected_object(selected_object, game_world.sprites()):
-                            selected_object = None
+                            if pygame.key.get_mods() & KMOD_CTRL:
+                                selected_object = create_new_instance(selected_object)
+                                game_world.add(selected_object)
+                            else:
+                                selected_object = None
 
 
         pressed_keys = pygame.key.get_pressed()
