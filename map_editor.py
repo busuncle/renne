@@ -117,6 +117,12 @@ def create_new_instance(selected_object):
     raise Exception("invalid object to create")
 
 
+def turn_sprite_direction(selected_object):
+    if isinstance(selected_object, Renne) or isinstance(selected_object, Enemy):
+        selected_object.direction = (selected_object.direction + 1) % len(cfg.Direction.ALL)
+
+    return selected_object
+
 
 def run(chapter):
     clock = pygame.time.Clock()
@@ -165,13 +171,17 @@ def run(chapter):
 
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    running = False
+                    game_world.remove(selected_object)
+                    selected_object = None
 
                 if event.key == K_q:
                     selected_object = mouse_object_toggle(selected_object, game_world)
 
                 if event.key == K_w:
                     selected_object = selected_object_toggle(selected_object, game_world)
+
+                if event.key == K_t:
+                    selected_object = turn_sprite_direction(selected_object)
 
                 if pygame.key.get_mods() & KMOD_CTRL and event.key == K_s:
                     # ctrl+s to save map setting
@@ -212,6 +222,12 @@ def run(chapter):
         passed_seconds = time_passed / 1000.0
 
         camera.screen_move(key_vec, sfg.MapEditor.SCREEN_MOVE_SPEED, passed_seconds)
+
+        for sp in game_world:
+            if isinstance(sp, Renne) or isinstance(sp, Enemy):
+                # select current image for corresponding direction
+                sp.animation.image = sp.animation.sprite_image_contoller.get_surface(
+                    cfg.SpriteAction.STAND)[sp.direction]
 
         game_map.draw(camera)
         game_world.draw(camera)

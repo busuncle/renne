@@ -110,6 +110,41 @@ class SkeletonWarrior(GameRole):
     NEARBY_ALLIANCE_RANGE = 300
 
 
+class CastleWarrior(GameRole):
+    NAME = "CastleWarrior" 
+    HP = 250
+    ATK = 50
+    DFS = 3
+
+    RADIUS = 24
+    HEIGHT = 82
+    D_COORD_TO_FOOT = 40
+    D_COORD_TO_SHADOW = 60
+    SHADOW_INDEX = 3
+
+    FRAME_RATES = {
+        cfg.EnemyAction.STAND: 12,
+        cfg.EnemyAction.WALK: 14,
+        cfg.EnemyAction.ATTACK: 12,
+    }
+
+    FRAME_NUMS = {
+        cfg.EnemyAction.STAND: 8,
+        cfg.EnemyAction.WALK: 8,
+        cfg.EnemyAction.ATTACK: 8,
+    }
+
+    ATTACK_CAL_FRAMES = (3, 4)
+    WALK_SPEED = 160
+    ATTACK_RANGE = 100
+    ATTACK_ANGLE = 40
+    VIEW_RANGE = 380
+    VIEW_ANGLE = 120 
+    CHASE_RANGE = VIEW_RANGE + 20
+    NEARBY_ALLIANCE_RANGE = 300
+
+
+
 
 class GameMap(object):
     TILE_SIZE = 256
@@ -265,6 +300,7 @@ class MapEditor(object):
 # control all objects in list, their order will detemine the attribute "ID" of their own
 SPRITE_SETTING_LIST = [
     SkeletonWarrior,
+    CastleWarrior,
 ]
 
 STATIC_OBJECT_SETTING_LIST = [
@@ -297,6 +333,11 @@ SPRITE_FRAMES = {
         cfg.HeroAction.WIN: "win_31.png",
     }),
     1: ("skeleton_warrior", {
+        cfg.EnemyAction.WALK: "walk_8.png",
+        cfg.EnemyAction.STAND: "stand_8.png",
+        cfg.EnemyAction.ATTACK: "attack_8.png",
+    }),
+    2: ("castle_warrior", {
         cfg.EnemyAction.WALK: "walk_8.png",
         cfg.EnemyAction.STAND: "stand_8.png",
         cfg.EnemyAction.ATTACK: "attack_8.png",
