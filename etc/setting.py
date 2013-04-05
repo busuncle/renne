@@ -114,7 +114,7 @@ class GameMap(object):
     TILE_SIZE = 256
     ONE_SCREEN_DISTANCE_WIDTH = TILE_SIZE * 4
     ONE_SCREEN_DISTANCE_HEIGHT = TILE_SIZE * 6
-    CHAPTERS = [1, ]
+    CHAPTERS = [1, 2]
 
 
 
@@ -292,6 +292,9 @@ STATIC_OBJECT_IMAGES = ("static_object", {
 TILE_IMAGES = ("tiles", {
     1: "1.png", 
     2: "2.png",
+    3: "3.png", 
+    4: "4.png", 
+    5: "5.png", 
 })
 
 # (folder, {image_key: image_filename, ...})

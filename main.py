@@ -21,7 +21,11 @@ pygame.display.set_icon(pygame.image.load("renne.png").convert_alpha())
 COMMAND_DEBUG_MODE = False
 
 
-def main():
+def main(args):
+    if args.chapter is not None:
+        enter_chapter(args.chapter)
+        return
+
     opening_cg()
     for chapter in sfg.GameMap.CHAPTERS:
         img = cg_image_controller.get(2).convert_alpha()
@@ -132,7 +136,8 @@ def enter_chapter(chapter):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--debug", dest="debug", action="store_true")
+    parser.add_argument("-c", "--chapter", dest="chapter", action="store")
     args = parser.parse_args()
     COMMAND_DEBUG_MODE = args.debug
-    main()
+    main(args)
 
