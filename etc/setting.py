@@ -239,8 +239,11 @@ class OPENING(object):
     WORDS = {
         "continue": pygame.font.SysFont("arial", 32).render(
             "press enter to continue", True, pygame.Color("white")),
+        "loading": pygame.font.SysFont("arial", 32).render(
+            "now loading ...", True, pygame.Color("white")),
     }
     CONTINUE_BLIT_POS = (650, 700)
+    LOADING_BLIT_POS = (780, 700)
      
 
 

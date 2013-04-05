@@ -37,6 +37,7 @@ def opening_cg():
         ev = pygame.event.wait()
         if ev.type == KEYDOWN:
             if ev.key == K_RETURN:
+                screen.fill(pygame.Color("black"))
                 break
             elif ev.key == K_ESCAPE:
                 exit(0)
@@ -46,6 +47,9 @@ def opening_cg():
 
 
 def enter_chapter(chapter):
+    screen.blit(sfg.OPENING.WORDS["loading"], sfg.OPENING.LOADING_BLIT_POS)
+    pygame.display.update()
+
     clock = pygame.time.Clock()
     map_setting = util.load_map_setting(chapter)
 
