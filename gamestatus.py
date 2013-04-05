@@ -16,7 +16,7 @@ class GameStatus(object):
         self.chapter = chapter
         self.hero = hero
         self.enemies = enemies
-        self.info_titles = sfg.GameStatus.INFO_TITLES
+        self.words = sfg.GameStatus.WORDS
         self.status_panel = self.gen_panel("status", 
             sfg.GameStatus.HERO_PANEL_RECT, sfg.GameStatus.HERO_PANEL_SCALE_SIZE)
         self.head_images_list = self.gen_head_images_list()
@@ -113,8 +113,8 @@ class GameStatus(object):
     def draw(self, camera):
         camera.screen.blit(self.status_panel, sfg.GameStatus.HERO_PANEL_BLIT_POS)
 
-        self.status_panel.blit(self.info_titles["hero_hp"], sfg.GameStatus.HERO_HP_TITLE_BLIT_POS)
-        self.status_panel.blit(self.info_titles["hero_sp"], sfg.GameStatus.HERO_SP_TITLE_BLIT_POS)
+        self.status_panel.blit(self.words["hero_hp"], sfg.GameStatus.HERO_HP_TITLE_BLIT_POS)
+        self.status_panel.blit(self.words["hero_sp"], sfg.GameStatus.HERO_SP_TITLE_BLIT_POS)
 
         # Renne's head, showing her status
         self.status_panel.blit(self.get_current_head(self.hero.status), sfg.GameStatus.HERO_HEAD_BLIT_POS)

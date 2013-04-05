@@ -186,10 +186,14 @@ class EmotionImage(object):
 class GameStatus(object):
     NUMBER_RECT = (0, 280, 340, 60)
     NUMBER_SIZE = (34, 60)
-    # all fonts
-    INFO_TITLES = {
+    # all words
+    WORDS = {
         "hero_hp": pygame.font.SysFont("arial", 12).render("HP", True, pygame.Color("white")),
         "hero_sp": pygame.font.SysFont("arial", 12).render("SP", True, pygame.Color("white")),
+        "continue": pygame.font.SysFont("arial", 32).render(
+            "press enter to continue", True, pygame.Color("white")),
+        "loading": pygame.font.SysFont("arial", 32).render(
+            "now loading ...", True, pygame.Color("white")),
     }
     # init status persist 3 seconds
     INIT_PERSIST_TIME = 3
@@ -228,23 +232,12 @@ class GameStatus(object):
     HERO_LOSE_BLIT_POS = (0, 280)
     NUMBER_BLIT_POS = (500, 360)
 
+    CONTINUE_BLIT_POS = (650, 700)
+    LOADING_BLIT_POS = (780, 700)
 
 
 class MapEditor(object):
     SCREEN_MOVE_SPEED = 400
-
-
-
-class OPENING(object):
-    WORDS = {
-        "continue": pygame.font.SysFont("arial", 32).render(
-            "press enter to continue", True, pygame.Color("white")),
-        "loading": pygame.font.SysFont("arial", 32).render(
-            "now loading ...", True, pygame.Color("white")),
-    }
-    CONTINUE_BLIT_POS = (650, 700)
-    LOADING_BLIT_POS = (780, 700)
-     
 
 
 

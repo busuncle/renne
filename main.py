@@ -30,7 +30,7 @@ def opening_cg():
     r = opening.get_rect()
     r.center = map(lambda x: x/2, sfg.Screen.SIZE)
     screen.blit(opening, r)
-    screen.blit(sfg.OPENING.WORDS["continue"], sfg.OPENING.CONTINUE_BLIT_POS)
+    screen.blit(sfg.GameStatus.WORDS["continue"], sfg.GameStatus.CONTINUE_BLIT_POS)
     pygame.display.update()
     clock = pygame.time.Clock()
     while True:
@@ -47,7 +47,7 @@ def opening_cg():
 
 
 def enter_chapter(chapter):
-    screen.blit(sfg.OPENING.WORDS["loading"], sfg.OPENING.LOADING_BLIT_POS)
+    screen.blit(sfg.GameStatus.WORDS["loading"], sfg.GameStatus.LOADING_BLIT_POS)
     pygame.display.update()
 
     clock = pygame.time.Clock()
