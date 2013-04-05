@@ -14,6 +14,9 @@ for k, v in sfg.SPRITE_FRAMES.iteritems():
 basic_image_controller = ImageController(sfg.BASIC_IMAGES[0])
 basic_image_controller.add_from_list(sfg.BASIC_IMAGES[1])
 
+cg_image_controller = ImageController(sfg.CG_IMAGES[0])
+cg_image_controller.add_from_list(sfg.CG_IMAGES[1])
+
 
 class SpriteAnimator(object):
     def __init__(self, sprite):

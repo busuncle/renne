@@ -19,8 +19,30 @@ pygame.display.set_icon(pygame.image.load("renne.png").convert_alpha())
 
 
 def main():
+    opening_cg()
     for chapter in sfg.GameMap.CHAPTERS:
         enter_chapter(chapter)
+
+
+def opening_cg():
+    from animation import cg_image_controller
+    opening = cg_image_controller.get(1).convert_alpha()
+    r = opening.get_rect()
+    r.center = map(lambda x: x/2, sfg.Screen.SIZE)
+    screen.blit(opening, r)
+    screen.blit(sfg.OPENING.WORDS["continue"], sfg.OPENING.CONTINUE_BLIT_POS)
+    pygame.display.update()
+    clock = pygame.time.Clock()
+    while True:
+        ev = pygame.event.wait()
+        if ev.type == KEYDOWN:
+            if ev.key == K_RETURN:
+                break
+            elif ev.key == K_ESCAPE:
+                exit(0)
+
+        clock.tick(sfg.FPS)
+
 
 
 def enter_chapter(chapter):

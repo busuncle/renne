@@ -235,6 +235,16 @@ class MapEditor(object):
 
 
 
+class OPENING(object):
+    WORDS = {
+        "continue": pygame.font.SysFont("arial", 32).render(
+            "press enter to continue", True, pygame.Color("white")),
+    }
+    CONTINUE_BLIT_POS = (650, 700)
+     
+
+
+
 ######### mapping for factory ########
 # control all objects in list, their order will detemine the attribute "ID" of their own
 SPRITE_SETTING_LIST = [
@@ -302,5 +312,7 @@ BATTLE_IMAGES = ("battle", {
     "status4": "status4.png", 
 })
 
-
+CG_IMAGES = ("cg", {
+    1: "1.png",
+})
 
