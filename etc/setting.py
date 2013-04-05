@@ -164,7 +164,7 @@ class WoodenCase(StaticObject):
     IMAGE_KEY = "s1"
     IMAGE_RECT = (64, 64, 48, 64)
     IMAGE_POS_DELTA_Y = -16
-    AREA_RECT = (0, 0, 50, 66)
+    AREA_RECT = (0, 0, 48, 66)
     IS_BLOCK = True
     IS_VIEW_BLOCK = False
 
