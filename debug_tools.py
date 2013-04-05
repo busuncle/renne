@@ -22,11 +22,12 @@ def draw_pos(sprite, camera):
 
 def draw_waypoins(camera, waypoints):
     for x, y in waypoints:
-        pygame.draw.circle(camera.screen, pygame.Color("red"), (x, y/2), 2)
+        ix, iy = map(int, (x, y/2))
+        pygame.draw.circle(camera.screen, pygame.Color("red"), (ix, iy), 2)
 
 
-def all_model_display(camera, game_world):
-    draw_waypoins(camera, game_world.waypoints)
+def all_model_display(camera, game_world, game_map):
+    draw_waypoins(camera, game_map.waypoints)
     for sp in game_world.sprites():
         #draw_area(sp, camera)
         draw_pos(sp, camera)

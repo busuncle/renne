@@ -117,7 +117,7 @@ def enter_chapter(chapter):
         game_status.draw(camera)
 
         if sfg.DEBUG_MODE:
-            debug_tools.all_model_display(camera, game_world)        
+            debug_tools.all_model_display(camera, game_world, game_map)        
 
         pygame.display.flip()
 
