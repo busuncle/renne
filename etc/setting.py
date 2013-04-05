@@ -1,3 +1,4 @@
+import os
 import constant as cfg
 import pygame
 from pygame.locals import *
@@ -155,9 +156,28 @@ class ThickGrass(StaticObject):
     IS_VIEW_BLOCK = True 
 
 
+class GrassWall(StaticObject):
+    NAME = "GrassWall"
+    IMAGE_KEY = "s4"
+    IMAGE_RECT = (0, 0, 64, 104)
+    IMAGE_POS_DELTA_Y = -24
+    AREA_RECT = (0, 0, 64, 64)
+    IS_BLOCK = True
+    IS_VIEW_BLOCK = True
+
+
+class StoneWall(StaticObject):
+    NAME = "StoneWall"
+    IMAGE_KEY = "s5"
+    IMAGE_RECT = (192, 0, 64, 160)
+    IMAGE_POS_DELTA_Y = - 56
+    AREA_RECT = (0, 0, 64, 96)
+    IS_BLOCK = True
+    IS_VIEW_BLOCK = True
+
 
 class WayPoint(object):
-    DIR = "etc/waypoints"
+    DIR = os.path.join("etc", "waypoints")
     STEP_WIDTH = 24
     BOUNDING_BOX_RECT = (0, 0, 48, 48)
 
@@ -251,6 +271,8 @@ STATIC_OBJECT_SETTING_LIST = [
     WoodenCase,
     IronCase,
     ThickGrass,
+    GrassWall,
+    StoneWall,
 ]
 
 # set attribute "ID" for all objects, start from 1, Renne is special for 0
@@ -286,6 +308,8 @@ STATIC_OBJECT_IMAGES = ("static_object", {
     "s1": "s1.png",
     "s2": "s2.png", 
     "s3": "s3.png",
+    "s4": "s4.png",
+    "s5": "s5.png",
 })
 
 # (folder, {image_key: image_filename, ...})

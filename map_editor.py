@@ -95,10 +95,10 @@ def selected_object_toggle(selected_object, game_world):
 
     game_world.remove(selected_object)
     if isinstance(selected_object, Enemy):
-        new_object_id = (selected_object.setting.ID + 1) % len(sfg.SPRITE_SETTING_LIST) + 1
+        new_object_id = (selected_object.setting.ID + 1) % (len(sfg.SPRITE_SETTING_LIST) + 1) or 1
         new_object = Enemy(sfg.SPRITE_SETTING_MAPPING[new_object_id], (-1000, -1000), 0)
     elif isinstance(selected_object, GameStaticObject):
-        new_object_id = (selected_object.setting.ID + 1) % len(sfg.STATIC_OBJECT_SETTING_LIST) + 1
+        new_object_id = (selected_object.setting.ID + 1) % (len(sfg.STATIC_OBJECT_SETTING_LIST) + 1) or 1
         new_object = GameStaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[new_object_id], (-1000, -1000))
     game_world.add(new_object)
         
