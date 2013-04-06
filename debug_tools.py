@@ -23,6 +23,8 @@ def draw_pos(camera, sprite):
 def draw_waypoins(camera, waypoints):
     for x, y in waypoints:
         ix, iy = map(int, (x, y/2))
+        ix -= camera.rect.left
+        iy -= camera.rect.top
         pygame.draw.circle(camera.screen, pygame.Color("red"), (ix, iy), 2)
 
 
