@@ -195,7 +195,7 @@ class GrassWall(StaticObject):
     NAME = "GrassWall"
     IMAGE_KEY = "s4"
     IMAGE_RECT = (0, 0, 64, 104)
-    IMAGE_POS_DELTA_Y = -24
+    IMAGE_POS_DELTA_Y = -36
     AREA_RECT = (0, 0, 64, 64)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
