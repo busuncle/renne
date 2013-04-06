@@ -1,6 +1,5 @@
 import argparse
 import os
-import copy
 import pygame
 from pygame.locals import *
 from gamesprites import Renne, Enemy, GameSpritesGroup
