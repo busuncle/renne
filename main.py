@@ -16,7 +16,8 @@ from base import util
 
 screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption("Renne")
-pygame.display.set_icon(pygame.image.load("renne.png").convert_alpha())
+renne_image = pygame.image.load("renne.png").convert_alpha()
+pygame.display.set_icon(renne_image)
 
 COMMAND_DEBUG_MODE = False
 
@@ -37,6 +38,8 @@ def main(args):
             return
         elif status == cfg.Chapter.STATUS_PASS:
             i += 1
+
+    ending_cg()
 
 
 def loading_chapter(screen):
@@ -65,6 +68,25 @@ def opening_cg():
             if ev.key == K_RETURN:
                 break
             elif ev.key == K_ESCAPE:
+                exit(0)
+
+        clock.tick(sfg.FPS)
+
+
+def ending_cg():
+    r = renne_image.get_rect()
+    r.center = map(lambda x: x/2, sfg.Screen.SIZE)
+    screen.blit(renne_image, r)
+    word = sfg.GameStatus.WORDS["ending"]
+    r = word.get_rect()
+    r.center = (sfg.Screen.SIZE[0]/2, sfg.Screen.SIZE[1] * 0.61)
+    screen.blit(word, r)
+    pygame.display.update()
+    clock = pygame.time.Clock()
+    while True:
+        ev = pygame.event.wait()
+        if ev.type == KEYDOWN:
+            if ev.key == K_ESCAPE:
                 exit(0)
 
         clock.tick(sfg.FPS)
