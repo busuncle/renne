@@ -21,21 +21,34 @@ pygame.display.set_icon(pygame.image.load("renne.png").convert_alpha())
 COMMAND_DEBUG_MODE = False
 
 
+
 def main(args):
     if args.chapter is not None:
         enter_chapter(args.chapter)
         return
 
     opening_cg()
-    for chapter in sfg.GameMap.CHAPTERS:
-        img = cg_image_controller.get(2).convert_alpha()
-        r = img.get_rect()
-        r.center = map(lambda x: x/2, sfg.Screen.SIZE)
-        screen.blit(img, r)
-        screen.blit(sfg.GameStatus.WORDS["loading"], sfg.GameStatus.LOADING_BLIT_POS)
-        pygame.display.update()
-        pygame.time.wait(1000)
-        enter_chapter(chapter)
+    i = 0
+    while i < len(sfg.GameMap.CHAPTERS):
+        chapter = sfg.GameMap.CHAPTERS[i]
+        loading_chapter(screen)
+        status = enter_chapter(chapter)
+        if status == cfg.Chapter.STATUS_QUIT_GAME:
+            return
+        elif status == cfg.Chapter.STATUS_PASS:
+            i += 1
+
+
+def loading_chapter(screen):
+    screen.fill(pygame.Color("black"))
+    img = cg_image_controller.get(2).convert_alpha()
+    r = img.get_rect()
+    r.center = map(lambda x: x/2, sfg.Screen.SIZE)
+    screen.blit(img, r)
+    screen.blit(sfg.GameStatus.WORDS["loading"], sfg.GameStatus.LOADING_BLIT_POS)
+    pygame.display.update()
+    # a delay deliberately for showing renne's picture?
+    pygame.time.wait(1000)
 
 
 def opening_cg():
@@ -50,7 +63,6 @@ def opening_cg():
         ev = pygame.event.wait()
         if ev.type == KEYDOWN:
             if ev.key == K_RETURN:
-                screen.fill(pygame.Color("black"))
                 break
             elif ev.key == K_ESCAPE:
                 exit(0)
@@ -101,8 +113,15 @@ def enter_chapter(chapter):
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 
                 exit(0)
-            if event.type == KEYDOWN and event.key == K_ESCAPE:
-                exit(0)
+
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    return cfg.Chapter.STATUS_QUIT_GAME
+                if event.key == K_RETURN:
+                    if game_status.status == cfg.GameStatus.HERO_WIN:
+                        return cfg.Chapter.STATUS_PASS
+                    elif game_status.status == cfg.GameStatus.HERO_LOSE:
+                        return cfg.Chapter.STATUS_AGAIN
 
         pressed_keys = pygame.key.get_pressed()
         renne.event_handle(pressed_keys, external_event=game_status.status)
