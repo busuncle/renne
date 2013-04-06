@@ -211,6 +211,16 @@ class StoneWall(StaticObject):
     IS_VIEW_BLOCK = True
 
 
+class StoneWall2(StaticObject):
+    NAME = "StoneWall2"
+    IMAGE_KEY = "s6"
+    IMAGE_RECT = (0, 0, 256, 192)
+    IMAGE_POS_DELTA_Y = -80
+    AREA_RECT = (0, 0, 256, 64)
+    IS_BLOCK = True
+    IS_VIEW_BLOCK = True
+
+
 class WayPoint(object):
     DIR = os.path.join("etc", "waypoints")
     STEP_WIDTH = 24
@@ -311,6 +321,7 @@ STATIC_OBJECT_SETTING_LIST = [
     ThickGrass,
     GrassWall,
     StoneWall,
+    StoneWall2,
 ]
 
 # set attribute "ID" for all objects, start from 1, Renne is special for 0
@@ -353,6 +364,7 @@ STATIC_OBJECT_IMAGES = ("static_object", {
     "s3": "s3.png",
     "s4": "s4.png",
     "s5": "s5.png",
+    "s6": "s6.png", 
 })
 
 # (folder, {image_key: image_filename, ...})
