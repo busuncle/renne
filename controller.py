@@ -33,11 +33,11 @@ def happen(probability):
     return random() <= probability
 
 
-
 ########### state machine ####################
 class State(object):
     def __init__(self, state_id):
         self.id = state_id
+        self.enter_time = None
 
     def send_actions(self):
         pass
@@ -136,7 +136,7 @@ class SpriteStay(State):
 
 
     def enter(self, last_state):
-        self.begin_time = time()
+        self.enter_time = time()
         self.stay_time = gauss(self.ai.STAY_TIME_MU, self.ai.STAY_TIME_SIGMA)   
         # turn for a random direction if the last state is the same "stay"
         if last_state and last_state.id == cfg.SpriteState.STAY:
@@ -160,7 +160,7 @@ class SpriteStay(State):
 
             return cfg.SpriteState.CHASE
 
-        if time() - self.begin_time >= self.stay_time:
+        if time() - self.enter_time >= self.stay_time:
             if happen(self.ai.STAY_TO_PATROL_PROB):
                 print "stay to patrol"
                 return cfg.SpriteState.PATROL
@@ -169,7 +169,7 @@ class SpriteStay(State):
 
 
     def exit(self):
-        self.begin_time, self.stay_seconds = None, None
+        self.enter_time, self.stay_seconds = None, None
 
 
 
@@ -188,7 +188,7 @@ class SpritePatrol(State):
 
 
     def enter(self, last_state):
-        self.begin_time = time()
+        self.enter_time = time()
         self.walk_time = gauss(self.ai.WALK_TIME_MU, self.ai.WALK_TIME_SIGMA)   
         self.sprite.direction = self.choose_a_backside_direction(self.sprite.direction)
 
@@ -212,12 +212,12 @@ class SpritePatrol(State):
             sp.brain.interrupt = False
             return cfg.SpriteState.STAY
 
-        if time() - self.begin_time >= self.walk_time:
+        if time() - self.enter_time >= self.walk_time:
             return cfg.SpriteState.STAY
 
 
     def exit(self):
-        self.begin_time, self.walk_time = None, None
+        self.enter_time, self.walk_time = None, None
 
 
 
