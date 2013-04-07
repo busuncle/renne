@@ -33,6 +33,30 @@ def save_map_setting(chapter, map_setting):
         fp.write("map_setting = " + res)
 
 
+def parse_command_line(needed_args_list):
+    # for version compatible
+    # needed_args_list should be a list containing dicts
+    # e.g: [{"abbr": "-a", "full": "--arg-name", "dest": "argname", "action": "store"}, ...]
+    try:
+        # for python version >= 2.7
+        import argparse
+        parser = argparse.ArgumentParser()
+        for args in needed_args_list:
+            parser.add_argument(args["abbr"], args["full"], 
+                dest=args["dest"], action=args["action"])
+        args = parser.parse_args()
+        return args
+
+    except ImportError, ex:
+        import optparse
+        parser = optparse.OptionParser()
+        for args in needed_args_list:
+            parser.add_option(args["abbr"], args["full"], 
+                dest=args["dest"], action=args["action"])
+        options, args = parser.parse_args()
+        return options
+
+
 class ResourceController(object):
     def __init__(self, loader):
         self.res_mapping = {}
@@ -231,5 +255,9 @@ def test_geometry():
 
 
 if __name__ == "__main__":
-    res = load_map_setting(1)
-    print res["size"]
+    res = parse_command_line([
+        {"abbr": "-d", "full": "--debug", "dest": "debug", "action": "store_true"},
+        {"abbr": "-f", "full": "--file-path", "dest": "filepath", "action": "store"},
+    ])
+    print res.debug
+    print res.filepath
