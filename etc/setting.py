@@ -259,8 +259,10 @@ class GameStatus(object):
             "press enter to continue", True, pygame.Color("white")),
         "loading": pygame.font.SysFont("arial", 32).render(
             "now loading ...", True, pygame.Color("white")),
-        "ending": pygame.font.SysFont("arial", 32).render(
+        "busuncle_works": pygame.font.SysFont("arial", 32).render(
             "Busuncle's works", True, pygame.Color("white")),
+        "the_end": pygame.font.SysFont("arial", 64).render(
+            "The End", True, pygame.Color("white")),
     }
     # init status persist 3 seconds
     INIT_PERSIST_TIME = 3

@@ -76,7 +76,7 @@ def ending_cg():
     r = renne_image.get_rect()
     r.center = map(lambda x: x/2, sfg.Screen.SIZE)
     screen.blit(renne_image, r)
-    word = sfg.GameStatus.WORDS["ending"]
+    word = sfg.GameStatus.WORDS["busuncle_works"]
     r = word.get_rect()
     r.center = (sfg.Screen.SIZE[0]/2, sfg.Screen.SIZE[1] * 0.61)
     screen.blit(word, r)
