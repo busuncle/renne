@@ -27,21 +27,21 @@ def main(args):
         enter_chapter(args.chapter)
         return
 
-    opening_cg()
+    start_game()
     i = 0
     while i < len(sfg.GameMap.CHAPTERS):
         chapter = sfg.GameMap.CHAPTERS[i]
-        loading_chapter(screen)
+        loading_chapter_picture(screen)
         status = enter_chapter(chapter)
         if status == cfg.Chapter.STATUS_QUIT_GAME:
             return
         elif status == cfg.Chapter.STATUS_PASS:
             i += 1
 
-    ending_cg()
+    end_game()
 
 
-def loading_chapter(screen):
+def loading_chapter_picture(screen):
     screen.fill(pygame.Color("black"))
     img = cg_image_controller.get(2).convert_alpha()
     r = img.get_rect()
@@ -49,11 +49,11 @@ def loading_chapter(screen):
     screen.blit(img, r)
     screen.blit(sfg.GameStatus.WORDS["loading"], sfg.GameStatus.LOADING_BLIT_POS)
     pygame.display.update()
-    # a delay deliberately for showing renne's picture?
+    # a delay to show renne's picture on purpose?
     pygame.time.wait(1000)
 
 
-def opening_cg():
+def start_game():
     opening = cg_image_controller.get(1).convert_alpha()
     r = opening.get_rect()
     r.center = map(lambda x: x/2, sfg.Screen.SIZE)
@@ -72,7 +72,7 @@ def opening_cg():
         clock.tick(sfg.FPS)
 
 
-def ending_cg():
+def end_game():
     r = renne_image.get_rect()
     r.center = map(lambda x: x/2, sfg.Screen.SIZE)
     screen.blit(renne_image, r)
