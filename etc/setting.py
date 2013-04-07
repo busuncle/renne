@@ -310,8 +310,10 @@ class START_GAME(object):
     PICTURE_FADEIN_TIME = 4 # in second unit, show up the picture
     MENU_ON_COLOR = pygame.Color("white")
     MENU_OFF_COLOR = pygame.Color("gray")
+    MENU_ON_SIZE = 48
+    MENU_OFF_SIZE = 32
     MENU_LIST = ["START", "QUIT"]
-    MENU_OPTION_RECT = (0, 0, 256, 48)
+    MENU_OPTION_RECT = (0, 0, 256, 64)
     PICTURE_BLIT_Y = 100
     MENU_BLIT_Y = 600
 

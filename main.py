@@ -54,22 +54,63 @@ def loading_chapter_picture(screen):
 
 
 def start_game():
-    opening = cg_image_controller.get(1).convert_alpha()
-    r = opening.get_rect()
-    r.center = map(lambda x: x/2, sfg.Screen.SIZE)
-    screen.blit(opening, r)
-    screen.blit(sfg.GameStatus.WORDS["continue"], sfg.GameStatus.CONTINUE_BLIT_POS)
-    pygame.display.update()
-    clock = pygame.time.Clock()
-    while True:
-        ev = pygame.event.wait()
-        if ev.type == KEYDOWN:
-            if ev.key == K_RETURN:
-                break
-            elif ev.key == K_ESCAPE:
-                exit(0)
+    pic = cg_image_controller.get(1).convert_alpha()
+    r = pic.get_rect()
+    screen_centerx = sfg.Screen.SIZE[0] / 2
+    r.centerx = screen_centerx
+    r.top = sfg.START_GAME.PICTURE_BLIT_Y
+    mask = pygame.Surface((pic.get_width(), pic.get_height())).convert_alpha()
 
-        clock.tick(sfg.FPS)
+    clock = pygame.time.Clock()
+    menu_index = 0
+    menu_option_rect = pygame.Rect(sfg.START_GAME.MENU_OPTION_RECT)
+    menu_option = pygame.Surface((menu_option_rect.width, menu_option_rect.height))
+    pic_alpha = 255 # picture fades in, alpha changes from 255 to 0
+    fade_in_delta = 256 / sfg.START_GAME.PICTURE_FADEIN_TIME
+    while True:
+        time_passed = clock.tick(sfg.FPS)
+        passed_seconds = time_passed / 1000.0
+
+        pic_alpha = max(pic_alpha - passed_seconds * fade_in_delta, 0)
+        mask.fill(pygame.Color(0, 0, 0, pic_alpha))
+        pic.blit(mask, (0, 0))
+
+        screen.blit(pic, r)
+
+        if pic_alpha == 0:
+            # no event accepted when fading in the picture
+            ev = pygame.event.wait()
+            if ev.type == KEYDOWN:
+                if ev.key == K_RETURN:
+                    break
+                elif ev.key == K_ESCAPE:
+                    exit(0)
+                elif ev.key == K_DOWN:
+                    menu_index = min(len(sfg.START_GAME.MENU_LIST) - 1, menu_index + 1)
+                elif ev.key == K_UP:
+                    menu_index = max(0, menu_index - 1)
+
+            menu_y = sfg.START_GAME.MENU_BLIT_Y
+            for i, menu_word in enumerate(sfg.START_GAME):
+                if i == menu_index:
+                    m_size = sfg.START_GAME.MENU_ON_SIZE
+                    m_color = sfg.START_GAME.MENU_ON_COLOR
+                else:
+                    m_size = sfg.START_GAME.MENU_OFF_SIZE
+                    m_color = sfg.START_GAME.MENU_OFF_COLOR
+
+                menu_option_rect.centerx = screen_centerx
+                menu_option_rect.centery = menu_y + menu_option_rect.height / 2
+                menu = pygame.font.SysFont("arial", m_size).render(menu_word, True, m_color)
+                menu_rect = menu.get_rect()
+                menu_rect.center = menu_option_rect.center
+                menu_option.blit(menu, menu_rect)
+                screen.blit(menu_option, menu_option_rect)
+
+                meny_y += menu_option_rect.height
+
+        pygame.display.update()
+
 
 
 def end_game():
