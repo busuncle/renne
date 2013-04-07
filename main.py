@@ -6,7 +6,7 @@ import etc.constant as cfg
 import etc.ai_setting as ai
 from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObject
 from gamestatus import GameStatus
-from animation import cg_image_controller
+from animation import cg_image_controller, basic_image_controller
 from renderer import Camera
 import debug_tools
 from base import util
@@ -24,10 +24,18 @@ COMMAND_DEBUG_MODE = False
 
 def main(args):
     if args.chapter is not None:
-        enter_chapter(args.chapter)
+        if args.chapter == 0:
+            start_game()
+        elif args.chapter == -1:
+            end_game()
+        else:
+            enter_chapter(args.chapter)
         return
 
-    start_game()
+    option_index_chosen = start_game()
+    if option_index_chosen == sfg.START_GAME.INDEX_QUIT:
+        return
+
     i = 0
     while i < len(sfg.GameMap.CHAPTERS):
         chapter = sfg.GameMap.CHAPTERS[i]
@@ -43,7 +51,7 @@ def main(args):
 
 def loading_chapter_picture(screen):
     screen.fill(pygame.Color("black"))
-    img = cg_image_controller.get(2).convert_alpha()
+    img = cg_image_controller.get("loading_chapter").convert_alpha()
     r = img.get_rect()
     r.center = map(lambda x: x/2, sfg.Screen.SIZE)
     screen.blit(img, r)
@@ -54,62 +62,76 @@ def loading_chapter_picture(screen):
 
 
 def start_game():
-    pic = cg_image_controller.get(1).convert_alpha()
-    r = pic.get_rect()
+    pic = cg_image_controller.get("start_game").convert_alpha()
+    pic_rect = pic.get_rect()
+
+    renne_cursor = basic_image_controller.get("head_status").subsurface(
+        pygame.Rect(sfg.START_GAME.RENNE_CURSOR_RECT)).convert_alpha()
+
     screen_centerx = sfg.Screen.SIZE[0] / 2
-    r.centerx = screen_centerx
-    r.top = sfg.START_GAME.PICTURE_BLIT_Y
-    mask = pygame.Surface((pic.get_width(), pic.get_height())).convert_alpha()
+    pic_rect.centerx = screen_centerx
+    pic_rect.top = sfg.START_GAME.PICTURE_BLIT_Y
 
     clock = pygame.time.Clock()
     menu_index = 0
-    menu_option_rect = pygame.Rect(sfg.START_GAME.MENU_OPTION_RECT)
-    menu_option = pygame.Surface((menu_option_rect.width, menu_option_rect.height))
     pic_alpha = 255 # picture fades in, alpha changes from 255 to 0
     fade_in_delta = 256 / sfg.START_GAME.PICTURE_FADEIN_TIME
+
+    mask = pygame.Surface((pic.get_width(), pic.get_height())).convert_alpha()
+
     while True:
         time_passed = clock.tick(sfg.FPS)
         passed_seconds = time_passed / 1000.0
 
-        pic_alpha = max(pic_alpha - passed_seconds * fade_in_delta, 0)
-        mask.fill(pygame.Color(0, 0, 0, pic_alpha))
-        pic.blit(mask, (0, 0))
+        pic_alpha = int(max(pic_alpha - passed_seconds * fade_in_delta, 0))
 
-        screen.blit(pic, r)
+        mask.fill(pygame.Color(0, 0, 0, pic_alpha))
+
+        screen.blit(pic, pic_rect)
+        screen.blit(mask, pic_rect.topleft)
 
         if pic_alpha == 0:
-            # no event accepted when fading in the picture
-            ev = pygame.event.wait()
-            if ev.type == KEYDOWN:
-                if ev.key == K_RETURN:
-                    break
-                elif ev.key == K_ESCAPE:
+            # no events accepted until the renne's picure is fully displayed
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: 
                     exit(0)
-                elif ev.key == K_DOWN:
-                    menu_index = min(len(sfg.START_GAME.MENU_LIST) - 1, menu_index + 1)
-                elif ev.key == K_UP:
-                    menu_index = max(0, menu_index - 1)
+                if event.type == KEYDOWN:
+                    if event.key == K_RETURN:
+                        return menu_index
+                    elif event.key == K_ESCAPE:
+                        return sfg.START_GAME.INDEX_QUIT
+                    elif event.key in (sfg.UserKey.DOWN, K_DOWN):
+                        menu_index = min(len(sfg.START_GAME.MENU_LIST) - 1, menu_index + 1)
+                    elif event.key in (sfg.UserKey.UP, K_UP):
+                        menu_index = max(0, menu_index - 1)
 
             menu_y = sfg.START_GAME.MENU_BLIT_Y
-            for i, menu_word in enumerate(sfg.START_GAME):
+            for i, menu_word in enumerate(sfg.START_GAME.MENU_LIST):
+                menu_option_rect = pygame.Rect(sfg.START_GAME.MENU_OPTION_RECT)
+                menu_option = pygame.Surface((menu_option_rect.width, menu_option_rect.height))
+
                 if i == menu_index:
+                    renne_cursor_rect = renne_cursor.get_rect()
+                    renne_cursor_rect.centery = menu_option_rect.height / 2
+                    menu_option.blit(renne_cursor, renne_cursor_rect)
                     m_size = sfg.START_GAME.MENU_ON_SIZE
                     m_color = sfg.START_GAME.MENU_ON_COLOR
                 else:
                     m_size = sfg.START_GAME.MENU_OFF_SIZE
                     m_color = sfg.START_GAME.MENU_OFF_COLOR
-
-                menu_option_rect.centerx = screen_centerx
-                menu_option_rect.centery = menu_y + menu_option_rect.height / 2
-                menu = pygame.font.SysFont("arial", m_size).render(menu_word, True, m_color)
+                
+                menu = pygame.font.SysFont("arial black", m_size).render(menu_word, True, m_color)
                 menu_rect = menu.get_rect()
                 menu_rect.center = menu_option_rect.center
                 menu_option.blit(menu, menu_rect)
+
+                menu_option_rect.centerx = screen_centerx
+                menu_option_rect.centery = menu_y + menu_option_rect.height / 2
                 screen.blit(menu_option, menu_option_rect)
 
-                meny_y += menu_option_rect.height
+                menu_y += menu_option_rect.height
 
-        pygame.display.update()
+        pygame.display.flip()
 
 
 
@@ -124,10 +146,10 @@ def end_game():
     pygame.display.update()
     clock = pygame.time.Clock()
     while True:
-        ev = pygame.event.wait()
-        if ev.type == KEYDOWN:
-            if ev.key == K_ESCAPE:
-                exit(0)
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    exit(0)
 
         clock.tick(sfg.FPS)
 

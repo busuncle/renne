@@ -307,15 +307,21 @@ class GameStatus(object):
 
 
 class START_GAME(object):
-    PICTURE_FADEIN_TIME = 4 # in second unit, show up the picture
+    PICTURE_FADEIN_TIME = 3 # in second unit, show up the picture
     MENU_ON_COLOR = pygame.Color("white")
     MENU_OFF_COLOR = pygame.Color("gray")
     MENU_ON_SIZE = 48
     MENU_OFF_SIZE = 32
     MENU_LIST = ["START", "QUIT"]
-    MENU_OPTION_RECT = (0, 0, 256, 64)
-    PICTURE_BLIT_Y = 100
-    MENU_BLIT_Y = 600
+    MENU_OPTION_RECT = (0, 0, 256, 48)
+    PICTURE_BLIT_Y = 30
+    MENU_BLIT_Y = 550
+
+    RENNE_CURSOR_RECT = (224, 64, 32, 32)
+
+    # according to MENU_LIST
+    INDEX_START = 0
+    INDEX_QUIT = 1
 
 
 
@@ -398,6 +404,7 @@ TILE_IMAGES = ("tiles", {
 BASIC_IMAGES = ("basic", {
     "sprite_shadow": "sprite_shadow.png",
     "emotion": "sprite_emotion.png",
+    "head_status": "head_status.png",
 })
 
 BATTLE_IMAGES = ("battle", {
@@ -409,7 +416,7 @@ BATTLE_IMAGES = ("battle", {
 })
 
 CG_IMAGES = ("cg", {
-    1: "1.png",
-    2: "2.png", 
+    "start_game": "1.png",
+    "loading_chapter": "2.png", 
 })
 
