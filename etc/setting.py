@@ -331,8 +331,10 @@ for i, cls in enumerate(SPRITE_SETTING_LIST):
 for i, cls in enumerate(STATIC_OBJECT_SETTING_LIST):
     cls.ID = i + 1
 
-SPRITE_SETTING_MAPPING = {cls.ID: cls for cls in SPRITE_SETTING_LIST}
-STATIC_OBJECT_SETTING_MAPPING = {cls.ID: cls for cls in STATIC_OBJECT_SETTING_LIST}
+#SPRITE_SETTING_MAPPING = {cls.ID: cls for cls in SPRITE_SETTING_LIST}
+#STATIC_OBJECT_SETTING_MAPPING = {cls.ID: cls for cls in STATIC_OBJECT_SETTING_LIST}
+SPRITE_SETTING_MAPPING = dict((cls.ID, cls) for cls in SPRITE_SETTING_LIST)
+STATIC_OBJECT_SETTING_MAPPING = dict((cls.ID, cls) for cls in STATIC_OBJECT_SETTING_LIST)
 
 
 ########### resource mapping ###########
