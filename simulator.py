@@ -1,4 +1,4 @@
-from util import LineSegment, line_segment_intersect_with_rect, cos_for_vec, manhattan_distance
+from base.util import LineSegment, line_segment_intersect_with_rect, cos_for_vec, manhattan_distance
 import etc.constant as cfg
 import math
 from math import pow, radians, sqrt, tan, cos

@@ -1,4 +1,3 @@
-import argparse
 import pygame
 from pygame.locals import *
 from gamesprites import Renne, Enemy, GameSpritesGroup, enemy_in_one_screen
@@ -175,10 +174,10 @@ def enter_chapter(chapter):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--debug", dest="debug", action="store_true")
-    parser.add_argument("-c", "--chapter", dest="chapter", action="store")
-    args = parser.parse_args()
+    args = util.parse_command_line([
+        {"abbr": "-d", "full": "--debug", "dest": "debug", "action": "store_true"},
+        {"abbr": "-c", "full": "--chapter", "dest": "chapter", "action": "store"},
+    ])
     COMMAND_DEBUG_MODE = args.debug
     main(args)
 
