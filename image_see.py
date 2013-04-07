@@ -1,8 +1,8 @@
-import argparse
 import os
 import pygame
 from pygame.locals import *
 import etc.setting as sfg
+from base import util
 
 
 screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
@@ -38,9 +38,9 @@ def run(filepath):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--file-path", dest="filepath", action="store")
-    args = parser.parse_args()
+    args = util.parse_command_line([
+        (["-f", "--file-path"], {"dest": "filepath", "action": "store"}),
+    ])
     if args.filepath is None:
         print "please specify the param filepath, using -f or --file-path option"
         exit(-1)

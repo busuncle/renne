@@ -175,9 +175,9 @@ def enter_chapter(chapter):
 
 if __name__ == "__main__":
     args = util.parse_command_line([
-        {"abbr": "-d", "full": "--debug", "dest": "debug", "action": "store_true"},
-        {"abbr": "-c", "full": "--chapter", "dest": "chapter", "action": "store"},
+        (["-d", "--debug"], {"dest": "debug", "action": "store_true"}),
+        (["-c", "--chapter"], {"dest": "chapter", "action": "store"}),
     ])
-    COMMAND_DEBUG_MODE = args.debug
+    COMMAND_DEBUG_MODE = args.debug is True
     main(args)
 

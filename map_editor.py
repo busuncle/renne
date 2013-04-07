@@ -1,4 +1,3 @@
-import argparse
 import os
 import pygame
 from pygame.locals import *
@@ -266,9 +265,9 @@ def run(chapter):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--chapter", dest="chapter", action="store")
-    args = parser.parse_args()
+    args = util.parse_command_line([
+        (["-c", "--chapter"], {"dest": "chapter", "action": "store"}),
+    ])
     if args.chapter is None:
         print "please specify the param chapter, using -c or --chapter option"
         exit(-1)
