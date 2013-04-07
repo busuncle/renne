@@ -259,10 +259,6 @@ class GameStatus(object):
             "press enter to continue", True, pygame.Color("white")),
         "loading": pygame.font.SysFont("arial", 32).render(
             "now loading ...", True, pygame.Color("white")),
-        "busuncle_works": pygame.font.SysFont("arial", 32).render(
-            "Busuncle's works", True, pygame.Color("white")),
-        "the_end": pygame.font.SysFont("arial", 64).render(
-            "The End", True, pygame.Color("white")),
     }
     # init status persist 3 seconds
     INIT_PERSIST_TIME = 3
@@ -322,6 +318,15 @@ class START_GAME(object):
     # according to MENU_LIST
     INDEX_START = 0
     INDEX_QUIT = 1
+
+
+
+class END_GAME(object):
+    ENDING_FADEIN_TIME = 5
+    BUSUNCLE_WORKS = pygame.font.SysFont("arial black", 32).render(
+        "Busuncle's works", True, pygame.Color("white"))
+    BUSUNCLE_WORKS_BLIT_Y = 450
+    RENNE_IMAGE_BLIT_Y = 360
 
 
 

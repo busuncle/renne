@@ -136,14 +136,21 @@ def start_game():
 
 
 def end_game():
-    r = renne_image.get_rect()
-    r.center = map(lambda x: x/2, sfg.Screen.SIZE)
-    screen.blit(renne_image, r)
-    word = sfg.GameStatus.WORDS["busuncle_works"]
-    r = word.get_rect()
-    r.center = (sfg.Screen.SIZE[0]/2, sfg.Screen.SIZE[1] * 0.61)
-    screen.blit(word, r)
-    pygame.display.update()
+    screen_centerx = sfg.Screen.SIZE[0] / 2
+
+    renne_image_rect = renne_image.get_rect()
+    renne_image_rect.centerx = screen_centerx
+    renne_image_rect.centery = sfg.END_GAME.RENNE_IMAGE_BLIT_Y
+
+    word = sfg.END_GAME.BUSUNCLE_WORKS
+    word_rect = word.get_rect()
+    word_rect.centerx = screen_centerx
+    word_rect.centery = sfg.END_GAME.BUSUNCLE_WORKS_BLIT_Y
+
+    mask_alpha = 255
+    fade_in_delta = 256 / sfg.END_GAME.ENDING_FADEIN_TIME
+    mask = pygame.Surface(sfg.Screen.SIZE).convert_alpha()
+
     clock = pygame.time.Clock()
     while True:
         for event in pygame.event.get():
@@ -151,7 +158,21 @@ def end_game():
                 if event.key == K_ESCAPE:
                     exit(0)
 
-        clock.tick(sfg.FPS)
+        screen.blit(renne_image, renne_image_rect)
+
+        # it *must* create a new surface everytime for rendering a good font!
+        word_panel = pygame.Surface((word_rect.width, word_rect.height))
+        word_panel.blit(word, (0, 0))
+        screen.blit(word_panel, word_rect)
+
+
+        time_passed = clock.tick(sfg.FPS)
+        passed_seconds = time_passed / 1000.0
+        mask_alpha = int(max(mask_alpha - passed_seconds * fade_in_delta, 0))
+        mask.fill(pygame.Color(0, 0, 0, mask_alpha))
+        screen.blit(mask, (0, 0))
+
+        pygame.display.update()
 
 
 
@@ -239,7 +260,7 @@ def enter_chapter(chapter):
 if __name__ == "__main__":
     args = util.parse_command_line([
         (["-d", "--debug"], {"dest": "debug", "action": "store_true"}),
-        (["-c", "--chapter"], {"dest": "chapter", "action": "store"}),
+        (["-c", "--chapter"], {"dest": "chapter", "action": "store", "type": int}),
     ])
     COMMAND_DEBUG_MODE = args.debug is True
     main(args)
