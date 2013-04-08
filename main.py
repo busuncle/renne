@@ -77,7 +77,7 @@ def start_game(screen):
     pic_alpha = 255 # picture fades in, alpha changes from 255 to 0
     fade_in_delta = 256 / sfg.START_GAME.PICTURE_FADEIN_TIME
 
-    mask = pygame.Surface((pic.get_width(), pic.get_height())).convert_alpha()
+    mask = pygame.Surface(sfg.Screen.SIZE).convert_alpha()
 
     while True:
         time_passed = clock.tick(sfg.FPS)
@@ -88,7 +88,7 @@ def start_game(screen):
         mask.fill(pygame.Color(0, 0, 0, pic_alpha))
 
         screen.blit(pic, pic_rect)
-        screen.blit(mask, pic_rect.topleft)
+        screen.blit(mask, (0, 0))
 
         if pic_alpha == 0:
             # no events accepted until the renne's picure is fully displayed
