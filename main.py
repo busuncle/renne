@@ -158,13 +158,9 @@ def end_game(screen):
                 if event.key == K_ESCAPE:
                     exit(0)
 
+        screen.fill(pygame.Color("black"))
         screen.blit(renne_image, renne_image_rect)
-
-        # it *must* create a new surface everytime for rendering a good font!
-        word_panel = pygame.Surface((word_rect.width, word_rect.height))
-        word_panel.blit(word, (0, 0))
-        screen.blit(word_panel, word_rect)
-
+        screen.blit(word, word_rect)
 
         time_passed = clock.tick(sfg.FPS)
         passed_seconds = time_passed / 1000.0

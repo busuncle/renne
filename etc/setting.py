@@ -322,7 +322,7 @@ class START_GAME(object):
 
 
 class END_GAME(object):
-    ENDING_FADEIN_TIME = 5
+    ENDING_FADEIN_TIME = 4
     BUSUNCLE_WORKS = pygame.font.SysFont("arial black", 32).render(
         "Busuncle's works", True, pygame.Color("white"))
     BUSUNCLE_WORKS_BLIT_Y = 450
