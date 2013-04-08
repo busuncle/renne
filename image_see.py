@@ -9,14 +9,16 @@ screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption("Renne Image See")
 
 def run(filepath):
-    clock = pygame.time.Clock()
     img = pygame.image.load(filepath).convert_alpha()
     img_rect = img.get_rect()
     words_blit_pos = img_rect.bottomleft
+
+    clock = pygame.time.Clock()
     while True:
-        ev = pygame.event.wait()
-        if ev.type == KEYDOWN:
-            if ev.key == K_ESCAPE:
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT: 
+                return
+            if event.type == KEYDOWN and event.key == K_ESCAPE:
                 return
 
         screen.fill(pygame.Color("black")) 
