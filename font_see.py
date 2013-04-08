@@ -14,8 +14,6 @@ def run(string, name="arial black", size=64, color=pygame.Color("white")):
         string = "abcABC"
 
     font = pygame.font.SysFont(name, size).render(string, True, color)
-    screen.blit(font, (0, 0))
-    pygame.display.update()
 
     clock = pygame.time.Clock()
     while True:
@@ -24,6 +22,10 @@ def run(string, name="arial black", size=64, color=pygame.Color("white")):
                 return
             if event.type == KEYDOWN and event.key == K_ESCAPE:
                 return
+
+        screen.fill(pygame.Color("black"))
+        screen.blit(font, (0, 0))
+        pygame.display.update()
 
         clock.tick(sfg.FPS)
 
