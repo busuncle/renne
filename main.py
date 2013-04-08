@@ -25,14 +25,14 @@ COMMAND_DEBUG_MODE = False
 def main(args):
     if args.chapter is not None:
         if args.chapter == 0:
-            start_game()
+            start_game(screen)
         elif args.chapter == -1:
-            end_game()
+            end_game(screen)
         else:
             enter_chapter(args.chapter)
         return
 
-    option_index_chosen = start_game()
+    option_index_chosen = start_game(screen)
     if option_index_chosen == sfg.START_GAME.INDEX_QUIT:
         return
 
@@ -46,7 +46,7 @@ def main(args):
         elif status == cfg.Chapter.STATUS_PASS:
             i += 1
 
-    end_game()
+    end_game(screen)
 
 
 def loading_chapter_picture(screen):
@@ -61,7 +61,7 @@ def loading_chapter_picture(screen):
     pygame.time.wait(1000)
 
 
-def start_game():
+def start_game(screen):
     pic = cg_image_controller.get("start_game").convert_alpha()
     pic_rect = pic.get_rect()
 
@@ -135,7 +135,7 @@ def start_game():
 
 
 
-def end_game():
+def end_game(screen):
     screen_centerx = sfg.Screen.SIZE[0] / 2
 
     renne_image_rect = renne_image.get_rect()
