@@ -255,10 +255,6 @@ class GameStatus(object):
     WORDS = {
         "hero_hp": pygame.font.SysFont("arial", 12).render("HP", True, pygame.Color("white")),
         "hero_sp": pygame.font.SysFont("arial", 12).render("SP", True, pygame.Color("white")),
-        "continue": pygame.font.SysFont("arial", 32).render(
-            "press enter to continue", True, pygame.Color("white")),
-        "loading": pygame.font.SysFont("arial", 32).render(
-            "now loading ...", True, pygame.Color("white")),
     }
     # init status persist 3 seconds
     INIT_PERSIST_TIME = 3
@@ -297,8 +293,12 @@ class GameStatus(object):
     HERO_LOSE_BLIT_POS = (0, 280)
     NUMBER_BLIT_POS = (500, 360)
 
-    CONTINUE_BLIT_POS = (650, 700)
-    LOADING_BLIT_POS = (780, 700)
+
+
+class LOADING_CHAPTER(object):
+    PICTURE_FADEIN_TIME = 1 # in second unit, show up the picture
+    BLIT_POS = (760, 700)
+    WORD = pygame.font.SysFont("arial black", 28).render("now loading ...", True, pygame.Color("white"))
 
 
 

@@ -50,14 +50,22 @@ def main(args):
 
 def loading_chapter_picture(screen):
     screen.fill(pygame.Color("black"))
-    img = cg_image_controller.get("loading_chapter").convert_alpha()
-    r = img.get_rect()
-    r.center = map(lambda x: x/2, sfg.Screen.SIZE)
-    screen.blit(img, r)
-    screen.blit(sfg.GameStatus.WORDS["loading"], sfg.GameStatus.LOADING_BLIT_POS)
-    pygame.display.update()
-    # a delay to show renne's picture on purpose?
-    pygame.time.wait(1000)
+    img = cg_image_controller.get("loading_chapter").convert()
+    img_rect = img.get_rect()
+    img_rect.center = map(lambda x: x/2, sfg.Screen.SIZE)
+
+    alpha = 0
+    delta = 256 / sfg.LOADING_CHAPTER.PICTURE_FADEIN_TIME
+    clock = pygame.time.Clock()
+    while alpha < 255:
+        screen.fill(pygame.Color("black"))
+        time_passed = clock.tick(sfg.FPS)
+        passed_seconds = time_passed / 1000.0
+        alpha = int(min(alpha + passed_seconds * delta, 255))
+        img.set_alpha(alpha)
+        screen.blit(img, img_rect)
+        screen.blit(sfg.LOADING_CHAPTER.WORD, sfg.LOADING_CHAPTER.BLIT_POS)
+        pygame.display.update()
 
 
 def start_game(screen):
