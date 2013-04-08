@@ -205,28 +205,6 @@ class Steerer(object):
         self.is_end = False
 
 
-    def cal_refer_quadrant(self, p, p_refer):
-        """
-            something like this:
-
-             3 | 2
-            ---+--->
-             4 | 1
-               v
-            p_refer is regarded as original point
-        """
-        if p[0] >= p_refer[0]:
-            if p[1] >= p_refer[1]:
-                return 1
-            else:
-                return 2
-        else:
-            if p[1] < p_refer[1]:
-                return 3
-            else:
-                return 4
-
-
     def steer(self):
         sp = self.sprite
         dx = self.next_coord[0] - sp.pos.x 
