@@ -15,8 +15,7 @@ from base import util
 
 screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption("Renne")
-renne_image = pygame.image.load("renne.png").convert_alpha()
-pygame.display.set_icon(renne_image)
+pygame.display.set_icon(pygame.image.load("renne.png").convert_alpha())
 
 COMMAND_DEBUG_MODE = False
 
@@ -62,7 +61,7 @@ def loading_chapter_picture(screen):
 
 
 def start_game(screen):
-    pic = cg_image_controller.get("start_game").convert_alpha()
+    pic = cg_image_controller.get("start_game").convert()
     pic_rect = pic.get_rect()
 
     renne_cursor = basic_image_controller.get("head_status").subsurface(
@@ -74,23 +73,21 @@ def start_game(screen):
 
     clock = pygame.time.Clock()
     menu_index = 0
-    pic_alpha = 255 # picture fades in, alpha changes from 255 to 0
+    pic_alpha = 0 # picture fades in, alpha changes from 0 to 255
     fade_in_delta = 256 / sfg.START_GAME.PICTURE_FADEIN_TIME
 
-    mask = pygame.Surface(sfg.Screen.SIZE).convert_alpha()
-
+    menu_option_rect = pygame.Rect(sfg.START_GAME.MENU_OPTION_RECT)
     while True:
         time_passed = clock.tick(sfg.FPS)
         passed_seconds = time_passed / 1000.0
 
-        pic_alpha = int(max(pic_alpha - passed_seconds * fade_in_delta, 0))
+        screen.fill(pygame.Color("black"))
 
-        mask.fill(pygame.Color(0, 0, 0, pic_alpha))
-
+        pic_alpha = int(min(pic_alpha + passed_seconds * fade_in_delta, 255))
+        pic.set_alpha(pic_alpha)
         screen.blit(pic, pic_rect)
-        screen.blit(mask, (0, 0))
 
-        if pic_alpha == 0:
+        if pic_alpha >= 255:
             # no events accepted until the renne's picure is fully displayed
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: 
@@ -107,27 +104,23 @@ def start_game(screen):
 
             menu_y = sfg.START_GAME.MENU_BLIT_Y
             for i, menu_word in enumerate(sfg.START_GAME.MENU_LIST):
-                menu_option_rect = pygame.Rect(sfg.START_GAME.MENU_OPTION_RECT)
-                menu_option = pygame.Surface((menu_option_rect.width, menu_option_rect.height))
-
                 if i == menu_index:
                     renne_cursor_rect = renne_cursor.get_rect()
-                    renne_cursor_rect.centery = menu_option_rect.height / 2
-                    menu_option.blit(renne_cursor, renne_cursor_rect)
+                    renne_cursor_rect.center = (screen_centerx - menu_option_rect.width / 2,
+                        menu_y + menu_option_rect.height / 2)
+                    screen.blit(renne_cursor, renne_cursor_rect)
+
                     m_size = sfg.START_GAME.MENU_ON_SIZE
                     m_color = sfg.START_GAME.MENU_ON_COLOR
+
                 else:
                     m_size = sfg.START_GAME.MENU_OFF_SIZE
                     m_color = sfg.START_GAME.MENU_OFF_COLOR
                 
                 menu = pygame.font.SysFont("arial black", m_size).render(menu_word, True, m_color)
                 menu_rect = menu.get_rect()
-                menu_rect.center = menu_option_rect.center
-                menu_option.blit(menu, menu_rect)
-
-                menu_option_rect.centerx = screen_centerx
-                menu_option_rect.centery = menu_y + menu_option_rect.height / 2
-                screen.blit(menu_option, menu_option_rect)
+                menu_rect.center = (screen_centerx, menu_y + menu_option_rect.height / 2)
+                screen.blit(menu, menu_rect)
 
                 menu_y += menu_option_rect.height
 
@@ -138,6 +131,7 @@ def start_game(screen):
 def end_game(screen):
     screen_centerx = sfg.Screen.SIZE[0] / 2
 
+    renne_image = pygame.image.load("renne.png").convert_alpha()
     renne_image_rect = renne_image.get_rect()
     renne_image_rect.centerx = screen_centerx
     renne_image_rect.centery = sfg.END_GAME.RENNE_IMAGE_BLIT_Y

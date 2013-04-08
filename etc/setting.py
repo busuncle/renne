@@ -303,7 +303,7 @@ class GameStatus(object):
 
 
 class START_GAME(object):
-    PICTURE_FADEIN_TIME = 3 # in second unit, show up the picture
+    PICTURE_FADEIN_TIME = 2 # in second unit, show up the picture
     MENU_ON_COLOR = pygame.Color("white")
     MENU_OFF_COLOR = pygame.Color("gray")
     MENU_ON_SIZE = 48
@@ -322,7 +322,7 @@ class START_GAME(object):
 
 
 class END_GAME(object):
-    ENDING_FADEIN_TIME = 4
+    ENDING_FADEIN_TIME = 3
     BUSUNCLE_WORKS = pygame.font.SysFont("arial black", 32).render(
         "Busuncle's works", True, pygame.Color("white"))
     BUSUNCLE_WORKS_BLIT_Y = 450

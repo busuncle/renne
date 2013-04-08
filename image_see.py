@@ -9,7 +9,7 @@ screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption("Renne Image See")
 
 def run(filepath):
-    img = pygame.image.load(filepath).convert_alpha()
+    img = pygame.image.load(filepath).convert()
     img_rect = img.get_rect()
     words_blit_pos = img_rect.bottomleft
 
@@ -22,6 +22,7 @@ def run(filepath):
                 return
 
         screen.fill(pygame.Color("black")) 
+        #img.set_alpha(20)
         screen.blit(img, (0, 0))
 
         mouse_pos = pygame.mouse.get_pos()
