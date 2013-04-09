@@ -27,6 +27,17 @@ class Direction(object):
         SOUTH_WEST,
     ]
 
+    MARK_ALL = [
+        "WEST",
+        "NORTH_WEST",
+        "NORTH",
+        "NORTH_EAST",
+        "EAST",
+        "SOUTH_EAST",
+        "SOUTH",
+        "SOUTH_WEST",
+    ]
+
     VEC_ALL = [
         (-1.0, 0.0),
         (-1.0, -1.0),
@@ -40,6 +51,7 @@ class Direction(object):
 
     DIRECT_TO_VEC = dict(zip(ALL, VEC_ALL))
     VEC_TO_DIRECT = dict(zip(VEC_ALL, ALL))
+    DIRECT_TO_MARK = dict(zip(ALL, MARK_ALL))
 
 
 
