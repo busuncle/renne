@@ -111,6 +111,15 @@ class GameStatus(object):
 
 
     def draw(self, camera):
+        # enemy hp bar is the least important, draw it first
+        for enemy in self.enemies:
+            # draw the hp bar for all enemies
+            if enemy.emotion_animation.image is not None:
+                # don't draw the hp bar when the enemy is in some emotion
+                continue
+
+            self.draw_enemy_hp_bar(enemy, camera)
+
         camera.screen.blit(self.status_panel, sfg.GameStatus.HERO_PANEL_BLIT_POS)
 
         self.status_panel.blit(self.words["hero_hp"], sfg.GameStatus.HERO_HP_TITLE_BLIT_POS)
@@ -128,14 +137,6 @@ class GameStatus(object):
         sp_bar = self.make_bar(sfg.GameStatus.HERO_ALL_BAR_SIZE, self.hero.stamina, self.hero.setting.STAMINA,
             sfg.GameStatus.HERO_SP_COLOR, sfg.GameStatus.SPRITE_BAR_BG_COLOR)
         self.status_panel.blit(sp_bar, sfg.GameStatus.HERO_SP_BLIT_POS)
-
-        for enemy in self.enemies:
-            # draw the hp bar for all enemies
-            if enemy.emotion_animation.image is not None:
-                # don't draw the hp bar when the enemy is in some emotion
-                continue
-
-            self.draw_enemy_hp_bar(enemy, camera)
 
         # chapter info
         self.chapter_panel.blit(self.chapter_info, sfg.GameStatus.CHAPTER_INFO_BLIT_POS)
