@@ -11,10 +11,10 @@ from base.util import cos_for_vec
 
 
 ########### some tools #########################
-def cal_face_direct(sprite, target):
-    best_direct = sprite.direction
+def cal_face_direct(start_point, end_point):
+    best_direct = None
     cos_min = -1
-    vec_to_target = Vector2.from_points(sprite.area.center, target.area.center)
+    vec_to_target = Vector2.from_points(start_point, end_point)
     for vec_point, direct in cfg.Direction.VEC_TO_DIRECT.iteritems():
         vec = Vector2(vec_point)
 
@@ -323,7 +323,7 @@ class SpriteChase(State):
             # set corresponding emotion
             sp.set_emotion(cfg.SpriteEmotion.ALERT)
 
-        sp.direction = cal_face_direct(sp, sp.brain.target)
+        sp.direction = cal_face_direct(sp.pos.as_tuple(), sp.brain.target.pos.as_tuple())
         self.target_move_threshold = sp.brain.target.setting.RADIUS * 4
         sp.brain.destination = self.add_noise_to_dest(sp.brain.target.pos)
         path = self.pathfinder.find(sp.brain.destination.as_tuple(), sp.setting.ATTACK_RANGE)
@@ -379,7 +379,7 @@ class SpriteOffence(State):
     def enter(self, last_state):
         sp = self.sprite
         sp.brain.persistent = True
-        sp.direction = cal_face_direct(sp, sp.brain.target)
+        sp.direction = cal_face_direct(sp.pos.as_tuple(), sp.brain.target.pos.as_tuple())
         self.enter_time = time()
         self.delay_time = gauss(self.ai.OFFENCE_GO_DELAY_TIME_MU, self.ai.OFFENCE_GO_DELAY_TIME_SIGMA)
 
