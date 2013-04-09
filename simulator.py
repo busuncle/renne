@@ -165,9 +165,12 @@ class Steerer(object):
         self.sprite = sprite
 
     def path_smoothing(self, coord_list):
+        # coord_list will be a list containing the path goes *backwards*, that means:
+        # [last_coord, last_coord_but_one, ..., second_coord, first_coord]
         new_coord_list = []
         direct_list = []
 
+        # so looping backwards using list.pop, that will produce a new sequence-order coord-list
         new_coord_list.append(coord_list.pop())
         old_direct = None
         while coord_list:
@@ -186,6 +189,8 @@ class Steerer(object):
             else:
                 new_coord_list[-1] = next_coord
 
+        # because list only has pop method, 
+        # so reverse the 2 lists will make it convinient for steer
         new_coord_list.reverse()
         direct_list.reverse()
         return new_coord_list, direct_list
@@ -239,9 +244,9 @@ class Steerer(object):
 
 if __name__ == "__main__":
     st = Steerer(None)
-    #coord_list = [(4, 2), (3, 2), (2, 1), (1, 0), (0, 0)]
+    coord_list = [(4, 2), (3, 2), (2, 1), (1, 0), (0, 0)]
     #coord_list = [(1, 1), (0, 0)]
-    coord_list = [(0, 0)]
+    #coord_list = [(0, 0)]
     st.steer_init(coord_list)
     print st.next_coord
     print list(reversed(st.coord_list))
