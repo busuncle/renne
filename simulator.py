@@ -174,14 +174,9 @@ class Steerer(object):
             next_coord = coord_list.pop()
             dx = next_coord[0] - new_coord_list[-1][0]
             dy = next_coord[1] - new_coord_list[-1][1]
-            if dx > 0:
-                dx = 1.0
-            elif dx < 0:
-                dx = -1.0
-            if dy > 0:
-                dy = 1.0
-            elif dy < 0:
-                dy = -1.0
+            # make both dx and dy be in [-1.0, 1.0], as to decide the direction
+            dx = min(max(dx, -1.0), 1.0)
+            dy = min(max(dy, -1.0), 1.0)
 
             next_direct = cfg.Direction.VEC_TO_DIRECT[(dx, dy)]
             if next_direct != old_direct:
@@ -240,3 +235,14 @@ class Steerer(object):
 
             sp.direction = cfg.Direction.VEC_TO_DIRECT.get(sp.key_vec.as_tuple(), sp.direction)
 
+
+
+if __name__ == "__main__":
+    st = Steerer(None)
+    #coord_list = [(4, 2), (3, 2), (2, 1), (1, 0), (0, 0)]
+    #coord_list = [(1, 1), (0, 0)]
+    coord_list = [(0, 0)]
+    st.steer_init(coord_list)
+    print st.next_coord
+    print list(reversed(st.coord_list))
+    print map(lambda x: cfg.Direction.DIRECT_TO_MARK[x], reversed(st.direct_list))

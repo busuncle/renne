@@ -76,6 +76,10 @@ class Astar(object):
 
 
     def gen_path(self, cur_node):
+        # this algorithm go backwards for generating the path, 
+        # so the first element is target, and the last one is start, 
+        # which should be ignored because it's just some corner of the sprite area,
+        # not sprite's pos
         path = [cur_node.coord, ]
         next_parent = cur_node.parent
         while next_parent is not None:
