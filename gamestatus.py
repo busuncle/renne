@@ -17,8 +17,6 @@ class GameStatus(object):
         self.hero = hero
         self.enemies = enemies
         self.words = sfg.GameStatus.WORDS
-        self.status_panel = self.gen_panel("status", 
-            sfg.GameStatus.HERO_PANEL_RECT, sfg.GameStatus.HERO_PANEL_SCALE_SIZE)
         self.head_images_list = self.gen_head_images_list()
         self.sprite_hp_colors = sfg.GameStatus.SPRITE_HP_COLORS
         self.status = cfg.GameStatus.INIT
@@ -120,23 +118,27 @@ class GameStatus(object):
 
             self.draw_enemy_hp_bar(enemy, camera)
 
-        camera.screen.blit(self.status_panel, sfg.GameStatus.HERO_PANEL_BLIT_POS)
+        # generate status_panel everytime will make a good effect
+        status_panel = self.gen_panel("status", 
+            sfg.GameStatus.HERO_PANEL_RECT, sfg.GameStatus.HERO_PANEL_SCALE_SIZE)
 
-        self.status_panel.blit(self.words["hero_hp"], sfg.GameStatus.HERO_HP_TITLE_BLIT_POS)
-        self.status_panel.blit(self.words["hero_sp"], sfg.GameStatus.HERO_SP_TITLE_BLIT_POS)
+        status_panel.blit(self.words["hero_hp"], sfg.GameStatus.HERO_HP_TITLE_BLIT_POS)
+        status_panel.blit(self.words["hero_sp"], sfg.GameStatus.HERO_SP_TITLE_BLIT_POS)
 
         # Renne's head, showing her status
-        self.status_panel.blit(self.get_current_head(self.hero.status), sfg.GameStatus.HERO_HEAD_BLIT_POS)
+        status_panel.blit(self.get_current_head(self.hero.status), sfg.GameStatus.HERO_HEAD_BLIT_POS)
 
         # draw the hp bar for Renne
         hp_bar = self.make_bar(sfg.GameStatus.HERO_ALL_BAR_SIZE, self.hero.hp, self.hero.setting.HP,
             self.sprite_hp_colors[self.hero.status], sfg.GameStatus.SPRITE_BAR_BG_COLOR)
-        self.status_panel.blit(hp_bar, sfg.GameStatus.HERO_HP_BLIT_POS)
+        status_panel.blit(hp_bar, sfg.GameStatus.HERO_HP_BLIT_POS)
 
         # draw the sp bar for Renne
         sp_bar = self.make_bar(sfg.GameStatus.HERO_ALL_BAR_SIZE, self.hero.stamina, self.hero.setting.STAMINA,
             sfg.GameStatus.HERO_SP_COLOR, sfg.GameStatus.SPRITE_BAR_BG_COLOR)
-        self.status_panel.blit(sp_bar, sfg.GameStatus.HERO_SP_BLIT_POS)
+        status_panel.blit(sp_bar, sfg.GameStatus.HERO_SP_BLIT_POS)
+
+        camera.screen.blit(status_panel, sfg.GameStatus.HERO_PANEL_BLIT_POS)
 
         # chapter info
         self.chapter_panel.blit(self.chapter_info, sfg.GameStatus.CHAPTER_INFO_BLIT_POS)
