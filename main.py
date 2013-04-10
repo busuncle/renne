@@ -59,7 +59,7 @@ def loading_chapter_picture(screen):
     img_rect.center = map(lambda x: x/2, sfg.Screen.SIZE)
 
     alpha = 0
-    delta = 256 / sfg.LOADING_CHAPTER.PICTURE_FADEIN_TIME
+    delta = 256 / sfg.Chapter.LOADING_PICTURE_FADE_IN_TIME
     clock = pygame.time.Clock()
     while alpha < 255:
         screen.fill(pygame.Color("black"))
@@ -68,7 +68,7 @@ def loading_chapter_picture(screen):
         alpha = int(min(alpha + passed_seconds * delta, 255))
         img.set_alpha(alpha)
         screen.blit(img, img_rect)
-        screen.blit(sfg.LOADING_CHAPTER.WORD, sfg.LOADING_CHAPTER.BLIT_POS)
+        screen.blit(sfg.Chapter.LOADING_WORD, sfg.Chapter.LOADING_WORD_BLIT_POS)
         pygame.display.flip()
 
 

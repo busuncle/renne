@@ -295,10 +295,10 @@ class GameStatus(object):
 
 
 
-class LOADING_CHAPTER(object):
-    PICTURE_FADEIN_TIME = 1 # in second unit, show up the picture
-    BLIT_POS = (760, 700)
-    WORD = pygame.font.SysFont("arial black", 28).render("now loading ...", True, pygame.Color("white"))
+class Chapter(object):
+    LOADING_PICTURE_FADE_IN_TIME = 1    # in second unit, show up the picture
+    LOADING_WORD = pygame.font.SysFont("arial black", 28).render("now loading ...", True, pygame.Color("white"))
+    LOADING_WORD_BLIT_POS = (760, 700)
 
 
 
