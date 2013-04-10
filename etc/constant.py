@@ -113,7 +113,8 @@ class GameStatus(object):
     HERO_LOSE = 3
 
 
-class Chapter(object):
-    STATUS_AGAIN = 0
-    STATUS_PASS = 1
-    STATUS_QUIT_GAME = 2
+class GameControl(object):
+    NEXT = 0
+    AGAIN = 1
+    MAIN = 2
+    QUIT = 3

@@ -28,28 +28,32 @@ def main(args):
         elif args.chapter == -1:
             end_game(screen)
         else:
-            enter_chapter(args.chapter)
-        return
-
-    option_index_chosen = start_game(screen)
-    if option_index_chosen == sfg.START_GAME.INDEX_QUIT:
+            enter_chapter(screen, args.chapter)
         return
 
     i = 0
     while i < len(sfg.GameMap.CHAPTERS):
-        chapter = sfg.GameMap.CHAPTERS[i]
-        loading_chapter_picture(screen)
-        status = enter_chapter(chapter)
-        if status == cfg.Chapter.STATUS_QUIT_GAME:
-            return
-        elif status == cfg.Chapter.STATUS_PASS:
+        if i == 0:
+            # chapter 0 means the main menu
+            status = start_game(screen)
+        else:
+            chapter = sfg.GameMap.CHAPTERS[i]
+            loading_chapter_picture(screen)
+            status = enter_chapter(screen, chapter)
+
+        if status == cfg.GameControl.NEXT:
             i += 1
+        elif status == cfg.GameControl.AGAIN:
+            continue
+        elif status == cfg.GameControl.MAIN:
+            i = 0
+        elif status == cfg.GameControl.QUIT:
+            return
 
     end_game(screen)
 
 
 def loading_chapter_picture(screen):
-    screen.fill(pygame.Color("black"))
     img = cg_image_controller.get("loading_chapter").convert()
     img_rect = img.get_rect()
     img_rect.center = map(lambda x: x/2, sfg.Screen.SIZE)
@@ -65,7 +69,8 @@ def loading_chapter_picture(screen):
         img.set_alpha(alpha)
         screen.blit(img, img_rect)
         screen.blit(sfg.LOADING_CHAPTER.WORD, sfg.LOADING_CHAPTER.BLIT_POS)
-        pygame.display.update()
+        pygame.display.flip()
+
 
 
 def start_game(screen):
@@ -86,11 +91,10 @@ def start_game(screen):
 
     menu_option_rect = pygame.Rect(sfg.START_GAME.MENU_OPTION_RECT)
     while True:
-        time_passed = clock.tick(sfg.FPS)
-        passed_seconds = time_passed / 1000.0
-
         screen.fill(pygame.Color("black"))
 
+        time_passed = clock.tick(sfg.FPS)
+        passed_seconds = time_passed / 1000.0
         pic_alpha = int(min(pic_alpha + passed_seconds * fade_in_delta, 255))
         pic.set_alpha(pic_alpha)
         screen.blit(pic, pic_rect)
@@ -99,12 +103,15 @@ def start_game(screen):
             # no events accepted until the renne's picure is fully displayed
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: 
-                    exit(0)
+                    return cfg.GameControl.QUIT
                 if event.type == KEYDOWN:
                     if event.key == K_RETURN:
-                        return menu_index
+                        if menu_index == sfg.START_GAME.INDEX_START:
+                            return cfg.GameControl.NEXT
+                        elif menu_index == sfg.START_GAME.INDEX_QUIT:
+                            return cfg.GameControl.QUIT
                     elif event.key == K_ESCAPE:
-                        return sfg.START_GAME.INDEX_QUIT
+                        return cfg.GameControl.QUIT
                     elif event.key in (sfg.UserKey.DOWN, K_DOWN):
                         menu_index = min(len(sfg.START_GAME.MENU_LIST) - 1, menu_index + 1)
                     elif event.key in (sfg.UserKey.UP, K_UP):
@@ -170,11 +177,11 @@ def end_game(screen):
         mask.fill(pygame.Color(0, 0, 0, mask_alpha))
         screen.blit(mask, (0, 0))
 
-        pygame.display.update()
+        pygame.display.flip()
 
 
 
-def enter_chapter(chapter):
+def enter_chapter(screen, chapter):
     clock = pygame.time.Clock()
     map_setting = util.load_map_setting(chapter)
 
@@ -219,12 +226,12 @@ def enter_chapter(chapter):
 
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    return cfg.Chapter.STATUS_QUIT_GAME
+                    return cfg.GameControl.QUIT
                 if event.key == K_RETURN:
                     if game_status.status == cfg.GameStatus.HERO_WIN:
-                        return cfg.Chapter.STATUS_PASS
+                        return cfg.GameControl.NEXT
                     elif game_status.status == cfg.GameStatus.HERO_LOSE:
-                        return cfg.Chapter.STATUS_AGAIN
+                        return cfg.GameControl.AGAIN
 
         pressed_keys = pygame.key.get_pressed()
         renne.event_handle(pressed_keys, external_event=game_status.status)
