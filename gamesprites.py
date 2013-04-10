@@ -76,11 +76,14 @@ class GameSprite(pygame.sprite.DirtySprite):
         shadow_rect = self.animation.shadow_rect
         shadow_rect.center = (rect.center[0], rect.center[1] + self.setting.D_COORD_TO_SHADOW)
 
-        rect.top -= camera.rect.top
-        rect.left -= camera.rect.left
+        # don't modify rect itself, but pass the relative topleft point to the blit function
+        image_blit_pos = (rect.left - camera.rect.left, rect.top - camera.rect.top)
+        shadow_blit_pos = (shadow_rect.left - camera.rect.left, shadow_rect.top - camera.rect.top)
+        #rect.top -= camera.rect.top
+        #rect.left -= camera.rect.left
 
-        shadow_rect.top -= camera.rect.top
-        shadow_rect.left -= camera.rect.left
+        #shadow_rect.top -= camera.rect.top
+        #shadow_rect.left -= camera.rect.left
 
         if self.attack_receiver.under_attack:
             # add mix color to the image for simulating a under-attack effect, like a blink body, pretty good
@@ -89,6 +92,7 @@ class GameSprite(pygame.sprite.DirtySprite):
             image_mix.fill(pygame.Color("gray"), special_flags=BLEND_ADD)
             image = image_mix
 
+        # draw shadow first, and then the sprite itself
         camera.screen.blit(shadow_image, shadow_rect)
         camera.screen.blit(image, rect)
 

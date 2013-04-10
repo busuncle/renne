@@ -92,8 +92,20 @@ class GameWorld(pygame.sprite.LayeredDirty):
         super(GameWorld, self).__init__()
 
 
+    def yield_objects_in_screen(self, camera):
+        for obj in self.sprites():
+            if hasattr(obj, "rect"):
+                rect = obj.rect
+            else:
+                rect = obj.animation.rect
+
+            if rect.colliderect(camera.rect):
+                yield obj
+
+
     def draw(self, camera):
-        objs = sorted(self.sprites(), key=lambda sp: sp.pos.y)
+        #objs = sorted(self.sprites(), key=lambda sp: sp.pos.y)
+        objs = sorted(self.yield_objects_in_screen(camera), key=lambda sp: sp.pos.y)
         for v in objs:
             v.draw(camera)
 
