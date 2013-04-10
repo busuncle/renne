@@ -29,7 +29,9 @@ class SpriteAnimator(object):
         self.frame_adds = dict((k, 0) for k in self.frame_rates.keys()) 
 
         self.image = self.sprite_image_contoller.get_surface(sprite.action)[sprite.direction]
+        self.rect = self.image.get_rect()
         self.shadow_image = self.gen_shadow_image(sprite.setting.SHADOW_INDEX)
+        self.shadow_rect = self.shadow_image.get_rect()
         self.die_image = None
         self.die_begin_time = None
 

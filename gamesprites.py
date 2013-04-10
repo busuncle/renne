@@ -69,11 +69,11 @@ class GameSprite(pygame.sprite.DirtySprite):
         if image is None:
             return 
 
-        rect = image.get_rect()
+        rect = self.animation.rect
         rect.center = (self.pos.x, self.pos.y / 2 - self.setting.D_COORD_TO_FOOT)
 
         shadow_image = self.animation.shadow_image
-        shadow_rect = shadow_image.get_rect()
+        shadow_rect = self.animation.shadow_rect
         shadow_rect.center = (rect.center[0], rect.center[1] + self.setting.D_COORD_TO_SHADOW)
 
         rect.top -= camera.rect.top

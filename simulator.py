@@ -201,7 +201,6 @@ class Steerer(object):
         self.next_coord = self.coord_list.pop()
         self.cur_direct = None
         self.delta = 2
-        self.last_delta = 99999999
         self.is_end = False
 
 
@@ -209,14 +208,9 @@ class Steerer(object):
         sp = self.sprite
         dx = self.next_coord[0] - sp.pos.x 
         dy = self.next_coord[1] - sp.pos.y
-        if abs(dx) + abs(dy) < self.last_delta:
-            self.last_delta = abs(dx) + abs(dy)
 
-        if (abs(dx) < self.delta and abs(dy) < self.delta) or (abs(dx) + abs(dy) > self.last_delta):
+        if (abs(dx) < self.delta and abs(dy) < self.delta):
             # reach target coord, try next
-            # a delta in x, y less than threshold, or delta is getting greater(important case), 
-            # will be regarded as reaching the target
-            self.last_delta = 99999999
             if len(self.coord_list) == 0:
                 # reach the end
                 self.is_end = True

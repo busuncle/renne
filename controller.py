@@ -11,10 +11,10 @@ from base.util import cos_for_vec
 
 
 ########### some tools #########################
-def cal_face_direct(sprite, target):
-    best_direct = sprite.direction
+def cal_face_direct(start_point, end_point):
+    best_direct = None
     cos_min = -1
-    vec_to_target = Vector2.from_points(sprite.area.center, target.area.center)
+    vec_to_target = Vector2.from_points(start_point, end_point)
     for vec_point, direct in cfg.Direction.VEC_TO_DIRECT.iteritems():
         vec = Vector2(vec_point)
 
@@ -221,84 +221,6 @@ class SpritePatrol(State):
 
 
 
-class SpritePatrol2(State):
-    def __init__(self, sprite, ai, waypoints):
-        super(SpritePatrol2, self).__init__(cfg.SpriteState.PATROL)
-        self.sprite = sprite
-        self.ai = ai
-        self.waypoints = waypoints
-
-
-    def choose_a_backside_direction(self, current_direction):
-        total = cfg.Direction.TOTAL
-        opposite_direction = (current_direction + 4) % total
-        return choice([(opposite_direction - 1) % total, opposite_direction,
-            (opposite_direction + 1) % total])
-
-
-    def cal_walk_target(self):
-        try_steps = 5
-        key_vec = cfg.Direction.DIRECT_TO_VEC[self.sprite.direction]
-        x, y = self.sprite.pos
-        sw = sfg.WayPoint.STEP_WIDTH
-        for i in xrange(try_steps):
-            xi = x + key_vec[0] * sw
-            yi = y + key_vec[1] * sw
-
-            x0 = xi - xi % sw
-            y0 = yi - yi % sw
-
-            if len(filter(lambda v: v in self.waypoints, 
-                ((x0, y0), (x0+sw, y0), (x0, y0+sw), (x0+sw, y0+sw)))) < 4:
-                # not all corners in waypoint set, unsafe target, break
-                break
-
-            x, y = xi, yi
-
-        return x, y
-
-
-    def approach(self):
-        sp = self.sprite
-        dx = sp.pos.x - self.target[0]
-        dy = sp.pos.y - self.target[1]
-        if abs(dx) + abs(dy) > self.last_delta:
-            return True
-
-        self.last_delta = abs(dx) + abs(dy)
-        return False
-
-
-    def enter(self, last_state):
-        self.sprite.direction = self.choose_a_backside_direction(self.sprite.direction)
-        self.target = self.cal_walk_target()
-        self.last_delta = 99999999
-
-
-    def check_conditions(self):
-        sp = self.sprite
-        if sp.brain.target is not None:
-            distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
-            if distance_to_target <= sp.setting.ATTACK_RANGE:
-                print "patrol to attack"
-                return cfg.SpriteState.OFFENCE
-
-            print "patrol to chase"
-            return cfg.SpriteState.CHASE
-
-        if sp.brain.interrupt:
-            sp.brain.interrupt = False
-            return cfg.SpriteState.STAY
-
-        if self.approach():
-            return cfg.SpriteState.STAY
-
-
-    def exit(self):
-        self.target = None
-
-
-
 class SpriteChase(State):
     def __init__(self, sprite, ai, waypoints):
         super(SpriteChase, self).__init__(cfg.SpriteState.CHASE)
@@ -323,7 +245,7 @@ class SpriteChase(State):
             # set corresponding emotion
             sp.set_emotion(cfg.SpriteEmotion.ALERT)
 
-        sp.direction = cal_face_direct(sp, sp.brain.target)
+        sp.direction = cal_face_direct(sp.pos.as_tuple(), sp.brain.target.pos.as_tuple())
         self.target_move_threshold = sp.brain.target.setting.RADIUS * 4
         sp.brain.destination = self.add_noise_to_dest(sp.brain.target.pos)
         path = self.pathfinder.find(sp.brain.destination.as_tuple(), sp.setting.ATTACK_RANGE)
@@ -379,7 +301,7 @@ class SpriteOffence(State):
     def enter(self, last_state):
         sp = self.sprite
         sp.brain.persistent = True
-        sp.direction = cal_face_direct(sp, sp.brain.target)
+        sp.direction = cal_face_direct(sp.pos.as_tuple(), sp.brain.target.pos.as_tuple())
         self.enter_time = time()
         self.delay_time = gauss(self.ai.OFFENCE_GO_DELAY_TIME_MU, self.ai.OFFENCE_GO_DELAY_TIME_SIGMA)
 
