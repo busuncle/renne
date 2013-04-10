@@ -192,6 +192,9 @@ class Renne(GameSprite):
                 if self.action != cfg.HeroAction.ATTACK:
                     self.action = cfg.HeroAction.STAND
                 return 
+            elif external_event == cfg.GameStatus.PAUSE:
+                # do nothin
+                return
 
         if self.action == cfg.HeroAction.ATTACK:
             # attacking, return directly
@@ -231,7 +234,12 @@ class Renne(GameSprite):
             self.action = cfg.HeroAction.STAND
 
 
-    def update(self, passed_seconds):
+    def update(self, passed_seconds, external_event=None):
+        if external_event is not None:
+            if external_event == cfg.GameStatus.PAUSE:
+                # user pause the game, don't update animation
+                return
+
         if self.action == cfg.HeroAction.ATTACK:
             self.attack(passed_seconds)
 
@@ -332,7 +340,6 @@ class Enemy(GameSprite):
 
     def event_handle(self, pressed_keys=None, external_event=None):
         # perception and belief control level
-
         if external_event is not None:
             if external_event == cfg.GameStatus.INIT:
                 self.action = cfg.EnemyAction.STAND
@@ -340,6 +347,9 @@ class Enemy(GameSprite):
             elif external_event == cfg.GameStatus.HERO_LOSE:
                 self.reset_action()
                 return 
+            elif external_event == cfg.GameStatus.PAUSE:
+                # do nothing
+                return
 
         if self.status == cfg.SpriteStatus.DIE:
             return
@@ -369,8 +379,12 @@ class Enemy(GameSprite):
                 self.key_vec.x, self.key_vec.y = cfg.Direction.DIRECT_TO_VEC[self.direction] 
     
 
-    def update(self, passed_seconds):
+    def update(self, passed_seconds, external_event=None):
         # physics level
+        if external_event is not None:
+            if external_event == cfg.GameStatus.PAUSE:
+                # user pause the game, don't update animation
+                return
 
         if not self.attack_receiver.under_attack and self.status == cfg.SpriteStatus.DIE:
             return

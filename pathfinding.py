@@ -65,7 +65,7 @@ class OpenList(object):
 
 class Astar(object):
     # an empirical value for limiting the size of close list
-    MAX_SEARCHING_STEP = 100
+    MAX_SEARCHING_STEP = 300
     # unit cost in every direction
     direct_vec_cost = dict((v, math.sqrt(v[0]**2 + v[1]**2)) for v in cfg.Direction.VEC_ALL)
 

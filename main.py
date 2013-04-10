@@ -17,8 +17,45 @@ screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption("Renne")
 pygame.display.set_icon(pygame.image.load("renne.png").convert_alpha())
 
+
 COMMAND_DEBUG_MODE = False
 
+
+def select_menu(key, menu_list, menu_index):
+    # return a new menu_index that satisfies: 0 <= menu_index <= len(menu_list) - 1
+    if key in (sfg.UserKey.DOWN, K_DOWN):
+        return min(menu_index + 1, len(menu_list) - 1)
+    elif key in (sfg.UserKey.UP, K_UP):
+        return max(0, menu_index - 1)
+    return menu_index
+
+
+def render_menu(screen, menu_index, menu_list, menu_option_rect_setting, menu_blit_y,
+        size_on, size_off, color_on, color_off):
+    renne_cursor = basic_image_controller.get("head_status").subsurface(
+        pygame.Rect(sfg.START_GAME.RENNE_CURSOR_RECT)).convert_alpha()
+    menu_option_rect = pygame.Rect(menu_option_rect_setting)
+    screen_centerx = sfg.Screen.SIZE[0] / 2
+    for i, menu_word in enumerate(menu_list):
+        if i == menu_index:
+            renne_cursor_rect = renne_cursor.get_rect()
+            renne_cursor_rect.center = (screen_centerx - menu_option_rect.width / 2,
+                menu_blit_y + menu_option_rect.height / 2)
+            screen.blit(renne_cursor, renne_cursor_rect)
+
+            m_size = size_on
+            m_color = color_on
+
+        else:
+            m_size = size_off
+            m_color = color_off
+
+        menu = pygame.font.SysFont("arial black", m_size).render(menu_word, True, m_color)
+        menu_rect = menu.get_rect()
+        menu_rect.center = (screen_centerx, menu_blit_y + menu_option_rect.height / 2)
+        screen.blit(menu, menu_rect)
+
+        menu_blit_y += menu_option_rect.height
 
 
 def main(args):
@@ -77,9 +114,6 @@ def start_game(screen):
     pic = cg_image_controller.get("start_game").convert()
     pic_rect = pic.get_rect()
 
-    renne_cursor = basic_image_controller.get("head_status").subsurface(
-        pygame.Rect(sfg.START_GAME.RENNE_CURSOR_RECT)).convert_alpha()
-
     screen_centerx = sfg.Screen.SIZE[0] / 2
     pic_rect.centerx = screen_centerx
     pic_rect.top = sfg.START_GAME.PICTURE_BLIT_Y
@@ -112,32 +146,13 @@ def start_game(screen):
                             return cfg.GameControl.QUIT
                     elif event.key == K_ESCAPE:
                         return cfg.GameControl.QUIT
-                    elif event.key in (sfg.UserKey.DOWN, K_DOWN):
-                        menu_index = min(len(sfg.START_GAME.MENU_LIST) - 1, menu_index + 1)
-                    elif event.key in (sfg.UserKey.UP, K_UP):
-                        menu_index = max(0, menu_index - 1)
 
-            menu_y = sfg.START_GAME.MENU_BLIT_Y
-            for i, menu_word in enumerate(sfg.START_GAME.MENU_LIST):
-                if i == menu_index:
-                    renne_cursor_rect = renne_cursor.get_rect()
-                    renne_cursor_rect.center = (screen_centerx - menu_option_rect.width / 2,
-                        menu_y + menu_option_rect.height / 2)
-                    screen.blit(renne_cursor, renne_cursor_rect)
+                    # 0 <= menu_index <= len(menu_list) - 1
+                    menu_index = select_menu(event.key, sfg.START_GAME.MENU_LIST, menu_index)
 
-                    m_size = sfg.START_GAME.MENU_ON_SIZE
-                    m_color = sfg.START_GAME.MENU_ON_COLOR
-
-                else:
-                    m_size = sfg.START_GAME.MENU_OFF_SIZE
-                    m_color = sfg.START_GAME.MENU_OFF_COLOR
-                
-                menu = pygame.font.SysFont("arial black", m_size).render(menu_word, True, m_color)
-                menu_rect = menu.get_rect()
-                menu_rect.center = (screen_centerx, menu_y + menu_option_rect.height / 2)
-                screen.blit(menu, menu_rect)
-
-                menu_y += menu_option_rect.height
+            render_menu(screen, menu_index, sfg.START_GAME.MENU_LIST, sfg.START_GAME.MENU_OPTION_RECT,
+                sfg.START_GAME.MENU_BLIT_Y, sfg.START_GAME.MENU_ON_SIZE, sfg.START_GAME.MENU_OFF_SIZE,
+                sfg.START_GAME.MENU_ON_COLOR, sfg.START_GAME.MENU_OFF_COLOR)
 
         pygame.display.flip()
 
@@ -218,6 +233,7 @@ def enter_chapter(screen, chapter):
 
     game_status = GameStatus(chapter, renne, enemies)
 
+    menu_index = 0
     running = True
     while running:
         for event in pygame.event.get(): 
@@ -226,12 +242,28 @@ def enter_chapter(screen, chapter):
 
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    return cfg.GameControl.QUIT
+                    #return cfg.GameControl.QUIT
+                    if game_status.status == cfg.GameStatus.IN_PROGRESS:
+                        game_status.status = cfg.GameStatus.PAUSE
+                        menu_index = 0
+                    elif game_status.status == cfg.GameStatus.PAUSE:
+                        game_status.status = cfg.GameStatus.IN_PROGRESS
+
                 if event.key == K_RETURN:
                     if game_status.status == cfg.GameStatus.HERO_WIN:
                         return cfg.GameControl.NEXT
                     elif game_status.status == cfg.GameStatus.HERO_LOSE:
                         return cfg.GameControl.AGAIN
+                    elif game_status.status == cfg.GameStatus.PAUSE:
+                        if sfg.Chapter.PAUSE_MENU_LIST[menu_index] == "CONTINUE":
+                            game_status.status = cfg.GameStatus.IN_PROGRESS
+                        elif sfg.Chapter.PAUSE_MENU_LIST[menu_index] == "MAIN":
+                            return cfg.GameControl.MAIN
+                        elif sfg.Chapter.PAUSE_MENU_LIST[menu_index] == "QUIT":
+                            return cfg.GameControl.QUIT
+
+                if game_status.status == cfg.GameStatus.PAUSE:
+                    menu_index = select_menu(event.key, sfg.Chapter.PAUSE_MENU_LIST, menu_index)
 
         pressed_keys = pygame.key.get_pressed()
         renne.event_handle(pressed_keys, external_event=game_status.status)
@@ -244,9 +276,9 @@ def enter_chapter(screen, chapter):
         time_passed = clock.tick(sfg.FPS)
         passed_seconds = time_passed / 1000.0
 
-        renne.update(passed_seconds)
+        renne.update(passed_seconds, external_event=game_status.status)
         for enemy in filter(lambda x: enemy_in_one_screen(renne, x), enemies):
-            enemy.update(passed_seconds)
+            enemy.update(passed_seconds, external_event=game_status.status)
 
         game_status.update()
 
@@ -257,6 +289,17 @@ def enter_chapter(screen, chapter):
 
         if COMMAND_DEBUG_MODE or sfg.DEBUG_MODE:
             debug_tools.all_model_display(camera, game_world, game_map)        
+
+        if game_status.status == cfg.GameStatus.PAUSE:
+            mask = pygame.Surface(sfg.Screen.SIZE).convert_alpha()
+            mask.fill(pygame.Color(0, 0, 0, 128))
+            screen.blit(mask, (0, 0))
+
+            # draw the pause menu
+            render_menu(screen, menu_index, sfg.Chapter.PAUSE_MENU_LIST, sfg.Chapter.PAUSE_MENU_OPTION_RECT,
+                sfg.Chapter.PAUSE_MENU_BLIT_Y, sfg.Chapter.PAUSE_MENU_ON_SIZE, sfg.Chapter.PAUSE_MENU_OFF_SIZE,
+                sfg.Chapter.PAUSE_MENU_ON_COLOR, sfg.Chapter.PAUSE_MENU_OFF_COLOR)
+
 
         pygame.display.flip()
 
