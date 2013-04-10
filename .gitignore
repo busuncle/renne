@@ -166,6 +166,6 @@ pip-log.txt
 *~
 
 # project custom
-res
+.*.png
 build.py
 _test.py
