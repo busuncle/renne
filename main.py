@@ -87,7 +87,7 @@ def start_game(screen):
     clock = pygame.time.Clock()
     menu_index = 0
     pic_alpha = 0 # picture fades in, alpha changes from 0 to 255
-    fade_in_delta = 256 / sfg.START_GAME.PICTURE_FADEIN_TIME
+    fade_in_delta = 256 / sfg.START_GAME.PICTURE_FADE_IN_TIME
 
     menu_option_rect = pygame.Rect(sfg.START_GAME.MENU_OPTION_RECT)
     while True:
@@ -106,9 +106,9 @@ def start_game(screen):
                     return cfg.GameControl.QUIT
                 if event.type == KEYDOWN:
                     if event.key == K_RETURN:
-                        if menu_index == sfg.START_GAME.INDEX_START:
+                        if sfg.START_GAME.MENU_LIST[menu_index] == "START":
                             return cfg.GameControl.NEXT
-                        elif menu_index == sfg.START_GAME.INDEX_QUIT:
+                        elif sfg.START_GAME.MENU_LIST[menu_index] == "QUIT":
                             return cfg.GameControl.QUIT
                     elif event.key == K_ESCAPE:
                         return cfg.GameControl.QUIT

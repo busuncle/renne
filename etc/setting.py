@@ -300,24 +300,29 @@ class Chapter(object):
     LOADING_WORD = pygame.font.SysFont("arial black", 28).render("now loading ...", True, pygame.Color("white"))
     LOADING_WORD_BLIT_POS = (760, 700)
 
+    PAUSE_MENU_LIST = ["CONTINUE", "MAIN", "QUIT"]
+    PAUSE_MENU_OPTION_RECT = (0, 0, 192, 32)
+    PAUSE_MENU_BLIT_Y = 320
+    PAUSE_MENU_ON_SIZE = 32
+    PAUSE_MENU_OFF_SIZE = 28
+    PAUSE_MENU_ON_COLOR = pygame.Color("white")
+    PAUSE_MENU_OFF_COLOR = pygame.Color("gray")
+
 
 
 class START_GAME(object):
-    PICTURE_FADEIN_TIME = 2 # in second unit, show up the picture
+    PICTURE_FADE_IN_TIME = 2 # in second unit, show up the picture
+    PICTURE_BLIT_Y = 30
+
     MENU_ON_COLOR = pygame.Color("white")
     MENU_OFF_COLOR = pygame.Color("gray")
     MENU_ON_SIZE = 48
     MENU_OFF_SIZE = 32
     MENU_LIST = ["START", "QUIT"]
     MENU_OPTION_RECT = (0, 0, 256, 48)
-    PICTURE_BLIT_Y = 30
     MENU_BLIT_Y = 550
 
     RENNE_CURSOR_RECT = (224, 64, 32, 32)
-
-    # according to MENU_LIST
-    INDEX_START = 0
-    INDEX_QUIT = 1
 
 
 

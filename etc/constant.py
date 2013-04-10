@@ -111,6 +111,7 @@ class GameStatus(object):
     IN_PROGRESS = 1
     HERO_WIN = 2
     HERO_LOSE = 3
+    PAUSE = 4
 
 
 class GameControl(object):
