@@ -58,6 +58,12 @@ class GameSprite(pygame.sprite.DirtySprite):
         return False
 
 
+    def is_collide_static_objects(self):
+        for v in self.static_objects:
+            if v.is_block and self.area.colliderect(v.area):
+                return True
+
+
     def update(self):
         pass
 
@@ -135,17 +141,9 @@ class Renne(GameSprite):
                 old_coord = getattr(self.pos, coord)
                 setattr(self.pos, coord, old_coord + key_vec_coord * speed * passed_seconds)
                 self.area.center = self.pos("xy")
-                if self.is_collide() or self.is_collide_map_boundry():
+                if self.is_collide_static_objects() or self.is_collide_map_boundry():
                     setattr(self.pos, coord, old_coord)
                     self.area.center = self.pos("xy")
-
-
-    def is_collide(self):
-        for v in self.static_objects:
-            if v.is_block and self.area.colliderect(v.area):
-                return True
-
-        return False
 
 
     def stand(self, passed_seconds):
@@ -301,14 +299,6 @@ class Enemy(GameSprite):
             self.pos = old_pos
             self.area.center = self.pos("xy")
             self.brain.interrupt = True
-
-
-    def is_collide_static_objects(self):
-        for v in self.static_objects:
-            if v.is_block and self.area.colliderect(v.area):
-                return True
-
-        return False
 
 
     def stand(self, passed_seconds):
