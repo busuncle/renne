@@ -28,10 +28,26 @@ def draw_waypoins(camera, waypoints):
         pygame.draw.circle(camera.screen, pygame.Color("red"), (ix, iy), 2)
 
 
-def all_model_display(camera, game_world, game_map):
-    draw_waypoins(camera, game_map.waypoints)
-    for sp in game_world.sprites():
-        #draw_area(camera, sp)
-        #draw_pos(camera, sp)
-        pass
 
+def draw_fps(camera, clock):
+    fps = int(clock.get_fps())
+    w = "%s fps" % fps
+    info = pygame.font.SysFont("arial", 16).render(w, True, pygame.Color("red"))
+    r = info.get_rect()
+    r.right = camera.rect.right - 5
+    r.centery = camera.rect.centery
+    camera.screen.blit(info, (r.left - camera.rect.left, r.top - camera.rect.top))
+
+
+
+def run_debug_by_option_list(option_list, camera, game_world, game_map, clock):
+    if "z" in option_list:
+        draw_waypoins(camera, game_map.waypoints)
+    for sp in game_world.sprites():
+        if "a" in option_list:
+            draw_area(camera, sp)
+        if "p" in option_list:
+            draw_pos(camera, sp)
+        if "f" in option_list:
+            draw_fps(camera, clock)
+        
