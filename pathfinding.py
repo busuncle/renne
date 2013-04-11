@@ -138,7 +138,7 @@ class Astar(object):
             if len(close_list) > self.MAX_SEARCHING_STEP:
                 # pruning, reaching the max search step, return the most likely path
                 # avoiding the exhaust of cpu
-                print "impossible: %s" % len(close_list)
+                #print "impossible: %s" % len(close_list)
                 path = self.gen_path(cur_node)
                 return path
 
@@ -146,7 +146,7 @@ class Astar(object):
             # a value little equal than a reach_delta is regarded as reaching the target
             if abs(cur_x - target.x) + abs(cur_y - target.y) < reach_delta:
                 path = self.gen_path(cur_node)
-                print "astar close list length: %s" % len(close_list)
+                #print "astar close list length: %s" % len(close_list)
                 return path
 
             for vec, cost in self.direct_vec_cost.iteritems():

@@ -22,8 +22,7 @@ class Attacker(object):
         self.hit_list.add(id(enemy))
         damage = self.sprite.atk - enemy.dfs
         enemy.attack_receiver.recv(self.sprite, damage)
-        print "%s hit %s at %s damage!%s hp: %s" % \
-            (self.sprite.name, enemy.name, damage, enemy.name, enemy.hp)
+        #print "%s hit %s at %s damage!%s hp: %s" % (self.sprite.name, enemy.name, damage, enemy.name, enemy.hp)
 
 
     def finish_attack(self):

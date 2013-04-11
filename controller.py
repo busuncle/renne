@@ -155,14 +155,14 @@ class SpriteStay(State):
             # discover a target
             distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
             if distance_to_target <= sp.setting.ATTACK_RANGE:
-                print "to attack"
+                #print "to attack"
                 return cfg.SpriteState.OFFENCE
 
             return cfg.SpriteState.CHASE
 
         if time() - self.enter_time >= self.stay_time:
             if happen(self.ai.STAY_TO_PATROL_PROB):
-                print "stay to patrol"
+                #print "stay to patrol"
                 return cfg.SpriteState.PATROL
             else:
                 return cfg.SpriteState.STAY
@@ -202,10 +202,10 @@ class SpritePatrol(State):
         if sp.brain.target is not None:
             distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
             if distance_to_target <= sp.setting.ATTACK_RANGE:
-                print "patrol to attack"
+                #print "patrol to attack"
                 return cfg.SpriteState.OFFENCE
 
-            print "patrol to chase"
+            #print "patrol to chase"
             return cfg.SpriteState.CHASE
 
         if sp.brain.interrupt:
@@ -271,17 +271,17 @@ class SpriteChase(State):
         distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
 
         if distance_to_target <= sp.setting.ATTACK_RANGE:
-            print "to attack"
+            #print "to attack"
             return cfg.SpriteState.OFFENCE
 
         elif sp.setting.ATTACK_RANGE < distance_to_target <= sp.setting.CHASE_RANGE:
             target_move = sp.brain.destination.get_distance_to(sp.brain.target.pos)
             if target_move > self.target_move_threshold or sp.steerer.is_end:
-                "print chase to chase"
+                #print "chase to chase"
                 return cfg.SpriteState.CHASE
         else:
             # lose target
-            print "lose target"
+            #print "lose target"
             sp.brain.target = None
             sp.set_emotion(cfg.SpriteEmotion.CHAOS)
             return cfg.SpriteState.STAY
