@@ -40,9 +40,8 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.hp = hp
         self.atk = atk
         self.dfs = dfs
-        #self.status = cfg.SpriteStatus.HEALTHY
         # a chaos dict that holding many kinds of status, i don't want many attributes, so i use it
-        self.status = {"hp": cfg.SpriteStatus.HEALTHY}
+        self.status = {"hp": cfg.SpriteStatus.HEALTHY, "under_attack": False}
         self.pos = Vector2(pos)
         self.direction = direction
 
@@ -86,7 +85,7 @@ class GameSprite(pygame.sprite.DirtySprite):
         image_blit_pos = (rect.left - camera.rect.left, rect.top - camera.rect.top)
         shadow_blit_pos = (shadow_rect.left - camera.rect.left, shadow_rect.top - camera.rect.top)
 
-        if self.attacker.under_attack:
+        if self.status["under_attack"]:
             # add mix color to the image for simulating a under-attack effect, like a blink body, pretty good
             self.attacker.was_hit_tick()
             image_mix = image.copy()
@@ -392,7 +391,7 @@ class Enemy(GameSprite):
                 # user pause the game, don't update animation
                 return
 
-        if not self.attacker.under_attack and self.status["hp"] == cfg.SpriteStatus.DIE:
+        if not self.status["under_attack"] and self.status["hp"] == cfg.SpriteStatus.DIE:
             return
 
         if self.action == cfg.EnemyAction.ATTACK:

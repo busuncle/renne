@@ -17,7 +17,6 @@ class Attacker(object):
         self.sprite = sprite
         # a list containing enemies that attacked by the sprite, it have to be cleaned after finsh the attack
         self.hit_list = set()
-        self.under_attack = False
         self.enable_reaction = False if sprite.setting.NAME == "Renne" else True
         self.was_hit_begin_time = None
 
@@ -41,8 +40,8 @@ class Attacker(object):
         sp.hp = max(sp.hp - damage, 0)
 
         sp.status["hp"] = self.cal_sprite_status(sp.hp, sp.setting.HP)
+        sp.status["under_attack"] = True
         self.was_hit_begin_time = time()
-        self.under_attack = True
 
         if self.enable_reaction:
             angry_hp_threshold = sp.setting.HP * sp.brain.ai.ANGRY_HP_RATIO
@@ -56,7 +55,7 @@ class Attacker(object):
 
     def was_hit_tick(self):
         if time() - self.was_hit_begin_time > 0.05:
-            self.under_attack = False
+            self.sprite.status["under_attack"] = False
 
 
     def cal_sprite_status(self, current_hp, full_hp):
