@@ -69,8 +69,8 @@ def change_map_setting(map_setting, game_world):
 def set_selected_object_follow_mouse(map_pos_for_mouse, selected_object):
     selected_object.area.center = map_pos_for_mouse
     selected_object.pos.x, selected_object.pos.y = map_pos_for_mouse
-    if isinstance(selected_object, GameStaticObject):
-        selected_object.adjust_rect()
+    selected_object.adjust_rect()
+        
 
 
 def mouse_object_toggle(selected_object, game_world):

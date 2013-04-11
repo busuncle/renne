@@ -104,7 +104,6 @@ class GameWorld(pygame.sprite.LayeredDirty):
 
 
     def draw(self, camera):
-        #objs = sorted(self.sprites(), key=lambda sp: sp.pos.y)
         objs = sorted(self.yield_objects_in_screen(camera), key=lambda sp: sp.pos.y)
         for v in objs:
             v.draw(camera)

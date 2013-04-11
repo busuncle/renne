@@ -66,20 +66,27 @@ class GameSprite(pygame.sprite.DirtySprite):
     def update(self):
         pass
 
-
-    def draw_image(self, camera):
+    def adjust_rect(self):
         # for drawing to the screen, 
         # y-axis should be a half of pos[1] and considering the distance from pos to image center
+        # both rect and shadow_rect
+        rect = self.animation.rect
+        rect.center = (self.pos.x, self.pos.y / 2 - self.setting.D_COORD_TO_FOOT)
+        shadow_rect = self.animation.shadow_rect
+        shadow_rect.center = (rect.center[0], rect.center[1] + self.setting.D_COORD_TO_SHADOW)
+
+
+    def draw_image(self, camera):
+        self.adjust_rect()
+
         image = self.animation.image
         if image is None:
             return 
 
-        rect = self.animation.rect
-        rect.center = (self.pos.x, self.pos.y / 2 - self.setting.D_COORD_TO_FOOT)
-
         shadow_image = self.animation.shadow_image
+
+        rect = self.animation.rect
         shadow_rect = self.animation.shadow_rect
-        shadow_rect.center = (rect.center[0], rect.center[1] + self.setting.D_COORD_TO_SHADOW)
 
         # don't modify rect itself, but pass the relative topleft point to the blit function
         image_blit_pos = (rect.left - camera.rect.left, rect.top - camera.rect.top)
