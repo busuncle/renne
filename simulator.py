@@ -22,9 +22,12 @@ class Attacker(object):
 
 
     def hit(self, other):
+        # this sprite hit other, 
+        # and we should call "other.was_hit" to get "other was hit by sprite"
         self.hit_list.add(id(other))
         damage = self.sprite.atk - other.dfs
-        other.attack_receiver.recv(self.sprite, damage)
+        #other.attack_receiver.recv(self.sprite, damage)
+        other.was_hit(self.sprite, damage)
         #print "%s hit %s at %s damage!%s hp: %s" % (self.sprite.name, other.name, damage, other.name, other.hp)
 
 

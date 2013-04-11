@@ -47,7 +47,7 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.action = cfg.SpriteAction.STAND
         self.key_vec = Vector2() # a normal vector represents the direction
 
-        self.attack_receiver = simulator.AttackReceiver(self)
+        #self.attack_receiver = simulator.AttackReceiver(self)
         
 
     def is_collide_map_boundry(self):
@@ -86,9 +86,11 @@ class GameSprite(pygame.sprite.DirtySprite):
         image_blit_pos = (rect.left - camera.rect.left, rect.top - camera.rect.top)
         shadow_blit_pos = (shadow_rect.left - camera.rect.left, shadow_rect.top - camera.rect.top)
 
-        if self.attack_receiver.under_attack:
+        #if self.attack_receiver.under_attack:
+        if self.attacker.under_attack:
             # add mix color to the image for simulating a under-attack effect, like a blink body, pretty good
-            self.attack_receiver.tick()
+            #self.attack_receiver.tick()
+            self.attacker.was_hit_tick()
             image_mix = image.copy()
             image_mix.fill(pygame.Color("gray"), special_flags=BLEND_ADD)
             image = image_mix
@@ -392,7 +394,8 @@ class Enemy(GameSprite):
                 # user pause the game, don't update animation
                 return
 
-        if not self.attack_receiver.under_attack and self.status == cfg.SpriteStatus.DIE:
+        #if not self.attack_receiver.under_attack and self.status == cfg.SpriteStatus.DIE:
+        if not self.attacker.under_attack and self.status == cfg.SpriteStatus.DIE:
             return
 
         if self.action == cfg.EnemyAction.ATTACK:
