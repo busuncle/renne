@@ -247,6 +247,12 @@ class EmotionImage(object):
     }
 
 
+class SpriteStatus(object):
+    HEALTHY_RATIO_FLOOR = 2.0 / 3
+    WOUNDED_RATIO_FLOOR = 1.0 / 3
+    DANGER_RATIO_FLOOR = 0
+
+
 
 class GameStatus(object):
     NUMBER_RECT = (0, 280, 340, 60)

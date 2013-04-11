@@ -16,13 +16,51 @@ class Attacker(object):
         self.sprite = sprite
         # a list containing enemies that attacked by the sprite, it have to be cleaned after finsh the attack
         self.hit_list = set()
+        self.under_attack = False
+        self.enable_reaction = False if sprite.setting.NAME == "Renne" else True
+        self.was_hit_begin_time = None
 
 
-    def hit(self, enemy):
-        self.hit_list.add(id(enemy))
-        damage = self.sprite.atk - enemy.dfs
-        enemy.attack_receiver.recv(self.sprite, damage)
-        #print "%s hit %s at %s damage!%s hp: %s" % (self.sprite.name, enemy.name, damage, enemy.name, enemy.hp)
+    def hit(self, other):
+        self.hit_list.add(id(other))
+        damage = self.sprite.atk - other.dfs
+        other.attack_receiver.recv(self.sprite, damage)
+        #print "%s hit %s at %s damage!%s hp: %s" % (self.sprite.name, other.name, damage, other.name, other.hp)
+
+
+    def was_hit(self, other, damage):
+        # sprite was hit by someone else
+        sp = self.sprite
+        sp.hp = max(sp.hp - damage, 0)
+
+        sp.status = self.cal_sprite_status(sp.hp, sp.setting.HP)
+        self.was_hit_begin_time = time()
+        self.under_attack = True
+
+        if self.enable_reaction:
+            if sp.hp + damage > sp.setting.HP * sp.brain.ai.ANGRY_HP_RATIO
+                # this damage make the sprite's hp drop down to below-half
+                sp.set_emotion(cfg.SpriteEmotion.ANGRY)
+        
+            if sp.brain.target is None:
+                sp.brain.target = other
+
+
+    def was_hit_tick(self):
+        if time() - self.was_hit_begin_time > 0.05:
+            self.under_attack = False
+
+
+    def cal_sprite_status(self, current_hp, full_hp):
+        # calculate the sprite status according the current hp and full hp
+        if current_hp > full_hp * sfg.SpriteStatus.HEALTHY_RATIO_FLOOR:
+            return cfg.SpriteStatus.HEALTHY
+        elif current_hp > full_hp * sfg.SpriteStatus.WOUNDED_RATIO_FLOOR:
+            return cfg.SpriteStatus.WOUNDED
+        elif current_hp > full_hp * sfg.SpriteStatus.DANGER_RATIO_FLOOR:
+            return cfg.SpriteStatus.DANGER
+        else:
+            return cfg.SpriteStatus.DIE
 
 
     def finish_attack(self):
