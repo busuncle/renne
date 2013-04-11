@@ -26,7 +26,7 @@ class Attacker(object):
 
 
     def finish_attack(self):
-        pass
+        self.hit_list.clear()
 
 
 
@@ -110,11 +110,6 @@ class AngleAttacker(Attacker):
         cos_val = cos_for_vec(direct_vec, vec_to_target)
         if self.attack_range + target.setting.RADIUS > vec_to_target.get_length() and cos_val > self.cos_min:
             self.hit(target)
-
-
-    def finish_attack(self):
-        self.hit_list.clear()
-
 
 
 
