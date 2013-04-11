@@ -43,11 +43,12 @@ def draw_fps(camera, clock):
 def run_debug_by_option_list(option_list, camera, game_world, game_map, clock):
     if "z" in option_list:
         draw_waypoins(camera, game_map.waypoints)
-    for sp in game_world.sprites():
-        if "a" in option_list:
-            draw_area(camera, sp)
-        if "p" in option_list:
-            draw_pos(camera, sp)
-        if "f" in option_list:
-            draw_fps(camera, clock)
+    if "f" in option_list:
+        draw_fps(camera, clock)
+    if "a" in option_list or "p" in option_list:
+        for sp in game_world.sprites():
+            if "a" in option_list:
+                draw_area(camera, sp)
+            if "p" in option_list:
+                draw_pos(camera, sp)
         
