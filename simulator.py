@@ -1,5 +1,6 @@
 from base.util import LineSegment, line_segment_intersect_with_rect, cos_for_vec, manhattan_distance
 import etc.constant as cfg
+import etc.setting as sfg
 import math
 from math import pow, radians, sqrt, tan, cos
 from time import time
@@ -21,13 +22,16 @@ class Attacker(object):
         self.was_hit_begin_time = None
 
 
+    def run(self):
+        pass
+
+
     def hit(self, other):
         # this sprite hit other, 
-        # and we should call "other.was_hit" to get "other was hit by sprite"
+        # and we should call "other.attacker.was_hit" to get "other was hit by sprite"
         self.hit_list.add(id(other))
         damage = self.sprite.atk - other.dfs
-        #other.attack_receiver.recv(self.sprite, damage)
-        other.was_hit(self.sprite, damage)
+        other.attacker.was_hit(self.sprite, damage)
         #print "%s hit %s at %s damage!%s hp: %s" % (self.sprite.name, other.name, damage, other.name, other.hp)
 
 
@@ -41,7 +45,8 @@ class Attacker(object):
         self.under_attack = True
 
         if self.enable_reaction:
-            if sp.hp + damage > sp.setting.HP * sp.brain.ai.ANGRY_HP_RATIO
+            angry_hp_threshold = sp.setting.HP * sp.brain.ai.ANGRY_HP_RATIO
+            if sp.hp < angry_hp_threshold and sp.hp + damage >= angry_hp_threshold:
                 # this damage make the sprite's hp drop down to below-half
                 sp.set_emotion(cfg.SpriteEmotion.ANGRY)
         
@@ -66,58 +71,8 @@ class Attacker(object):
             return cfg.SpriteStatus.DIE
 
 
-    def finish_attack(self):
+    def finish(self):
         self.hit_list.clear()
-
-
-
-class AttackReceiver(object):
-    """
-    receive an attack, tell the sprite to do some reaction
-    """
-    
-    def __init__(self, sprite):
-        self.sprite = sprite
-        self.under_attack = False
-
-
-    def cal_sprite_status(self, current_hp, full_hp):
-        # calculate the sprite status according the current hp and full hp
-        if current_hp >= full_hp * 2.0 / 3:
-            return cfg.SpriteStatus.HEALTHY
-        elif full_hp / 3.0 <= current_hp < full_hp * 2.0 / 3:
-            return cfg.SpriteStatus.WOUNDED
-        elif 0 < current_hp < full_hp / 3.0:
-            return cfg.SpriteStatus.DANGER
-        else:
-            return cfg.SpriteStatus.DIE
-
-
-    def recv(self, who, damage):
-        old_hp = self.sprite.hp
-        self.sprite.hp = max(old_hp - damage, 0)
-
-        self.sprite.status = self.cal_sprite_status(self.sprite.hp, self.sprite.setting.HP)
-        self.begin_time = time()
-        self.under_attack = True
-
-        if not hasattr(self.sprite, "brain"):
-            # only npc has brain 
-            return
-
-        if old_hp >= self.sprite.setting.HP / 2.0 and self.sprite.hp < self.sprite.setting.HP / 2.0:
-            # set angry to sprite if the damage make hp below half of full
-            self.sprite.set_emotion(cfg.SpriteEmotion.ANGRY)
-
-        if self.sprite.brain.target is None:
-            # under attack when not having the target
-            self.sprite.brain.target = who
-
-
-    def tick(self):
-        # an emprivical value for blinking the body
-        if time() - self.begin_time > 0.04:
-            self.under_attack = False
 
 
 
@@ -138,7 +93,7 @@ class AngleAttacker(Attacker):
         self.cos_min = cos(radians(angle))
 
 
-    def do_attack(self, target, current_frame_add):
+    def run(self, target, current_frame_add):
         sp = self.sprite
         if int(current_frame_add) not in self.cal_frames:
             return
