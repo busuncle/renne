@@ -31,6 +31,9 @@ def draw_waypoins(camera, waypoints):
 
 def draw_fps(camera, clock):
     fps = int(clock.get_fps())
+    if fps < 50:
+        print "fps < 50, only: %s" % fps
+
     w = "%s fps" % fps
     info = pygame.font.SysFont("arial", 16).render(w, True, pygame.Color("red"))
     r = info.get_rect()
@@ -45,10 +48,10 @@ def run_debug_by_option_list(option_list, camera, game_world, game_map, clock):
         draw_waypoins(camera, game_map.waypoints)
     if "f" in option_list:
         draw_fps(camera, clock)
-    if "a" in option_list or "p" in option_list:
+    if "a" in option_list:
         for sp in game_world.sprites():
-            if "a" in option_list:
-                draw_area(camera, sp)
-            if "p" in option_list:
-                draw_pos(camera, sp)
+            draw_area(camera, sp)
+    if "p" in option_list:
+        for sp in game_world.sprites():
+            draw_pos(camera, sp)
         
