@@ -40,7 +40,7 @@ class Attacker(object):
         sp = self.sprite
         sp.hp = max(sp.hp - damage, 0)
 
-        sp.status = self.cal_sprite_status(sp.hp, sp.setting.HP)
+        sp.status["hp"] = self.cal_sprite_status(sp.hp, sp.setting.HP)
         self.was_hit_begin_time = time()
         self.under_attack = True
 

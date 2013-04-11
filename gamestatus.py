@@ -68,7 +68,7 @@ class GameStatus(object):
 
 
     def update(self):
-        if self.hero.status == cfg.SpriteStatus.DIE:
+        if self.hero.status["hp"] == cfg.SpriteStatus.DIE:
             # hero is dead, game over
             self.status = cfg.GameStatus.HERO_LOSE
             return
@@ -79,7 +79,7 @@ class GameStatus(object):
 
         remove_list = []
         for em in self.enemies:
-            if em.status == cfg.SpriteStatus.DIE:
+            if em.status["hp"] == cfg.SpriteStatus.DIE:
                 can_be_removed = em.animation.death_tick()
                 if can_be_removed:
                     remove_list.append(em)
@@ -98,9 +98,9 @@ class GameStatus(object):
 
 
     def draw_enemy_hp_bar(self, enemy, camera):
-        hp_color = self.sprite_hp_colors[enemy.status]
+        hp_color = self.sprite_hp_colors[enemy.status["hp"]]
         hp_bar = self.make_bar(sfg.GameStatus.ENEMY_HP_BAR_SIZE, enemy.hp, enemy.setting.HP,
-            self.sprite_hp_colors[enemy.status], sfg.GameStatus.SPRITE_BAR_BG_COLOR)
+            self.sprite_hp_colors[enemy.status["hp"]], sfg.GameStatus.SPRITE_BAR_BG_COLOR)
         r = hp_bar.get_rect() 
         r.center = (enemy.pos.x, enemy.pos.y / 2 - enemy.setting.HEIGHT)
         r.top -= camera.rect.top
@@ -126,11 +126,11 @@ class GameStatus(object):
         status_panel.blit(self.words["hero_sp"], sfg.GameStatus.HERO_SP_TITLE_BLIT_POS)
 
         # Renne's head, showing her status
-        status_panel.blit(self.get_current_head(self.hero.status), sfg.GameStatus.HERO_HEAD_BLIT_POS)
+        status_panel.blit(self.get_current_head(self.hero.status["hp"]), sfg.GameStatus.HERO_HEAD_BLIT_POS)
 
         # draw the hp bar for Renne
         hp_bar = self.make_bar(sfg.GameStatus.HERO_ALL_BAR_SIZE, self.hero.hp, self.hero.setting.HP,
-            self.sprite_hp_colors[self.hero.status], sfg.GameStatus.SPRITE_BAR_BG_COLOR)
+            self.sprite_hp_colors[self.hero.status["hp"]], sfg.GameStatus.SPRITE_BAR_BG_COLOR)
         status_panel.blit(hp_bar, sfg.GameStatus.HERO_HP_BLIT_POS)
 
         # draw the sp bar for Renne

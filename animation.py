@@ -37,7 +37,7 @@ class SpriteAnimator(object):
 
 
     def death_tick(self):
-        assert(self.sprite.status == cfg.SpriteStatus.DIE)
+        assert(self.sprite.status["hp"] == cfg.SpriteStatus.DIE)
 
         if self.die_begin_time is None:
             self.die_image = self.image.copy()

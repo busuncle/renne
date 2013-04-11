@@ -40,7 +40,9 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.hp = hp
         self.atk = atk
         self.dfs = dfs
-        self.status = cfg.SpriteStatus.HEALTHY
+        #self.status = cfg.SpriteStatus.HEALTHY
+        # a chaos dict that holding many kinds of status, i don't want many attributes, so i use it
+        self.status = {"hp": cfg.SpriteStatus.HEALTHY}
         self.pos = Vector2(pos)
         self.direction = direction
 
@@ -355,7 +357,7 @@ class Enemy(GameSprite):
                 # do nothing
                 return
 
-        if self.status == cfg.SpriteStatus.DIE:
+        if self.status["hp"] == cfg.SpriteStatus.DIE:
             return
 
         self.brain.think()
@@ -390,7 +392,7 @@ class Enemy(GameSprite):
                 # user pause the game, don't update animation
                 return
 
-        if not self.attacker.under_attack and self.status == cfg.SpriteStatus.DIE:
+        if not self.attacker.under_attack and self.status["hp"] == cfg.SpriteStatus.DIE:
             return
 
         if self.action == cfg.EnemyAction.ATTACK:
