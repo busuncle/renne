@@ -59,13 +59,17 @@ def render_menu(screen, menu_index, menu_list, menu_option_rect_setting, menu_bl
 
 
 def main(args):
+    # a Renne singleton goes through the whole game
+    renne = Renne(sfg.Renne, (0, 0), 0)
+
     if args.chapter is not None:
+        # it's for debuging, only run 1 part and return immediately
         if args.chapter == 0:
             start_game(screen)
         elif args.chapter == -1:
             end_game(screen)
         else:
-            enter_chapter(screen, args.chapter)
+            enter_chapter(screen, args.chapter, renne)
         return
 
     i = 0
@@ -76,10 +80,12 @@ def main(args):
         else:
             chapter = sfg.GameMap.CHAPTERS[i]
             loading_chapter_picture(screen)
-            status = enter_chapter(screen, chapter)
+            status = enter_chapter(screen, chapter, renne)
+            # TODO: auto save here
 
         if status == cfg.GameControl.NEXT:
             i += 1
+            # TODO: recover renne's status(eg. hp, sp) here
         elif status == cfg.GameControl.AGAIN:
             continue
         elif status == cfg.GameControl.MAIN:
@@ -196,7 +202,7 @@ def end_game(screen):
 
 
 
-def enter_chapter(screen, chapter):
+def enter_chapter(screen, chapter, renne):
     clock = pygame.time.Clock()
     map_setting = util.load_map_setting(chapter)
 
@@ -208,7 +214,8 @@ def enter_chapter(screen, chapter):
     game_map = GameMap(chapter, map_setting["size"], map_setting["tiles"])
 
     # load hero
-    renne = Renne(sfg.Renne, *map_setting["hero"])
+    #renne = Renne(sfg.Renne, *map_setting["hero"])
+    renne.place(*map_setting["hero"])
     renne.activate(allsprites, enemies, static_objects, game_map)
 
     # load monsters

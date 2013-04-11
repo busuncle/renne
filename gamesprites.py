@@ -128,6 +128,12 @@ class Renne(GameSprite):
             cal_frames=self.setting.ATTACK_CAL_FRAMES)
 
 
+    def place(self, pos, direction):
+        # place renne at some position, facing some direction
+        self.pos = Vector2(pos)
+        self.direction = direction
+
+
     def draw(self, camera):
         self.draw_image(camera)
 
