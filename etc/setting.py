@@ -316,7 +316,7 @@ class Chapter(object):
 
 
 
-class START_GAME(object):
+class StartGame(object):
     PICTURE_FADE_IN_TIME = 2 # in second unit, show up the picture
     PICTURE_BLIT_Y = 30
 
@@ -332,7 +332,7 @@ class START_GAME(object):
 
 
 
-class END_GAME(object):
+class EndGame(object):
     ENDING_FADEIN_TIME = 3
     BUSUNCLE_WORKS = pygame.font.SysFont("arial black", 32).render(
         "Busuncle's works", True, pygame.Color("white"))

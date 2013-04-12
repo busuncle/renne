@@ -35,7 +35,7 @@ def select_menu(key, menu_list, menu_index):
 def render_menu(screen, menu_index, menu_list, menu_option_rect_setting, menu_blit_y,
         size_on, size_off, color_on, color_off):
     renne_cursor = basic_image_controller.get("head_status").subsurface(
-        pygame.Rect(sfg.START_GAME.RENNE_CURSOR_RECT)).convert_alpha()
+        pygame.Rect(sfg.StartGame.RENNE_CURSOR_RECT)).convert_alpha()
     menu_option_rect = pygame.Rect(menu_option_rect_setting)
     screen_centerx = sfg.Screen.SIZE[0] / 2
     for i, menu_word in enumerate(menu_list):
@@ -124,14 +124,14 @@ def start_game(screen):
 
     screen_centerx = sfg.Screen.SIZE[0] / 2
     pic_rect.centerx = screen_centerx
-    pic_rect.top = sfg.START_GAME.PICTURE_BLIT_Y
+    pic_rect.top = sfg.StartGame.PICTURE_BLIT_Y
 
     clock = pygame.time.Clock()
     menu_index = 0
     pic_alpha = 0 # picture fades in, alpha changes from 0 to 255
-    fade_in_delta = 256 / sfg.START_GAME.PICTURE_FADE_IN_TIME
+    fade_in_delta = 256 / sfg.StartGame.PICTURE_FADE_IN_TIME
 
-    menu_option_rect = pygame.Rect(sfg.START_GAME.MENU_OPTION_RECT)
+    menu_option_rect = pygame.Rect(sfg.StartGame.MENU_OPTION_RECT)
     while True:
         screen.fill(pygame.Color("black"))
 
@@ -148,19 +148,19 @@ def start_game(screen):
                     return cfg.GameControl.QUIT
                 if event.type == KEYDOWN:
                     if event.key == K_RETURN:
-                        if sfg.START_GAME.MENU_LIST[menu_index] == "START":
+                        if sfg.StartGame.MENU_LIST[menu_index] == "START":
                             return cfg.GameControl.NEXT
-                        elif sfg.START_GAME.MENU_LIST[menu_index] == "QUIT":
+                        elif sfg.StartGame.MENU_LIST[menu_index] == "QUIT":
                             return cfg.GameControl.QUIT
                     elif event.key == K_ESCAPE:
                         return cfg.GameControl.QUIT
 
                     # 0 <= menu_index <= len(menu_list) - 1
-                    menu_index = select_menu(event.key, sfg.START_GAME.MENU_LIST, menu_index)
+                    menu_index = select_menu(event.key, sfg.StartGame.MENU_LIST, menu_index)
 
-            render_menu(screen, menu_index, sfg.START_GAME.MENU_LIST, sfg.START_GAME.MENU_OPTION_RECT,
-                sfg.START_GAME.MENU_BLIT_Y, sfg.START_GAME.MENU_ON_SIZE, sfg.START_GAME.MENU_OFF_SIZE,
-                sfg.START_GAME.MENU_ON_COLOR, sfg.START_GAME.MENU_OFF_COLOR)
+            render_menu(screen, menu_index, sfg.StartGame.MENU_LIST, sfg.StartGame.MENU_OPTION_RECT,
+                sfg.StartGame.MENU_BLIT_Y, sfg.StartGame.MENU_ON_SIZE, sfg.StartGame.MENU_OFF_SIZE,
+                sfg.StartGame.MENU_ON_COLOR, sfg.StartGame.MENU_OFF_COLOR)
 
         pygame.display.flip()
 
@@ -172,15 +172,15 @@ def end_game(screen):
     renne_image = pygame.image.load("renne.png").convert_alpha()
     renne_image_rect = renne_image.get_rect()
     renne_image_rect.centerx = screen_centerx
-    renne_image_rect.centery = sfg.END_GAME.RENNE_IMAGE_BLIT_Y
+    renne_image_rect.centery = sfg.EndGame.RENNE_IMAGE_BLIT_Y
 
-    word = sfg.END_GAME.BUSUNCLE_WORKS
+    word = sfg.EndGame.BUSUNCLE_WORKS
     word_rect = word.get_rect()
     word_rect.centerx = screen_centerx
-    word_rect.centery = sfg.END_GAME.BUSUNCLE_WORKS_BLIT_Y
+    word_rect.centery = sfg.EndGame.BUSUNCLE_WORKS_BLIT_Y
 
     mask_alpha = 255
-    fade_in_delta = 256 / sfg.END_GAME.ENDING_FADEIN_TIME
+    fade_in_delta = 256 / sfg.EndGame.ENDING_FADEIN_TIME
     mask = pygame.Surface(sfg.Screen.SIZE).convert_alpha()
 
     clock = pygame.time.Clock()
