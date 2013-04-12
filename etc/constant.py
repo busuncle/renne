@@ -119,3 +119,19 @@ class GameControl(object):
     AGAIN = 1
     MAIN = 2
     QUIT = 3
+
+
+class Achievement(object):
+    DOUBLE_HIT = 1
+    TRIBLE_HIT = 2
+    # a japanese word, here it's used to descript enemies is like yakitori,
+    # and is cook by hero
+    YAKITORI = 3    
+
+    DOUBLE_KILL = 11
+    TRIBLE_KILL = 12
+    ULTRA_KILL = 13
+    RAMPAGE = 14
+
+
+

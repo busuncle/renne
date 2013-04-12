@@ -346,6 +346,11 @@ class MapEditor(object):
 
 
 
+class Achievement(object):
+    N_KILL_TIMEDELTA = 20   # in second unit
+
+
+
 ######### mapping for factory ########
 # control all objects in list, their order will detemine the attribute "ID" of their own
 SPRITE_SETTING_LIST = [
