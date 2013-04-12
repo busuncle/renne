@@ -47,3 +47,7 @@ class Achievement(object):
                 break
 
         return n
+
+
+    def draw(self, camera):
+        pass
