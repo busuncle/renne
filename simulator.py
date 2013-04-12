@@ -118,7 +118,7 @@ class ViewSensor(object):
         self.cos_min = cos(radians(angle))
 
 
-    def do_view_sense(self, target):
+    def detect(self, target):
         sp = self.sprite
 
         if manhattan_distance(sp.pos, target.pos) > sp.setting.VIEW_RANGE + target.setting.RADIUS:

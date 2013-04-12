@@ -381,7 +381,7 @@ class Enemy(GameSprite):
 
             elif action == cfg.EnemyAction.LOOKOUT:
                 # tell its brain the current target found(or None if no target in view scope)
-                self.brain.target = self.brain.target or self.view_sensor.do_view_sense(self.hero)
+                self.brain.target = self.brain.target or self.view_sensor.detect(self.hero)
 
             elif action == cfg.EnemyAction.STAND:
                 self.action = cfg.EnemyAction.STAND
