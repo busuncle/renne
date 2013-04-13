@@ -10,6 +10,7 @@ class Achievement(object):
         self.enemy_list = enemy_list
         self.n_hit_list = []
         self.kill_time_list = []
+        self.current_n_kill_list = []
         self.current_kill_time_index = 0
         self.has_killed = set()
 
@@ -20,13 +21,11 @@ class Achievement(object):
                 print "%s hit!" % record["n_hit"]
                 self.n_hit_list.append(record["n_hit"])
 
+        self.hero.attacker.hit_record = []
+
         for em in filter(lambda x: id(x) not in self.has_killed, self.enemy_list):
             if em.status["hp"] == cfg.SpriteStatus.DIE:
                 self.record_n_kill(id(em))
-
-
-    def record_n_hit(self, n):
-        self.n_hit_list.append(n)
 
 
     def record_n_kill(self, enemy_id):

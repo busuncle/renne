@@ -94,7 +94,7 @@ class GameSprite(pygame.sprite.DirtySprite):
 
         if self.status["under_attack"]:
             # add mix color to the image for simulating a under-attack effect, like a blink body, pretty good
-            self.attacker.was_hit_tick()
+            self.attacker.under_attack_tick()
             image_mix = image.copy()
             image_mix.fill(pygame.Color("gray"), special_flags=BLEND_ADD)
             image = image_mix

@@ -15,12 +15,13 @@ class Attacker(object):
 
     def __init__(self, sprite):
         self.sprite = sprite
-        # target's id during on attack, for stateful attack calculation
+        # during one attack(will be clear after when the attack is finish)
         self.has_hits = set()
+        # during the whole game loop(one chapter)
+        self.has_killed = set()
         self.is_hero = True if sprite.setting.NAME == "Renne" else False
-        self.was_hit_begin_time = None
-        if self.is_hero:
-            self.hit_record = []
+        self.under_attack_begin_time = None
+        self.hit_record = []
 
 
     def run(self):
@@ -28,35 +29,26 @@ class Attacker(object):
 
 
     def hit(self, other):
-        # this sprite hit other, 
-        # and we should call "other.attacker.was_hit" to get "other was hit by sprite"
+        # use "other" to avoiding confusing with "target in other's brain"
         self.has_hits.add(id(other))
         damage = self.sprite.atk - other.dfs
-        other.attacker.was_hit(self.sprite, damage)
         #print "%s hit %s at %s damage!%s hp: %s" % (self.sprite.name, other.name, damage, other.name, other.hp)
+        other.hp = max(other.hp - damage, 0)
+        other.status["hp"] = other.attacker.cal_sprite_status(other.hp, other.setting.HP)
+        other.status["under_attack"] = True
+        other.attacker.under_attack_begin_time = time()
+
+        if not other.attacker.is_hero:
+            angry_hp_threshold = other.setting.HP * other.brain.ai.ANGRY_HP_RATIO
+            if other.hp < angry_hp_threshold and other.hp + damage >= angry_hp_threshold:
+                other.set_emotion(cfg.SpriteEmotion.ANGRY)
+
+            if other.brain.target is None:
+                other.brain.target = self.sprite
 
 
-    def was_hit(self, other, damage):
-        # sprite was hit by someone else
-        sp = self.sprite
-        sp.hp = max(sp.hp - damage, 0)
-
-        sp.status["hp"] = self.cal_sprite_status(sp.hp, sp.setting.HP)
-        sp.status["under_attack"] = True
-        self.was_hit_begin_time = time()
-
-        if not self.is_hero:
-            angry_hp_threshold = sp.setting.HP * sp.brain.ai.ANGRY_HP_RATIO
-            if sp.hp < angry_hp_threshold and sp.hp + damage >= angry_hp_threshold:
-                # this damage make the sprite's hp drop down to below-half
-                sp.set_emotion(cfg.SpriteEmotion.ANGRY)
-        
-            if sp.brain.target is None:
-                sp.brain.target = other
-
-
-    def was_hit_tick(self):
-        if time() - self.was_hit_begin_time > 0.05:
+    def under_attack_tick(self):
+        if time() - self.under_attack_begin_time > 0.05:
             self.sprite.status["under_attack"] = False
 
 
