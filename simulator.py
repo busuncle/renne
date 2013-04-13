@@ -30,6 +30,9 @@ class Attacker(object):
 
     def hit(self, other):
         # use "other" to avoiding confusing with "target in other's brain"
+        if other.status["hp"] == cfg.SpriteStatus.DIE:
+            return
+
         self.has_hits.add(id(other))
         damage = self.sprite.atk - other.dfs
         #print "%s hit %s at %s damage!%s hp: %s" % (self.sprite.name, other.name, damage, other.name, other.hp)
