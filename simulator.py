@@ -15,10 +15,12 @@ class Attacker(object):
 
     def __init__(self, sprite):
         self.sprite = sprite
-        # a list containing enemies that attacked by the sprite, it have to be cleaned after finsh the attack
-        self.hit_list = set()
-        self.enable_reaction = False if sprite.setting.NAME == "Renne" else True
+        # target's id during on attack, for stateful attack calculation
+        self.has_hits = set()
+        self.is_hero = True if sprite.setting.NAME == "Renne" else False
         self.was_hit_begin_time = None
+        if self.is_hero:
+            self.hit_record = []
 
 
     def run(self):
@@ -28,7 +30,7 @@ class Attacker(object):
     def hit(self, other):
         # this sprite hit other, 
         # and we should call "other.attacker.was_hit" to get "other was hit by sprite"
-        self.hit_list.add(id(other))
+        self.has_hits.add(id(other))
         damage = self.sprite.atk - other.dfs
         other.attacker.was_hit(self.sprite, damage)
         #print "%s hit %s at %s damage!%s hp: %s" % (self.sprite.name, other.name, damage, other.name, other.hp)
@@ -43,7 +45,7 @@ class Attacker(object):
         sp.status["under_attack"] = True
         self.was_hit_begin_time = time()
 
-        if self.enable_reaction:
+        if not self.is_hero:
             angry_hp_threshold = sp.setting.HP * sp.brain.ai.ANGRY_HP_RATIO
             if sp.hp < angry_hp_threshold and sp.hp + damage >= angry_hp_threshold:
                 # this damage make the sprite's hp drop down to below-half
@@ -71,7 +73,9 @@ class Attacker(object):
 
 
     def finish(self):
-        self.hit_list.clear()
+        if len(self.has_hits) > 0:
+            self.hit_record.append({"time": time(), "n_hit": len(self.has_hits)})
+            self.has_hits.clear()
 
 
 
@@ -98,7 +102,7 @@ class AngleAttacker(Attacker):
             return
 
         direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
-        if id(target) in self.hit_list:
+        if id(target) in self.has_hits:
             return
 
         vec_to_target = Vector2.from_points(sp.area.center, target.area.center)
