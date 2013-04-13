@@ -30,7 +30,7 @@ def run(filepath):
             words = "outside the image"
         else:
             words = "(%s, %s)" % tuple(map(int, mouse_pos))
-        info = pygame.font.SysFont("arial", 32).render(words, True, pygame.Color("white"))
+        info = sfg.Font.ARIAL_32.render(words, True, pygame.Color("white"))
         screen.blit(info, words_blit_pos)
 
         pygame.display.update()

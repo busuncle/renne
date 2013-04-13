@@ -33,7 +33,7 @@ def select_menu(key, menu_list, menu_index):
 
 
 def render_menu(screen, menu_index, menu_list, menu_option_rect_setting, menu_blit_y,
-        size_on, size_off, color_on, color_off):
+        font_on, font_off, color_on, color_off):
     renne_cursor = basic_image_controller.get("head_status").subsurface(
         pygame.Rect(sfg.StartGame.RENNE_CURSOR_RECT)).convert_alpha()
     menu_option_rect = pygame.Rect(menu_option_rect_setting)
@@ -45,14 +45,14 @@ def render_menu(screen, menu_index, menu_list, menu_option_rect_setting, menu_bl
                 menu_blit_y + menu_option_rect.height / 2)
             screen.blit(renne_cursor, renne_cursor_rect)
 
-            m_size = size_on
+            m_font = font_on
             m_color = color_on
 
         else:
-            m_size = size_off
+            m_font = font_off
             m_color = color_off
 
-        menu = pygame.font.SysFont("arial black", m_size).render(menu_word, True, m_color)
+        menu = m_font.render(menu_word, True, m_color)
         menu_rect = menu.get_rect()
         menu_rect.center = (screen_centerx, menu_blit_y + menu_option_rect.height / 2)
         screen.blit(menu, menu_rect)
@@ -159,7 +159,7 @@ def start_game(screen):
                     menu_index = select_menu(event.key, sfg.StartGame.MENU_LIST, menu_index)
 
             render_menu(screen, menu_index, sfg.StartGame.MENU_LIST, sfg.StartGame.MENU_OPTION_RECT,
-                sfg.StartGame.MENU_BLIT_Y, sfg.StartGame.MENU_ON_SIZE, sfg.StartGame.MENU_OFF_SIZE,
+                sfg.StartGame.MENU_BLIT_Y, sfg.StartGame.MENU_ON_FONT, sfg.StartGame.MENU_OFF_FONT,
                 sfg.StartGame.MENU_ON_COLOR, sfg.StartGame.MENU_OFF_COLOR)
 
         pygame.display.flip()
@@ -310,7 +310,7 @@ def enter_chapter(screen, chapter, renne):
 
             # draw the pause menu
             render_menu(screen, menu_index, sfg.Chapter.PAUSE_MENU_LIST, sfg.Chapter.PAUSE_MENU_OPTION_RECT,
-                sfg.Chapter.PAUSE_MENU_BLIT_Y, sfg.Chapter.PAUSE_MENU_ON_SIZE, sfg.Chapter.PAUSE_MENU_OFF_SIZE,
+                sfg.Chapter.PAUSE_MENU_BLIT_Y, sfg.Chapter.PAUSE_MENU_ON_FONT, sfg.Chapter.PAUSE_MENU_OFF_FONT,
                 sfg.Chapter.PAUSE_MENU_ON_COLOR, sfg.Chapter.PAUSE_MENU_OFF_COLOR)
 
 

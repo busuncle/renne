@@ -10,6 +10,23 @@ DEBUG_MODE = False
 
 
 
+class Font(object):
+    ARIAL_FILEPATH = os.path.join("res", "font",  "arial.ttf")
+    ARIAL_BOLD_FILEPATH = os.path.join("res", "font", "arial_bold.ttf")
+    ARIAL_BLACK_FILEPATH = os.path.join("res", "font", "arial_black.ttf")
+
+    ARIAL_16 = pygame.font.Font(ARIAL_FILEPATH, 16)
+    ARIAL_32 = pygame.font.Font(ARIAL_FILEPATH, 32)
+
+    ARIAL_BOLD_12 = pygame.font.Font(ARIAL_BOLD_FILEPATH, 12)
+    ARIAL_BOLD_16 = pygame.font.Font(ARIAL_BOLD_FILEPATH, 16)
+
+    ARIAL_BLACK_28 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 28)
+    ARIAL_BLACK_32 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 32)
+    ARIAL_BLACK_48 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 48)
+
+
+
 class UserKey(object):
     UP = K_w
     DOWN = K_s
@@ -259,8 +276,8 @@ class GameStatus(object):
     NUMBER_SIZE = (34, 60)
     # all words
     WORDS = {
-        "hero_hp": pygame.font.SysFont("arial", 12).render("HP", True, pygame.Color("white")),
-        "hero_sp": pygame.font.SysFont("arial", 12).render("SP", True, pygame.Color("white")),
+        "hero_hp": Font.ARIAL_BOLD_12.render("HP", True, pygame.Color("white")),
+        "hero_sp": Font.ARIAL_BOLD_12.render("SP", True, pygame.Color("white")),
     }
     # init status persist 3 seconds
     INIT_PERSIST_TIME = 3
@@ -279,11 +296,11 @@ class GameStatus(object):
     SPRITE_BAR_BG_COLOR = pygame.Color(0, 0, 0, 128)
     HERO_ALL_BAR_SIZE = (100, 10)
     HERO_HP_TITLE_BLIT_POS = (80, 18)
-    HERO_HP_BLIT_POS = (100, 20)
+    HERO_HP_BLIT_POS = (102, 20)
     # stamina point related
     HERO_SP_COLOR = pygame.Color(0, 64, 128, 128),
     HERO_SP_TITLE_BLIT_POS = (80, 33)
-    HERO_SP_BLIT_POS = (100, 35)
+    HERO_SP_BLIT_POS = (102, 35)
 
     HERO_PANEL_RECT = (0, 0, 144, 56)
     HERO_PANEL_SCALE_SIZE = (1.5, 1.66)
@@ -303,14 +320,14 @@ class GameStatus(object):
 
 class Chapter(object):
     LOADING_PICTURE_FADE_IN_TIME = 1    # in second unit, show up the picture
-    LOADING_WORD = pygame.font.SysFont("arial black", 28).render("now loading ...", True, pygame.Color("white"))
+    LOADING_WORD = Font.ARIAL_BLACK_28.render("now loading ...", True, pygame.Color("white"))
     LOADING_WORD_BLIT_POS = (760, 700)
 
     PAUSE_MENU_LIST = ["CONTINUE", "MAIN", "QUIT"]
     PAUSE_MENU_OPTION_RECT = (0, 0, 224, 32)
     PAUSE_MENU_BLIT_Y = 320
-    PAUSE_MENU_ON_SIZE = 32
-    PAUSE_MENU_OFF_SIZE = 28
+    PAUSE_MENU_ON_FONT = Font.ARIAL_BLACK_32
+    PAUSE_MENU_OFF_FONT = Font.ARIAL_BLACK_28
     PAUSE_MENU_ON_COLOR = pygame.Color("white")
     PAUSE_MENU_OFF_COLOR = pygame.Color("gray")
 
@@ -322,8 +339,8 @@ class StartGame(object):
 
     MENU_ON_COLOR = pygame.Color("white")
     MENU_OFF_COLOR = pygame.Color("gray")
-    MENU_ON_SIZE = 48
-    MENU_OFF_SIZE = 32
+    MENU_ON_FONT = Font.ARIAL_BLACK_48
+    MENU_OFF_FONT = Font.ARIAL_BLACK_32
     MENU_LIST = ["START", "QUIT"]
     MENU_OPTION_RECT = (0, 0, 256, 48)
     MENU_BLIT_Y = 550
@@ -334,8 +351,7 @@ class StartGame(object):
 
 class EndGame(object):
     ENDING_FADEIN_TIME = 3
-    BUSUNCLE_WORKS = pygame.font.SysFont("arial black", 32).render(
-        "Busuncle's works", True, pygame.Color("white"))
+    BUSUNCLE_WORKS = Font.ARIAL_BLACK_32.render("Busuncle's works", True, pygame.Color("white"))
     BUSUNCLE_WORKS_BLIT_Y = 450
     RENNE_IMAGE_BLIT_Y = 360
 

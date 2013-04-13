@@ -141,8 +141,8 @@ class GameStatus(object):
         camera.screen.blit(status_panel, sfg.GameStatus.HERO_PANEL_BLIT_POS)
 
         # chapter info
-        self.chapter_panel.blit(self.chapter_info, sfg.GameStatus.CHAPTER_INFO_BLIT_POS)
-        camera.screen.blit(self.chapter_panel, sfg.GameStatus.CHAPTER_PANEL_BLIT_POS)
+        #self.chapter_panel.blit(self.chapter_info, sfg.GameStatus.CHAPTER_INFO_BLIT_POS)
+        #camera.screen.blit(self.chapter_panel, sfg.GameStatus.CHAPTER_PANEL_BLIT_POS)
 
         if self.status == cfg.GameStatus.INIT:
             if self.begin_time is None:

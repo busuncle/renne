@@ -1,4 +1,5 @@
 import pygame
+import etc.setting as sfg
 
 
 
@@ -12,7 +13,7 @@ def draw_area(camera, sprite):
 
 def draw_pos(camera, sprite):
     pos = "(%s, %s)" % tuple(map(int, sprite.pos))
-    info = pygame.font.SysFont("arial", 16).render(pos, True, pygame.Color("red"))
+    info = sfg.Font.ARIAL_16.render(pos, True, pygame.Color("red"))
     r = pygame.Rect(0, 0, 100, 20)
     r.center = (sprite.pos.x, sprite.pos.y/2)
     r.top -= camera.rect.top
@@ -32,10 +33,14 @@ def draw_waypoins(camera, waypoints):
 def draw_fps(camera, clock):
     fps = int(clock.get_fps())
     if fps < 50:
-        print "fps < 50, only: %s" % fps
+        font = sfg.Font.ARIAL_BOLD_16
+        color = pygame.Color("pink")
+    else:
+        font = sfg.Font.ARIAL_16
+        color = pygame.Color("red")
 
     w = "%s fps" % fps
-    info = pygame.font.SysFont("arial", 16).render(w, True, pygame.Color("red"))
+    info = font.render(w, True, color)
     r = info.get_rect()
     r.right = camera.rect.right - 5
     r.centery = camera.rect.centery
