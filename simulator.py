@@ -17,11 +17,10 @@ class Attacker(object):
         self.sprite = sprite
         # during one attack(will be clear after when the attack is finish)
         self.has_hits = set()
-        # during the whole game loop(one chapter)
-        self.has_killed = set()
         self.is_hero = True if sprite.setting.NAME == "Renne" else False
         self.under_attack_begin_time = None
         self.hit_record = []
+        self.kill_record = []
 
 
     def run(self):
@@ -33,13 +32,14 @@ class Attacker(object):
         if other.status["hp"] == cfg.SpriteStatus.DIE:
             return
 
-        self.has_hits.add(id(other))
+        self.has_hits.add(other)
         damage = self.sprite.atk - other.dfs
-        #print "%s hit %s at %s damage!%s hp: %s" % (self.sprite.name, other.name, damage, other.name, other.hp)
+        print "%s hit %s at %s damage!%s hp: %s" % (self.sprite.name, other.name, damage, other.name, other.hp)
         other.hp = max(other.hp - damage, 0)
         other.status["hp"] = other.attacker.cal_sprite_status(other.hp, other.setting.HP)
         other.status["under_attack"] = True
         other.attacker.under_attack_begin_time = time()
+
 
         if not other.attacker.is_hero:
             angry_hp_threshold = other.setting.HP * other.brain.ai.ANGRY_HP_RATIO
@@ -70,6 +70,9 @@ class Attacker(object):
     def finish(self):
         if len(self.has_hits) > 0:
             self.hit_record.append({"time": time(), "n_hit": len(self.has_hits)})
+            for sp in self.has_hits:
+                if sp.status["hp"] == cfg.SpriteStatus.DIE:
+                    self.kill_record.append({"time": time()})
             self.has_hits.clear()
 
 
@@ -97,7 +100,7 @@ class AngleAttacker(Attacker):
             return
 
         direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
-        if id(target) in self.has_hits:
+        if target in self.has_hits:
             return
 
         vec_to_target = Vector2.from_points(sp.area.center, target.area.center)
