@@ -8,10 +8,11 @@ from base import util
 screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption("Renne Image See")
 
-def run(filepath):
-    img = pygame.image.load(filepath).convert()
+def run(args):
+    img = pygame.image.load(args.filepath).convert()
     img_rect = img.get_rect()
     words_blit_pos = img_rect.bottomleft
+    background_color = args.background_color or "black"
 
     clock = pygame.time.Clock()
     while True:
@@ -21,7 +22,7 @@ def run(filepath):
             if event.type == KEYDOWN and event.key == K_ESCAPE:
                 return
 
-        screen.fill(pygame.Color("black")) 
+        screen.fill(pygame.Color(background_color))
         #img.set_alpha(20)
         screen.blit(img, (0, 0))
 
@@ -43,8 +44,9 @@ def run(filepath):
 if __name__ == "__main__":
     args = util.parse_command_line([
         (["-f", "--file-path"], {"dest": "filepath", "action": "store"}),
+        (["-b", "--background-color"], {"dest": "background_color", "action": "store"}),
     ])
     if args.filepath is None:
         print "please specify the param filepath, using -f or --file-path option"
         exit(-1)
-    run(args.filepath)
+    run(args)
