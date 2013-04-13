@@ -59,7 +59,9 @@ def parse_command_line(needed_args_list):
 class ResourceController(object):
     def __init__(self, loader):
         self.res_mapping = {}
-        self.cache = weakref.WeakValueDictionary()
+        # TODO: disable weakref for trouble shooting
+        #self.cache = weakref.WeakValueDictionary()
+        self.cache = {}
         self.loader = loader
         self.path = "res"
 
@@ -75,6 +77,7 @@ class ResourceController(object):
         try:
             res = self.cache[name]
         except KeyError:
+            print "load %s" % self.res_mapping[name]
             res = self.loader(self.res_mapping[name])
             self.cache[name] = res
         return res
