@@ -3,6 +3,7 @@ from pygame.locals import *
 from gameobjects.vector2 import Vector2
 import simulator
 from animation import SpriteAnimator, SpriteEmotionAnimator
+from musicbox import SoundBox
 from controller import SpriteBrain
 import etc.constant as cfg
 import etc.setting as sfg
@@ -119,6 +120,7 @@ class Renne(GameSprite):
         self.exp = 0
 
         self.animation = SpriteAnimator(self)
+        self.sound_box = SoundBox()
 
         # represent the sprite area, used for deciding frame layer and collide, attack computing or so
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
@@ -230,6 +232,7 @@ class Renne(GameSprite):
 
         if pressed_keys[sfg.UserKey.ATTACK]:
             self.action = cfg.HeroAction.ATTACK
+            self.sound_box.play("renne_attack")
 
         elif self.key_vec:
             if pressed_keys[sfg.UserKey.RUN] and self.stamina > 0:
@@ -241,6 +244,7 @@ class Renne(GameSprite):
         elif pressed_keys[sfg.UserKey.WIN]:
             # egg, show win animation
             self.action = cfg.HeroAction.WIN
+            self.sound_box.play("renne_win")
 
         else:
             self.action = cfg.HeroAction.STAND
@@ -277,6 +281,7 @@ class Enemy(GameSprite):
         self.emotion_animation = SpriteEmotionAnimator(self)
 
         self.animation = SpriteAnimator(self)
+        self.sound_box = SoundBox()
 
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
         self.area.center = self.pos('xy')

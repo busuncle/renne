@@ -137,6 +137,7 @@ class Point(object):
     def __str__(self):
         return "(%s, %s)" % (self.x, self.y)
 
+
 def point_add_delta(point, point_delta):
     # given a point p(x, y) and a delta (dx, dy), return a new point p(x + dx, y + dy) 
     # all of above params and return value should be tuple type

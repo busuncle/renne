@@ -367,8 +367,8 @@ class Achievement(object):
 
 
 class Music(object):
-    BACKGROUND_VOLUME = 0.5
-    SOUND_VOLUME = 0.5
+    BACKGROUND_VOLUME = 0.4
+    SOUND_VOLUME = 0.2
 
 
 
@@ -472,4 +472,8 @@ BACKGROUND_MUSICS = ("background", {
 })
 
 SOUND_EFFECT = ("sound", {
+    "renne_attack": "renne_attack.wav",
+    "renne_under_attack": "renne_under_attack.wav",
+    "renne_win": "renne_win.wav",
+    "attack_hit": "attack_hit.wav",
 })

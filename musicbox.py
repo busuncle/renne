@@ -30,6 +30,10 @@ class SoundBox(object):
     box = MusicController(sfg.SOUND_EFFECT[0])
     box.add_from_list(sfg.SOUND_EFFECT[1])
     def __init__(self):
-        pass
+        pass 
 
+    def play(self, key):
+        snd = self.box.get(key)
+        snd.set_volume(sfg.Music.SOUND_VOLUME)
+        snd.play()
 

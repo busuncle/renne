@@ -167,5 +167,7 @@ pip-log.txt
 
 # project custom
 .*.png
+.*.ogg
+.*.wav
 build.py
 _test.py
