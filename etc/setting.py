@@ -466,6 +466,9 @@ CG_IMAGES = ("cg", {
 BACKGROUND_MUSICS = ("background", {
     "start_game": "start_game.ogg", 
     "end_game": "end_game.ogg", 
+    "chapter_1": "chapter_1.ogg",
+    "chapter_2": "chapter_2.ogg",
+    "chapter_3": "chapter_3.ogg",
 })
 
 SOUND_EFFECT = ("sound", {

@@ -16,6 +16,7 @@ from base import util
 
 
 screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
+bg_box = BackgroundBox(sfg.Music.BACKGROUND_VOLUME)
 pygame.display.set_caption("Renne")
 pygame.display.set_icon(pygame.image.load("renne.png").convert_alpha())
 
@@ -86,6 +87,8 @@ def main(args):
             status = enter_chapter(screen, chapter, renne)
             # TODO: auto save here
 
+        bg_box.stop()
+
         if status == cfg.GameControl.NEXT:
             i += 1
             # TODO: recover renne's status(eg. hp, sp) here
@@ -120,8 +123,7 @@ def loading_chapter_picture(screen):
 
 
 def start_game(screen):
-    mbox = BackgroundBox(sfg.Music.BACKGROUND_VOLUME)
-    mbox.play("start_game")
+    bg_box.play("start_game")
 
     pic = cg_image_controller.get("start_game").convert()
     pic_rect = pic.get_rect()
@@ -153,8 +155,6 @@ def start_game(screen):
                 if event.type == KEYDOWN:
                     if event.key == K_RETURN:
                         if sfg.StartGame.MENU_LIST[menu_index] == "START":
-                            # stop music when this part passes
-                            mbox.stop()
                             return cfg.GameControl.NEXT
                         elif sfg.StartGame.MENU_LIST[menu_index] == "QUIT":
                             return cfg.GameControl.QUIT
@@ -174,8 +174,7 @@ def start_game(screen):
 
 
 def end_game(screen):
-    mbox = BackgroundBox(sfg.Music.BACKGROUND_VOLUME)
-    mbox.play("end_game")
+    bg_box.play("end_game")
 
     screen_centerx = sfg.Screen.SIZE[0] / 2
 
@@ -217,6 +216,7 @@ def end_game(screen):
 
 
 def enter_chapter(screen, chapter, renne):
+    bg_box.play("chapter_%s" % chapter)
     clock = pygame.time.Clock()
     map_setting = util.load_map_setting(chapter)
 
