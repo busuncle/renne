@@ -128,9 +128,6 @@ class ViewSensor(object):
             # quick check
             return None
 
-        if sp.pos.get_distance_to(target.pos) > sp.setting.VIEW_RANGE + target.setting.RADIUS:
-            return None
-
         p_sprite = sp.area.center
         direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
 
@@ -141,12 +138,11 @@ class ViewSensor(object):
             if cos_for_vec(direct_vec, vec_to_target) > self.cos_min:
                 # and then check whether the line is blocked by some static objects
                 line_seg = LineSegment(p_sprite, p_target)
-                blocked_objs = filter(lambda s_obj: \
-                    s_obj.is_view_block and line_segment_intersect_with_rect(line_seg, s_obj.area), 
-                    sp.static_objects)
-                if len(blocked_objs) == 0:
-                    # no static objects block this view line segment!
-                    return target
+                for obj in sp.static_objects:
+                    if obj.is_view_block and line_segment_intersect_with_rect(line_seg, obj.area):
+                        return None
+
+                return target
 
         return None
 
