@@ -300,8 +300,9 @@ def enter_chapter(screen, chapter, renne):
 
         # update renne, enemies, game_status, game_achievement in sequence
         renne.update(passed_seconds, external_event=game_status.status)
-        for enemy in filter(lambda x: enemy_in_one_screen(renne, x), enemies):
-            enemy.update(passed_seconds, external_event=game_status.status)
+        for enemy in enemies:
+            if enemy_in_one_screen(renne, enemy):
+                enemy.update(passed_seconds, external_event=game_status.status)
 
         game_status.update()
         game_achievement.update()

@@ -436,17 +436,14 @@ class GameSpritesGroup(pygame.sprite.LayeredDirty):
 
 
     def notify_nearby_alliance_for_target(self, sprite, target):
-        for nearby_sprite in filter(lambda sp: sp is not target and \
-            sprite.pos.get_distance_to(sp.pos) <= sprite.setting.NEARBY_ALLIANCE_RANGE, self.sprites()):
-            if nearby_sprite.pos.get_distance_to(target.pos) < nearby_sprite.setting.VIEW_RANGE \
-                and nearby_sprite.brain.target is None:
-                # found by alliance, and within chase range, chase it
-                nearby_sprite.brain.target = target
+        for other in self.sprites():
+            if other is target or other is sprite or \
+                sprite.pos.get_distance_to(other.pos) > sprite.setting.NEARBY_ALLIANCE_RANGE or \
+                other.brain.target is not None:
+                continue
+
+            other.brain.target = target
 
 
-    def draw(self, camera):
-        sprites = sorted(self.sprites(), key=lambda sp: sp.pos.y)
-        for v in sprites:
-            v.draw(camera)
 
 
