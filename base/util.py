@@ -87,6 +87,13 @@ class ResourceController(object):
 
 
 
+class MusicController(ResourceController):
+    def __init__(self, music_folder="", default_loader=pygame.mixer.Sound):
+        super(MusicController, self).__init__(default_loader)
+        self.path = os.path.join(self.path, "music", music_folder)
+
+
+
 class ImageController(ResourceController):
     def __init__(self, image_folder=""):
         super(ImageController, self).__init__(pygame.image.load)

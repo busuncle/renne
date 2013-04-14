@@ -7,6 +7,7 @@ import etc.ai_setting as ai
 from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObject
 from gamestatus import GameStatus
 from achievement import Achievement
+from musicbox import BackgroundBox
 from animation import cg_image_controller, basic_image_controller
 from renderer import Camera
 import debug_tools
@@ -119,6 +120,9 @@ def loading_chapter_picture(screen):
 
 
 def start_game(screen):
+    mbox = BackgroundBox(sfg.Music.BACKGROUND_VOLUME)
+    mbox.play("start_game")
+
     pic = cg_image_controller.get("start_game").convert()
     pic_rect = pic.get_rect()
 
@@ -149,6 +153,8 @@ def start_game(screen):
                 if event.type == KEYDOWN:
                     if event.key == K_RETURN:
                         if sfg.StartGame.MENU_LIST[menu_index] == "START":
+                            # stop music when this part passes
+                            mbox.stop()
                             return cfg.GameControl.NEXT
                         elif sfg.StartGame.MENU_LIST[menu_index] == "QUIT":
                             return cfg.GameControl.QUIT
@@ -166,7 +172,11 @@ def start_game(screen):
 
 
 
+
 def end_game(screen):
+    mbox = BackgroundBox(sfg.Music.BACKGROUND_VOLUME)
+    mbox.play("end_game")
+
     screen_centerx = sfg.Screen.SIZE[0] / 2
 
     renne_image = pygame.image.load("renne.png").convert_alpha()
@@ -186,6 +196,8 @@ def end_game(screen):
     clock = pygame.time.Clock()
     while True:
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit(0)
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     exit(0)

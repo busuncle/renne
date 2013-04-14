@@ -334,7 +334,7 @@ class Chapter(object):
 
 
 class StartGame(object):
-    PICTURE_FADE_IN_TIME = 2 # in second unit, show up the picture
+    PICTURE_FADE_IN_TIME = 3 # in second unit, show up the picture
     PICTURE_BLIT_Y = 30
 
     MENU_ON_COLOR = pygame.Color("white")
@@ -350,7 +350,7 @@ class StartGame(object):
 
 
 class EndGame(object):
-    ENDING_FADEIN_TIME = 3
+    ENDING_FADEIN_TIME = 5
     BUSUNCLE_WORKS = Font.ARIAL_BLACK_32.render("Busuncle's works", True, pygame.Color("white"))
     BUSUNCLE_WORKS_BLIT_Y = 450
     RENNE_IMAGE_BLIT_Y = 360
@@ -364,6 +364,11 @@ class MapEditor(object):
 
 class Achievement(object):
     N_KILL_TIMEDELTA = 20   # in second unit
+
+
+class Music(object):
+    BACKGROUND_VOLUME = 0.5
+    SOUND_VOLUME = 0.5
 
 
 
@@ -457,3 +462,11 @@ CG_IMAGES = ("cg", {
     "loading_chapter": "2.png", 
 })
 
+
+BACKGROUND_MUSICS = ("background", {
+    "start_game": "start_game.ogg", 
+    "end_game": "end_game.ogg", 
+})
+
+SOUND_EFFECT = ("sound", {
+})

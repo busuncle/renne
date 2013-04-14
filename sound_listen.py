@@ -13,7 +13,7 @@ def run(args):
     background = pygame.mixer.music.load(args.background)
     effect = pygame.mixer.Sound(args.effect)
 
-    pygame.mixer.music.play()
+    pygame.mixer.music.play(-1)
     clock = pygame.time.Clock()
     while True:
         for event in pygame.event.get(): 
@@ -24,6 +24,9 @@ def run(args):
 
             if event.type == KEYDOWN and event.key == K_j:
                 effect.play()
+
+            if event.type == KEYDOWN and event.key == K_SPACE:
+                pygame.mixer.music.stop()
 
         pygame.display.update()
 
