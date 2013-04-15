@@ -10,7 +10,6 @@ from time import time
 from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObject
 from renderer import Camera
 from base import util
-from gen_waypoint import gen_chapter_waypoints
 import debug_tools
 
 
@@ -23,6 +22,41 @@ DEBUG_DRAW = {
     "area": False,
     "waypoints": False,
 }
+
+
+
+def gen_chapter_waypoints(chapter):
+    bounding_box = pygame.Rect(sfg.WayPoint.BOUNDING_BOX_RECT)
+    blocks = []
+    waypoints = []
+
+    map_setting = util.load_map_setting(chapter)
+    for t, p in map_setting["static_objects"]:
+        static_obj_setting = sfg.STATIC_OBJECT_SETTING_MAPPING[t]
+        if not static_obj_setting.IS_BLOCK:
+            continue
+
+        pos = Vector2(p)
+        rect = pygame.Rect(static_obj_setting.AREA_RECT)
+        rect.center = pos
+        blocks.append(rect)
+
+    for x in xrange(0, map_setting["size"][0], sfg.WayPoint.STEP_WIDTH):
+        for y in xrange(0, map_setting["size"][1], sfg.WayPoint.STEP_WIDTH):
+            fx, fy = map(float, (x, y))
+            bounding_box.center = (fx, fy)
+            if bounding_box.collidelist(blocks) == -1:
+                waypoints.append((fx, fy))
+
+
+    filename = "%s.txt" % chapter
+    fp = open(os.path.join(sfg.WayPoint.DIR, filename), "w")
+    for wp in waypoints:
+        fp.write("%s\t%s\n" % wp)
+
+    print "generate waypoints %s success" % filename
+
+    fp.close()
 
 
 
