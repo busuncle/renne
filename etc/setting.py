@@ -272,8 +272,10 @@ class SpriteStatus(object):
 
 
 class GameStatus(object):
-    NUMBER_RECT = (0, 280, 340, 60)
-    NUMBER_SIZE = (34, 60)
+    NUMBER_RECT1 = (0, 280, 340, 60)
+    NUMBER_SIZE1 = (34, 60)
+    NUMBER_RECT2 = (96, 160, 160, 16)
+    NUMBER_SIZE2 = (16, 16)
     # all words
     WORDS = {
         "hero_hp": Font.ARIAL_BOLD_12.render("HP", True, pygame.Color("white")),
@@ -281,11 +283,6 @@ class GameStatus(object):
     }
     # init status persist 3 seconds
     INIT_PERSIST_TIME = 3
-    CHAPTER_PANEL_RECT = (156, 0, 50, 52)
-    CHAPTER_PANEL_BLIT_POS = (965, 5)
-    CHAPTER_FONT = {"name": "arial", "size": 14, "italic": True, "pre": "CH", "antialias": True, 
-        "color": pygame.Color("gray")}
-    CHAPTER_INFO_BLIT_POS = (12, 16)
     # health point related
     SPRITE_HP_COLORS = {
         cfg.SpriteStatus.HEALTHY: pygame.Color(0, 128, 0, 128),
@@ -315,6 +312,15 @@ class GameStatus(object):
     HERO_WIN_BLIT_POS = (0, 280)
     HERO_LOSE_BLIT_POS = (0, 280)
     NUMBER_BLIT_POS = (500, 360)
+
+    KILL_ICON_RECT = (224, 0, 32, 32)
+    KILL_ICON_BLIT_POS = (220, 6)
+    KILL_VERTICAL_LINE_RECT = (18, 220, 10, 24)
+    KILL_VERTICAL_LINE_BLIT_POS = (300, 8)
+    KILL_NUM_CURRENT_BLIT_POS = (260, 12)
+    KILL_NUM_CURRENT_BLIT_POS2 = (276, 12)
+    KILL_NUM_TOTAL_BLIT_POS = (320, 12)
+    KILL_NUM_TOTAL_BLIT_POS2 = (336, 12)
 
 
 
@@ -455,6 +461,8 @@ BATTLE_IMAGES = ("battle", {
     "status2": "status2.png", 
     "status3": "status3.png", 
     "status4": "status4.png", 
+    "status5": "status5.png",
+    "icon1": "icon1.png",
 })
 
 CG_IMAGES = ("cg", {

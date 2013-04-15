@@ -20,12 +20,15 @@ class GameStatus(object):
         self.head_images_list = self.gen_head_images_list()
         self.sprite_hp_colors = sfg.GameStatus.SPRITE_HP_COLORS
         self.status = cfg.GameStatus.INIT
-        self.chapter_panel = self.gen_panel("status3", sfg.GameStatus.CHAPTER_PANEL_RECT)
-        self.chapter_info = self.gen_chapter_info()
         self.win_panel = self.gen_panel("status2", sfg.GameStatus.HERO_WIN_PANEL_RECT)
         self.lose_panel = self.gen_panel("status2", sfg.GameStatus.HERO_LOSE_PANEL_RECT)
-        self.numbers = self.gen_numbers()
+        self.kill_icon = self.gen_panel("status5", sfg.GameStatus.KILL_ICON_RECT)
+        self.kill_vertical_line = self.gen_panel("icon1", sfg.GameStatus.KILL_VERTICAL_LINE_RECT)
+        self.numbers1 = self.gen_numbers("status4", sfg.GameStatus.NUMBER_RECT1, sfg.GameStatus.NUMBER_SIZE1)
+        self.numbers2 = self.gen_numbers("icon1", sfg.GameStatus.NUMBER_RECT2, sfg.GameStatus.NUMBER_SIZE2)
         self.begin_time = None
+        self.total_enemy_num = len(self.enemies)
+        self.current_enemy_num = self.total_enemy_num
 
 
     def gen_panel(self, image_key, rect, scale=None):
@@ -35,16 +38,10 @@ class GameStatus(object):
         return panel
 
 
-    def gen_chapter_info(self):
-        f = sfg.GameStatus.CHAPTER_FONT
-        return pygame.font.SysFont(f["name"], f["size"], italic=f["italic"]).render(
-            "%s %s" % (f["pre"], self.chapter), f["antialias"], f["color"])
-
-
-    def gen_numbers(self):
+    def gen_numbers(self, filekey, number_rect, number_size):
         res = {}
-        number_panel = self.gen_panel("status4", sfg.GameStatus.NUMBER_RECT)
-        w, h = sfg.GameStatus.NUMBER_SIZE
+        number_panel = self.gen_panel(filekey, number_rect)
+        w, h = number_size
         for i in xrange(10):
             res[i] = number_panel.subsurface(pygame.Rect((i * w, 0), (w, h)))
 
@@ -86,6 +83,8 @@ class GameStatus(object):
 
         for em in remove_list:
             self.enemies.remove(em)
+
+        self.current_enemy_num = len(self.enemies)
 
 
     def make_bar(self, size, curren_val, full_val, bar_color, background_color):
@@ -140,9 +139,18 @@ class GameStatus(object):
 
         camera.screen.blit(status_panel, sfg.GameStatus.HERO_PANEL_BLIT_POS)
 
-        # chapter info
-        #self.chapter_panel.blit(self.chapter_info, sfg.GameStatus.CHAPTER_INFO_BLIT_POS)
-        #camera.screen.blit(self.chapter_panel, sfg.GameStatus.CHAPTER_PANEL_BLIT_POS)
+        camera.screen.blit(self.kill_icon, sfg.GameStatus.KILL_ICON_BLIT_POS)
+        camera.screen.blit(self.kill_vertical_line, sfg.GameStatus.KILL_VERTICAL_LINE_BLIT_POS)
+
+        dec = self.current_enemy_num / 10
+        camera.screen.blit(self.numbers2[dec], sfg.GameStatus.KILL_NUM_CURRENT_BLIT_POS)
+        unit = self.current_enemy_num % 10
+        camera.screen.blit(self.numbers2[unit], sfg.GameStatus.KILL_NUM_CURRENT_BLIT_POS2)
+
+        dec = self.total_enemy_num / 10
+        camera.screen.blit(self.numbers2[dec], sfg.GameStatus.KILL_NUM_TOTAL_BLIT_POS)
+        unit = self.total_enemy_num % 10
+        camera.screen.blit(self.numbers2[unit], sfg.GameStatus.KILL_NUM_TOTAL_BLIT_POS2)
 
         if self.status == cfg.GameStatus.INIT:
             if self.begin_time is None:
@@ -155,7 +163,7 @@ class GameStatus(object):
                 else:
                     # count down for game begin
                     left_time = sfg.GameStatus.INIT_PERSIST_TIME - pass_time
-                    number_to_draw = self.numbers[int(left_time)+1]
+                    number_to_draw = self.numbers1[int(left_time)+1]
                     camera.screen.blit(number_to_draw, sfg.GameStatus.NUMBER_BLIT_POS)
 
         elif self.status == cfg.GameStatus.HERO_WIN:
