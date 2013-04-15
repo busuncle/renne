@@ -132,7 +132,7 @@ class Renne(GameSprite):
         self.enemies = enemies
         self.static_objects = static_objects
         self.game_map = game_map
-        self.attacker = simulator.AngleAttacker(self, angle=self.setting.ATTACK_ANGLE, 
+        self.attacker = simulator.RenneAttacker(self, angle=self.setting.ATTACK_ANGLE, 
             cal_frames=self.setting.ATTACK_CAL_FRAMES)
 
 
@@ -299,7 +299,7 @@ class Enemy(GameSprite):
         self.allsprites = allsprites
         self.hero = hero
         self.static_objects = static_objects
-        self.attacker = simulator.AngleAttacker(self, angle=self.setting.ATTACK_ANGLE, 
+        self.attacker = simulator.EnemyAttacker(self, angle=self.setting.ATTACK_ANGLE, 
             cal_frames=self.setting.ATTACK_CAL_FRAMES)
         self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
         self.steerer = simulator.Steerer(self)

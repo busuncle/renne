@@ -17,34 +17,16 @@ class Attacker(object):
         self.sprite = sprite
         # during one attack(will be clear after when the attack is finish)
         self.has_hits = set()
-        self.is_hero = True if sprite.setting.NAME == "Renne" else False
+        #self.is_hero = True if sprite.setting.NAME == "Renne" else False
         self.under_attack_begin_time = None
-        self.hit_record = []
-        self.kill_record = []
 
 
     def run(self):
         pass
 
 
-    def hit(self, other):
-        # use "other" to avoiding confusing with "target in other's brain"
-        self.has_hits.add(other)
-        damage = self.sprite.atk - other.dfs
-        print "%s hit %s at %s damage!%s hp: %s" % (self.sprite.name, other.name, damage, other.name, other.hp)
-        other.hp = max(other.hp - damage, 0)
-        other.status["hp"] = other.attacker.cal_sprite_status(other.hp, other.setting.HP)
-        other.status["under_attack"] = True
-        other.attacker.under_attack_begin_time = time()
-
-
-        if not other.attacker.is_hero:
-            angry_hp_threshold = other.setting.HP * other.brain.ai.ANGRY_HP_RATIO
-            if other.hp < angry_hp_threshold and other.hp + damage >= angry_hp_threshold:
-                other.set_emotion(cfg.SpriteEmotion.ANGRY)
-
-            if other.brain.target is None:
-                other.brain.target = self.sprite
+    def hit(self):
+        pass
 
 
     def under_attack_tick(self):
@@ -65,12 +47,7 @@ class Attacker(object):
 
 
     def finish(self):
-        if len(self.has_hits) > 0:
-            self.hit_record.append({"time": time(), "n_hit": len(self.has_hits)})
-            for sp in self.has_hits:
-                if sp.status["hp"] == cfg.SpriteStatus.DIE:
-                    self.kill_record.append({"time": time()})
-            self.has_hits.clear()
+        pass
 
 
 
@@ -91,7 +68,7 @@ class AngleAttacker(Attacker):
         self.cos_min = cos(radians(angle))
 
 
-    def run(self, target, current_frame_add):
+    def hit(self, target, current_frame_add):
         sp = self.sprite
         if int(current_frame_add) not in self.cal_frames:
             return False
@@ -104,10 +81,68 @@ class AngleAttacker(Attacker):
         cos_val = cos_for_vec(direct_vec, vec_to_target)
         if self.attack_range + target.setting.RADIUS > vec_to_target.get_length() \
             and cos_val > self.cos_min and target.status["hp"] != cfg.SpriteStatus.DIE:
-            self.hit(target)
+            self.has_hits.add(target)
             return True
 
         return False
+
+
+
+class RenneAttacker(AngleAttacker):
+    def __init__(self, sprite, angle, cal_frames):
+        super(RenneAttacker, self).__init__(sprite, angle, cal_frames)
+        self.hit_record = []
+        self.kill_record = []
+
+
+    def run(self, enemy, current_frame_add):
+        if self.hit(enemy, current_frame_add):
+            damage = self.sprite.atk - enemy.dfs
+            enemy.hp = max(enemy.hp - damage, 0)
+            enemy.status["hp"] = enemy.attacker.cal_sprite_status(enemy.hp, enemy.setting.HP)
+            enemy.status["under_attack"] = True
+            enemy.attacker.under_attack_begin_time = time()
+
+            # calculate enemy's emotion
+            angry_hp_threshold = enemy.setting.HP * enemy.brain.ai.ANGRY_HP_RATIO
+            if enemy.hp < angry_hp_threshold and enemy.hp + damage >= angry_hp_threshold:
+                enemy.set_emotion(cfg.SpriteEmotion.ANGRY)
+
+            if enemy.brain.target is None:
+                enemy.brain.target = self.sprite
+
+            return True
+        return False
+
+
+    def finish(self):
+        if len(self.has_hits) > 0:
+            self.hit_record.append({"time": time(), "n_hit": len(self.has_hits)})
+            for sp in self.has_hits:
+                if sp.status["hp"] == cfg.SpriteStatus.DIE:
+                    self.kill_record.append({"time": time()})
+            self.has_hits.clear()
+
+
+
+class EnemyAttacker(AngleAttacker):
+    def __init__(self, sprite, angle, cal_frames):
+        super(EnemyAttacker, self).__init__(sprite, angle, cal_frames)
+
+
+    def run(self, hero, current_frame_add):
+        if self.hit(hero, current_frame_add):
+            damage = self.sprite.atk - hero.dfs
+            hero.hp = max(hero.hp - damage, 0)
+            hero.status["hp"] = hero.attacker.cal_sprite_status(hero.hp, hero.setting.HP)
+            hero.status["under_attack"] = True
+            hero.attacker.under_attack_begin_time = time()
+            return True
+        return False
+        
+
+    def finish(self):
+        len(self.has_hits) > 0 and self.has_hits.clear()
 
 
 
