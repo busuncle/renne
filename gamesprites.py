@@ -186,8 +186,14 @@ class Renne(GameSprite):
             self.attacker.finish()
             self.action = cfg.HeroAction.STAND
         else:
+            hit_count = 0
             for em in self.enemies:
-                self.attacker.run(em, self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
+                hit_it = self.attacker.run(em, self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
+                if hit_it:
+                    hit_count += 1
+
+            if hit_count > 0:
+                self.sound_box.play("attack_hit")
 
 
     def win(self, passed_seconds):
@@ -341,8 +347,10 @@ class Enemy(GameSprite):
             self.attacker.finish()
             self.brain.persistent = False
         else:
-            self.attacker.run(self.brain.target, 
+            hit_it = self.attacker.run(self.brain.target, 
                 self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
+            if hit_it:
+                self.sound_box.play("attack_hit")
 
 
     def reset_action(self):

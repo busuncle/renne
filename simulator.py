@@ -29,10 +29,6 @@ class Attacker(object):
 
     def hit(self, other):
         # use "other" to avoiding confusing with "target in other's brain"
-        if other.status["hp"] == cfg.SpriteStatus.DIE:
-            return
-
-        self.sprite.sound_box.play("attack_hit")
         self.has_hits.add(other)
         damage = self.sprite.atk - other.dfs
         print "%s hit %s at %s damage!%s hp: %s" % (self.sprite.name, other.name, damage, other.name, other.hp)
@@ -98,16 +94,20 @@ class AngleAttacker(Attacker):
     def run(self, target, current_frame_add):
         sp = self.sprite
         if int(current_frame_add) not in self.cal_frames:
-            return
+            return False
 
         direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
         if target in self.has_hits:
-            return
+            return False
 
         vec_to_target = Vector2.from_points(sp.area.center, target.area.center)
         cos_val = cos_for_vec(direct_vec, vec_to_target)
-        if self.attack_range + target.setting.RADIUS > vec_to_target.get_length() and cos_val > self.cos_min:
+        if self.attack_range + target.setting.RADIUS > vec_to_target.get_length() \
+            and cos_val > self.cos_min and target.status["hp"] != cfg.SpriteStatus.DIE:
             self.hit(target)
+            return True
+
+        return False
 
 
 
