@@ -71,6 +71,11 @@ class Steerer(object):
 
 
     def init(self, coord_list):
+        if coord_list is None or len(coord_list) == 0:
+            self.is_ok = False
+            return
+
+        self.is_ok = True
         self.coord_list, self.direct_list = self.path_smoothing(coord_list)
         self.next_coord = self.coord_list.pop()
         self.cur_direct = None
@@ -327,11 +332,7 @@ class SpriteChase(State):
         self.target_move_threshold = sp.brain.target.setting.RADIUS * 4
         sp.brain.destination = self.add_noise_to_dest(sp.brain.target.pos)
         path = self.pathfinder.find(sp.brain.destination.as_tuple(), sp.setting.ATTACK_RANGE)
-        if path and len(path) > 0:
-            self.steerer.init(path)
-            self.can_steer = True
-        else:
-            self.can_steer = False
+        self.steerer.init(path)
 
 
     def send_actions(self):
@@ -340,7 +341,7 @@ class SpriteChase(State):
                 # delay chase action for a more real effect
                 return (cfg.EnemyAction.STAND, )
 
-        if self.can_steer:
+        if self.steerer.is_ok:
             self.steerer.run()
             if self.steerer.is_end:
                 return (cfg.EnemyAction.STAND, )
