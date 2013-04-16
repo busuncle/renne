@@ -115,6 +115,7 @@ class Steerer(object):
 
 
 
+
 ########### state machine ####################
 class State(object):
     def __init__(self, state_id):
@@ -343,11 +344,10 @@ class SpriteChase(State):
 
         if self.steerer.is_ok:
             self.steerer.run()
-            if self.steerer.is_end:
-                return (cfg.EnemyAction.STAND, )
-            return (cfg.EnemyAction.STEER, )
-        else:
-            return (cfg.EnemyAction.STAND, )
+            if not self.steerer.is_end:
+                return (cfg.EnemyAction.STEER, )
+
+        return (cfg.EnemyAction.STAND, )
 
 
     def check_conditions(self):
