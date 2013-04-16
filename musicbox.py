@@ -10,14 +10,17 @@ class BackgroundBox(object):
     box.add_from_list(sfg.BACKGROUND_MUSICS[1])
     def __init__(self, volume):
         pygame.mixer.music.set_volume(volume)
+        self.current_playing = None
 
 
     def play(self, key):
         self.box.get(key)
+        self.current_playing = key
         pygame.mixer.music.play(-1)
 
 
     def stop(self):
+        self.current_playing = None
         pygame.mixer.music.stop()
 
 

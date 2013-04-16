@@ -326,6 +326,15 @@ def enter_chapter(screen, chapter, renne):
                 sfg.Chapter.PAUSE_MENU_BLIT_Y, sfg.Chapter.PAUSE_MENU_ON_FONT, sfg.Chapter.PAUSE_MENU_OFF_FONT,
                 sfg.Chapter.PAUSE_MENU_ON_COLOR, sfg.Chapter.PAUSE_MENU_OFF_COLOR)
 
+        elif game_status.status == cfg.GameStatus.HERO_WIN:
+            if bg_box.current_playing != "hero_win":
+                bg_box.stop()
+                # TODO: may play some other background music here
+        elif game_status.status == cfg.GameStatus.HERO_LOSE:
+            if bg_box.current_playing != "hero_lose":
+                bg_box.stop()
+                # TODO: may play some other background music here
+
 
         pygame.display.flip()
 
