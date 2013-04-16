@@ -17,7 +17,6 @@ class Attacker(object):
         self.sprite = sprite
         # during one attack(will be clear after when the attack is finish)
         self.has_hits = set()
-        #self.is_hero = True if sprite.setting.NAME == "Renne" else False
         self.under_attack_begin_time = None
 
 
@@ -69,14 +68,14 @@ class AngleAttacker(Attacker):
 
 
     def hit(self, target, current_frame_add):
-        sp = self.sprite
         if int(current_frame_add) not in self.cal_frames:
             return False
 
-        direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
         if target in self.has_hits:
             return False
 
+        sp = self.sprite
+        direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
         vec_to_target = Vector2.from_points(sp.area.center, target.area.center)
         cos_val = cos_for_vec(direct_vec, vec_to_target)
         if self.attack_range + target.setting.RADIUS > vec_to_target.get_length() \
