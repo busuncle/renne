@@ -33,6 +33,83 @@ def happen(probability):
     return random() <= probability
 
 
+
+class Steerer(object):
+    def __init__(self, sprite):
+        self.sprite = sprite
+
+    def path_smoothing(self, coord_list):
+        # coord_list will be a list containing the path goes *backwards*, that means:
+        # [last_coord, last_coord_but_one, ..., second_coord, first_coord]
+        new_coord_list = []
+        direct_list = []
+
+        # so looping backwards using list.pop, that will produce a new sequence-order coord-list
+        new_coord_list.append(coord_list.pop())
+        old_direct = None
+        while coord_list:
+            next_coord = coord_list.pop()
+            dx = next_coord[0] - new_coord_list[-1][0]
+            dy = next_coord[1] - new_coord_list[-1][1]
+            # make both dx and dy be in [-1.0, 1.0], as to decide the direction
+            dx = min(max(dx, -1.0), 1.0)
+            dy = min(max(dy, -1.0), 1.0)
+
+            next_direct = cfg.Direction.VEC_TO_DIRECT[(dx, dy)]
+            if next_direct != old_direct:
+                old_direct = next_direct
+                new_coord_list.append(next_coord)
+                direct_list.append(next_direct)    
+            else:
+                new_coord_list[-1] = next_coord
+
+        # because list only has pop method, 
+        # so reverse the 2 lists will make it convinient for steer
+        new_coord_list.reverse()
+        direct_list.reverse()
+        return new_coord_list, direct_list
+
+
+    def init(self, coord_list):
+        self.coord_list, self.direct_list = self.path_smoothing(coord_list)
+        self.next_coord = self.coord_list.pop()
+        self.cur_direct = None
+        self.delta = 2
+        self.is_end = False
+
+
+    def run(self):
+        sp = self.sprite
+        dx = self.next_coord[0] - sp.pos.x 
+        dy = self.next_coord[1] - sp.pos.y
+
+        if (abs(dx) < self.delta and abs(dy) < self.delta):
+            # reach target coord, try next
+            if len(self.coord_list) == 0:
+                # reach the end
+                self.is_end = True
+            else:
+                self.next_coord = self.coord_list.pop()
+                self.cur_direct = self.direct_list.pop()
+        
+        if self.cur_direct:
+            sp.direction = self.cur_direct
+            sp.key_vec.x, sp.key_vec.y = cfg.Direction.DIRECT_TO_VEC[sp.direction]
+        else:
+            sp.key_vec.x = sp.key_vec.y = 0.0
+            if dx > self.delta:
+                sp.key_vec.x = 1.0
+            if dx < -self.delta:
+                sp.key_vec.x = -1.0
+            if dy > self.delta:
+                sp.key_vec.y = 1.0
+            if dy < -self.delta:
+                sp.key_vec.y = -1.0
+
+            sp.direction = cfg.Direction.VEC_TO_DIRECT.get(sp.key_vec.as_tuple(), sp.direction)
+
+
+
 ########### state machine ####################
 class State(object):
     def __init__(self, state_id):
@@ -228,6 +305,7 @@ class SpriteChase(State):
         self.ai = ai
         self.see_hero_time = None
         self.pathfinder = pathfinding.Astar(sprite, waypoints)
+        self.steerer = Steerer(sprite)
 
 
     def add_noise_to_dest(self, target_pos):
@@ -250,7 +328,7 @@ class SpriteChase(State):
         sp.brain.destination = self.add_noise_to_dest(sp.brain.target.pos)
         path = self.pathfinder.find(sp.brain.destination.as_tuple(), sp.setting.ATTACK_RANGE)
         if path and len(path) > 0:
-            sp.steerer.steer_init(path)
+            self.steerer.init(path)
             self.can_steer = True
         else:
             self.can_steer = False
@@ -262,7 +340,13 @@ class SpriteChase(State):
                 # delay chase action for a more real effect
                 return (cfg.EnemyAction.STAND, )
 
-        return (cfg.EnemyAction.STEER, ) if self.can_steer else (cfg.EnemyAction.STAND, )
+        if self.can_steer:
+            self.steerer.run()
+            if self.steerer.is_end:
+                return cfg.EnemyAction.STAND
+            return cfg.EnemyAction.STEER
+        else:
+            return cfg.EnemyAction.STAND
 
 
     def check_conditions(self):
@@ -276,7 +360,7 @@ class SpriteChase(State):
 
         elif sp.setting.ATTACK_RANGE < distance_to_target <= sp.setting.CHASE_RANGE:
             target_move = sp.brain.destination.get_distance_to(sp.brain.target.pos)
-            if target_move > self.target_move_threshold or sp.steerer.is_end:
+            if target_move > self.target_move_threshold or self.steerer.is_end:
                 #print "chase to chase"
                 return cfg.SpriteState.CHASE
         else:
@@ -331,3 +415,12 @@ class SpriteOffence(State):
         self.sprite.brain.persistent = False
         
 
+if __name__ == "__main__":
+    st = Steerer(None)
+    coord_list = [(4, 2), (3, 2), (2, 1), (1, 0), (0, 0)]
+    #coord_list = [(1, 1), (0, 0)]
+    #coord_list = [(0, 0)]
+    st.steer_init(coord_list)
+    print st.next_coord
+    print list(reversed(st.coord_list))
+    print map(lambda x: cfg.Direction.DIRECT_TO_MARK[x], reversed(st.direct_list))

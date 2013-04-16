@@ -302,7 +302,6 @@ class Enemy(GameSprite):
         self.attacker = simulator.EnemyAttacker(self, angle=self.setting.ATTACK_ANGLE, 
             cal_frames=self.setting.ATTACK_CAL_FRAMES)
         self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
-        self.steerer = simulator.Steerer(self)
         self.brain = SpriteBrain(self, ai, game_map.waypoints)
 
 
@@ -386,10 +385,7 @@ class Enemy(GameSprite):
                 self.action = cfg.EnemyAction.ATTACK
             
             elif action == cfg.EnemyAction.STEER:
-                self.steerer.steer()
                 self.action = cfg.EnemyAction.STEER
-                if self.steerer.is_end:
-                    self.action = cfg.EnemyAction.STAND
                 self.allsprites.notify_nearby_alliance_for_target(self, self.brain.target)
 
             elif action == cfg.EnemyAction.LOOKOUT:
