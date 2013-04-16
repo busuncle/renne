@@ -343,10 +343,10 @@ class SpriteChase(State):
         if self.can_steer:
             self.steerer.run()
             if self.steerer.is_end:
-                return cfg.EnemyAction.STAND
-            return cfg.EnemyAction.STEER
+                return (cfg.EnemyAction.STAND, )
+            return (cfg.EnemyAction.STEER, )
         else:
-            return cfg.EnemyAction.STAND
+            return (cfg.EnemyAction.STAND, )
 
 
     def check_conditions(self):
