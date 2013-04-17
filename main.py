@@ -22,7 +22,7 @@ pygame.display.set_icon(pygame.image.load("renne.png").convert_alpha())
 
 
 COMMAND_DEBUG_MODE = False
-COMMAND_DEBUG_OPTION_LIST = []
+COMMAND_DEBUG_OPTIONS = {}
 
 
 def select_menu(key, menu_list, menu_index):
@@ -313,7 +313,7 @@ def enter_chapter(screen, chapter, renne):
         game_status.draw(camera)
 
         if COMMAND_DEBUG_MODE or sfg.DEBUG_MODE:
-            debug_tools.run_debug_by_option_list(COMMAND_DEBUG_OPTION_LIST,
+            debug_tools.run_debug_by_option_list(COMMAND_DEBUG_OPTIONS,
                 camera, game_world, game_map, clock)
 
         if game_status.status == cfg.GameStatus.PAUSE:
@@ -343,11 +343,17 @@ def enter_chapter(screen, chapter, renne):
 if __name__ == "__main__":
     args = util.parse_command_line([
         (["-d", "--debug"], {"dest": "debug", "action": "store_true"}),
-        (["-l", "--option-list"], {"dest": "option_list", "action": "store"}),
         (["-c", "--chapter"], {"dest": "chapter", "action": "store", "type": int}),
+        (["--fps"], {"dest": "fps", "action": "store_true"}),
+        (["--waypoints"], {"dest": "waypoints", "action": "store_true"}),
+        (["--area"], {"dest": "area", "action": "store_true"}),
+        (["--pos"], {"dest": "pos", "action": "store_true"}),
     ])
     COMMAND_DEBUG_MODE = args.debug is True
-    COMMAND_DEBUG_OPTION_LIST = args.option_list.split(",") if args.option_list is not None \
-        else []
+    COMMAND_DEBUG_OPTIONS["waypoints"] = args.waypoints
+    COMMAND_DEBUG_OPTIONS["fps"] = args.fps
+    COMMAND_DEBUG_OPTIONS["area"] = args.area
+    COMMAND_DEBUG_OPTIONS["pos"] = args.pos
+
     main(args)
 

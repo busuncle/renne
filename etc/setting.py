@@ -69,7 +69,7 @@ class Renne(GameRole):
         cfg.HeroAction.STAND: 12,
         cfg.HeroAction.WALK: 14,
         cfg.HeroAction.RUN: 16,
-        cfg.HeroAction.ATTACK: 20,
+        cfg.HeroAction.ATTACK: 18,
         cfg.HeroAction.WIN: 14,
     }
 
