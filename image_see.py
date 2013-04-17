@@ -1,5 +1,6 @@
 import os
 import pygame
+from pygame import transform
 from pygame.locals import *
 import etc.setting as sfg
 from base import util
@@ -10,6 +11,7 @@ pygame.display.set_caption("Renne Image See")
 
 def run(args):
     img = pygame.image.load(args.filepath).convert()
+    img = transform.scale2x(img)
     img_rect = img.get_rect()
     words_blit_pos = img_rect.bottomleft
     background_color = args.background_color or "black"
