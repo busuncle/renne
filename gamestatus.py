@@ -1,7 +1,7 @@
 from time import time
 import pygame
 from pygame.locals import *
-from pygame.transform import smoothscale
+from pygame.transform import smoothscale, scale2x
 from base.util import ImageController
 import etc.setting as sfg
 import etc.constant as cfg
@@ -19,19 +19,18 @@ class GameStatus(object):
         self.enemies = enemies
         self.words = sfg.GameStatus.WORDS
         self.head_images_list = self.gen_head_images_list()
+        self.status_panel = self.gen_panel("status", 
+            sfg.GameStatus.HERO_PANEL_RECT, sfg.GameStatus.HERO_PANEL_SCALE_SIZE)
         self.sprite_hp_colors = sfg.GameStatus.SPRITE_HP_COLORS
         self.status = cfg.GameStatus.INIT
         self.win_panel = self.gen_panel("status2", sfg.GameStatus.HERO_WIN_PANEL_RECT)
         self.lose_panel = self.gen_panel("status2", sfg.GameStatus.HERO_LOSE_PANEL_RECT)
         self.kill_icon = self.gen_panel("status5", sfg.GameStatus.KILL_ICON_RECT)
-        self.kill_vertical_line = self.gen_panel("icon1", sfg.GameStatus.KILL_VERTICAL_LINE_RECT)
         self.numbers1 = self.gen_numbers("status4", sfg.GameStatus.NUMBER_RECT1, sfg.GameStatus.NUMBER_SIZE1)
         self.numbers2 = self.gen_numbers("icon1", sfg.GameStatus.NUMBER_RECT2, sfg.GameStatus.NUMBER_SIZE2)
         self.begin_timer = Timer()
         self.total_enemy_num = len(self.enemies)
         self.current_enemy_num = self.total_enemy_num
-        self.status_panel = self.gen_panel("status", 
-            sfg.GameStatus.HERO_PANEL_RECT, sfg.GameStatus.HERO_PANEL_SCALE_SIZE)
 
 
     def gen_panel(self, image_key, rect, scale=None):
@@ -140,17 +139,12 @@ class GameStatus(object):
         camera.screen.blit(sp_bar, sfg.GameStatus.HERO_SP_BLIT_POS)
 
         camera.screen.blit(self.kill_icon, sfg.GameStatus.KILL_ICON_BLIT_POS)
-        camera.screen.blit(self.kill_vertical_line, sfg.GameStatus.KILL_VERTICAL_LINE_BLIT_POS)
 
-        dec = self.current_enemy_num / 10
-        camera.screen.blit(self.numbers2[dec], sfg.GameStatus.KILL_NUM_CURRENT_BLIT_POS)
-        unit = self.current_enemy_num % 10
-        camera.screen.blit(self.numbers2[unit], sfg.GameStatus.KILL_NUM_CURRENT_BLIT_POS2)
+        kill_num = self.total_enemy_num - self.current_enemy_num
+        # suppose(be sure) kill_num < 100, e.g. 12, so "kill_num / 10" gets 1, and "kill_num % 10" is 2
+        camera.screen.blit(scale2x(self.numbers2[kill_num / 10]), sfg.GameStatus.KILL_NUM_BLIT_POS)
+        camera.screen.blit(scale2x(self.numbers2[kill_num % 10]), sfg.GameStatus.KILL_NUM_BLIT_POS2)
 
-        dec = self.total_enemy_num / 10
-        camera.screen.blit(self.numbers2[dec], sfg.GameStatus.KILL_NUM_TOTAL_BLIT_POS)
-        unit = self.total_enemy_num % 10
-        camera.screen.blit(self.numbers2[unit], sfg.GameStatus.KILL_NUM_TOTAL_BLIT_POS2)
 
         if self.status == cfg.GameStatus.INIT:
             if not self.begin_timer.is_begin():
