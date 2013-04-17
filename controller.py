@@ -292,7 +292,7 @@ class SpritePatrol(State):
         super(SpritePatrol, self).__init__(cfg.SpriteState.PATROL)
         self.sprite = sprite
         self.ai = ai
-        self.enter_timer()
+        self.enter_timer = Timer()
 
 
     def choose_a_backside_direction(self, current_direction):
