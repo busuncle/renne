@@ -115,12 +115,41 @@ class Steerer(object):
 
 
 
+class Timer(object):
+    def __init__(self, time_len=None):
+        self.begin_time = None
+        self.time_len = time_len
+
+
+    def begin(self, time_len=None):
+        # set begin time, when you run a stopwatch, you must call this
+        # optionally, you may set another time_len
+        self.begin_time = time()
+        if time_len is not None:
+            self.time_len = time_len
+
+
+    def is_begin(self):
+        return self.begin_time is not None
+
+
+    def exceed(self):
+        if time() - self.begin_time > self.time_len:
+            return True
+        return False
+
+
+    def clear(self):
+        self.begin_time = None
+        self.time_len = None
+
+
 
 ########### state machine ####################
 class State(object):
     def __init__(self, state_id):
         self.id = state_id
-        self.enter_time = None
+        #self.enter_time = None
 
     def send_actions(self):
         pass
@@ -216,11 +245,11 @@ class SpriteStay(State):
         super(SpriteStay, self).__init__(cfg.SpriteState.STAY)
         self.sprite = sprite
         self.ai = ai
+        self.enter_timer = Timer()
 
 
     def enter(self, last_state):
-        self.enter_time = time()
-        self.stay_time = gauss(self.ai.STAY_TIME_MU, self.ai.STAY_TIME_SIGMA)   
+        self.enter_timer.begin(gauss(self.ai.STAY_TIME_MU, self.ai.STAY_TIME_SIGMA))
         # turn for a random direction if the last state is the same "stay"
         if last_state and last_state.id == cfg.SpriteState.STAY \
             and happen(self.ai.STAY_CHANGE_DIRECTION_PROB):
@@ -245,7 +274,7 @@ class SpriteStay(State):
 
             return cfg.SpriteState.CHASE
 
-        if time() - self.enter_time >= self.stay_time:
+        if self.enter_timer.exceed():
             if happen(self.ai.STAY_TO_PATROL_PROB):
                 #print "stay to patrol"
                 return cfg.SpriteState.PATROL
@@ -254,7 +283,7 @@ class SpriteStay(State):
 
 
     def exit(self):
-        self.enter_time, self.stay_time = None, None
+        self.enter_timer.clear()
 
 
 
@@ -263,6 +292,7 @@ class SpritePatrol(State):
         super(SpritePatrol, self).__init__(cfg.SpriteState.PATROL)
         self.sprite = sprite
         self.ai = ai
+        self.enter_timer()
 
 
     def choose_a_backside_direction(self, current_direction):
@@ -273,8 +303,7 @@ class SpritePatrol(State):
 
 
     def enter(self, last_state):
-        self.enter_time = time()
-        self.walk_time = gauss(self.ai.WALK_TIME_MU, self.ai.WALK_TIME_SIGMA)   
+        self.enter_timer.begin(gauss(self.ai.WALK_TIME_MU, self.ai.WALK_TIME_SIGMA))
         self.sprite.direction = self.choose_a_backside_direction(self.sprite.direction)
 
     
@@ -297,12 +326,12 @@ class SpritePatrol(State):
             sp.brain.interrupt = False
             return cfg.SpriteState.STAY
 
-        if time() - self.enter_time >= self.walk_time:
+        if self.enter_timer.exceed():
             return cfg.SpriteState.STAY
 
 
     def exit(self):
-        self.enter_time, self.walk_time = None, None
+        self.enter_timer.clear()
 
 
 
@@ -311,9 +340,9 @@ class SpriteChase(State):
         super(SpriteChase, self).__init__(cfg.SpriteState.CHASE)
         self.sprite = sprite
         self.ai = ai
-        self.see_hero_time = None
         self.pathfinder = pathfinding.Astar(sprite, waypoints)
         self.steerer = Steerer(sprite)
+        self.enter_timer = Timer()
 
 
     def add_noise_to_dest(self, target_pos):
@@ -327,7 +356,7 @@ class SpriteChase(State):
         sp = self.sprite
         if last_state and last_state.id in (cfg.SpriteState.STAY, cfg.SpriteState.PATROL):
             # discover hero right now, record the time for action delay
-            self.see_hero_time = time()
+            self.enter_timer.begin(self.ai.CHASE_GO_DELAY_TIME)
             # set corresponding emotion
             sp.set_emotion(cfg.SpriteEmotion.ALERT)
 
@@ -339,10 +368,9 @@ class SpriteChase(State):
 
 
     def send_actions(self):
-        if self.see_hero_time is not None:
-            if time() - self.see_hero_time < self.ai.CHASE_GO_DELAY_TIME:
-                # delay chase action for a more real effect
-                return (cfg.EnemyAction.STAND, )
+        if self.enter_timer.is_begin() and not self.enter_timer.exceed():
+            # delay chase action for a more real effect
+            return (cfg.EnemyAction.STAND, )
 
         if self.steerer.is_ok:
             self.steerer.run()
@@ -376,7 +404,8 @@ class SpriteChase(State):
 
     def exit(self):
         self.sprite.brain.destination = None
-        self.see_hero_time = None
+        self.enter_timer.clear()
+
 
 
 class SpriteOffence(State):
@@ -384,17 +413,17 @@ class SpriteOffence(State):
         super(SpriteOffence, self).__init__(cfg.SpriteState.OFFENCE)
         self.sprite = sprite
         self.ai = ai
+        self.enter_timer = Timer()
 
     def enter(self, last_state):
         sp = self.sprite
         sp.brain.persistent = True
         sp.direction = cal_face_direct(sp.pos.as_tuple(), sp.brain.target.pos.as_tuple())
-        self.enter_time = time()
-        self.delay_time = gauss(self.ai.OFFENCE_GO_DELAY_TIME_MU, self.ai.OFFENCE_GO_DELAY_TIME_SIGMA)
+        self.enter_timer.begin(gauss(self.ai.OFFENCE_GO_DELAY_TIME_MU, self.ai.OFFENCE_GO_DELAY_TIME_SIGMA))
 
 
     def send_actions(self):
-        if time() - self.enter_time < self.delay_time:
+        if not self.enter_timer.exceed():
             # add delay time for attack
             return (cfg.EnemyAction.STAND, )
 
@@ -415,8 +444,10 @@ class SpriteOffence(State):
 
 
     def exit(self):
+        self.enter_timer.clear()
         self.sprite.brain.persistent = False
         
+
 
 if __name__ == "__main__":
     st = Steerer(None)
