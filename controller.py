@@ -148,9 +148,6 @@ class StateMachine(object):
 
 
     def run(self):
-        if self.active_state is None:
-            return
-
         new_state_id = None
         # ai event tick, interrupt event will trigger condition calculation at once
         if self.sprite.brain.interrupt or self.timer.exceed():
@@ -164,9 +161,8 @@ class StateMachine(object):
 
 
     def set_state(self, new_state_id):
-        if self.active_state is not None:
-            self.last_state = self.active_state
-            self.active_state.exit()
+        self.last_state = self.active_state
+        self.active_state.exit()
 
         self.active_state = self.states[new_state_id]
         self.active_state.enter(self.last_state)
@@ -195,6 +191,8 @@ class SpriteBrain(object):
         self.state_machine.add_state(patrol_state)
         self.state_machine.add_state(chase_state)
         self.state_machine.add_state(offence_state)
+
+        # initial the sprite state, mostly, a "STAY" state works well
         self.state_machine.set_state(cfg.SpriteState.STAY)
 
 
