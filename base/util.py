@@ -93,6 +93,12 @@ class MusicController(ResourceController):
         super(MusicController, self).__init__(default_loader)
         self.path = os.path.join(self.path, "music", music_folder)
 
+    def load(self, key):
+        # this function is totally for pygame.mixer.music.load
+        # it loads music file as stream, it should be called every time when you want to play another music
+        res = self.res_mapping[key]
+        self.loader(res)
+
 
 
 class ImageController(ResourceController):

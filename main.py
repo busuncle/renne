@@ -264,12 +264,13 @@ def enter_chapter(screen, chapter, renne):
 
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    #return cfg.GameControl.QUIT
                     if game_status.status == cfg.GameStatus.IN_PROGRESS:
                         game_status.status = cfg.GameStatus.PAUSE
+                        bg_box.pause()
                         menu_index = 0
                     elif game_status.status == cfg.GameStatus.PAUSE:
                         game_status.status = cfg.GameStatus.IN_PROGRESS
+                        bg_box.unpause()
 
                 if event.key == K_RETURN:
                     if game_status.status == cfg.GameStatus.HERO_WIN:
@@ -279,6 +280,7 @@ def enter_chapter(screen, chapter, renne):
                     elif game_status.status == cfg.GameStatus.PAUSE:
                         if sfg.Chapter.PAUSE_MENU_LIST[menu_index] == "CONTINUE":
                             game_status.status = cfg.GameStatus.IN_PROGRESS
+                            bg_box.unpause()
                         elif sfg.Chapter.PAUSE_MENU_LIST[menu_index] == "MAIN":
                             return cfg.GameControl.MAIN
                         elif sfg.Chapter.PAUSE_MENU_LIST[menu_index] == "QUIT":

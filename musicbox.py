@@ -14,7 +14,7 @@ class BackgroundBox(object):
 
 
     def play(self, key):
-        self.box.get(key)
+        self.box.load(key)
         self.current_playing = key
         pygame.mixer.music.play(-1)
 
@@ -26,6 +26,10 @@ class BackgroundBox(object):
 
     def pause(self):
         pygame.mixer.music.pause()
+
+
+    def unpause(self):
+        pygame.mixer.music.unpause()
 
 
 
