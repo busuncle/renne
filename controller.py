@@ -254,7 +254,7 @@ class SpriteStay(State):
 
 
     def exit(self):
-        self.enter_time, self.stay_seconds = None, None
+        self.enter_time, self.stay_time = None, None
 
 
 
