@@ -161,8 +161,9 @@ class StateMachine(object):
 
 
     def set_state(self, new_state_id):
-        self.last_state = self.active_state
-        self.active_state.exit()
+        if self.active_state is not None:
+            self.last_state = self.active_state
+            self.active_state.exit()
 
         self.active_state = self.states[new_state_id]
         self.active_state.enter(self.last_state)

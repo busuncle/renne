@@ -30,6 +30,8 @@ class GameStatus(object):
         self.begin_timer = Timer()
         self.total_enemy_num = len(self.enemies)
         self.current_enemy_num = self.total_enemy_num
+        self.status_panel = self.gen_panel("status", 
+            sfg.GameStatus.HERO_PANEL_RECT, sfg.GameStatus.HERO_PANEL_SCALE_SIZE)
 
 
     def gen_panel(self, image_key, rect, scale=None):
@@ -118,27 +120,24 @@ class GameStatus(object):
 
             self.draw_enemy_hp_bar(enemy, camera)
 
-        # generate status_panel everytime will make a good effect
-        status_panel = self.gen_panel("status", 
-            sfg.GameStatus.HERO_PANEL_RECT, sfg.GameStatus.HERO_PANEL_SCALE_SIZE)
+        # panel first, other things over it
+        camera.screen.blit(self.status_panel, sfg.GameStatus.HERO_PANEL_BLIT_POS)
 
-        status_panel.blit(self.words["hero_hp"], sfg.GameStatus.HERO_HP_TITLE_BLIT_POS)
-        status_panel.blit(self.words["hero_sp"], sfg.GameStatus.HERO_SP_TITLE_BLIT_POS)
+        camera.screen.blit(self.words["hero_hp"], sfg.GameStatus.HERO_HP_TITLE_BLIT_POS)
+        camera.screen.blit(self.words["hero_sp"], sfg.GameStatus.HERO_SP_TITLE_BLIT_POS)
 
         # Renne's head, showing her status
-        status_panel.blit(self.get_current_head(self.hero.status["hp"]), sfg.GameStatus.HERO_HEAD_BLIT_POS)
+        camera.screen.blit(self.get_current_head(self.hero.status["hp"]), sfg.GameStatus.HERO_HEAD_BLIT_POS)
 
         # draw the hp bar for Renne
         hp_bar = self.make_bar(sfg.GameStatus.HERO_ALL_BAR_SIZE, self.hero.hp, self.hero.setting.HP,
             self.sprite_hp_colors[self.hero.status["hp"]], sfg.GameStatus.SPRITE_BAR_BG_COLOR)
-        status_panel.blit(hp_bar, sfg.GameStatus.HERO_HP_BLIT_POS)
+        camera.screen.blit(hp_bar, sfg.GameStatus.HERO_HP_BLIT_POS)
 
         # draw the sp bar for Renne
         sp_bar = self.make_bar(sfg.GameStatus.HERO_ALL_BAR_SIZE, self.hero.stamina, self.hero.setting.STAMINA,
             sfg.GameStatus.HERO_SP_COLOR, sfg.GameStatus.SPRITE_BAR_BG_COLOR)
-        status_panel.blit(sp_bar, sfg.GameStatus.HERO_SP_BLIT_POS)
-
-        camera.screen.blit(status_panel, sfg.GameStatus.HERO_PANEL_BLIT_POS)
+        camera.screen.blit(sp_bar, sfg.GameStatus.HERO_SP_BLIT_POS)
 
         camera.screen.blit(self.kill_icon, sfg.GameStatus.KILL_ICON_BLIT_POS)
         camera.screen.blit(self.kill_vertical_line, sfg.GameStatus.KILL_VERTICAL_LINE_BLIT_POS)
@@ -164,7 +163,7 @@ class GameStatus(object):
                 # count down for game begin, draw corresponding count-down numbers
                 left_time = sfg.GameStatus.INIT_PERSIST_TIME - self.begin_timer.passed_time()
                 number_to_draw = self.numbers1[int(left_time)+1]
-                camera.screen.blit(number_to_draw, sfg.GameStatus.NUMBER_BLIT_POS)
+                camera.screen.blit(number_to_draw, sfg.GameStatus.BEGIN_NUMBER_BLIT_POS)
 
         elif self.status == cfg.GameStatus.HERO_WIN:
             camera.screen.blit(self.win_panel, sfg.GameStatus.HERO_WIN_BLIT_POS)

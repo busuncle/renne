@@ -292,18 +292,23 @@ class GameStatus(object):
     }
     SPRITE_BAR_BG_COLOR = pygame.Color(0, 0, 0, 128)
     HERO_ALL_BAR_SIZE = (100, 10)
-    HERO_HP_TITLE_BLIT_POS = (80, 18)
-    HERO_HP_BLIT_POS = (102, 20)
+    #HERO_HP_TITLE_BLIT_POS = (80, 18)
+    HERO_HP_TITLE_BLIT_POS = (82, 20)
+    #HERO_HP_BLIT_POS = (102, 20)
+    HERO_HP_BLIT_POS = (104, 22)
     # stamina point related
     HERO_SP_COLOR = pygame.Color(0, 64, 128, 128),
-    HERO_SP_TITLE_BLIT_POS = (80, 33)
-    HERO_SP_BLIT_POS = (102, 35)
+    #HERO_SP_TITLE_BLIT_POS = (80, 33)
+    HERO_SP_TITLE_BLIT_POS = (82, 35)
+    #HERO_SP_BLIT_POS = (102, 35)
+    HERO_SP_BLIT_POS = (104, 37)
 
     HERO_PANEL_RECT = (0, 0, 144, 56)
     HERO_PANEL_SCALE_SIZE = (1.5, 1.66)
     HERO_PANEL_BLIT_POS = (2, 2)
     HERO_HEAD_SIZE = (128, 128)
-    HERO_HEAD_BLIT_POS = (-22, -40)
+    #HERO_HEAD_BLIT_POS = (-22, -40)
+    HERO_HEAD_BLIT_POS = (-20, -38)
 
     ENEMY_HP_BAR_SIZE = (50, 5)
 
@@ -311,7 +316,7 @@ class GameStatus(object):
     HERO_LOSE_PANEL_RECT = (0, 170, 1024, 170)
     HERO_WIN_BLIT_POS = (0, 280)
     HERO_LOSE_BLIT_POS = (0, 280)
-    NUMBER_BLIT_POS = (500, 360)
+    BEGIN_NUMBER_BLIT_POS = (500, 360)
 
     KILL_ICON_RECT = (224, 0, 32, 32)
     KILL_ICON_BLIT_POS = (220, 6)
