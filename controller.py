@@ -119,7 +119,6 @@ class Steerer(object):
 class State(object):
     def __init__(self, state_id):
         self.id = state_id
-        #self.enter_time = None
 
     def send_actions(self):
         pass
@@ -137,11 +136,11 @@ class State(object):
 class StateMachine(object):
     def __init__(self, sprite, tick):
         self.sprite = sprite
-        self.tick = tick
         self.states = {}
         self.active_state = None
         self.last_state = None
-        self.last_time = time()
+        self.timer = Timer(tick)
+        self.timer.begin()
 
 
     def add_state(self, state):
@@ -153,10 +152,9 @@ class StateMachine(object):
             return
 
         new_state_id = None
-        current_time = time()
         # ai event tick, interrupt event will trigger condition calculation at once
-        if self.sprite.brain.interrupt or current_time - self.last_time > self.tick:
-            self.last_time = current_time
+        if self.sprite.brain.interrupt or self.timer.exceed():
+            self.timer.begin()
             new_state_id = self.active_state.check_conditions()
         
         if new_state_id is not None:
