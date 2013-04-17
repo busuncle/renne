@@ -6,7 +6,7 @@ from random import randint, choice, gauss, random
 import etc.constant as cfg
 import etc.setting as sfg
 import pathfinding
-from base.util import cos_for_vec
+from base.util import cos_for_vec, Timer
 
 
 
@@ -112,36 +112,6 @@ class Steerer(object):
                 sp.key_vec.y = -1.0
 
             sp.direction = cfg.Direction.VEC_TO_DIRECT.get(sp.key_vec.as_tuple(), sp.direction)
-
-
-
-class Timer(object):
-    def __init__(self, time_len=None):
-        self.begin_time = None
-        self.time_len = time_len
-
-
-    def begin(self, time_len=None):
-        # set begin time, when you run a stopwatch, you must call this
-        # optionally, you may set another time_len
-        self.begin_time = time()
-        if time_len is not None:
-            self.time_len = time_len
-
-
-    def is_begin(self):
-        return self.begin_time is not None
-
-
-    def exceed(self):
-        if time() - self.begin_time > self.time_len:
-            return True
-        return False
-
-
-    def clear(self):
-        self.begin_time = None
-        self.time_len = None
 
 
 

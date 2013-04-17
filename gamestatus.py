@@ -5,6 +5,7 @@ from pygame.transform import smoothscale
 from base.util import ImageController
 import etc.setting as sfg
 import etc.constant as cfg
+from base.util import Timer
 
 
 
@@ -26,7 +27,7 @@ class GameStatus(object):
         self.kill_vertical_line = self.gen_panel("icon1", sfg.GameStatus.KILL_VERTICAL_LINE_RECT)
         self.numbers1 = self.gen_numbers("status4", sfg.GameStatus.NUMBER_RECT1, sfg.GameStatus.NUMBER_SIZE1)
         self.numbers2 = self.gen_numbers("icon1", sfg.GameStatus.NUMBER_RECT2, sfg.GameStatus.NUMBER_SIZE2)
-        self.begin_time = None
+        self.begin_timer = Timer()
         self.total_enemy_num = len(self.enemies)
         self.current_enemy_num = self.total_enemy_num
 
@@ -153,18 +154,17 @@ class GameStatus(object):
         camera.screen.blit(self.numbers2[unit], sfg.GameStatus.KILL_NUM_TOTAL_BLIT_POS2)
 
         if self.status == cfg.GameStatus.INIT:
-            if self.begin_time is None:
-                self.begin_time = time()
+            if not self.begin_timer.is_begin():
+                self.begin_timer.begin(sfg.GameStatus.INIT_PERSIST_TIME)
+
+            if self.begin_timer.exceed():
+                # game begin, change the status
+                self.status = cfg.GameStatus.IN_PROGRESS
             else:
-                pass_time = time() - self.begin_time
-                if pass_time >= sfg.GameStatus.INIT_PERSIST_TIME:
-                    # game begin, change the status
-                    self.status = cfg.GameStatus.IN_PROGRESS
-                else:
-                    # count down for game begin
-                    left_time = sfg.GameStatus.INIT_PERSIST_TIME - pass_time
-                    number_to_draw = self.numbers1[int(left_time)+1]
-                    camera.screen.blit(number_to_draw, sfg.GameStatus.NUMBER_BLIT_POS)
+                # count down for game begin, draw corresponding count-down numbers
+                left_time = sfg.GameStatus.INIT_PERSIST_TIME - self.begin_timer.passed_time()
+                number_to_draw = self.numbers1[int(left_time)+1]
+                camera.screen.blit(number_to_draw, sfg.GameStatus.NUMBER_BLIT_POS)
 
         elif self.status == cfg.GameStatus.HERO_WIN:
             camera.screen.blit(self.win_panel, sfg.GameStatus.HERO_WIN_BLIT_POS)

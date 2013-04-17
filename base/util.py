@@ -3,6 +3,7 @@ from pygame.locals import *
 from gameobjects.vector2 import Vector2
 import weakref
 import os
+from time import time
 import pprint
 import imp
 
@@ -244,6 +245,48 @@ def cos_for_vec(v1, v2):
 
 def manhattan_distance(p1, p2):
     return abs(p1.x - p2.x) + abs(p1.y - p2.y)
+
+
+
+class Timer(object):
+    def __init__(self, time_len=None):
+        self.begin_time = None
+        self.current_time = None
+        self.time_len = time_len
+
+
+    def begin(self, time_len=None):
+        # set begin time, when you run a stopwatch, you must call this
+        # optionally, you may set another time_len
+        self.begin_time = time()
+        if time_len is not None:
+            self.time_len = time_len
+
+
+    def is_begin(self):
+        return self.begin_time is not None
+
+
+    def tick(self):
+        self.current_time = time()
+
+
+    def passed_time(self):
+        return self.current_time - self.begin_time
+
+
+    def exceed(self):
+        self.current_time = time()
+        if self.current_time - self.begin_time > self.time_len:
+            return True
+        return False
+
+
+    def clear(self):
+        self.begin_time = None
+        self.current_time = None
+        self.time_len = None
+
 
 
 def test_geometry():
