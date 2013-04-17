@@ -222,10 +222,12 @@ class SpriteStay(State):
         self.enter_time = time()
         self.stay_time = gauss(self.ai.STAY_TIME_MU, self.ai.STAY_TIME_SIGMA)   
         # turn for a random direction if the last state is the same "stay"
-        if last_state and last_state.id == cfg.SpriteState.STAY:
+        if last_state and last_state.id == cfg.SpriteState.STAY \
+            and happen(self.ai.STAY_CHANGE_DIRECTION_PROB):
             self.sprite.direction = choice(cfg.Direction.ALL)   # a random direction from "all"
-            if happen(self.ai.EMOTION_SILENT_PROB):
-                self.sprite.set_emotion(cfg.SpriteEmotion.SILENT)
+
+        if happen(self.ai.EMOTION_SILENT_PROB):
+            self.sprite.set_emotion(cfg.SpriteEmotion.SILENT)
 
 
     def send_actions(self):
