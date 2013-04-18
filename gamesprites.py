@@ -303,6 +303,8 @@ class Enemy(GameSprite):
             cal_frames=self.setting.ATTACK_CAL_FRAMES)
         self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
         self.brain = SpriteBrain(self, ai, game_map.waypoints)
+        self.hp_bar = pygame.Surface(sfg.GameStatus.ENEMY_HP_BAR_SIZE, 
+            flags=SRCALPHA, depth=32).convert_alpha()
 
 
     def draw_emotion(self, camera):
@@ -313,11 +315,29 @@ class Enemy(GameSprite):
         camera.screen.blit(self.emotion_animation.image, rect)
 
 
+    def draw_hp_bar(self, camera):
+        # fill color to hp_bar according to the sprite hp
+        self.hp_bar.fill(sfg.GameStatus.SPRITE_BAR_BG_COLOR)
+        r = self.hp_bar.get_rect()
+        r.width *= float(self.hp) / self.setting.HP
+        hp_color = sfg.GameStatus.SPRITE_HP_COLORS[self.status["hp"]]
+        self.hp_bar.fill(hp_color, r)
+
+        # adjust hp_bar position relative to screen
+        r = self.hp_bar.get_rect()
+        r.center = (self.pos.x, self.pos.y / 2 - self.setting.HEIGHT)
+        r.top -= camera.rect.top
+        r.left -= camera.rect.left
+        camera.screen.blit(hp_bar, r)
+
+
     def draw(self, camera):
         self.draw_image(camera)
 
         if self.emotion_animation.image is not None:
             self.draw_emotion(camera)
+        else:
+            self.draw_hp_bar(camera)
 
 
     def move(self, speed, passed_seconds, to_check_block=False):

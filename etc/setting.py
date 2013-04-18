@@ -276,13 +276,16 @@ class GameStatus(object):
     NUMBER_SIZE1 = (34, 60)
     NUMBER_RECT2 = (96, 160, 160, 16)
     NUMBER_SIZE2 = (16, 16)
+
     # all words
     WORDS = {
         "hero_hp": Font.ARIAL_BOLD_12.render("HP", True, pygame.Color("white")),
         "hero_sp": Font.ARIAL_BOLD_12.render("SP", True, pygame.Color("white")),
     }
+
     # init status persist 3 seconds
     INIT_PERSIST_TIME = 3
+
     # health point related
     SPRITE_HP_COLORS = {
         cfg.SpriteStatus.HEALTHY: pygame.Color(0, 128, 0, 128),
@@ -292,22 +295,18 @@ class GameStatus(object):
     }
     SPRITE_BAR_BG_COLOR = pygame.Color(0, 0, 0, 128)
     HERO_ALL_BAR_SIZE = (100, 10)
-    #HERO_HP_TITLE_BLIT_POS = (80, 18)
     HERO_HP_TITLE_BLIT_POS = (82, 20)
-    #HERO_HP_BLIT_POS = (102, 20)
     HERO_HP_BLIT_POS = (104, 22)
+
     # stamina point related
     HERO_SP_COLOR = pygame.Color(0, 64, 128, 128),
-    #HERO_SP_TITLE_BLIT_POS = (80, 33)
     HERO_SP_TITLE_BLIT_POS = (82, 35)
-    #HERO_SP_BLIT_POS = (102, 35)
     HERO_SP_BLIT_POS = (104, 37)
 
     HERO_PANEL_RECT = (0, 0, 144, 56)
     HERO_PANEL_SCALE_SIZE = (1.5, 1.66)
     HERO_PANEL_BLIT_POS = (2, 2)
     HERO_HEAD_SIZE = (128, 128)
-    #HERO_HEAD_BLIT_POS = (-22, -40)
     HERO_HEAD_BLIT_POS = (-20, -38)
 
     ENEMY_HP_BAR_SIZE = (50, 5)
