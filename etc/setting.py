@@ -50,12 +50,13 @@ class GameRole(object):
 class Renne(GameRole):
     NAME = "Renne"
     HP = 300
-    STAMINA = 100
+    # stamina
+    SP = 100
     ATK = 30
     DFS = 5
 
-    STAMINA_COST_RATE = 15
-    STAMINA_RECOVERY_RATE = 12
+    SP_COST_RATE = 15
+    SP_RECOVERY_RATE = 12
     # sprite radius
     RADIUS = 18 
     # distance from coord to sprite foot

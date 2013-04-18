@@ -91,10 +91,10 @@ class GameStatus(object):
         self.current_enemy_num = len(self.enemies)
 
 
-    def draw_hero_bar(self, camera, bar, bar_color, blit_pos):
+    def draw_hero_bar(self, camera, current_value, full_value, bar, bar_color, blit_pos):
         bar.fill(sfg.SpriteStatus.SPRITE_BAR_BG_COLOR)
-        r = self.bar.get_rect()
-        r.width *= float(self.hero.hp) / self.hero.HP
+        r = bar.get_rect()
+        r.width *= float(current_value) / full_value
         bar.fill(bar_color, r)
         camera.screen.blit(bar, blit_pos)
 
@@ -110,12 +110,12 @@ class GameStatus(object):
         camera.screen.blit(sfg.SpriteStatus.WORDS["hero_sp"], sfg.SpriteStatus.HERO_SP_TITLE_BLIT_POS)
 
         # draw the hp bar for Renne
-        self.draw_hero_bar(camera, self.hero_hp_bar, 
+        self.draw_hero_bar(camera, self.hero.hp, self.hero.setting.HP, self.hero_hp_bar, 
             sfg.SpriteStatus.SPRITE_HP_COLORS[self.hero.status["hp"]], 
             sfg.SpriteStatus.HERO_HP_BLIT_POS)
 
         # draw the sp bar for Renne
-        self.draw_hero_bar(camera, self.hero_sp_bar,
+        self.draw_hero_bar(camera, self.hero.sp, self.hero.setting.SP, self.hero_sp_bar,
             sfg.SpriteStatus.HERO_SP_COLOR, sfg.SpriteStatus.HERO_SP_BLIT_POS)
 
         camera.screen.blit(self.kill_icon, sfg.GameStatus.KILL_ICON_BLIT_POS)

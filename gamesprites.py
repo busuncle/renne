@@ -115,7 +115,7 @@ class Renne(GameSprite):
         super(Renne, self).__init__(setting.NAME, setting.HP, setting.ATK, setting.DFS, pos, direction)
 
         self.setting = setting
-        self.stamina = self.setting.STAMINA
+        self.sp = self.setting.SP
         self.level = 1
         self.exp = 0
 
@@ -163,8 +163,8 @@ class Renne(GameSprite):
     def stand(self, passed_seconds):
         # stamina recover when standing
         if self.hp > 0:
-            self.stamina = min(self.setting.STAMINA, 
-                self.stamina + self.setting.STAMINA_RECOVERY_RATE * passed_seconds)
+            self.sp = min(self.setting.SP, 
+                self.sp + self.setting.SP_RECOVERY_RATE * passed_seconds)
         self.animation.run_circle_frame(cfg.HeroAction.STAND, passed_seconds)
 
 
@@ -175,7 +175,7 @@ class Renne(GameSprite):
 
     def run(self, passed_seconds):
         # cost some stamina when running
-        self.stamina = max(0, self.stamina - self.setting.STAMINA_COST_RATE * passed_seconds)
+        self.sp = max(0, self.sp - self.setting.SP_COST_RATE * passed_seconds)
         self.move(self.setting.RUN_SPEED, passed_seconds)
         self.animation.run_circle_frame(cfg.HeroAction.RUN, passed_seconds)
 
@@ -241,7 +241,7 @@ class Renne(GameSprite):
             self.sound_box.play("renne_attack")
 
         elif self.key_vec:
-            if pressed_keys[sfg.UserKey.RUN] and self.stamina > 0:
+            if pressed_keys[sfg.UserKey.RUN] and self.sp > 0:
                 # press run and stamina enough
                 self.action = cfg.HeroAction.RUN
             else:
@@ -328,16 +328,18 @@ class Enemy(GameSprite):
         r.center = (self.pos.x, self.pos.y / 2 - self.setting.HEIGHT)
         r.top -= camera.rect.top
         r.left -= camera.rect.left
-        camera.screen.blit(hp_bar, r)
+        camera.screen.blit(self.hp_bar, r)
 
 
     def draw(self, camera):
         self.draw_image(camera)
 
+        if self.status["hp"] == cfg.SpriteStatus.DIE:
+            return
+
+        self.draw_hp_bar(camera)
         if self.emotion_animation.image is not None:
             self.draw_emotion(camera)
-        else:
-            self.draw_hp_bar(camera)
 
 
     def move(self, speed, passed_seconds, to_check_block=False):
