@@ -41,10 +41,20 @@ class UserKey(object):
 class Screen(object):
     SIZE = [1024, 768]
     INNER_SIZE = [SIZE[0] / 4, SIZE[1] / 4]
+    DEFAULT_SCREEN = pygame.display.set_mode(SIZE, HWSURFACE|DOUBLEBUF)
+    DEFAULT_SURFACE = pygame.Surface(SIZE).convert_alpha()
+
+
+
+class Stuff(object):
+    # some common stuff, may be used everywhere if needed
+    MASK_ALPHA_128 = pygame.Color(0, 0, 0, 128)
+
 
 
 class GameRole(object):
     pass
+
 
 
 class Renne(GameRole):

@@ -9,6 +9,9 @@ from base.util import Timer
 
 
 
+screen_surface = sfg.Screen.DEFAULT_SURFACE
+
+
 class GameStatus(object):
     battle_images = ImageController(sfg.BATTLE_IMAGES[0])
     battle_images.add_from_list(sfg.BATTLE_IMAGES[1])
@@ -20,10 +23,8 @@ class GameStatus(object):
         self.head_images_list = self.gen_head_images_list()
         self.status_panel = self.gen_panel("status", 
             sfg.GameStatus.HERO_PANEL_RECT, sfg.GameStatus.HERO_PANEL_SCALE_SIZE)
-        self.hero_hp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE, 
-            flags=SRCALPHA, depth=32).convert_alpha()
-        self.hero_sp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE,
-            flags=SRCALPHA, depth=32).convert_alpha()
+        self.hero_hp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
+        self.hero_sp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
         self.status = cfg.GameStatus.INIT
         self.win_panel = self.gen_panel("status2", sfg.GameStatus.HERO_WIN_PANEL_RECT)
         self.lose_panel = self.gen_panel("status2", sfg.GameStatus.HERO_LOSE_PANEL_RECT)
@@ -139,7 +140,11 @@ class GameStatus(object):
                 camera.screen.blit(number_to_draw, sfg.GameStatus.BEGIN_NUMBER_BLIT_POS)
 
         elif self.status == cfg.GameStatus.HERO_WIN:
+            screen_surface.fill(sfg.Stuff.MASK_ALPHA_128)
+            camera.screen.blit(screen_surface, (0, 0))
             camera.screen.blit(self.win_panel, sfg.GameStatus.HERO_WIN_BLIT_POS)
         elif self.status == cfg.GameStatus.HERO_LOSE:
+            screen_surface.fill(sfg.Stuff.MASK_ALPHA_128)
+            camera.screen.blit(screen_surface, (0, 0))
             camera.screen.blit(self.lose_panel, sfg.GameStatus.HERO_LOSE_BLIT_POS)
 

@@ -15,7 +15,8 @@ from base import util
 
 
 
-screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
+screen = sfg.Screen.DEFAULT_SCREEN
+screen_surface = sfg.Screen.DEFAULT_SURFACE
 bg_box = BackgroundBox(sfg.Music.BACKGROUND_VOLUME)
 pygame.display.set_caption("Renne")
 pygame.display.set_icon(pygame.image.load("renne.png").convert_alpha())
@@ -319,9 +320,8 @@ def enter_chapter(screen, chapter, renne):
                 camera, game_world, game_map, clock)
 
         if game_status.status == cfg.GameStatus.PAUSE:
-            mask = pygame.Surface(sfg.Screen.SIZE).convert_alpha()
-            mask.fill(pygame.Color(0, 0, 0, 128))
-            screen.blit(mask, (0, 0))
+            screen_surface.fill(sfg.Stuff.MASK_ALPHA_128)
+            screen.blit(screen_surface, (0, 0))
 
             # draw the pause menu
             render_menu(screen, menu_index, sfg.Chapter.PAUSE_MENU_LIST, sfg.Chapter.PAUSE_MENU_OPTION_RECT,

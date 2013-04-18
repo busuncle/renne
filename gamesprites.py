@@ -303,8 +303,7 @@ class Enemy(GameSprite):
             cal_frames=self.setting.ATTACK_CAL_FRAMES)
         self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
         self.brain = SpriteBrain(self, ai, game_map.waypoints)
-        self.hp_bar = pygame.Surface(sfg.SpriteStatus.ENEMY_HP_BAR_SIZE, 
-            flags=SRCALPHA, depth=32).convert_alpha()
+        self.hp_bar = pygame.Surface(sfg.SpriteStatus.ENEMY_HP_BAR_SIZE).convert_alpha()
 
 
     def draw_emotion(self, camera):
