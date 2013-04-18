@@ -6,7 +6,6 @@ import etc.constant as cfg
 import etc.ai_setting as ai
 from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObject
 from gamestatus import GameStatus
-from achievement import Achievement
 from musicbox import BackgroundBox
 from animation import cg_image_controller, basic_image_controller
 from renderer import Camera
@@ -254,7 +253,7 @@ def enter_chapter(screen, chapter, renne):
     game_world.add(static_objects)
 
     game_status = GameStatus(chapter, renne, enemies)
-    game_achievement = Achievement(renne, enemies)
+    #game_achievement = Achievement(renne, enemies)
 
     menu_index = 0
     running = True
@@ -308,7 +307,7 @@ def enter_chapter(screen, chapter, renne):
                 enemy.update(passed_seconds, external_event=game_status.status)
 
         game_status.update()
-        game_achievement.update()
+        #game_achievement.update()
 
         camera.screen_follow(renne.pos)
 

@@ -32,6 +32,7 @@ class GameStatus(object):
         self.numbers1 = self.gen_numbers("status4", sfg.GameStatus.NUMBER_RECT1, sfg.GameStatus.NUMBER_SIZE1)
         self.numbers2 = self.gen_numbers("icon1", sfg.GameStatus.NUMBER_RECT2, sfg.GameStatus.NUMBER_SIZE2)
         self.begin_timer = Timer()
+        self.achievement = Achievement(hero, enemies)
         self.total_enemy_num = len(self.enemies)
         self.current_enemy_num = self.total_enemy_num
 
@@ -126,6 +127,8 @@ class GameStatus(object):
         camera.screen.blit(scale2x(self.numbers2[kill_num / 10]), sfg.GameStatus.KILL_NUM_BLIT_POS)
         camera.screen.blit(scale2x(self.numbers2[kill_num % 10]), sfg.GameStatus.KILL_NUM_BLIT_POS2)
 
+        self.achievement.update()
+
         if self.status == cfg.GameStatus.INIT:
             if not self.begin_timer.is_begin():
                 self.begin_timer.begin(sfg.GameStatus.INIT_PERSIST_TIME)
@@ -148,3 +151,43 @@ class GameStatus(object):
             camera.screen.blit(screen_surface, (0, 0))
             camera.screen.blit(self.lose_panel, sfg.GameStatus.HERO_LOSE_BLIT_POS)
 
+
+
+class Achievement(object):
+    def __init__(self, hero, enemy_list):
+        self.hero = hero
+        self.enemy_list = enemy_list
+        self.n_hit_list = []
+        self.n_kill_list = []
+        self.kill_time_list = []
+        self.current_n_kill_index = 0
+        self.current_kill_time_index = 0
+        self.has_killed = set()
+
+
+    def update(self):
+        if len(self.hero.attacker.hit_record) > 0:
+            for record in self.hero.attacker.hit_record:
+                if record["n_hit"] > 1:
+                    print "%s hit!" % record["n_hit"]
+                    self.n_hit_list.append(record["n_hit"])
+
+            self.hero.attacker.hit_record = []
+
+        if len(self.hero.attacker.kill_record) > 0:
+            for record in self.hero.attacker.kill_record:
+                self.kill_time_list.append(record["time"])
+                if len(self.kill_time_list) == 1:
+                    self.n_kill_list.append(1)
+                else:
+                    if self.kill_time_list[-1] - self.kill_time_list[-2] <= sfg.Achievement.N_KILL_TIMEDELTA:
+                        self.n_kill_list.append(self.n_kill_list[-1] + 1)
+                        print "%s kill!" % self.n_kill_list[-1]
+                    else:
+                        self.n_kill_list.append(1)
+
+            self.hero.attacker.kill_record = []
+
+
+    def draw(self, camera):
+        pass
