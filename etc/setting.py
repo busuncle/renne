@@ -269,22 +269,11 @@ class SpriteStatus(object):
     WOUNDED_RATIO_FLOOR = 1.0 / 3
     DANGER_RATIO_FLOOR = 0
 
-
-
-class GameStatus(object):
-    NUMBER_RECT1 = (0, 280, 340, 60)
-    NUMBER_SIZE1 = (34, 60)
-    NUMBER_RECT2 = (96, 160, 160, 16)
-    NUMBER_SIZE2 = (16, 16)
-
     # all words
     WORDS = {
         "hero_hp": Font.ARIAL_BOLD_12.render("HP", True, pygame.Color("white")),
         "hero_sp": Font.ARIAL_BOLD_12.render("SP", True, pygame.Color("white")),
     }
-
-    # init status persist 3 seconds
-    INIT_PERSIST_TIME = 3
 
     # health point related
     SPRITE_HP_COLORS = {
@@ -303,19 +292,30 @@ class GameStatus(object):
     HERO_SP_TITLE_BLIT_POS = (82, 35)
     HERO_SP_BLIT_POS = (104, 37)
 
+    ENEMY_HP_BAR_SIZE = (50, 5)
+
+
+
+class GameStatus(object):
+    NUMBER_RECT1 = (0, 280, 340, 60)
+    NUMBER_SIZE1 = (34, 60)
+    NUMBER_RECT2 = (96, 160, 160, 16)
+    NUMBER_SIZE2 = (16, 16)
+    BEGIN_NUMBER_BLIT_POS = (500, 360)
+
+    # init status persist 3 seconds
+    INIT_PERSIST_TIME = 3
+
     HERO_PANEL_RECT = (0, 0, 144, 56)
     HERO_PANEL_SCALE_SIZE = (1.5, 1.66)
     HERO_PANEL_BLIT_POS = (2, 2)
     HERO_HEAD_SIZE = (128, 128)
     HERO_HEAD_BLIT_POS = (-20, -38)
 
-    ENEMY_HP_BAR_SIZE = (50, 5)
-
     HERO_WIN_PANEL_RECT = (0, 0, 1024, 170)
     HERO_LOSE_PANEL_RECT = (0, 170, 1024, 170)
     HERO_WIN_BLIT_POS = (0, 280)
     HERO_LOSE_BLIT_POS = (0, 280)
-    BEGIN_NUMBER_BLIT_POS = (500, 360)
 
     KILL_ICON_RECT = (224, 0, 32, 32)
     KILL_ICON_BLIT_POS = (220, 10)

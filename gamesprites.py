@@ -303,7 +303,7 @@ class Enemy(GameSprite):
             cal_frames=self.setting.ATTACK_CAL_FRAMES)
         self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
         self.brain = SpriteBrain(self, ai, game_map.waypoints)
-        self.hp_bar = pygame.Surface(sfg.GameStatus.ENEMY_HP_BAR_SIZE, 
+        self.hp_bar = pygame.Surface(sfg.SpriteStatus.ENEMY_HP_BAR_SIZE, 
             flags=SRCALPHA, depth=32).convert_alpha()
 
 
@@ -317,10 +317,10 @@ class Enemy(GameSprite):
 
     def draw_hp_bar(self, camera):
         # fill color to hp_bar according to the sprite hp
-        self.hp_bar.fill(sfg.GameStatus.SPRITE_BAR_BG_COLOR)
+        self.hp_bar.fill(sfg.SpriteStatus.SPRITE_BAR_BG_COLOR)
         r = self.hp_bar.get_rect()
         r.width *= float(self.hp) / self.setting.HP
-        hp_color = sfg.GameStatus.SPRITE_HP_COLORS[self.status["hp"]]
+        hp_color = sfg.SpriteStatus.SPRITE_HP_COLORS[self.status["hp"]]
         self.hp_bar.fill(hp_color, r)
 
         # adjust hp_bar position relative to screen

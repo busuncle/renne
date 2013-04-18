@@ -17,13 +17,12 @@ class GameStatus(object):
         self.chapter = chapter
         self.hero = hero
         self.enemies = enemies
-        self.words = sfg.GameStatus.WORDS
         self.head_images_list = self.gen_head_images_list()
         self.status_panel = self.gen_panel("status", 
             sfg.GameStatus.HERO_PANEL_RECT, sfg.GameStatus.HERO_PANEL_SCALE_SIZE)
-        self.hero_hp_bar = pygame.Surface(sfg.GameStatus.HERO_ALL_BAR_SIZE, 
+        self.hero_hp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE, 
             flags=SRCALPHA, depth=32).convert_alpha()
-        self.hero_sp_bar = pygame.Surface(sfg.GameStatus.HERO_ALL_BAR_SIZE,
+        self.hero_sp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE,
             flags=SRCALPHA, depth=32).convert_alpha()
         self.status = cfg.GameStatus.INIT
         self.win_panel = self.gen_panel("status2", sfg.GameStatus.HERO_WIN_PANEL_RECT)
@@ -93,7 +92,7 @@ class GameStatus(object):
 
 
     def draw_hero_bar(self, camera, bar, bar_color, blit_pos):
-        bar.fill(sfg.GameStatus.SPRITE_BAR_BG_COLOR)
+        bar.fill(sfg.SpriteStatus.SPRITE_BAR_BG_COLOR)
         r = self.bar.get_rect()
         r.width *= float(self.hero.hp) / self.hero.HP
         bar.fill(bar_color, r)
@@ -107,17 +106,17 @@ class GameStatus(object):
         # Renne's head, showing her status
         camera.screen.blit(self.get_current_head(self.hero.status["hp"]), sfg.GameStatus.HERO_HEAD_BLIT_POS)
 
-        camera.screen.blit(self.words["hero_hp"], sfg.GameStatus.HERO_HP_TITLE_BLIT_POS)
-        camera.screen.blit(self.words["hero_sp"], sfg.GameStatus.HERO_SP_TITLE_BLIT_POS)
+        camera.screen.blit(sfg.SpriteStatus.WORDS["hero_hp"], sfg.SpriteStatus.HERO_HP_TITLE_BLIT_POS)
+        camera.screen.blit(sfg.SpriteStatus.WORDS["hero_sp"], sfg.SpriteStatus.HERO_SP_TITLE_BLIT_POS)
 
         # draw the hp bar for Renne
         self.draw_hero_bar(camera, self.hero_hp_bar, 
-            sfg.GameStatus.SPRITE_HP_COLORS[self.hero.status["hp"]], 
-            sfg.GameStatus.HERO_HP_BLIT_POS)
+            sfg.SpriteStatus.SPRITE_HP_COLORS[self.hero.status["hp"]], 
+            sfg.SpriteStatus.HERO_HP_BLIT_POS)
 
         # draw the sp bar for Renne
         self.draw_hero_bar(camera, self.hero_sp_bar,
-            sfg.GameStatus.HERO_SP_COLOR, sfg.GameStatus.HERO_SP_BLIT_POS)
+            sfg.SpriteStatus.HERO_SP_COLOR, sfg.SpriteStatus.HERO_SP_BLIT_POS)
 
         camera.screen.blit(self.kill_icon, sfg.GameStatus.KILL_ICON_BLIT_POS)
 
