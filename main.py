@@ -253,7 +253,9 @@ def enter_chapter(screen, chapter, renne):
     game_world.add(static_objects)
 
     game_status = GameStatus(chapter, renne, enemies)
-    #game_achievement = Achievement(renne, enemies)
+    if COMMAND_DEBUG_MODE:
+        # skip the init status in command debug mode
+        game_status.status = cfg.GameStatus.IN_PROGRESS
 
     menu_index = 0
     running = True
@@ -307,7 +309,6 @@ def enter_chapter(screen, chapter, renne):
                 enemy.update(passed_seconds, external_event=game_status.status)
 
         game_status.update()
-        #game_achievement.update()
 
         camera.screen_follow(renne.pos)
 
