@@ -14,6 +14,7 @@ class Font(object):
     ARIAL_FILEPATH = os.path.join("res", "font",  "arial.ttf")
     ARIAL_BOLD_FILEPATH = os.path.join("res", "font", "arial_bold.ttf")
     ARIAL_BLACK_FILEPATH = os.path.join("res", "font", "arial_black.ttf")
+    HOLLOW_FILEPATH = os.path.join("res", "font", "hollow.ttf")
 
     ARIAL_16 = pygame.font.Font(ARIAL_FILEPATH, 16)
     ARIAL_32 = pygame.font.Font(ARIAL_FILEPATH, 32)
@@ -24,6 +25,8 @@ class Font(object):
     ARIAL_BLACK_28 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 28)
     ARIAL_BLACK_32 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 32)
     ARIAL_BLACK_48 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 48)
+
+    HOLLOW_16 = pygame.font.Font(HOLLOW_FILEPATH, 16)
 
 
 
@@ -48,6 +51,7 @@ class Menu(object):
         "color_on": pygame.Color("white"),
         "color_off": pygame.Color("gray"),
     }
+
 
 
 class UserKey(object):
@@ -342,18 +346,32 @@ class Achievement(object):
 
     KILL_ICON_RECT = (224, 0, 32, 32)
     KILL_ICON_BLIT_POS = (220, 10)
-    KILL_NUM_BLIT_POS = (260, 10)
-    KILL_NUM_BLIT_POS2 = (292, 10)
 
     N_HIT_ICON_RECT = (192, 32, 32, 32)
     N_HIT_ICON_BLIT_POS = (332, 10)
-    N_HIT_NUM_BLIT_POS = (372, 10)
-    N_HIT_NUM_BLIT_POS2 = (404, 10)
 
     N_KILL_ICON_RECT = (192, 0, 32, 32)
     N_KILL_ICON_BLIT_POS = (444, 10)
-    N_KILL_NUM_BLIT_POS = (484, 10)
-    N_KILL_NUM_BLIT_POS = (516, 10)
+
+    SCORE_RUN_RATE = 20
+
+    KILL_SCORE = {
+        "blit_pos": (260, 10),
+        "font": Font.HOLLOW_16,
+        "color": pygame.Color("gold"),
+    }
+
+    N_HIT_SCORE = {
+        "blit_pos": (332, 10),
+        "font": Font.HOLLOW_16,
+        "color": pygame.Color("gold"),
+    }
+
+    N_KILL_SCORE = {
+        "blit_pos": (444, 10),
+        "font": Font.HOLLOW_16,
+        "color": pygame.Color("gold"),
+    }
 
 
 

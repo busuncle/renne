@@ -87,6 +87,33 @@ class Menu(object):
 
 
 
+class Score(object):
+    def __init__(self, score_setting):
+        self.current_value = 0
+        self.next_value = 0
+        self.blit_pos = score_setting["blit_pos"]
+        self.font = score_setting["font"]
+        self.color = score_setting["color"]
+
+
+    def add_next_value(self, delta):
+        self.next_value += delta
+
+
+    def update(self, passed_seconds):
+        if self.current_value == self.next_value:
+            return
+
+        self.current_value += passed_seconds * sfg.Achievement.SCORE_RUN_RATE
+        self.current_value = min(self.current_value, self.next_value)
+
+
+    def draw(self, camera):
+        self.font.render(str(self.current_value), True, self.color)
+        camera.screen.blit(self.font, self.blit_pos)
+
+
+
 def start_game(screen):
     bg_box.play("start_game")
 
