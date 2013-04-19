@@ -305,6 +305,32 @@ class SpriteStatus(object):
 
     ENEMY_HP_BAR_SIZE = (50, 5)
 
+    HERO_PANEL_RECT = (0, 0, 144, 56)
+    HERO_PANEL_SCALE_SIZE = (1.5, 1.66)
+    HERO_PANEL_BLIT_POS = (2, 2)
+    HERO_HEAD_SIZE = (128, 128)
+    HERO_HEAD_BLIT_POS = (-20, -38)
+
+
+
+class Achievement(object):
+    N_KILL_TIMEDELTA = 20   # in second unit
+
+    KILL_ICON_RECT = (224, 0, 32, 32)
+    KILL_ICON_BLIT_POS = (220, 10)
+    KILL_NUM_BLIT_POS = (260, 10)
+    KILL_NUM_BLIT_POS2 = (292, 10)
+
+    N_HIT_ICON_RECT = (192, 32, 32, 32)
+    N_HIT_ICON_BLIT_POS = (332, 10)
+    N_HIT_NUM_BLIT_POS = (372, 10)
+    N_HIT_NUM_BLIT_POS2 = (404, 10)
+
+    N_KILL_ICON_RECT = (192, 0, 32, 32)
+    N_KILL_ICON_BLIT_POS = (444, 10)
+    N_KILL_NUM_BLIT_POS = (484, 10)
+    N_KILL_NUM_BLIT_POS = (516, 10)
+
 
 
 class GameStatus(object):
@@ -317,21 +343,10 @@ class GameStatus(object):
     # init status persist 3 seconds
     INIT_PERSIST_TIME = 3
 
-    HERO_PANEL_RECT = (0, 0, 144, 56)
-    HERO_PANEL_SCALE_SIZE = (1.5, 1.66)
-    HERO_PANEL_BLIT_POS = (2, 2)
-    HERO_HEAD_SIZE = (128, 128)
-    HERO_HEAD_BLIT_POS = (-20, -38)
-
     HERO_WIN_PANEL_RECT = (0, 0, 1024, 170)
     HERO_LOSE_PANEL_RECT = (0, 170, 1024, 170)
     HERO_WIN_BLIT_POS = (0, 280)
     HERO_LOSE_BLIT_POS = (0, 280)
-
-    KILL_ICON_RECT = (224, 0, 32, 32)
-    KILL_ICON_BLIT_POS = (220, 10)
-    KILL_NUM_BLIT_POS = (260, 10)
-    KILL_NUM_BLIT_POS2 = (292, 10)
 
 
 
@@ -377,10 +392,6 @@ class EndGame(object):
 class MapEditor(object):
     SCREEN_MOVE_SPEED = 400
 
-
-
-class Achievement(object):
-    N_KILL_TIMEDELTA = 20   # in second unit
 
 
 class Music(object):
