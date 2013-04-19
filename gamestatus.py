@@ -2,6 +2,8 @@ from time import time
 import pygame
 from pygame.locals import *
 from pygame.transform import smoothscale, scale2x
+from animation import cg_image_controller, basic_image_controller
+from musicbox import BackgroundBox
 from base.util import ImageController
 import etc.setting as sfg
 import etc.constant as cfg
@@ -9,7 +11,7 @@ from base.util import Timer
 
 
 
-screen_surface = sfg.Screen.DEFAULT_SURFACE
+bg_box = BackgroundBox(sfg.Music.BACKGROUND_VOLUME)
 
 battle_images = ImageController(sfg.BATTLE_IMAGES[0])
 battle_images.add_from_list(sfg.BATTLE_IMAGES[1])
@@ -33,6 +35,165 @@ def gen_numbers(images, filekey, number_rect, number_size):
     return res
 
 
+class Menu(object):
+    def __init__(self, menu_setting):
+        self.index = 0
+        self.options = menu_setting["options"]
+        self.option_rect = pygame.Rect(menu_setting["option_rect"])
+        self.blit_y = menu_setting["blit_y"]
+        self.font_on = menu_setting["font_on"]
+        self.font_off = menu_setting["font_off"]
+        self.color_on = menu_setting["color_on"]
+        self.color_off = menu_setting["color_off"]
+        self.renne_cursor = basic_image_controller.get("head_status").subsurface(
+            pygame.Rect(sfg.Menu.RENNE_CURSOR_RECT)).convert_alpha()
+
+
+    def current_menu(self):
+        return self.options[self.index]
+
+
+    def update(self, key):
+        # 0 <= menu_index <= len(menu_list) - 1
+        if key in (sfg.UserKey.DOWN, K_DOWN):
+            self.index = min(self.index + 1, len(self.options) - 1)
+        elif key in (sfg.UserKey.UP, K_UP):
+            self.index = max(0, self.index - 1)
+
+
+    def draw(self, screen):
+        menu_blit_y = self.blit_y
+        screen_centerx = sfg.Screen.SIZE[0] / 2
+        for i, menu_word in enumerate(self.options):
+            if i == self.index:
+                renne_cursor_rect = self.renne_cursor.get_rect()
+                renne_cursor_rect.center = (screen_centerx - self.option_rect.width / 2,
+                    menu_blit_y + self.option_rect.height / 2)
+                screen.blit(self.renne_cursor, renne_cursor_rect)
+
+                m_font = self.font_on
+                m_color = self.color_on
+
+            else:
+                m_font = self.font_off
+                m_color = self.color_off
+
+            menu = m_font.render(menu_word, True, m_color)
+            menu_rect = menu.get_rect()
+            menu_rect.center = (screen_centerx, menu_blit_y + self.option_rect.height / 2)
+            screen.blit(menu, menu_rect)
+
+            menu_blit_y += self.option_rect.height
+
+
+
+def start_game(screen):
+    bg_box.play("start_game")
+
+    pic = cg_image_controller.get("start_game").convert()
+    pic_rect = pic.get_rect()
+
+    screen_centerx = sfg.Screen.SIZE[0] / 2
+    pic_rect.centerx = screen_centerx
+    pic_rect.top = sfg.StartGame.PICTURE_BLIT_Y
+
+    clock = pygame.time.Clock()
+    pic_alpha = 0 # picture fades in, alpha changes from 0 to 255
+    fade_in_delta = 256 / sfg.StartGame.PICTURE_FADE_IN_TIME
+
+    menu = Menu(sfg.Menu.START_GAME)
+    while True:
+        screen.fill(pygame.Color("black"))
+
+        time_passed = clock.tick(sfg.FPS)
+        passed_seconds = time_passed / 1000.0
+        pic_alpha = int(min(pic_alpha + passed_seconds * fade_in_delta, 255))
+        pic.set_alpha(pic_alpha)
+        screen.blit(pic, pic_rect)
+
+        if pic_alpha >= 255:
+            # no events accepted until the renne's picure is fully displayed
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: 
+                    return cfg.GameControl.QUIT
+                if event.type == KEYDOWN:
+                    if event.key == K_RETURN:
+                        if menu.current_menu() == "START":
+                            return cfg.GameControl.NEXT
+                        elif menu.current_menu() == "QUIT":
+                            return cfg.GameControl.QUIT
+                    elif event.key == K_ESCAPE:
+                        return cfg.GameControl.QUIT
+
+                    menu.update(event.key)
+
+            menu.draw(screen)
+
+        pygame.display.flip()
+
+
+
+def loading_chapter_picture(screen):
+    img = cg_image_controller.get("loading_chapter").convert()
+    img_rect = img.get_rect()
+    img_rect.center = map(lambda x: x/2, sfg.Screen.SIZE)
+
+    alpha = 0
+    delta = 256 / sfg.Chapter.LOADING_PICTURE_FADE_IN_TIME
+    clock = pygame.time.Clock()
+    while alpha < 255:
+        screen.fill(pygame.Color("black"))
+        time_passed = clock.tick(sfg.FPS)
+        passed_seconds = time_passed / 1000.0
+        alpha = int(min(alpha + passed_seconds * delta, 255))
+        img.set_alpha(alpha)
+        screen.blit(img, img_rect)
+        screen.blit(sfg.Chapter.LOADING_WORD, sfg.Chapter.LOADING_WORD_BLIT_POS)
+        pygame.display.flip()
+
+
+
+def end_game(screen):
+    bg_box.play("end_game")
+
+    screen_centerx = sfg.Screen.SIZE[0] / 2
+
+    renne_image = pygame.image.load("renne.png").convert_alpha()
+    renne_image_rect = renne_image.get_rect()
+    renne_image_rect.centerx = screen_centerx
+    renne_image_rect.centery = sfg.EndGame.RENNE_IMAGE_BLIT_Y
+
+    word = sfg.EndGame.BUSUNCLE_WORKS
+    word_rect = word.get_rect()
+    word_rect.centerx = screen_centerx
+    word_rect.centery = sfg.EndGame.BUSUNCLE_WORKS_BLIT_Y
+
+    mask_alpha = 255
+    fade_in_delta = 256 / sfg.EndGame.ENDING_FADEIN_TIME
+    mask = sfg.Screen.DEFAULT_SURFACE
+
+    clock = pygame.time.Clock()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit(0)
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    exit(0)
+
+        screen.fill(pygame.Color("black"))
+        screen.blit(renne_image, renne_image_rect)
+        screen.blit(word, word_rect)
+
+        time_passed = clock.tick(sfg.FPS)
+        passed_seconds = time_passed / 1000.0
+        mask_alpha = int(max(mask_alpha - passed_seconds * fade_in_delta, 0))
+        mask.fill(pygame.Color(0, 0, 0, mask_alpha))
+        screen.blit(mask, (0, 0))
+
+        pygame.display.flip()
+
+
 
 class GameStatus(object):
     def __init__(self, chapter, hero, enemy_list):
@@ -46,6 +207,10 @@ class GameStatus(object):
         self.begin_timer = Timer()
         self.hero_status = HeroStatus(hero)
         self.achievement = Achievement(hero, enemy_list)
+        self.menu = Menu(sfg.Menu.PAUSE)
+        self.mask = sfg.Screen.DEFAULT_SURFACE
+
+        bg_box.play("chapter_%s" % chapter)
 
 
     def update(self):
@@ -93,14 +258,24 @@ class GameStatus(object):
                 number_to_draw = self.numbers1[int(left_time)+1]
                 camera.screen.blit(number_to_draw, sfg.GameStatus.BEGIN_NUMBER_BLIT_POS)
 
-        elif self.status == cfg.GameStatus.HERO_WIN:
-            screen_surface.fill(sfg.Stuff.MASK_ALPHA_128)
-            camera.screen.blit(screen_surface, (0, 0))
-            camera.screen.blit(self.win_panel, sfg.GameStatus.HERO_WIN_BLIT_POS)
-        elif self.status == cfg.GameStatus.HERO_LOSE:
-            screen_surface.fill(sfg.Stuff.MASK_ALPHA_128)
-            camera.screen.blit(screen_surface, (0, 0))
-            camera.screen.blit(self.lose_panel, sfg.GameStatus.HERO_LOSE_BLIT_POS)
+        elif self.status != cfg.GameStatus.IN_PROGRESS:
+            self.mask.fill(sfg.Stuff.MASK_ALPHA_128)
+            camera.screen.blit(self.mask, (0, 0))
+
+            if self.status == cfg.GameStatus.HERO_WIN:
+                camera.screen.blit(self.win_panel, sfg.GameStatus.HERO_WIN_BLIT_POS)
+                if bg_box.current_playing != "hero_win":
+                    bg_box.stop()
+                    # TODO: may play some other background music here
+
+            elif self.status == cfg.GameStatus.HERO_LOSE:
+                camera.screen.blit(self.lose_panel, sfg.GameStatus.HERO_LOSE_BLIT_POS)
+                if bg_box.current_playing != "hero_lose":
+                    bg_box.stop()
+                    # TODO: may play some other background music here
+            
+            elif self.status == cfg.GameStatus.PAUSE:
+                self.menu.draw(camera.screen)
 
 
 

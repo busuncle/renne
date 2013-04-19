@@ -27,6 +27,29 @@ class Font(object):
 
 
 
+class Menu(object):
+    RENNE_CURSOR_RECT = (224, 64, 32, 32)
+    PAUSE = {
+        "options": ["CONTINUE", "MAIN", "QUIT"],
+        "option_rect": (0, 0, 224, 32),
+        "blit_y": 320,
+        "font_on": Font.ARIAL_BLACK_32,
+        "font_off": Font.ARIAL_BLACK_28,
+        "color_on": pygame.Color("white"),
+        "color_off": pygame.Color("gray"),
+    }
+
+    START_GAME = {
+        "options": ["START", "QUIT"],
+        "option_rect": (0, 0, 256, 48),
+        "blit_y": 550,
+        "font_on": Font.ARIAL_BLACK_48,
+        "font_off": Font.ARIAL_BLACK_32,
+        "color_on": pygame.Color("white"),
+        "color_off": pygame.Color("gray"),
+    }
+
+
 class UserKey(object):
     UP = K_w
     DOWN = K_s
@@ -138,6 +161,7 @@ class SkeletonWarrior(GameRole):
     NEARBY_ALLIANCE_RANGE = 300
 
 
+
 class CastleWarrior(GameRole):
     NAME = "CastleWarrior" 
     HP = 250
@@ -170,7 +194,6 @@ class CastleWarrior(GameRole):
     VIEW_ANGLE = 120 
     CHASE_RANGE = VIEW_RANGE + 20
     NEARBY_ALLIANCE_RANGE = 300
-
 
 
 
@@ -275,6 +298,7 @@ class EmotionImage(object):
     }
 
 
+
 class SpriteStatus(object):
     HEALTHY_RATIO_FLOOR = 2.0 / 3
     WOUNDED_RATIO_FLOOR = 1.0 / 3
@@ -355,29 +379,11 @@ class Chapter(object):
     LOADING_WORD = Font.ARIAL_BLACK_28.render("now loading ...", True, pygame.Color("white"))
     LOADING_WORD_BLIT_POS = (760, 700)
 
-    PAUSE_MENU_LIST = ["CONTINUE", "MAIN", "QUIT"]
-    PAUSE_MENU_OPTION_RECT = (0, 0, 224, 32)
-    PAUSE_MENU_BLIT_Y = 320
-    PAUSE_MENU_ON_FONT = Font.ARIAL_BLACK_32
-    PAUSE_MENU_OFF_FONT = Font.ARIAL_BLACK_28
-    PAUSE_MENU_ON_COLOR = pygame.Color("white")
-    PAUSE_MENU_OFF_COLOR = pygame.Color("gray")
-
 
 
 class StartGame(object):
     PICTURE_FADE_IN_TIME = 3 # in second unit, show up the picture
     PICTURE_BLIT_Y = 30
-
-    MENU_ON_COLOR = pygame.Color("white")
-    MENU_OFF_COLOR = pygame.Color("gray")
-    MENU_ON_FONT = Font.ARIAL_BLACK_48
-    MENU_OFF_FONT = Font.ARIAL_BLACK_32
-    MENU_LIST = ["START", "QUIT"]
-    MENU_OPTION_RECT = (0, 0, 256, 48)
-    MENU_BLIT_Y = 550
-
-    RENNE_CURSOR_RECT = (224, 64, 32, 32)
 
 
 
