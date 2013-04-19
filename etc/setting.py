@@ -205,7 +205,7 @@ class GameMap(object):
     TILE_SIZE = 256
     ONE_SCREEN_DISTANCE_WIDTH = TILE_SIZE * 4
     ONE_SCREEN_DISTANCE_HEIGHT = TILE_SIZE * 6
-    CHAPTERS = [0, 1, 2]
+    CHAPTERS = [0, 1, 2, 3]
 
 
 

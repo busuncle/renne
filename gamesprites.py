@@ -292,6 +292,8 @@ class Enemy(GameSprite):
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
         self.area.center = self.pos('xy')
 
+        self.hp_bar = pygame.Surface(sfg.SpriteStatus.ENEMY_HP_BAR_SIZE).convert_alpha()
+
 
     def activate(self, ai, allsprites, hero, static_objects, game_map):
         # activate the enemy by passing all the nessary external information and ai to it
@@ -303,7 +305,6 @@ class Enemy(GameSprite):
             cal_frames=self.setting.ATTACK_CAL_FRAMES)
         self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
         self.brain = SpriteBrain(self, ai, game_map.waypoints)
-        self.hp_bar = pygame.Surface(sfg.SpriteStatus.ENEMY_HP_BAR_SIZE).convert_alpha()
 
 
     def draw_emotion(self, camera):
