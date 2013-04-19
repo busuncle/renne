@@ -408,7 +408,3 @@ class Achievement(object):
     def draw(self, camera):
         # suppose(be sure) kill_num < 100, e.g. 12, so "kill_num / 10" gets 1, and "kill_num % 10" is 2
         camera.screen.blit(self.kill_icon, sfg.Achievement.KILL_ICON_BLIT_POS)
-        camera.screen.blit(scale2x(self.numbers2[self.kill_num / 10]), 
-            sfg.Achievement.KILL_NUM_BLIT_POS)
-        camera.screen.blit(scale2x(self.numbers2[self.kill_num % 10]), 
-            sfg.Achievement.KILL_NUM_BLIT_POS2)

@@ -348,10 +348,10 @@ class Achievement(object):
     KILL_ICON_BLIT_POS = (220, 10)
 
     N_HIT_ICON_RECT = (192, 32, 32, 32)
-    N_HIT_ICON_BLIT_POS = (332, 10)
+    N_HIT_ICON_BLIT_POS = (360, 10)
 
     N_KILL_ICON_RECT = (192, 0, 32, 32)
-    N_KILL_ICON_BLIT_POS = (444, 10)
+    N_KILL_ICON_BLIT_POS = (500, 10)
 
     SCORE_RUN_RATE = 20
 
@@ -362,13 +362,13 @@ class Achievement(object):
     }
 
     N_HIT_SCORE = {
-        "blit_pos": (332, 10),
+        "blit_pos": (400, 10),
         "font": Font.HOLLOW_16,
         "color": pygame.Color("gold"),
     }
 
     N_KILL_SCORE = {
-        "blit_pos": (444, 10),
+        "blit_pos": (540, 10),
         "font": Font.HOLLOW_16,
         "color": pygame.Color("gold"),
     }
