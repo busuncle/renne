@@ -218,7 +218,7 @@ class WoodenCase(StaticObject):
     NAME = "WoodenCase"
     IMAGE_KEY = "s1"
     IMAGE_RECT = (64, 64, 48, 64)
-    IMAGE_POS_DELTA_Y = -16
+    POS_RECT_DELTA_Y = 16
     AREA_RECT = (0, 0, 48, 66)
     IS_BLOCK = True
     IS_VIEW_BLOCK = False
@@ -229,7 +229,7 @@ class IronCase(StaticObject):
     NAME = "IronCase"
     IMAGE_KEY = "s2"
     IMAGE_RECT = (174, 112, 70, 132)
-    IMAGE_POS_DELTA_Y = -36
+    POS_RECT_DELTA_Y = 36
     AREA_RECT = (0, 0, 70, 124)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True 
@@ -240,7 +240,7 @@ class ThickGrass(StaticObject):
     NAME = "ThickGrass"
     IMAGE_KEY = "s3"
     IMAGE_RECT = (192, 64, 64, 64)
-    IMAGE_POS_DELTA_Y = -26
+    POS_RECT_DELTA_Y = 26
     AREA_RECT = (0, 0, 64, 64)
     IS_BLOCK = False 
     IS_VIEW_BLOCK = True 
@@ -250,7 +250,7 @@ class GrassWall(StaticObject):
     NAME = "GrassWall"
     IMAGE_KEY = "s4"
     IMAGE_RECT = (0, 0, 64, 104)
-    IMAGE_POS_DELTA_Y = -36
+    POS_RECT_DELTA_Y = 36
     AREA_RECT = (0, 0, 64, 64)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
@@ -260,7 +260,7 @@ class StoneWall(StaticObject):
     NAME = "StoneWall"
     IMAGE_KEY = "s5"
     IMAGE_RECT = (192, 0, 64, 160)
-    IMAGE_POS_DELTA_Y = - 48
+    POS_RECT_DELTA_Y = 48
     AREA_RECT = (0, 0, 64, 128)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
@@ -270,7 +270,7 @@ class StoneWall2(StaticObject):
     NAME = "StoneWall2"
     IMAGE_KEY = "s6"
     IMAGE_RECT = (0, 0, 256, 192)
-    IMAGE_POS_DELTA_Y = -80
+    POS_RECT_DELTA_Y = 80
     AREA_RECT = (0, 0, 256, 64)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True

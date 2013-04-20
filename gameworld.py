@@ -68,7 +68,7 @@ class GameStaticObject(pygame.sprite.DirtySprite):
 
 
     def adjust_rect(self):
-        self.rect.center = (self.pos[0], self.pos[1] / 2 + self.setting.IMAGE_POS_DELTA_Y)
+        self.rect.center = (self.pos[0], self.pos[1] / 2 - self.setting.POS_RECT_DELTA_Y)
 
 
     def draw(self, camera):
