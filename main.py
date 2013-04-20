@@ -6,8 +6,6 @@ import etc.constant as cfg
 import etc.ai_setting as ai
 from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObject
 from gamestatus import GameStatus, Menu, bg_box, start_game, loading_chapter_picture, end_game
-from musicbox import BackgroundBox
-from animation import cg_image_controller, basic_image_controller
 from renderer import Camera
 import debug_tools
 from base import util
@@ -142,10 +140,9 @@ def enter_chapter(screen, chapter, renne):
         pressed_keys = pygame.key.get_pressed()
         renne.event_handle(pressed_keys, external_event=game_status.status)
 
-        for enemy in filter(lambda x: enemy_in_one_screen(renne, x), enemies):
-            enemy.event_handle(pressed_keys, external_event=game_status.status)
-
-        game_map.draw(camera)
+        for enemy in enemies:
+            if enemy_in_one_screen(renne, enemy):
+                enemy.event_handle(pressed_keys, external_event=game_status.status)
 
         time_passed = clock.tick(sfg.FPS)
         passed_seconds = time_passed / 1000.0
@@ -160,6 +157,7 @@ def enter_chapter(screen, chapter, renne):
 
         camera.screen_follow(renne.pos)
 
+        game_map.draw(camera)
         game_world.draw(camera)
         game_status.draw(camera)
 
