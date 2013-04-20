@@ -78,7 +78,6 @@ class ResourceController(object):
         try:
             res = self.cache[name]
         except KeyError:
-            print "load %s" % self.res_mapping[name]
             res = self.loader(self.res_mapping[name])
             self.cache[name] = res
         return res

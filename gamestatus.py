@@ -94,23 +94,26 @@ class Score(object):
         self.blit_pos = score_setting["blit_pos"]
         self.font = score_setting["font"]
         self.color = score_setting["color"]
+        self.score_run_rate = sfg.Achievement.SCORE_RUN_RATE
 
 
-    def add_next_value(self, delta):
+    def incr_next_value(self, delta):
         self.next_value += delta
+        # change score_run_rate if delta is more than default value
+        self.score_run_rate = max(delta, sfg.Achievement.SCORE_RUN_RATE)
 
 
     def update(self, passed_seconds):
         if self.current_value == self.next_value:
             return
 
-        self.current_value += passed_seconds * sfg.Achievement.SCORE_RUN_RATE
+        self.current_value += passed_seconds * self.score_run_rate
         self.current_value = min(self.current_value, self.next_value)
 
 
     def draw(self, camera):
-        self.font.render(str(self.current_value), True, self.color)
-        camera.screen.blit(self.font, self.blit_pos)
+        score = self.font.render(str(int(self.current_value)), True, self.color)
+        camera.screen.blit(score, self.blit_pos)
 
 
 
@@ -240,7 +243,7 @@ class GameStatus(object):
         bg_box.play("chapter_%s" % chapter)
 
 
-    def update(self):
+    def update(self, passed_seconds):
         if self.hero.status["hp"] == cfg.SpriteStatus.DIE:
             # hero is dead, game over
             self.status = cfg.GameStatus.HERO_LOSE
@@ -262,7 +265,7 @@ class GameStatus(object):
             self.enemy_list.remove(em)
 
         # achievement calculation here
-        self.achievement.update()
+        self.achievement.update(passed_seconds)
 
 
     def draw(self, camera):
@@ -365,46 +368,57 @@ class Achievement(object):
     def __init__(self, hero, enemy_list):
         self.hero = hero
         self.enemy_list = enemy_list
-        self.total_enemy_num = len(self.enemy_list)
-        self.kill_num = 0
-        self.n_hit_list = []
         self.n_kill_list = []
         self.kill_time_list = []
-        self.current_n_kill_index = 0
-        self.current_kill_time_index = 0
         self.kill_icon = gen_panel(battle_images, "status5", sfg.Achievement.KILL_ICON_RECT)
+        self.n_hit_icon = gen_panel(battle_images, "status5", sfg.Achievement.N_HIT_ICON_RECT)
+        self.n_kill_icon = gen_panel(battle_images, "status5", sfg.Achievement.N_KILL_ICON_RECT)
         self.numbers2 = gen_numbers(battle_images, "icon1", sfg.GameStatus.NUMBER_RECT2, sfg.GameStatus.NUMBER_SIZE2)
 
+        self.kill_score = Score(sfg.Achievement.KILL_SCORE)
+        self.n_hit_score = Score(sfg.Achievement.N_HIT_SCORE)
+        self.n_kill_score = Score(sfg.Achievement.N_KILL_SCORE)
 
-    def update(self):
-        # calculate kill num
-        self.kill_num = self.total_enemy_num - len(self.enemy_list)
 
+    def update(self, passed_seconds):
         # calculate n_hit
         if len(self.hero.attacker.hit_record) > 0:
             for record in self.hero.attacker.hit_record:
-                if record["n_hit"] > 1:
-                    print "%s hit!" % record["n_hit"]
-                    self.n_hit_list.append(record["n_hit"])
+                score = sfg.Achievement.SCORE["per_hit"] * sum(range(1, record["n_hit"] + 1))
+                self.n_hit_score.incr_next_value(score)
+                print "%s hit!" % record["n_hit"]
 
             self.hero.attacker.hit_record = []
 
         # calculate n_kill
         if len(self.hero.attacker.kill_record) > 0:
             for record in self.hero.attacker.kill_record:
+                self.kill_score.incr_next_value(sfg.Achievement.SCORE["per_kill"])
                 self.kill_time_list.append(record["time"])
                 if len(self.kill_time_list) == 1:
                     self.n_kill_list.append(1)
                 else:
                     if self.kill_time_list[-1] - self.kill_time_list[-2] <= sfg.Achievement.N_KILL_TIMEDELTA:
-                        self.n_kill_list.append(self.n_kill_list[-1] + 1)
+                        n_kill = self.n_kill_list[-1] + 1
+                        self.n_kill_list.append(n_kill)
                         print "%s kill!" % self.n_kill_list[-1]
+                        score = sfg.Achievement.SCORE["per_n_kill"] * pow(2, n_kill)
+                        self.n_kill_score.incr_next_value(score)
                     else:
                         self.n_kill_list.append(1)
 
             self.hero.attacker.kill_record = []
 
+        self.kill_score.update(passed_seconds)
+        self.n_hit_score.update(passed_seconds)
+        self.n_kill_score.update(passed_seconds)
+
 
     def draw(self, camera):
-        # suppose(be sure) kill_num < 100, e.g. 12, so "kill_num / 10" gets 1, and "kill_num % 10" is 2
+        camera.screen.blit(sfg.Achievement.HEADER_PANEL, sfg.Achievement.HEADER_PANEL_BLIT_POS)
         camera.screen.blit(self.kill_icon, sfg.Achievement.KILL_ICON_BLIT_POS)
+        camera.screen.blit(self.n_hit_icon, sfg.Achievement.N_HIT_ICON_BLIT_POS)
+        camera.screen.blit(self.n_kill_icon, sfg.Achievement.N_KILL_ICON_BLIT_POS)
+        self.kill_score.draw(camera)
+        self.n_hit_score.draw(camera)
+        self.n_kill_score.draw(camera)

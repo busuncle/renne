@@ -156,7 +156,7 @@ def enter_chapter(screen, chapter, renne):
             if enemy_in_one_screen(renne, enemy):
                 enemy.update(passed_seconds, external_event=game_status.status)
 
-        game_status.update()
+        game_status.update(passed_seconds)
 
         camera.screen_follow(renne.pos)
 

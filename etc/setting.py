@@ -27,6 +27,7 @@ class Font(object):
     ARIAL_BLACK_48 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 48)
 
     HOLLOW_16 = pygame.font.Font(HOLLOW_FILEPATH, 16)
+    HOLLOW_32 = pygame.font.Font(HOLLOW_FILEPATH, 32)
 
 
 
@@ -342,35 +343,47 @@ class SpriteStatus(object):
 
 
 class Achievement(object):
+    KILL_ICON_RECT = (224, 0, 32, 32)
+    N_HIT_ICON_RECT = (192, 32, 32, 32)
+    N_KILL_ICON_RECT = (192, 0, 32, 32)
+
+    HEADER_PANEL = pygame.Surface((720, 32)).convert_alpha()
+    HEADER_PANEL.fill(pygame.Color(255, 255, 255, 192))
+    HEADER_PANEL_BLIT_POS = (240, 12)
+
+    KILL_ICON_BLIT_POS = (240, 12)
+    N_HIT_ICON_BLIT_POS = (480, 12)
+    N_KILL_ICON_BLIT_POS = (720, 12)
+
+    SCORE_RUN_RATE = 100
+
+    SCORE_COLOR = pygame.Color("black"),
+    SCORE_FONT = Font.HOLLOW_32
+
     N_KILL_TIMEDELTA = 20   # in second unit
 
-    KILL_ICON_RECT = (224, 0, 32, 32)
-    KILL_ICON_BLIT_POS = (220, 10)
-
-    N_HIT_ICON_RECT = (192, 32, 32, 32)
-    N_HIT_ICON_BLIT_POS = (360, 10)
-
-    N_KILL_ICON_RECT = (192, 0, 32, 32)
-    N_KILL_ICON_BLIT_POS = (500, 10)
-
-    SCORE_RUN_RATE = 20
-
     KILL_SCORE = {
-        "blit_pos": (260, 10),
-        "font": Font.HOLLOW_16,
-        "color": pygame.Color("gold"),
+        "blit_pos": (280, 10),
+        "font": Font.HOLLOW_32,
+        "color": SCORE_COLOR,
     }
 
     N_HIT_SCORE = {
-        "blit_pos": (400, 10),
-        "font": Font.HOLLOW_16,
-        "color": pygame.Color("gold"),
+        "blit_pos": (520, 10),
+        "font": Font.HOLLOW_32,
+        "color": SCORE_COLOR,
     }
 
     N_KILL_SCORE = {
-        "blit_pos": (540, 10),
-        "font": Font.HOLLOW_16,
-        "color": pygame.Color("gold"),
+        "blit_pos": (760, 10),
+        "font": Font.HOLLOW_32,
+        "color": SCORE_COLOR,
+    }
+
+    SCORE = {
+        "per_hit": 10,
+        "per_kill": 100,
+        "per_n_kill": 20,
     }
 
 
