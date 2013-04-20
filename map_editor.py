@@ -178,14 +178,14 @@ def run(chapter):
     renne = Renne(sfg.Renne, *map_setting["hero"])
 
     # load monsters
-    monster_init = map_setting["monsters"]
+    monster_init = map_setting.get("monsters", [])
     for monster_id, pos, direct in monster_init:
         monster = Enemy(sfg.SPRITE_SETTING_MAPPING[monster_id], pos, direct)
 
         enemies.add(monster)
 
     # load static objects
-    chapter_static_objects = map_setting["static_objects"]
+    chapter_static_objects = map_setting.get("static_objects", [])
     for t, p in chapter_static_objects:
         static_obj = GameStaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[t], p)
         static_objects.add(static_obj)

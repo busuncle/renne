@@ -97,6 +97,7 @@ class Renne(GameRole):
     SP_RECOVERY_RATE = 12
     # sprite radius
     RADIUS = 18 
+    HEIGHT = 60
     # distance from coord to sprite foot
     POS_RECT_DELTA_Y = 40
 
@@ -257,6 +258,7 @@ class GrassWall(StaticObject):
     IS_VIEW_BLOCK = True
 
 
+
 class StoneWall(StaticObject):
     NAME = "StoneWall"
     IMAGE_KEY = "s5"
@@ -267,6 +269,7 @@ class StoneWall(StaticObject):
     IS_VIEW_BLOCK = True
 
 
+
 class StoneWall2(StaticObject):
     NAME = "StoneWall2"
     IMAGE_KEY = "s6"
@@ -275,6 +278,18 @@ class StoneWall2(StaticObject):
     AREA_RECT = (0, 0, 256, 64)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
+
+
+
+class StoneWall2_1(StaticObject):
+    NAME = "StoneWall2_1"
+    IMAGE_KEY = "s6"
+    IMAGE_RECT = (32, 0, 96, 192)
+    POS_RECT_DELTA_Y = 80
+    AREA_RECT = (0, 0, 96, 64)
+    IS_BLOCK = True
+    IS_VIEW_BLOCK = True
+
 
 
 class WayPoint(object):
@@ -432,8 +447,11 @@ class MapEditor(object):
 
 
 class Music(object):
-    BACKGROUND_VOLUME = 0.4
-    SOUND_VOLUME = 0.2
+    #BACKGROUND_VOLUME = 0.4
+    #SOUND_VOLUME = 0.2
+    # TODO: mute all music before release
+    BACKGROUND_VOLUME = 0
+    SOUND_VOLUME = 0
 
 
 
@@ -451,6 +469,7 @@ STATIC_OBJECT_SETTING_LIST = [
     GrassWall,
     StoneWall,
     StoneWall2,
+    StoneWall2_1,
 ]
 
 # set attribute "ID" for all objects, start from 1, Renne is special for 0
