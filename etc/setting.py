@@ -349,11 +349,11 @@ class Achievement(object):
 
     HEADER_PANEL = pygame.Surface((720, 32)).convert_alpha()
     HEADER_PANEL.fill(pygame.Color(255, 255, 255, 192))
-    HEADER_PANEL_BLIT_POS = (240, 12)
+    HEADER_PANEL_BLIT_POS = (240, 10)
 
-    KILL_ICON_BLIT_POS = (240, 12)
-    N_HIT_ICON_BLIT_POS = (480, 12)
-    N_KILL_ICON_BLIT_POS = (720, 12)
+    KILL_ICON_BLIT_POS = (240, 10)
+    N_HIT_ICON_BLIT_POS = (480, 10)
+    N_KILL_ICON_BLIT_POS = (720, 10)
 
     SCORE_RUN_RATE = 100
 
@@ -363,19 +363,19 @@ class Achievement(object):
     N_KILL_TIMEDELTA = 20   # in second unit
 
     KILL_SCORE = {
-        "blit_pos": (280, 10),
+        "blit_pos": (280, 7),
         "font": Font.HOLLOW_32,
         "color": SCORE_COLOR,
     }
 
     N_HIT_SCORE = {
-        "blit_pos": (520, 10),
+        "blit_pos": (520, 7),
         "font": Font.HOLLOW_32,
         "color": SCORE_COLOR,
     }
 
     N_KILL_SCORE = {
-        "blit_pos": (760, 10),
+        "blit_pos": (760, 7),
         "font": Font.HOLLOW_32,
         "color": SCORE_COLOR,
     }
