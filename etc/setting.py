@@ -97,9 +97,9 @@ class Renne(GameRole):
     # sprite radius
     RADIUS = 18 
     # distance from coord to sprite foot
-    D_COORD_TO_FOOT = 40
+    POS_RECT_DELTA_Y = 40
 
-    D_COORD_TO_SHADOW = 50
+    SHADOW_RECT_DELTA_Y = 50
     SHADOW_INDEX = 1
 
 
@@ -138,8 +138,8 @@ class SkeletonWarrior(GameRole):
 
     RADIUS = 24
     HEIGHT = 80
-    D_COORD_TO_FOOT = 40
-    D_COORD_TO_SHADOW = 60
+    POS_RECT_DELTA_Y = 40
+    SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
 
     FRAME_RATES = {
@@ -174,8 +174,8 @@ class CastleWarrior(GameRole):
 
     RADIUS = 24
     HEIGHT = 82
-    D_COORD_TO_FOOT = 40
-    D_COORD_TO_SHADOW = 60
+    POS_RECT_DELTA_Y = 40
+    SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
 
     FRAME_RATES = {

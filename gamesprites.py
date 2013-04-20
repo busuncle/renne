@@ -72,9 +72,9 @@ class GameSprite(pygame.sprite.DirtySprite):
         # y-axis should be a half of pos[1] and considering the distance from pos to image center
         # both rect and shadow_rect
         rect = self.animation.rect
-        rect.center = (self.pos.x, self.pos.y / 2 - self.setting.D_COORD_TO_FOOT)
+        rect.center = (self.pos.x, self.pos.y / 2 - self.setting.POS_RECT_DELTA_Y)
         shadow_rect = self.animation.shadow_rect
-        shadow_rect.center = (rect.center[0], rect.center[1] + self.setting.D_COORD_TO_SHADOW)
+        shadow_rect.center = (rect.center[0], rect.center[1] + self.setting.SHADOW_RECT_DELTA_Y)
 
 
     def draw_image(self, camera):
