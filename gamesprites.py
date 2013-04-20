@@ -136,6 +136,14 @@ class Renne(GameSprite):
             cal_frames=self.setting.ATTACK_CAL_FRAMES)
 
 
+    def recover(self):
+        # recover renne's whole status, usually when the current chapter pass
+        self.hp = self.setting.HP
+        self.sp = self.setting.SP
+        self.status["hp"] = cfg.SpriteStatus.HEALTHY 
+        self.status["under_attack"] = False
+
+
     def place(self, pos, direction):
         # place renne at some position, facing some direction
         self.pos = Vector2(pos)

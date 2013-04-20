@@ -45,14 +45,14 @@ def main(args):
             chapter = sfg.GameMap.CHAPTERS[i]
             loading_chapter_picture(screen)
             status = enter_chapter(screen, chapter, renne)
-            # TODO: auto save here
 
         bg_box.stop()
 
         if status == cfg.GameControl.NEXT:
             i += 1
-            # TODO: recover renne's status(eg. hp, sp) here
+            renne.recover()
         elif status == cfg.GameControl.AGAIN:
+            renne.recover()
             continue
         elif status == cfg.GameControl.MAIN:
             i = 0
