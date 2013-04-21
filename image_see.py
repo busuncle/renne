@@ -5,6 +5,10 @@ from pygame.locals import *
 import etc.setting as sfg
 from base import util
 
+"""
+check image
+"""
+
 
 screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption("Renne Image See")
