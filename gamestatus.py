@@ -18,6 +18,15 @@ battle_images.add_from_list(sfg.BATTLE_IMAGES[1])
 
 
 
+def draw_y_symmetric(camera, blit_surface, y):
+    # given y, draw the surface that it's y-axis symmetric
+    r = blit_surface.get_rect()
+    r.centerx = camera.size[0] / 2
+    r.top = y
+    camera.screen.blit(blit_surface, r)
+
+
+
 def gen_panel(images, image_key, rect, scale=None):
     panel = images.get(image_key).convert_alpha().subsurface(pygame.Rect(rect))
     if scale is not None:
@@ -318,6 +327,7 @@ class GameStatus(object):
                 camera.screen.blit(self.win_panel, sfg.GameStatus.HERO_WIN_BLIT_POS)
                 camera.screen.blit(self.bonus_icon, sfg.GameStatus.BONUS_ICON_BLIT_POS1)
                 camera.screen.blit(self.bonus_icon, sfg.GameStatus.BONUS_ICON_BLIT_POS2)
+                draw_y_symmetric(camera, sfg.GameStatus.NEXT_CHAPTER, sfg.GameStatus.NEXT_CHAPTER_BLIT_Y)
 
                 self.achievement.kill_score.draw(camera, sfg.GameStatus.CHAPTER_KILL_BLIT_POS)
                 self.achievement.n_hit_score.draw(camera, sfg.GameStatus.CHAPTER_N_HIT_BLIT_POS)
