@@ -28,6 +28,7 @@ class Font(object):
 
     HOLLOW_16 = pygame.font.Font(HOLLOW_FILEPATH, 16)
     HOLLOW_32 = pygame.font.Font(HOLLOW_FILEPATH, 32)
+    HOLLOW_48 = pygame.font.Font(HOLLOW_FILEPATH, 48)
 
 
 
@@ -418,8 +419,38 @@ class GameStatus(object):
 
     HERO_WIN_PANEL_RECT = (0, 0, 1024, 170)
     HERO_LOSE_PANEL_RECT = (0, 170, 1024, 170)
-    HERO_WIN_BLIT_POS = (0, 280)
-    HERO_LOSE_BLIT_POS = (0, 280)
+    BONUS_ICON_RECT = (128, 224, 62, 16)
+
+    CHAPTER_SCORE_ICON_RECT = (294, 720, 68, 74)
+    CHAPTER_SCORE_ICON_SCALE_SIZE = (56, 60)
+    CHAPTER_SCORE_LINE_RECT = (58, 98, 28, 10)
+    CHAPTER_SCORE_LINE_SCALE_SIZE = (320, 10)
+
+    HERO_WIN_BLIT_POS = (0, 300)
+    HERO_LOSE_BLIT_POS = (0, 300)
+
+    CHAPTER_KILL_ICON_BLIT_POS = (380, 100)
+    CHAPTER_N_HIT_ICON_BLIT_POS = (380, 140)
+    CHAPTER_N_KILL_ICON_BLIT_POS = (380, 180)
+    CHAPTER_SCORE_LINE_BLIT_POS = (340, 220)
+    CHAPTER_SCORE_ICON_BLIT_POS = (360, 240)
+
+    BONUS_ICON_BLIT_POS1 = (640, 150)
+    BONUS_ICON_BLIT_POS2 = (640, 190)
+
+    CHAPTER_KILL_BLIT_POS = (440, 97)
+    CHAPTER_N_HIT_BLIT_POS = (440, 137)
+    CHAPTER_N_KILL_BLIT_POS = (440, 177)
+    CHAPTER_SCORE_BLIT_POS = (440, 246)
+
+    CHAPTER_SCORE_FONT = Font.HOLLOW_48
+    CHAPTER_SCORE_COLOR = pygame.Color("white")
+
+    CHAPTER_SCORE = {
+        "font": CHAPTER_SCORE_FONT,
+        "color": CHAPTER_SCORE_COLOR,
+        "blit_pos": CHAPTER_SCORE_BLIT_POS,
+    }
 
 
 
@@ -541,6 +572,7 @@ BATTLE_IMAGES = ("battle", {
     "status3": "status3.png", 
     "status4": "status4.png", 
     "status5": "status5.png",
+    "status6": "status6.png",
     "icon1": "icon1.png",
 })
 
@@ -556,6 +588,7 @@ BACKGROUND_MUSICS = ("background", {
     "chapter_1": "chapter_1.ogg",
     "chapter_2": "chapter_2.ogg",
     "chapter_3": "chapter_3.ogg",
+    "chapter_4": "chapter_4.ogg",
 })
 
 SOUND_EFFECT = ("sound", {

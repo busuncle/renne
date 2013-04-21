@@ -91,9 +91,9 @@ class Score(object):
     def __init__(self, score_setting):
         self.current_value = 0
         self.next_value = 0
-        self.blit_pos = score_setting["blit_pos"]
-        self.font = score_setting["font"]
-        self.color = score_setting["color"]
+        self.blit_pos = score_setting.get("blit_pos")
+        self.font = score_setting.get("font")
+        self.color = score_setting.get("color")
         self.score_run_rate = sfg.Achievement.SCORE_RUN_RATE
 
 
@@ -111,9 +111,11 @@ class Score(object):
         self.current_value = min(self.current_value, self.next_value)
 
 
-    def draw(self, camera):
+    def draw(self, camera, blit_pos=None):
         score = self.font.render(str(int(self.current_value)), True, self.color)
-        camera.screen.blit(score, self.blit_pos)
+        if blit_pos is None:
+            blit_pos = self.blit_pos
+        camera.screen.blit(score, blit_pos)
 
 
 
@@ -233,7 +235,13 @@ class GameStatus(object):
         self.status = cfg.GameStatus.INIT
         self.win_panel = gen_panel(battle_images, "status2", sfg.GameStatus.HERO_WIN_PANEL_RECT)
         self.lose_panel = gen_panel(battle_images, "status2", sfg.GameStatus.HERO_LOSE_PANEL_RECT)
-        self.numbers1 = gen_numbers(battle_images, "status4", sfg.GameStatus.NUMBER_RECT1, sfg.GameStatus.NUMBER_SIZE1)
+        self.chapter_score_icon = gen_panel(battle_images, "status2", 
+            sfg.GameStatus.CHAPTER_SCORE_ICON_RECT, sfg.GameStatus.CHAPTER_SCORE_ICON_SCALE_SIZE)
+        self.bonus_icon = gen_panel(battle_images, "status6", sfg.GameStatus.BONUS_ICON_RECT)
+        self.chapter_score_line = gen_panel(battle_images, "status3", 
+            sfg.GameStatus.CHAPTER_SCORE_LINE_RECT, sfg.GameStatus.CHAPTER_SCORE_LINE_SCALE_SIZE)
+        self.numbers1 = gen_numbers(battle_images, "status4", 
+            sfg.GameStatus.NUMBER_RECT1, sfg.GameStatus.NUMBER_SIZE1)
         self.begin_timer = Timer()
         self.hero_status = HeroStatus(hero)
         self.achievement = Achievement(hero, enemy_list)
@@ -244,15 +252,24 @@ class GameStatus(object):
 
 
     def update(self, passed_seconds):
-        if self.hero.status["hp"] == cfg.SpriteStatus.DIE:
-            # hero is dead, game over
-            self.status = cfg.GameStatus.HERO_LOSE
-            return
+        if self.status == cfg.GameStatus.IN_PROGRESS:
+            if self.hero.status["hp"] == cfg.SpriteStatus.DIE:
+                # hero is dead, game over
+                self.status = cfg.GameStatus.HERO_LOSE
+                return
 
-        if len(self.enemy_list) == 0:
-            # all enemies are gone, hero win
-            self.status = cfg.GameStatus.HERO_WIN
-            return 
+            if len(self.enemy_list) == 0:
+                # all enemies are gone, hero win
+                self.status = cfg.GameStatus.HERO_WIN
+                # only call incr_next_value one for chapter score
+                score = self.achievement.kill_score.current_value \
+                    + self.achievement.n_hit_score.current_value \
+                    + self.achievement.n_kill_score.current_value
+                self.achievement.chapter_score.incr_next_value(score)
+                return 
+
+        elif self.status == cfg.GameStatus.HERO_WIN:
+            self.achievement.chapter_score.update(passed_seconds)
 
         remove_list = []
         for em in self.enemy_list:
@@ -293,7 +310,20 @@ class GameStatus(object):
             camera.screen.blit(self.mask, (0, 0))
 
             if self.status == cfg.GameStatus.HERO_WIN:
+                camera.screen.blit(self.achievement.kill_icon, sfg.GameStatus.CHAPTER_KILL_ICON_BLIT_POS)
+                camera.screen.blit(self.achievement.n_hit_icon, sfg.GameStatus.CHAPTER_N_HIT_ICON_BLIT_POS)
+                camera.screen.blit(self.achievement.n_kill_icon, sfg.GameStatus.CHAPTER_N_KILL_ICON_BLIT_POS)
+                camera.screen.blit(self.chapter_score_line, sfg.GameStatus.CHAPTER_SCORE_LINE_BLIT_POS)
+                camera.screen.blit(self.chapter_score_icon, sfg.GameStatus.CHAPTER_SCORE_ICON_BLIT_POS)
                 camera.screen.blit(self.win_panel, sfg.GameStatus.HERO_WIN_BLIT_POS)
+                camera.screen.blit(self.bonus_icon, sfg.GameStatus.BONUS_ICON_BLIT_POS1)
+                camera.screen.blit(self.bonus_icon, sfg.GameStatus.BONUS_ICON_BLIT_POS2)
+
+                self.achievement.kill_score.draw(camera, sfg.GameStatus.CHAPTER_KILL_BLIT_POS)
+                self.achievement.n_hit_score.draw(camera, sfg.GameStatus.CHAPTER_N_HIT_BLIT_POS)
+                self.achievement.n_kill_score.draw(camera, sfg.GameStatus.CHAPTER_N_KILL_BLIT_POS)
+                self.achievement.chapter_score.draw(camera)
+
                 if bg_box.current_playing != "hero_win":
                     bg_box.stop()
                     # TODO: may play some other background music here
@@ -378,6 +408,7 @@ class Achievement(object):
         self.kill_score = Score(sfg.Achievement.KILL_SCORE)
         self.n_hit_score = Score(sfg.Achievement.N_HIT_SCORE)
         self.n_kill_score = Score(sfg.Achievement.N_KILL_SCORE)
+        self.chapter_score = Score(sfg.GameStatus.CHAPTER_SCORE)
 
         self.score_panel = gen_panel(battle_images, "status", sfg.Achievement.SCORE_PANEL_RECT,
             sfg.Achievement.SCORE_PANEL_SCALE_SIZE)

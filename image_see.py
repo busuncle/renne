@@ -11,6 +11,7 @@ pygame.display.set_caption("Renne Image See")
 
 def run(args):
     img = pygame.image.load(args.filepath).convert()
+    #img = img.subsurface((294, 720, 68, 74))
     img_rect = img.get_rect()
     words_blit_pos = img_rect.bottomleft
     background_color = args.background_color or "black"
