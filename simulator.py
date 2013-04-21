@@ -129,6 +129,15 @@ class EnemyAttacker(AngleAttacker):
         super(EnemyAttacker, self).__init__(sprite, angle, cal_frames)
 
 
+    def chance(self, target):
+        # totally for ai, because player can judge whether it's a good attack chance himself
+        sp = self.sprite
+        distance_to_target = sp.pos.get_distance_to(target.pos)
+        if distance_to_target <= sp.setting.ATTACK_RANGE:
+            return True
+        return False
+
+
     def run(self, hero, current_frame_add):
         if self.hit(hero, current_frame_add):
             damage = self.sprite.atk - hero.dfs

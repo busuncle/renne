@@ -234,8 +234,7 @@ class SpriteStay(State):
         sp = self.sprite
         if sp.brain.target is not None:
             # discover a target
-            distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
-            if distance_to_target <= sp.setting.ATTACK_RANGE:
+            if sp.attacker.chance(sp.brain.target):
                 #print "to attack"
                 return cfg.SpriteState.OFFENCE
 
@@ -281,8 +280,7 @@ class SpritePatrol(State):
     def check_conditions(self):
         sp = self.sprite
         if sp.brain.target is not None:
-            distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
-            if distance_to_target <= sp.setting.ATTACK_RANGE:
+            if sp.attacker.chance(sp.brain.target):
                 #print "patrol to attack"
                 return cfg.SpriteState.OFFENCE
 
@@ -351,8 +349,7 @@ class SpriteChase(State):
         sp = self.sprite
 
         distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
-
-        if distance_to_target <= sp.setting.ATTACK_RANGE:
+        if sp.attacker.chance(sp.brain.target):
             #print "to attack"
             return cfg.SpriteState.OFFENCE
 
@@ -403,8 +400,7 @@ class SpriteOffence(State):
         if sp.brain.persistent:
             return 
 
-        distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
-        if distance_to_target <= sp.setting.ATTACK_RANGE:
+        if sp.attacker.chance(sp.brain.target):
             return cfg.SpriteState.OFFENCE
         else:
             return cfg.SpriteState.CHASE
