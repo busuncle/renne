@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+import random
 from gameobjects.vector2 import Vector2
 import simulator
 from animation import SpriteAnimator, SpriteEmotionAnimator
@@ -201,7 +202,7 @@ class Renne(GameSprite):
                     hit_count += 1
 
             if hit_count > 0:
-                self.sound_box.play("attack_hit")
+                self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
 
 
     def win(self, passed_seconds):
@@ -246,7 +247,10 @@ class Renne(GameSprite):
 
         if pressed_keys[sfg.UserKey.ATTACK]:
             self.action = cfg.HeroAction.ATTACK
-            self.sound_box.play("renne_attack")
+            atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3", 
+                "renne_attack0", "renne_attack0", "renne_attack0"))
+            if atk_snd is not None:
+                self.sound_box.play(atk_snd)
 
         elif self.key_vec:
             if pressed_keys[sfg.UserKey.RUN] and self.sp > 0:
@@ -379,7 +383,7 @@ class Enemy(GameSprite):
             hit_it = self.attacker.run(self.brain.target, 
                 self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
             if hit_it:
-                self.sound_box.play("attack_hit")
+                self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
 
 
     def reset_action(self):

@@ -484,11 +484,11 @@ class MapEditor(object):
 
 
 class Music(object):
-    #BACKGROUND_VOLUME = 0.4
-    #SOUND_VOLUME = 0.2
     # TODO: mute all music before release
+    #BACKGROUND_VOLUME = 0.4
+    SOUND_VOLUME = 0.2
     BACKGROUND_VOLUME = 0
-    SOUND_VOLUME = 0
+    #SOUND_VOLUME = 0
 
 
 
@@ -595,8 +595,12 @@ BACKGROUND_MUSICS = ("background", {
 })
 
 SOUND_EFFECT = ("sound", {
+    "renne_attack0": "renne_attack0.wav",
     "renne_attack": "renne_attack.wav",
+    "renne_attack2": "renne_attack2.wav",
+    "renne_attack3": "renne_attack3.wav",
     "renne_under_attack": "renne_under_attack.wav",
     "renne_win": "renne_win.wav",
     "attack_hit": "attack_hit.wav",
+    "attack_hit2": "attack_hit2.wav",
 })
