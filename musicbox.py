@@ -13,14 +13,14 @@ class BackgroundBox(object):
         self.current_playing = None
 
 
-    def play(self, key):
+    def play(self, key, loops=-1):
         if self.current_playing is not None:
             # stop current playing before play another one
             self.stop()
 
         self.box.load(key)
         self.current_playing = key
-        pygame.mixer.music.play(-1)
+        pygame.mixer.music.play(loops)
 
 
     def stop(self):

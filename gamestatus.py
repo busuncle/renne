@@ -335,14 +335,12 @@ class GameStatus(object):
                 self.achievement.chapter_score.draw(camera)
 
                 if bg_box.current_playing != "hero_win":
-                    bg_box.stop()
-                    # TODO: may play some other background music here
+                    bg_box.play("hero_win", 0)
 
             elif self.status == cfg.GameStatus.HERO_LOSE:
                 camera.screen.blit(self.lose_panel, sfg.GameStatus.HERO_LOSE_BLIT_POS)
                 if bg_box.current_playing != "hero_lose":
-                    bg_box.stop()
-                    # TODO: may play some other background music here
+                    bg_box.play("hero_lose", 0)
             
             elif self.status == cfg.GameStatus.PAUSE:
                 self.menu.draw(camera.screen)

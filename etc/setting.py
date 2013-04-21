@@ -485,9 +485,9 @@ class MapEditor(object):
 
 class Music(object):
     # TODO: mute all music before release
-    #BACKGROUND_VOLUME = 0.4
+    BACKGROUND_VOLUME = 0.4
     SOUND_VOLUME = 0.2
-    BACKGROUND_VOLUME = 0
+    #BACKGROUND_VOLUME = 0
     #SOUND_VOLUME = 0
 
 
@@ -592,6 +592,8 @@ BACKGROUND_MUSICS = ("background", {
     "chapter_2": "chapter_2.ogg",
     "chapter_3": "chapter_3.ogg",
     "chapter_4": "chapter_4.ogg",
+    "hero_win": "hero_win.wav",
+    "hero_lose": "hero_lose.wav",
 })
 
 SOUND_EFFECT = ("sound", {
