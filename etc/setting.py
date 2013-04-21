@@ -339,8 +339,8 @@ class SpriteStatus(object):
     }
     SPRITE_BAR_BG_COLOR = pygame.Color(0, 0, 0, 128)
     HERO_ALL_BAR_SIZE = (100, 10)
-    HERO_HP_TITLE_BLIT_POS = (82, 20)
-    HERO_HP_BLIT_POS = (104, 22)
+    HERO_HP_TITLE_BLIT_POS = (82, 18)
+    HERO_HP_BLIT_POS = (104, 20)
 
     # stamina point related
     HERO_SP_COLOR = pygame.Color(0, 64, 128, 128),
@@ -350,7 +350,7 @@ class SpriteStatus(object):
     ENEMY_HP_BAR_SIZE = (50, 5)
 
     HERO_PANEL_RECT = (0, 0, 144, 56)
-    HERO_PANEL_SCALE_SIZE = (1.5, 1.66)
+    HERO_PANEL_SCALE_SIZE = (216, 92)
     HERO_PANEL_BLIT_POS = (2, 2)
     HERO_HEAD_SIZE = (128, 128)
     HERO_HEAD_BLIT_POS = (-20, -38)
@@ -361,10 +361,13 @@ class Achievement(object):
     KILL_ICON_RECT = (224, 0, 32, 32)
     N_HIT_ICON_RECT = (192, 32, 32, 32)
     N_KILL_ICON_RECT = (192, 0, 32, 32)
+    #SCORE_PANEL_RECT = (192, 55, 64, 25)
+    SCORE_PANEL_RECT = (0, 0, 144, 56)
+    SCORE_PANEL_SCALE_SIZE = (220, 36)
 
-    HEADER_PANEL = pygame.Surface((720, 32)).convert_alpha()
-    HEADER_PANEL.fill(pygame.Color(255, 255, 255, 192))
-    HEADER_PANEL_BLIT_POS = (240, 10)
+    SCORE_PANEL_BLIT_POS1 = (234, 8)
+    SCORE_PANEL_BLIT_POS2 = (474, 8)
+    SCORE_PANEL_BLIT_POS3 = (714, 8)
 
     KILL_ICON_BLIT_POS = (240, 10)
     N_HIT_ICON_BLIT_POS = (480, 10)
@@ -372,7 +375,7 @@ class Achievement(object):
 
     SCORE_RUN_RATE = 100
 
-    SCORE_COLOR = pygame.Color("black"),
+    SCORE_COLOR = pygame.Color("white"),
     SCORE_FONT = Font.HOLLOW_32
 
     N_KILL_TIMEDELTA = 20   # in second unit

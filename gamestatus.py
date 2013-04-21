@@ -21,7 +21,7 @@ battle_images.add_from_list(sfg.BATTLE_IMAGES[1])
 def gen_panel(images, image_key, rect, scale=None):
     panel = images.get(image_key).convert_alpha().subsurface(pygame.Rect(rect))
     if scale is not None:
-        panel = smoothscale(panel, (int(panel.get_width() * scale[0]), int(panel.get_height() * scale[1])))
+        panel = smoothscale(panel, scale)
     return panel
 
 
@@ -379,6 +379,9 @@ class Achievement(object):
         self.n_hit_score = Score(sfg.Achievement.N_HIT_SCORE)
         self.n_kill_score = Score(sfg.Achievement.N_KILL_SCORE)
 
+        self.score_panel = gen_panel(battle_images, "status", sfg.Achievement.SCORE_PANEL_RECT,
+            sfg.Achievement.SCORE_PANEL_SCALE_SIZE)
+
 
     def update(self, passed_seconds):
         # calculate n_hit
@@ -415,7 +418,9 @@ class Achievement(object):
 
 
     def draw(self, camera):
-        camera.screen.blit(sfg.Achievement.HEADER_PANEL, sfg.Achievement.HEADER_PANEL_BLIT_POS)
+        camera.screen.blit(self.score_panel, sfg.Achievement.SCORE_PANEL_BLIT_POS1)
+        camera.screen.blit(self.score_panel, sfg.Achievement.SCORE_PANEL_BLIT_POS2)
+        camera.screen.blit(self.score_panel, sfg.Achievement.SCORE_PANEL_BLIT_POS3)
         camera.screen.blit(self.kill_icon, sfg.Achievement.KILL_ICON_BLIT_POS)
         camera.screen.blit(self.n_hit_icon, sfg.Achievement.N_HIT_ICON_BLIT_POS)
         camera.screen.blit(self.n_kill_icon, sfg.Achievement.N_KILL_ICON_BLIT_POS)
