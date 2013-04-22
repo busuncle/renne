@@ -79,7 +79,7 @@ class GameSprite(pygame.sprite.DirtySprite):
 
 
     def draw_image(self, camera):
-        self.adjust_rect()
+        #self.adjust_rect()
 
         image = self.animation.image
         if image is None:

@@ -515,12 +515,17 @@ STATIC_OBJECT_SETTING_LIST = [
     StoneWall2_1,
 ]
 
+
 # set attribute "ID" for all objects, start from 1, Renne is special for 0
 Renne.ID = 0
+Renne.GAME_OBJECT_TYPE = cfg.GameObject.TYPE_DYNAMIC
 for i, cls in enumerate(SPRITE_SETTING_LIST):
     cls.ID = i + 1
+    cls.GAME_OBJECT_TYPE = cfg.GameObject.TYPE_DYNAMIC
 for i, cls in enumerate(STATIC_OBJECT_SETTING_LIST):
     cls.ID = i + 1
+    cls.GAME_OBJECT_TYPE = cfg.GameObject.TYPE_STATIC
+
 
 SPRITE_SETTING_MAPPING = dict((cls.ID, cls) for cls in SPRITE_SETTING_LIST)
 STATIC_OBJECT_SETTING_MAPPING = dict((cls.ID, cls) for cls in STATIC_OBJECT_SETTING_LIST)

@@ -55,6 +55,12 @@ class Direction(object):
 
 
 
+class GameObject(object):
+    TYPE_STATIC = 1
+    TYPE_DYNAMIC = 2
+
+
+
 class SpriteAction(object):
     STAND = 1
     WALK = 2

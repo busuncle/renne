@@ -5,6 +5,7 @@ from gameobjects.vector2 import Vector2
 from pygame.transform import smoothscale
 from base.util import ImageController
 import etc.setting as sfg
+import etc.constant as cfg
 
 
 
@@ -94,9 +95,11 @@ class GameWorld(pygame.sprite.LayeredDirty):
 
     def yield_objects_in_screen(self, camera):
         for obj in self.sprites():
-            if hasattr(obj, "rect"):
+            if obj.setting.GAME_OBJECT_TYPE == cfg.GameObject.TYPE_STATIC:
                 rect = obj.rect
             else:
+                # dynamic object, adjust its rect first!
+                obj.adjust_rect()
                 rect = obj.animation.rect
 
             if rect.colliderect(camera.rect):
