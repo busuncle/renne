@@ -77,6 +77,12 @@ class EnemyAction(SpriteAction):
 
 
 
+class SpriteAttackType(object):
+    SHORT = 1
+    LONG = 2
+
+
+
 class SpriteState(object):
     STAY = 1
     PATROL = 2

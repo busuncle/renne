@@ -157,6 +157,7 @@ class SkeletonWarrior(GameRole):
         cfg.EnemyAction.ATTACK: 8,
     }
 
+    ATTACKTYPE = cfg.SpriteAttackType.SHORT
     ATTACK_CAL_FRAMES = (3, 4)
 
     WALK_SPEED = 160
@@ -193,7 +194,9 @@ class CastleWarrior(GameRole):
         cfg.EnemyAction.ATTACK: 8,
     }
 
+    ATTACKTYPE = cfg.SpriteAttackType.SHORT
     ATTACK_CAL_FRAMES = (3, 4)
+
     WALK_SPEED = 160
     ATTACK_RANGE = 90
     ATTACK_ANGLE = 40
