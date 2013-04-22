@@ -61,7 +61,7 @@ class GameSprite(pygame.sprite.DirtySprite):
 
     def is_collide_static_objects(self):
         for v in self.static_objects:
-            if v.is_block and self.area.colliderect(v.area):
+            if v.setting.IS_BLOCK and self.area.colliderect(v.area):
                 return True
 
 
@@ -79,7 +79,6 @@ class GameSprite(pygame.sprite.DirtySprite):
 
 
     def draw_image(self, camera):
-        #self.adjust_rect()
 
         image = self.animation.image
         if image is None:

@@ -182,7 +182,7 @@ class ViewSensor(object):
                 # and then check whether the line is blocked by some static objects
                 line_seg = LineSegment(p_sprite, p_target)
                 for obj in sp.static_objects:
-                    if obj.is_view_block and line_segment_intersect_with_rect(line_seg, obj.area):
+                    if obj.setting.IS_VIEW_BLOCK and line_segment_intersect_with_rect(line_seg, obj.area):
                         return None
 
                 return target

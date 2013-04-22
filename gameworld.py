@@ -57,8 +57,6 @@ class GameStaticObject(pygame.sprite.DirtySprite):
         super(GameStaticObject, self).__init__()
         self.setting = setting
         self.pos = Vector2(pos)
-        self.is_block = setting.IS_BLOCK
-        self.is_view_block = setting.IS_VIEW_BLOCK
         self.image = self.static_images.get(setting.IMAGE_KEY).convert_alpha().subsurface(
             Rect(setting.IMAGE_RECT)
         )
