@@ -12,7 +12,9 @@ class AIBase(object):
 
 
 
-class NormalAI(AIBase):
+class ShortNormalAI(AIBase):
+    # this ai is for some short-distance-attack monster
+
     # used in gauss function, MU is the mean, SIGMA is the standard deviation
     STAY_TIME_MU = 1
     STAY_TIME_SIGMA = 0.1
