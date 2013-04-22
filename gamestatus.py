@@ -18,8 +18,8 @@ battle_images.add_from_list(sfg.BATTLE_IMAGES[1])
 
 
 
-def draw_y_symmetric(camera, blit_surface, y):
-    # given y, draw the surface that it's y-axis symmetric
+def screen_draw_y_symmetric(camera, blit_surface, y):
+    # given y, draw the surface to screen that it's y-axis symmetric
     r = blit_surface.get_rect()
     r.centerx = camera.size[0] / 2
     r.top = y
@@ -327,7 +327,8 @@ class GameStatus(object):
                 camera.screen.blit(self.win_panel, sfg.GameStatus.HERO_WIN_BLIT_POS)
                 camera.screen.blit(self.bonus_icon, sfg.GameStatus.BONUS_ICON_BLIT_POS1)
                 camera.screen.blit(self.bonus_icon, sfg.GameStatus.BONUS_ICON_BLIT_POS2)
-                draw_y_symmetric(camera, sfg.GameStatus.NEXT_CHAPTER, sfg.GameStatus.NEXT_CHAPTER_BLIT_Y)
+                screen_draw_y_symmetric(camera, sfg.GameStatus.CHAPTER_NEXT, 
+                    sfg.GameStatus.CHAPTER_NEXT_BLIT_Y)
 
                 self.achievement.kill_score.draw(camera, sfg.GameStatus.CHAPTER_KILL_BLIT_POS)
                 self.achievement.n_hit_score.draw(camera, sfg.GameStatus.CHAPTER_N_HIT_BLIT_POS)
@@ -339,6 +340,8 @@ class GameStatus(object):
 
             elif self.status == cfg.GameStatus.HERO_LOSE:
                 camera.screen.blit(self.lose_panel, sfg.GameStatus.HERO_LOSE_BLIT_POS)
+                screen_draw_y_symmetric(camera, sfg.GameStatus.CHAPTER_AGAIN, 
+                    sfg.GameStatus.CHAPTER_AGAIN_BLIT_Y)
                 if bg_box.current_playing != "hero_lose":
                     bg_box.play("hero_lose", 0)
             

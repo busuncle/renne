@@ -446,8 +446,11 @@ class GameStatus(object):
     CHAPTER_SCORE_FONT = Font.HOLLOW_48
     CHAPTER_SCORE_COLOR = pygame.Color("white")
 
-    NEXT_CHAPTER = Font.ARIAL_BLACK_32.render("press enter to continue", True, pygame.Color("gray"))
-    NEXT_CHAPTER_BLIT_Y = 500
+    CHAPTER_NEXT = Font.ARIAL_BLACK_32.render("press enter to continue", True, pygame.Color("gray"))
+    CHAPTER_NEXT_BLIT_Y = 500
+
+    CHAPTER_AGAIN = Font.ARIAL_BLACK_32.render("press enter to play again", True, pygame.Color("gray"))
+    CHAPTER_AGAIN_BLIT_Y = 460
 
     CHAPTER_SCORE = {
         "font": CHAPTER_SCORE_FONT,
