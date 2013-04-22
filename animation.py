@@ -32,29 +32,6 @@ class SpriteAnimator(object):
         self.rect = self.image.get_rect()
         self.shadow_image = self.gen_shadow_image(sprite.setting.SHADOW_INDEX)
         self.shadow_rect = self.shadow_image.get_rect()
-        self.die_image = None
-        self.die_begin_time = None
-
-
-    def death_tick(self):
-        assert(self.sprite.status["hp"] == cfg.SpriteStatus.DIE)
-
-        if self.die_begin_time is None:
-            self.die_image = self.image.copy()
-            self.die_begin_time = time()
-        else:
-            pass_time = time() - self.die_begin_time
-            # blink 3 times, persistant 0.5 second everytime
-            if pass_time > 1.5:
-                self.image = None
-                return True
-
-            if pass_time % 0.5 < 0.25:
-                self.image = self.die_image
-            else:
-                self.image = None
-
-        return False
 
 
     def gen_shadow_image(self, shadow_index):
@@ -88,8 +65,13 @@ class SpriteAnimator(object):
             return False
 
 
+
+class RenneAnimator(SpriteAnimator):
+    def __init__(self, sprite):
+        super(RenneAnimator, self).__init__(sprite)
+
     def _run_renne_win_frame(self, passed_seconds):
-        # TODO: a fancy egg for Renne, not for every sprites
+        # a fancy egg for Renne, ^o^
         action = cfg.HeroAction.WIN
         self.frame_adds[action] += passed_seconds * self.frame_rates[action]
         if self.frame_adds[action] >= self.frame_nums[action]:
@@ -104,6 +86,35 @@ class SpriteAnimator(object):
         else:
             self.image = self.sprite_image_contoller.get_surface(action)[int(self.frame_adds[action])]
             return False
+
+
+
+class EnemyAnimator(SpriteAnimator):
+    def __init__(self, sprite):
+        super(EnemyAnimator, self).__init__(sprite)
+        self.die_image = None
+        self.die_begin_time = None
+
+
+    def death_tick(self):
+        assert(self.sprite.status["hp"] == cfg.SpriteStatus.DIE)
+
+        if self.die_begin_time is None:
+            self.die_image = self.image.copy()
+            self.die_begin_time = time()
+        else:
+            pass_time = time() - self.die_begin_time
+            # blink 3 times, persistant 0.5 second everytime
+            if pass_time > 1.5:
+                self.image = None
+                return True
+
+            if pass_time % 0.5 < 0.25:
+                self.image = self.die_image
+            else:
+                self.image = None
+
+        return False
 
 
 
@@ -139,6 +150,7 @@ class SpriteEmotionAnimator(object):
 
     def reset_frame(self, emotion):
         self.frame_adds[emotion] = 0
+
 
     def run_sequence_frame(self, emotion, passed_seconds):
         self.frame_adds[emotion] += passed_seconds * self.frame_rates[emotion]

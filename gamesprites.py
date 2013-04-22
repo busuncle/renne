@@ -3,7 +3,7 @@ from pygame.locals import *
 import random
 from gameobjects.vector2 import Vector2
 import simulator
-from animation import SpriteAnimator, SpriteEmotionAnimator
+from animation import SpriteEmotionAnimator, RenneAnimator, EnemyAnimator
 from musicbox import SoundBox
 from controller import SpriteBrain
 import etc.constant as cfg
@@ -119,7 +119,7 @@ class Renne(GameSprite):
         self.level = 1
         self.exp = 0
 
-        self.animation = SpriteAnimator(self)
+        self.animation = RenneAnimator(self)
         self.sound_box = SoundBox()
 
         # represent the sprite area, used for deciding frame layer and collide, attack computing or so
@@ -297,7 +297,7 @@ class Enemy(GameSprite):
         self.emotion = cfg.SpriteEmotion.NORMAL
         self.emotion_animation = SpriteEmotionAnimator(self)
 
-        self.animation = SpriteAnimator(self)
+        self.animation = EnemyAnimator(self)
         self.sound_box = SoundBox()
 
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
