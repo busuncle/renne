@@ -64,7 +64,9 @@ class AngleAttacker(Attacker):
         self.attack_range = sprite.setting.ATTACK_RANGE
         # cosine is a decrease function between 0 and 180 degree, 
         # so we need angle to be calculated as the min cosine value
-        self.cos_min = cos(radians(angle))
+        # angle needs to be divide by 2 because of the symmetry
+        assert 0 <= angle <= 180
+        self.cos_min = cos(radians(angle / 2))
 
 
     def hit(self, target, current_frame_add):
@@ -79,7 +81,7 @@ class AngleAttacker(Attacker):
         vec_to_target = Vector2.from_points(sp.area.center, target.area.center)
         cos_val = cos_for_vec(direct_vec, vec_to_target)
         if self.attack_range + target.setting.RADIUS > vec_to_target.get_length() \
-            and cos_val > self.cos_min and target.status["hp"] != cfg.SpriteStatus.DIE:
+            and cos_val >= self.cos_min and target.status["hp"] != cfg.SpriteStatus.DIE:
             self.has_hits.add(target)
             return True
 
@@ -161,7 +163,7 @@ class ViewSensor(object):
 
     def __init__(self, sprite, angle=90):
         self.sprite = sprite
-        self.cos_min = cos(radians(angle))
+        self.cos_min = cos(radians(angle / 2))
 
 
     def detect(self, target):
@@ -178,7 +180,7 @@ class ViewSensor(object):
         for point_attr in ("center", "topleft", "topright", "bottomleft", "bottomright"):
             p_target = getattr(target.area, point_attr)
             vec_to_target = Vector2.from_points(p_sprite, p_target)
-            if cos_for_vec(direct_vec, vec_to_target) > self.cos_min:
+            if cos_for_vec(direct_vec, vec_to_target) >= self.cos_min:
                 # and then check whether the line is blocked by some static objects
                 line_seg = LineSegment(p_sprite, p_target)
                 for obj in sp.static_objects:

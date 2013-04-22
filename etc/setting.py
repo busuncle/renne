@@ -162,7 +162,7 @@ class SkeletonWarrior(GameRole):
 
     WALK_SPEED = 160
     ATTACK_RANGE = 60
-    ATTACK_ANGLE = 60
+    ATTACK_ANGLE = 90
     VIEW_RANGE = 380
     VIEW_ANGLE = 120 
     CHASE_RANGE = VIEW_RANGE + 20
@@ -199,7 +199,7 @@ class CastleWarrior(GameRole):
 
     WALK_SPEED = 160
     ATTACK_RANGE = 90
-    ATTACK_ANGLE = 40
+    ATTACK_ANGLE = 60
     VIEW_RANGE = 380
     VIEW_ANGLE = 120 
     CHASE_RANGE = VIEW_RANGE + 20
