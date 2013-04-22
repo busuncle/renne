@@ -361,6 +361,12 @@ class SpriteStatus(object):
 
 
 
+class Enemy(object):
+    DEAD_TICK = 1.5
+    DEAD_BLINK_TIMES = 3
+
+
+
 class Achievement(object):
     KILL_ICON_RECT = (224, 0, 32, 32)
     N_HIT_ICON_RECT = (192, 32, 32, 32)

@@ -1,6 +1,6 @@
 import pygame
 from time import time
-from base.util import ImageController, SpriteImageController
+from base.util import ImageController, SpriteImageController, Timer
 import etc.setting as sfg
 import etc.constant as cfg
 
@@ -93,23 +93,23 @@ class EnemyAnimator(SpriteAnimator):
     def __init__(self, sprite):
         super(EnemyAnimator, self).__init__(sprite)
         self.die_image = None
-        self.die_begin_time = None
+        self.dead_timer = Timer(sfg.Enemy.DEAD_TICK)
+        self.dead_blink_unit = float(sfg.Enemy.DEAD_TICK) / sfg.Enemy.DEAD_BLINK_TIMES
 
 
-    def death_tick(self):
-        assert(self.sprite.status["hp"] == cfg.SpriteStatus.DIE)
-
-        if self.die_begin_time is None:
+    def dead_tick(self):
+        if not self.dead_timer.is_begin():
             self.die_image = self.image.copy()
-            self.die_begin_time = time()
+            self.dead_timer.begin()
         else:
-            pass_time = time() - self.die_begin_time
-            # blink 3 times, persistant 0.5 second everytime
-            if pass_time > 1.5:
+            if self.dead_timer.exceed():
                 self.image = None
                 return True
 
-            if pass_time % 0.5 < 0.25:
+            pass_time = self.dead_timer.passed_time()
+            # in 1 blink unit, one half show image, another half hide it
+            # make it like a blink effect
+            if pass_time % self.dead_blink_unit < self.dead_blink_unit * 0.5:
                 self.image = self.die_image
             else:
                 self.image = None

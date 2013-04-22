@@ -283,7 +283,7 @@ class GameStatus(object):
         remove_list = []
         for em in self.enemy_list:
             if em.status["hp"] == cfg.SpriteStatus.DIE:
-                can_be_removed = em.animation.death_tick()
+                can_be_removed = em.animation.dead_tick()
                 if can_be_removed:
                     remove_list.append(em)
 
