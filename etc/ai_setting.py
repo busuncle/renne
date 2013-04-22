@@ -31,3 +31,8 @@ class ShortNormalAI(AIBase):
     STAY_TO_PATROL_PROB = 0.2
     STAY_CHANGE_DIRECTION_PROB = 0.5
 
+
+
+ATTACKTYPE_AI_MAPPING = {
+    cfg.SpriteAttackType.SHORT: ShortNormalAI,
+}

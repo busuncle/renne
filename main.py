@@ -80,8 +80,10 @@ def enter_chapter(screen, chapter, renne):
     # load monsters
     monster_init = map_setting["monsters"]
     for monster_id, pos, direct in monster_init:
-        monster = Enemy(sfg.SPRITE_SETTING_MAPPING[monster_id], pos, direct)
-        monster.activate(ai.ShortNormalAI, allsprites, renne, static_objects, game_map)
+        monster_setting = sfg.SPRITE_SETTING_MAPPING[monster_id]
+        monster = Enemy(monster_setting, pos, direct)
+        monster_ai_setting = ai.ATTACKTYPE_AI_MAPPING[monster_setting.ATTACKTYPE]
+        monster.activate(monster_ai_setting, allsprites, renne, static_objects, game_map)
 
         enemies.add(monster)
 
