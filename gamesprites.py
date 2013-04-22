@@ -68,6 +68,7 @@ class GameSprite(pygame.sprite.DirtySprite):
     def update(self):
         pass
 
+
     def adjust_rect(self):
         # for drawing to the screen, 
         # y-axis should be a half of pos[1] and considering the distance from pos to image center
@@ -353,23 +354,34 @@ class Enemy(GameSprite):
             self.draw_emotion(camera)
 
 
-    def move(self, speed, passed_seconds, to_check_block=False):
+    def move(self, speed, passed_seconds, check_reachable=False):
         self.key_vec.normalize()
         old_pos = self.pos.copy()
         self.pos += self.key_vec * speed * passed_seconds
         self.area.center = self.pos("xy")
-        if self.is_collide_map_boundry() or (to_check_block and self.is_collide_static_objects()):
+        if check_reachable and not self.reachable():
             self.pos = old_pos
             self.area.center = self.pos("xy")
             self.brain.interrupt = True
+
+
+    def reachable(self):
+        wps = self.brain.waypoints
+        step = sfg.WayPoint.STEP_WIDTH
+        x0 = self.pos.x - self.pos.x % step
+        y0 = self.pos.y - self.pos.y % step
+        for p in ((x0, y0), (x0 + step, y0), (x0, y0 + step), (x0 + step, y0 + step)):
+            if p not in wps:
+                return False
+        return True
 
 
     def stand(self, passed_seconds):
         self.animation.run_circle_frame(cfg.EnemyAction.STAND, passed_seconds)
 
 
-    def walk(self, passed_seconds, to_check_block=False):
-        self.move(self.setting.WALK_SPEED, passed_seconds, to_check_block)
+    def walk(self, passed_seconds, check_reachable=False):
+        self.move(self.setting.WALK_SPEED, passed_seconds, check_reachable)
         self.animation.run_circle_frame(cfg.EnemyAction.WALK, passed_seconds)
 
 

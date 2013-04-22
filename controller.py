@@ -174,6 +174,7 @@ class SpriteBrain(object):
     def __init__(self, sprite, ai, waypoints):
         self.sprite = sprite
         self.ai = ai
+        self.waypoints = waypoints
         self.target = None
         self.destination = None
         self.path = None
