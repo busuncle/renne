@@ -187,11 +187,13 @@ class SpriteBrain(object):
         patrol_state = SpritePatrol(sprite, ai)
         chase_state = SpriteChase(sprite, ai, waypoints)
         offence_state = SpriteOffence(sprite, ai)
+        defence_state = SpriteDefence(sprite, ai)
 
         self.state_machine.add_state(stay_state)
         self.state_machine.add_state(patrol_state)
         self.state_machine.add_state(chase_state)
         self.state_machine.add_state(offence_state)
+        self.state_machine.add_state(defence_state)
 
         # initial the sprite state, mostly, a "STAY" state works well
         self.state_machine.set_state(cfg.SpriteState.STAY)
