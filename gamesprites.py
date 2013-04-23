@@ -133,8 +133,7 @@ class Renne(GameSprite):
         self.enemies = enemies
         self.static_objects = static_objects
         self.game_map = game_map
-        self.attacker = simulator.RenneAttacker(self, angle=self.setting.ATTACK_ANGLE, 
-            cal_frames=self.setting.ATTACK_CAL_FRAMES)
+        self.attacker = simulator.RenneAttacker(self, self.setting.ATTACKER_PARAMS)
 
 
     def recover(self):
@@ -313,8 +312,8 @@ class Enemy(GameSprite):
         self.allsprites = allsprites
         self.hero = hero
         self.static_objects = static_objects
-        self.attacker = simulator.EnemyAttacker(self, angle=self.setting.ATTACK_ANGLE, 
-            cal_frames=self.setting.ATTACK_CAL_FRAMES)
+        self.attacker = simulator.ENEMY_ATTACKER_MAPPING[self.setting.ATTACKTYPE](
+            self, self.setting.ATTACKER_PARAMS)
         self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
         self.brain = SpriteBrain(self, ai, game_map.waypoints)
 

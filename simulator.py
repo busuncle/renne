@@ -5,7 +5,7 @@ import math
 from math import pow, radians, sqrt, tan, cos
 from time import time
 from gameobjects.vector2 import Vector2
-import pygame
+
 
 
 class Attacker(object):
@@ -56,12 +56,11 @@ class AngleAttacker(Attacker):
     and the line segment of the 2 units
     """
     
-    def __init__(self, sprite, angle, cal_frames):
+    def __init__(self, sprite, attack_range, angle, key_frames):
         # angle should be a degree value, like 45 degree
         super(AngleAttacker, self).__init__(sprite)
-        # 2 of 8 attack frames to check
-        self.cal_frames = cal_frames
-        self.attack_range = sprite.setting.ATTACK_RANGE
+        self.attack_range = attack_range
+        self.key_frames = key_frames
         # cosine is a decrease function between 0 and 180 degree, 
         # so we need angle to be calculated as the min cosine value
         # angle needs to be divide by 2 because of the symmetry
@@ -70,7 +69,7 @@ class AngleAttacker(Attacker):
 
 
     def hit(self, target, current_frame_add):
-        if int(current_frame_add) not in self.cal_frames:
+        if int(current_frame_add) not in self.key_frames:
             return False
 
         if target in self.has_hits:
@@ -90,8 +89,11 @@ class AngleAttacker(Attacker):
 
 
 class RenneAttacker(AngleAttacker):
-    def __init__(self, sprite, angle, cal_frames):
-        super(RenneAttacker, self).__init__(sprite, angle, cal_frames)
+    def __init__(self, sprite, attacker_params):
+        attack_range = attacker_params["range"]
+        angle = attacker_params["angle"]
+        key_frames = attacker_params["key_frames"]
+        super(RenneAttacker, self).__init__(sprite, attack_range, angle, key_frames)
         self.hit_record = []
         self.kill_record = []
 
@@ -126,16 +128,19 @@ class RenneAttacker(AngleAttacker):
 
 
 
-class EnemyAttacker(AngleAttacker):
-    def __init__(self, sprite, angle, cal_frames):
-        super(EnemyAttacker, self).__init__(sprite, angle, cal_frames)
+class EnemyShortAttacker(AngleAttacker):
+    def __init__(self, sprite, attacker_params):
+        attack_range = attacker_params["range"]
+        angle = attacker_params["angle"]
+        key_frames = attacker_params["key_frames"]
+        super(EnemyShortAttacker, self).__init__(sprite, attack_range, angle, key_frames)
 
 
     def chance(self, target):
         # totally for ai, because player can judge whether it's a good attack chance himself
         sp = self.sprite
         distance_to_target = sp.pos.get_distance_to(target.pos)
-        if distance_to_target <= sp.setting.ATTACK_RANGE:
+        if distance_to_target <= self.attack_range:
             return True
         return False
 
@@ -191,6 +196,11 @@ class ViewSensor(object):
 
         return None
 
+
+
+ENEMY_ATTACKER_MAPPING = {
+    cfg.SpriteAttackType.SHORT: EnemyShortAttacker,
+}
 
 
 if __name__ == "__main__":

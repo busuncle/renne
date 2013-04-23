@@ -309,13 +309,7 @@ class SpriteChase(State):
         self.pathfinder = pathfinding.Astar(sprite, waypoints)
         self.steerer = Steerer(sprite)
         self.enter_timer = Timer()
-
-
-    def add_noise_to_dest(self, target_pos):
-        pos = target_pos.copy()
-        pos.x = gauss(pos.x, sfg.WayPoint.STEP_WIDTH)
-        pos.y = gauss(pos.y, sfg.WayPoint.STEP_WIDTH)
-        return pos
+        self.target_move_threshold = sfg.WayPoint.STEP_WIDTH * 3
         
 
     def enter(self, last_state):
@@ -327,9 +321,8 @@ class SpriteChase(State):
             sp.set_emotion(cfg.SpriteEmotion.ALERT)
 
         sp.direction = cal_face_direct(sp.pos.as_tuple(), sp.brain.target.pos.as_tuple())
-        self.target_move_threshold = sp.brain.target.setting.RADIUS * 4
-        sp.brain.destination = self.add_noise_to_dest(sp.brain.target.pos)
-        path = self.pathfinder.find(sp.brain.destination.as_tuple(), sp.setting.ATTACK_RANGE)
+        sp.brain.destination = sp.brain.target.pos.copy()
+        path = self.pathfinder.find(sp.brain.destination.as_tuple(), sfg.WayPoint.STEP_WIDTH)
         self.steerer.init(path)
 
 
@@ -349,12 +342,12 @@ class SpriteChase(State):
     def check_conditions(self):
         sp = self.sprite
 
-        distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
         if sp.attacker.chance(sp.brain.target):
             #print "to attack"
             return cfg.SpriteState.OFFENCE
 
-        elif sp.setting.ATTACK_RANGE < distance_to_target <= sp.setting.CHASE_RANGE:
+        distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
+        if distance_to_target <= sp.setting.CHASE_RANGE:
             target_move = sp.brain.destination.get_distance_to(sp.brain.target.pos)
             if target_move > self.target_move_threshold or self.steerer.is_end:
                 #print "chase to chase"

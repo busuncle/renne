@@ -127,9 +127,12 @@ class Renne(GameRole):
     WALK_SPEED = 100
     RUN_SPEED = 200
 
-    ATTACK_RANGE = 100
-    ATTACK_ANGLE = 90
-    ATTACK_CAL_FRAMES = (4, 5)
+    ATTACKTYPE = cfg.SpriteAttackType.SHORT
+    ATTACKER_PARAMS = {
+        "range": 100,
+        "angle": 90,
+        "key_frames": (4, 5),
+    }
 
 
                 
@@ -158,11 +161,13 @@ class SkeletonWarrior(GameRole):
     }
 
     ATTACKTYPE = cfg.SpriteAttackType.SHORT
-    ATTACK_CAL_FRAMES = (3, 4)
+    ATTACKER_PARAMS = {
+        "range": 60,
+        "angle": 90,
+        "key_frames": (3, 4),
+    }
 
     WALK_SPEED = 160
-    ATTACK_RANGE = 60
-    ATTACK_ANGLE = 90
     VIEW_RANGE = 380
     VIEW_ANGLE = 120 
     CHASE_RANGE = VIEW_RANGE + 20
@@ -195,11 +200,13 @@ class CastleWarrior(GameRole):
     }
 
     ATTACKTYPE = cfg.SpriteAttackType.SHORT
-    ATTACK_CAL_FRAMES = (3, 4)
+    ATTACKER_PARAMS = {
+        "range": 90,
+        "angle": 60,
+        "key_frames": (3, 4),
+    }
 
     WALK_SPEED = 160
-    ATTACK_RANGE = 90
-    ATTACK_ANGLE = 60
     VIEW_RANGE = 380
     VIEW_ANGLE = 120 
     CHASE_RANGE = VIEW_RANGE + 20
