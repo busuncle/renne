@@ -399,6 +399,8 @@ class SpriteOffence(State):
         if happen(self.ai.OFFENCE_TO_CHASE_PROB):
             return cfg.SpriteState.CHASE
 
+        return cfg.SpriteState.DEFENCE
+
 
     def exit(self):
         self.enter_timer.clear()
@@ -414,6 +416,8 @@ class SpriteDefence(State):
 
 
     def enter(self, last_state):
+        sp = self.sprite
+        sp.direction = cal_face_direct(sp.pos.as_tuple(), sp.brain.target.pos.as_tuple())
 
 
     def send_actions(self):
@@ -421,7 +425,19 @@ class SpriteDefence(State):
 
 
     def check_conditions(self):
-        pass
+        sp = self.sprite
+        if sp.attacker.chance(sp.brain.target) and happen(self.ai.DEFENCE_TO_OFFENCE_PROB):
+            return cfg.SpriteState.OFFENCE
+
+        distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
+        if distance_to_target <= sp.setting.CHASE_RANGE and happen(self.ai.DEFENCE_TO_CHASE_PROB):
+            return cfg.SpriteState.CHASE
+
+        if distance_to_target > sp.setting.CHASE_RANGE:
+            sp.brain.target = None
+            return cfg.SpriteState.STAY
+
+        return cfg.SpriteState.DEFENCE
 
 
     def exit(self):
