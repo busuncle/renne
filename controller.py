@@ -238,7 +238,10 @@ class SpriteStay(State):
                 #print "to attack"
                 return cfg.SpriteState.OFFENCE
 
-            return cfg.SpriteState.CHASE
+            if happen(self.ai.STAY_TO_CHASE):
+                return cfg.SpriteState.CHASE
+
+            return cfg.SpriteState.DEFENCE
 
         if self.enter_timer.exceed():
             if happen(self.ai.STAY_TO_PATROL_PROB):
@@ -284,8 +287,11 @@ class SpritePatrol(State):
                 #print "patrol to attack"
                 return cfg.SpriteState.OFFENCE
 
-            #print "patrol to chase"
-            return cfg.SpriteState.CHASE
+            if happen(self.ai.PATROL_TO_CHASE):
+                #print "patrol to chase"
+                return cfg.SpriteState.CHASE
+
+            return cfg.SpriteState.DEFENCE
 
         if sp.brain.interrupt:
             sp.brain.interrupt = False
