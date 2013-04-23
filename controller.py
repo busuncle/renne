@@ -403,7 +403,30 @@ class SpriteOffence(State):
     def exit(self):
         self.enter_timer.clear()
         self.sprite.brain.persistent = False
-        
+
+
+
+class SpriteDefence(State):
+    def __init__(self, sprite, ai):
+       super(SpriteDefence, self).__init__(cfg.SpriteState.DEFENCE)
+       self.sprite = sprite
+       self.ai = ai
+
+
+    def enter(self, last_state):
+
+
+    def send_actions(self):
+        return (cfg.EnemyAction.STAND, )
+
+
+    def check_conditions(self):
+        pass
+
+
+    def exit(self):
+        pass
+
 
 
 if __name__ == "__main__":

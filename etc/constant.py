@@ -94,7 +94,7 @@ class SpriteState(object):
     PATROL = 2
     CHASE = 3
     OFFENCE = 4
-    ESCAPE = 5
+    DEFENCE = 5
 
 
 class SpriteStatus(object):
