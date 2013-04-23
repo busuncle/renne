@@ -100,17 +100,8 @@ class Steerer(object):
             sp.direction = self.cur_direct
             sp.key_vec.x, sp.key_vec.y = cfg.Direction.DIRECT_TO_VEC[sp.direction]
         else:
-            sp.key_vec.x = sp.key_vec.y = 0.0
-            if dx > self.delta:
-                sp.key_vec.x = 1.0
-            if dx < -self.delta:
-                sp.key_vec.x = -1.0
-            if dy > self.delta:
-                sp.key_vec.y = 1.0
-            if dy < -self.delta:
-                sp.key_vec.y = -1.0
-
-            sp.direction = cfg.Direction.VEC_TO_DIRECT.get(sp.key_vec.as_tuple(), sp.direction)
+            sp.key_vec.x = dx
+            sp.key_vec.y = dy
 
 
 
