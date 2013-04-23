@@ -24,11 +24,21 @@ DEBUG_DRAW = {
 }
 
 
+def save_waypoints(chapter, waypoints):
+    filename = "%s.txt" % chapter
+    fp = open(os.path.join(sfg.WayPoint.DIR, filename), "w")
+    for wp in waypoints:
+        fp.write("%s\t%s\n" % wp)
+
+    print "generate waypoints %s success" % filename
+
+    fp.close()
+
 
 def gen_chapter_waypoints(chapter, map_setting):
     bounding_box = pygame.Rect(sfg.WayPoint.BOUNDING_BOX_RECT)
     blocks = []
-    waypoints = []
+    waypoints = set()
 
     for t, p in map_setting["static_objects"]:
         static_obj_setting = sfg.STATIC_OBJECT_SETTING_MAPPING[t]
@@ -45,16 +55,9 @@ def gen_chapter_waypoints(chapter, map_setting):
             fx, fy = map(float, (x, y))
             bounding_box.center = (fx, fy)
             if bounding_box.collidelist(blocks) == -1:
-                waypoints.append((fx, fy))
+                waypoints.add((fx, fy))
 
-    filename = "%s.txt" % chapter
-    fp = open(os.path.join(sfg.WayPoint.DIR, filename), "w")
-    for wp in waypoints:
-        fp.write("%s\t%s\n" % wp)
-
-    print "generate waypoints %s success" % filename
-
-    fp.close()
+    return waypoints
 
 
 
@@ -230,9 +233,10 @@ def run(chapter):
                     # ctrl+s to save map setting
                     change_map_setting(map_setting, game_world)
                     util.save_map_setting(chapter, map_setting)
-                    # a good chance for generating waypoints when saving the map setting
-                    gen_chapter_waypoints(chapter, map_setting)
                     print "save chapter %s map setting" % chapter
+                    # a good chance for generating waypoints when saving the map setting
+                    game_map.waypoints = gen_chapter_waypoints(chapter, map_setting)
+                    save_waypoints(chapter, game_map.waypoints)
 
                 if key_mods & KMOD_ALT:
                     if event.key == K_p:
