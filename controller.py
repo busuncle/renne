@@ -29,7 +29,6 @@ def cal_face_direct(start_point, end_point):
 
 def happen(probability):
     # calculate whether the event will happen according the probability
-    assert 0 <= probability <= 1
     return random() <= probability
 
 
@@ -396,7 +395,8 @@ class SpriteOffence(State):
 
         if sp.attacker.chance(sp.brain.target):
             return cfg.SpriteState.OFFENCE
-        else:
+
+        if happen(self.ai.OFFENCE_TO_CHASE_PROB):
             return cfg.SpriteState.CHASE
 
 
