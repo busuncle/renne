@@ -66,18 +66,18 @@ def get_map_pos_for_mouse(camera_rect, mouse_pos):
     return map_pos
 
 
-def select_unit(map_pos_for_mouse, game_objects):
+def select_unit(map_pos_for_mouse, game_world):
     # change mouse pos to map pos first
-    for sp in game_objects:
+    for sp in game_world.all_objects():
         if sp.area.collidepoint(map_pos_for_mouse):
             return sp
     return None
 
 
-def put_selected_object(selected_object, game_objects):
+def put_selected_object(selected_object, game_world):
     if selected_object is None:
         return True
-    for sp in game_objects:
+    for sp in game_world.all_objects():
         if sp is selected_object:
             continue
         if selected_object.area.colliderect(sp.area):
@@ -87,16 +87,16 @@ def put_selected_object(selected_object, game_objects):
 
 def change_map_setting(map_setting, game_world):
     res = {"hero": None, "monsters": [], "static_objects": []}
-    for sp in game_world.sprites():
+    for sp in game_world.static_objects:
         x, y = map(int, sp.pos)
-        if issubclass(sp.setting, sfg.StaticObject):
-            res["static_objects"].append([sp.setting.ID, [x, y]])
-        elif issubclass(sp.setting, sfg.GameRole):
-            direct = sp.direction
-            if isinstance(sp, Renne):
-                res["hero"] = [[x, y], direct]
-            else:
-                res["monsters"].append([sp.setting.ID, [x, y], direct])
+        res["static_objects"].append([sp.setting.ID, [x, y]])
+
+    for sp in game_world.dynamic_objects:
+        x, y = map(int, sp.pos)
+        if isinstance(sp, Renne):
+            res["hero"] = [[x, y], sp.direction]
+        else:
+            res["monsters"].append([sp.setting.ID, [x, y], sp.direction])
 
     map_setting.update(res)
 
@@ -117,13 +117,13 @@ def mouse_object_toggle(selected_object, game_world):
 
     if selected_object is None:
         new_selected = Enemy(sfg.SPRITE_SETTING_MAPPING[1], (-1000, -1000), 0)
-        game_world.add(new_selected)
+        game_world.add_object(new_selected)
     elif isinstance(selected_object, Enemy):
-        game_world.remove(selected_object)
+        game_world.remove_object(selected_object)
         new_selected = GameStaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[1], (-1000, -1000))
-        game_world.add(new_selected)
+        game_world.add_object(new_selected)
     elif isinstance(selected_object, GameStaticObject):
-        game_world.remove(selected_object)
+        game_world.remove_object(selected_object)
         new_selected = None
 
     return new_selected
@@ -134,14 +134,14 @@ def selected_object_toggle(selected_object, game_world):
         # Renne and None are not in toggle loop
         return selected_object
 
-    game_world.remove(selected_object)
+    game_world.remove_object(selected_object)
     if isinstance(selected_object, Enemy):
         new_object_id = (selected_object.setting.ID + 1) % (len(sfg.SPRITE_SETTING_LIST) + 1) or 1
         new_object = Enemy(sfg.SPRITE_SETTING_MAPPING[new_object_id], (-1000, -1000), 0)
     elif isinstance(selected_object, GameStaticObject):
         new_object_id = (selected_object.setting.ID + 1) % (len(sfg.STATIC_OBJECT_SETTING_LIST) + 1) or 1
         new_object = GameStaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[new_object_id], (-1000, -1000))
-    game_world.add(new_object)
+    game_world.add_object(new_object)
         
     return new_object
 
@@ -172,32 +172,24 @@ def run(chapter):
     pygame.display.set_caption("Renne Map Editor")
     camera = Camera(screen, map_size=map_setting["size"])
     game_world = GameWorld()
-    allsprites = GameSpritesGroup()
-    enemies = GameSpritesGroup()
-    static_objects = GameStaticObjectGroup()
     game_map = GameMap(chapter, map_setting["size"], map_setting["tiles"])
 
     # load hero
     renne = Renne(sfg.Renne, *map_setting["hero"])
+    game_world.add_object(renne)
 
     # load monsters
     monster_init = map_setting.get("monsters", [])
     for monster_id, pos, direct in monster_init:
         monster = Enemy(sfg.SPRITE_SETTING_MAPPING[monster_id], pos, direct)
-
-        enemies.add(monster)
+        game_world.add_object(monster)
 
     # load static objects
     chapter_static_objects = map_setting.get("static_objects", [])
     for t, p in chapter_static_objects:
         static_obj = GameStaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[t], p)
-        static_objects.add(static_obj)
+        game_world.add_object(static_obj)
 
-    allsprites.add(renne)
-    allsprites.add(enemies)
-
-    game_world.add(allsprites)
-    game_world.add(static_objects)
 
     running = True
     key_vec = Vector2()
@@ -212,7 +204,7 @@ def run(chapter):
 
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    if put_selected_object(selected_object, game_world.sprites()):
+                    if put_selected_object(selected_object, game_world):
                         selected_object = None
 
                 if event.key == K_q:
@@ -222,7 +214,7 @@ def run(chapter):
                     selected_object = selected_object_toggle(selected_object, game_world)
 
                 if event.key == K_e:
-                    game_world.remove(selected_object)
+                    game_world.remove_object(selected_object)
                     selected_object = None
 
                 if event.key == K_t:
@@ -251,13 +243,13 @@ def run(chapter):
                     # left click
                     if selected_object is None:
                         # pick up "this" unit if the mouse is over it
-                        selected_object = select_unit(map_pos_for_mouse, game_world.sprites())
+                        selected_object = select_unit(map_pos_for_mouse, game_world)
                     else:
                         # put down the current selected unit if no "collision" happen
-                        if put_selected_object(selected_object, game_world.sprites()):
+                        if put_selected_object(selected_object, game_world):
                             if pygame.key.get_mods() & KMOD_CTRL:
                                 selected_object = create_new_instance(selected_object)
-                                game_world.add(selected_object)
+                                game_world.add_object(selected_object)
                             else:
                                 selected_object = None
 
@@ -281,10 +273,10 @@ def run(chapter):
             set_selected_object_follow_mouse(map_pos_for_mouse, selected_object)
 
         game_map.draw(camera)
-        game_world.draw(camera)
+        game_world.draw2(camera)
 
-        for sp in game_world:
-            if isinstance(sp, Renne) or isinstance(sp, Enemy):
+        for sp in game_world.all_objects():
+            if sp.setting.GAME_OBJECT_TYPE == cfg.GameObject.TYPE_DYNAMIC:
                 # select current image for corresponding direction
                 sp.animation.image = sp.animation.sprite_image_contoller.get_surface(
                     cfg.SpriteAction.STAND)[sp.direction]
