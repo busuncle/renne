@@ -130,7 +130,7 @@ class Renne(GameRole):
     ATTACKTYPE = cfg.SpriteAttackType.SHORT
     ATTACKER_PARAMS = {
         "range": 100,
-        "angle": 90,
+        "angle": 120,
         "key_frames": (4, 5),
     }
 
