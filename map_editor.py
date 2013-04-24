@@ -273,6 +273,9 @@ def run(chapter):
             set_selected_object_follow_mouse(map_pos_for_mouse, selected_object)
 
         game_map.draw(camera)
+
+        # in map editor, we should sort all the objects, included static ones
+        game_world.static_objects.sort(key=lambda sp: sp.pos.y)
         game_world.draw(camera)
 
         for sp in game_world.all_objects():
