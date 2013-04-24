@@ -49,11 +49,11 @@ def run(args):
             (0, frame_no * animate_size.width, animate_size.width, animate_size.width)
         ))
 
-        screen.blit(blit_image, (0, 0))
+        #screen.blit(blit_image, (0, 0))
 
-        #lap_sf = laplacian(blit_image)
-        #screen.blit(lap_sf, (0, 0))
-        pygame.draw.rect(screen, pygame.Color("blue"), (0, 64, 256, 128), 1)
+        lap_sf = laplacian(blit_image)
+        screen.blit(lap_sf, (0, 0))
+        pygame.draw.rect(screen, pygame.Color("blue"), blit_image.get_bounding_rect(), 1)
 
         pygame.display.update()
 
