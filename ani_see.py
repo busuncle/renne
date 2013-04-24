@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+from pygame.transform import laplacian
 import etc.setting as sfg
 from base import util
 
@@ -44,7 +45,14 @@ def run(args):
         frame_add %= frame_no_max
         frame_no = direction + int(frame_add) * 8
 
-        screen.blit(image, (0, 0), (0, frame_no * animate_size.width, animate_size.width, animate_size.width))
+        blit_image = image.subsurface(pygame.Rect(
+            (0, frame_no * animate_size.width, animate_size.width, animate_size.width)
+        ))
+
+        screen.blit(blit_image, (0, 0))
+
+        #lap_sf = laplacian(blit_image)
+        #screen.blit(lap_sf, (0, 0))
         pygame.draw.rect(screen, pygame.Color("blue"), (0, 64, 256, 128), 1)
 
         pygame.display.update()
