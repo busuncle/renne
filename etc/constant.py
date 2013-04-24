@@ -102,6 +102,8 @@ class SpriteStatus(object):
     WOUNDED = 1
     DANGER = 2
     DIE = 3
+    VANISH = 4
+
 
 
 class SpriteEmotion(object):

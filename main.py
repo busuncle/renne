@@ -98,8 +98,8 @@ def enter_chapter(screen, chapter, renne):
 
     #game_world.add(allsprites)
     #game_world.add(static_objects)
-    game_world.batch_add(allsprites, cfg.GameObject.TYPE_DYNAMIC)
-    game_world.batch_add(static_objects, cfg.GameObject.TYPE_STATIC)
+    game_world.batch_add(allsprites)
+    game_world.batch_add(static_objects)
 
     game_status = GameStatus(chapter, renne, enemies)
 
@@ -157,13 +157,13 @@ def enter_chapter(screen, chapter, renne):
             if enemy_in_one_screen(renne, enemy):
                 enemy.update(passed_seconds, external_event=game_status.status)
 
+        game_world.update()
         game_status.update(passed_seconds)
 
         camera.screen_follow(renne.pos)
 
         game_map.draw(camera)
-        #game_world.draw(camera)
-        game_world.draw2(camera)
+        game_world.draw(camera)
         game_status.draw(camera)
 
         if COMMAND_DEBUG_MODE or sfg.DEBUG_MODE:

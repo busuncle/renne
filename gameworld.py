@@ -111,13 +111,12 @@ class GameWorld(pygame.sprite.LayeredDirty):
             self.static_objects.remove(game_object)
 
 
-    def batch_add(self, game_objects, game_object_type):
-        if game_object_type == cfg.GameObject.TYPE_DYNAMIC:
-            self.dynamic_objects.extend(game_objects)
-            self.dynamic_objects.sort(key=lambda obj: obj.pos.y)
-        else:
-            self.static_objects.extend(game_objects)
-            self.static_objects.sort(key=lambda obj: obj.pos.y)
+    def batch_add(self, game_objects):
+        for obj in game_objects:
+            self.add_object(obj)
+
+        self.dynamic_objects.sort(key=lambda obj: obj.pos.y)
+        self.static_objects.sort(key=lambda obj: obj.pos.y)
 
 
     def yield_objects_in_screen(self, camera):
@@ -133,13 +132,19 @@ class GameWorld(pygame.sprite.LayeredDirty):
                 yield obj
 
 
-    def draw(self, camera):
+    def draw2(self, camera):
         objs = sorted(self.yield_objects_in_screen(camera), key=lambda sp: sp.pos.y)
         for v in objs:
             v.draw(camera)
 
 
-    def draw2(self, camera):
+    def update(self):
+        for i, sp in enumerate(self.dynamic_objects):
+            if sp.status["hp"] == cfg.SpriteStatus.VANISH:
+                self.dynamic_objects.pop(i)
+
+
+    def draw(self, camera):
         # only sort dynamic objects, static object is sorted in nature and no longer change 
         # the algorithm is inspired by merge sort
         self.dynamic_objects.sort(key=lambda obj: obj.pos.y)

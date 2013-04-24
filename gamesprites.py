@@ -331,7 +331,7 @@ class Enemy(GameSprite):
         self.hp_bar.fill(sfg.SpriteStatus.SPRITE_BAR_BG_COLOR)
         r = self.hp_bar.get_rect()
         r.width *= float(self.hp) / self.setting.HP
-        hp_color = sfg.SpriteStatus.SPRITE_HP_COLORS[self.status["hp"]]
+        hp_color = sfg.SpriteStatus.SPRITE_HP_COLORS.get(self.status["hp"], pygame.Color("black"))
         self.hp_bar.fill(hp_color, r)
 
         # adjust hp_bar position relative to screen

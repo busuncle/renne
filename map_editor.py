@@ -273,7 +273,7 @@ def run(chapter):
             set_selected_object_follow_mouse(map_pos_for_mouse, selected_object)
 
         game_map.draw(camera)
-        game_world.draw2(camera)
+        game_world.draw(camera)
 
         for sp in game_world.all_objects():
             if sp.setting.GAME_OBJECT_TYPE == cfg.GameObject.TYPE_DYNAMIC:

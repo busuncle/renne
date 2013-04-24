@@ -280,15 +280,13 @@ class GameStatus(object):
         elif self.status == cfg.GameStatus.HERO_WIN:
             self.achievement.chapter_score.update(passed_seconds)
 
-        remove_list = []
         for em in self.enemy_list:
             if em.status["hp"] == cfg.SpriteStatus.DIE:
                 can_be_removed = em.animation.dead_tick()
                 if can_be_removed:
-                    remove_list.append(em)
-
-        for em in remove_list:
-            self.enemy_list.remove(em)
+                    em.status["hp"] = cfg.SpriteStatus.VANISH
+                    # kill the sprite from sprite groups containing it, but not chaning its internal status
+                    em.kill()
 
         # achievement calculation here
         self.achievement.update(passed_seconds)
