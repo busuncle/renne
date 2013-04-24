@@ -89,6 +89,35 @@ class GameWorld(pygame.sprite.LayeredDirty):
     # containing all sprites in the world
     def __init__(self):
         super(GameWorld, self).__init__()
+        self.static_objects = []
+        self.dynamic_objects = []
+
+
+    def all_objects(self):
+        return self.static_objects + self.dynamic_objects
+
+
+    def add_object(self, game_object):
+        if game_object.setting.GAME_OBJECT_TYPE == cfg.GameObject.TYPE_DYNAMIC:
+            self.dynamic_objects.append(game_object)
+        else:
+            self.static_objects.append(game_object)
+
+
+    def remove_object(self, game_object):
+        if game_object.setting.GAME_OBJECT_TYPE == cfg.GameObject.TYPE_DYNAMIC:
+            self.dynamic_objects.remove(game_object)
+        else:
+            self.static_objects.remove(game_object)
+
+
+    def batch_add(self, game_objects, game_object_type):
+        if game_object_type == cfg.GameObject.TYPE_DYNAMIC:
+            self.dynamic_objects.extend(game_objects)
+            self.dynamic_objects.sort(key=lambda obj: obj.pos.y)
+        else:
+            self.static_objects.extend(game_objects)
+            self.static_objects.sort(key=lambda obj: obj.pos.y)
 
 
     def yield_objects_in_screen(self, camera):
@@ -110,3 +139,31 @@ class GameWorld(pygame.sprite.LayeredDirty):
             v.draw(camera)
 
 
+    def draw2(self, camera):
+        # only sort dynamic objects, static object is sorted in nature and no longer change 
+        # the algorithm is inspired by merge sort
+        self.dynamic_objects.sort(key=lambda obj: obj.pos.y)
+        dy_idx = 0
+        st_idx = 0
+        while dy_idx < len(self.dynamic_objects) and st_idx < len(self.static_objects):
+            if self.static_objects[st_idx].pos.y <= self.dynamic_objects[dy_idx].pos.y:
+                if self.static_objects[st_idx].rect.colliderect(camera.rect):
+                    self.static_objects[st_idx].draw(camera)
+                st_idx += 1
+
+            else:
+                self.dynamic_objects[dy_idx].adjust_rect()
+                if self.dynamic_objects[dy_idx].animation.rect.colliderect(camera.rect):
+                    self.dynamic_objects[dy_idx].draw(camera)
+                dy_idx += 1
+
+        while dy_idx < len(self.dynamic_objects):
+            self.dynamic_objects[dy_idx].adjust_rect()
+            if self.dynamic_objects[dy_idx].animation.rect.colliderect(camera.rect):
+                self.dynamic_objects[dy_idx].draw(camera)
+            dy_idx += 1
+
+        while st_idx < len(self.static_objects):
+            if self.static_objects[st_idx].rect.colliderect(camera.rect):
+                self.static_objects[st_idx].draw(camera)
+            st_idx += 1
