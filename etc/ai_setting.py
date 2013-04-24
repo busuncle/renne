@@ -30,10 +30,11 @@ class ShortNormalAI(AIBase):
 
     STAY_CHANGE_DIRECTION_PROB = 0.5
 
+    # all states transition probability
     STAY_TO_PATROL_PROB = 0.2
-    STAY_TO_CHASE = 1
+    STAY_TO_CHASE_PROB = 1
 
-    PATROL_TO_CHASE = 1
+    PATROL_TO_CHASE_PROB = 1
 
     OFFENCE_TO_CHASE_PROB = 0.9
 
@@ -42,6 +43,38 @@ class ShortNormalAI(AIBase):
 
 
 
+class LongNormalAI(AIBase):
+    # this ai is for some long-distance-attack monster
+
+    # used in gauss function, MU is the mean, SIGMA is the standard deviation
+    STAY_TIME_MU = 1
+    STAY_TIME_SIGMA = 0.1
+    WALK_TIME_MU = 0.8
+    WALK_TIME_SIGMA = 0.1
+
+    # the probability(between 0 and 1, both sides include) that give rise an emotion on the sprite
+    EMOTION_SILENT_PROB = 0.2
+
+    CHASE_GO_DELAY_TIME = 0.5
+    OFFENCE_GO_DELAY_TIME_MU = 0.8
+    OFFENCE_GO_DELAY_TIME_SIGMA = 0.1
+
+    STAY_CHANGE_DIRECTION_PROB = 0.5
+
+    # all states transition probability
+    STAY_TO_PATROL_PROB = 0.01
+    STAY_TO_CHASE_PROB = 0.2
+
+    PATROL_TO_CHASE_PROB = 0.2
+
+    OFFENCE_TO_CHASE_PROB = 0.2
+
+    DEFENCE_TO_OFFENCE_PROB = 0.9
+    DEFENCE_TO_CHASE_PROB = 0.2
+
+
+
 ATTACKTYPE_AI_MAPPING = {
     cfg.SpriteAttackType.SHORT: ShortNormalAI,
+    cfg.SpriteAttackType.LONG: LongNormalAI,
 }

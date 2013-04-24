@@ -231,7 +231,7 @@ class SpriteStay(State):
                 #print "to attack"
                 return cfg.SpriteState.OFFENCE
 
-            if happen(self.ai.STAY_TO_CHASE):
+            if happen(self.ai.STAY_TO_CHASE_PROB):
                 return cfg.SpriteState.CHASE
 
             return cfg.SpriteState.DEFENCE
@@ -280,7 +280,7 @@ class SpritePatrol(State):
                 #print "patrol to attack"
                 return cfg.SpriteState.OFFENCE
 
-            if happen(self.ai.PATROL_TO_CHASE):
+            if happen(self.ai.PATROL_TO_CHASE_PROB):
                 #print "patrol to chase"
                 return cfg.SpriteState.CHASE
 
