@@ -81,12 +81,7 @@ class Stuff(object):
 
 
 
-class GameRole(object):
-    pass
-
-
-
-class Renne(GameRole):
+class Renne(object):
     NAME = "Renne"
     HP = 300
     # stamina
@@ -136,7 +131,7 @@ class Renne(GameRole):
 
 
                 
-class SkeletonWarrior(GameRole):
+class SkeletonWarrior(object):
     NAME = "SkeletonWarrior"
     HP = 200
     ATK = 40
@@ -175,7 +170,7 @@ class SkeletonWarrior(GameRole):
 
 
 
-class CastleWarrior(GameRole):
+class CastleWarrior(object):
     NAME = "CastleWarrior" 
     HP = 250
     ATK = 50
@@ -214,6 +209,46 @@ class CastleWarrior(GameRole):
 
 
 
+class SkeletonArcher(object):
+    NAME = "SkeletonArcher"
+    HP = 180
+    ATK = 35
+    DFS = 2
+
+    RADIUS = 24
+    HEIGHT = 70
+    POS_RECT_DELTA_Y = 35
+    SHADOW_RECT_DELTA_Y = 55
+    SHADOW_INDEX = 3
+
+    FRAME_RATES = {
+        cfg.EnemyAction.STAND: 12,
+        cfg.EnemyAction.WALK: 12,
+        cfg.EnemyAction.ATTACK: 10,
+    }
+
+    FRAME_NUMS = {
+        cfg.EnemyAction.STAND: 8,
+        cfg.EnemyAction.WALK: 8,
+        cfg.EnemyAction.ATTACK: 8,
+    }
+
+    ATTACKTYPE = cfg.SpriteAttackType.LONG
+
+    ATTACKER_PARAMS = {
+        "range": 400,
+        "angle": 20,
+        "key_frames": (4, 5),
+    }
+
+    WALK_SPEED = 140
+    VIEW_RANGE = 380
+    VIEW_ANGLE = 120 
+    CHASE_RANGE = VIEW_RANGE + 40
+    NEARBY_ALLIANCE_RANGE = 260
+
+
+
 class GameMap(object):
     TILE_SIZE = 256
     ONE_SCREEN_DISTANCE_WIDTH = TILE_SIZE * 4
@@ -222,12 +257,7 @@ class GameMap(object):
 
 
 
-class StaticObject(object):
-    pass
-
-
-
-class WoodenCase(StaticObject):
+class WoodenCase(object):
     NAME = "WoodenCase"
     IMAGE_KEY = "s1"
     IMAGE_RECT = (64, 64, 48, 64)
@@ -238,7 +268,7 @@ class WoodenCase(StaticObject):
 
 
 
-class IronCase(StaticObject):
+class IronCase(object):
     NAME = "IronCase"
     IMAGE_KEY = "s2"
     IMAGE_RECT = (174, 112, 70, 132)
@@ -249,7 +279,7 @@ class IronCase(StaticObject):
 
     
 
-class ThickGrass(StaticObject):
+class ThickGrass(object):
     NAME = "ThickGrass"
     IMAGE_KEY = "s3"
     IMAGE_RECT = (192, 64, 64, 64)
@@ -259,7 +289,7 @@ class ThickGrass(StaticObject):
     IS_VIEW_BLOCK = True 
 
 
-class GrassWall(StaticObject):
+class GrassWall(object):
     NAME = "GrassWall"
     IMAGE_KEY = "s4"
     IMAGE_RECT = (0, 0, 64, 104)
@@ -270,7 +300,7 @@ class GrassWall(StaticObject):
 
 
 
-class StoneWall(StaticObject):
+class StoneWall(object):
     NAME = "StoneWall"
     IMAGE_KEY = "s5"
     IMAGE_RECT = (192, 0, 64, 160)
@@ -281,7 +311,7 @@ class StoneWall(StaticObject):
 
 
 
-class StoneWall2(StaticObject):
+class StoneWall2(object):
     NAME = "StoneWall2"
     IMAGE_KEY = "s6"
     IMAGE_RECT = (0, 0, 256, 192)
@@ -292,7 +322,7 @@ class StoneWall2(StaticObject):
 
 
 
-class StoneWall2_1(StaticObject):
+class StoneWall2_1(object):
     NAME = "StoneWall2_1"
     IMAGE_KEY = "s6"
     IMAGE_RECT = (32, 0, 96, 192)
