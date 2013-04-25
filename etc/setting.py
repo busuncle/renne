@@ -151,7 +151,7 @@ class SkeletonWarrior(GameRole):
     FRAME_RATES = {
         cfg.EnemyAction.STAND: 12,
         cfg.EnemyAction.WALK: 14,
-        cfg.EnemyAction.ATTACK: 12,
+        cfg.EnemyAction.ATTACK: 10,
     }
 
     FRAME_NUMS = {
@@ -190,7 +190,7 @@ class CastleWarrior(GameRole):
     FRAME_RATES = {
         cfg.EnemyAction.STAND: 12,
         cfg.EnemyAction.WALK: 14,
-        cfg.EnemyAction.ATTACK: 12,
+        cfg.EnemyAction.ATTACK: 10,
     }
 
     FRAME_NUMS = {
