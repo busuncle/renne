@@ -200,7 +200,7 @@ class ViewSensor(object):
     a view sensor for detecting target
     """
 
-    def __init__(self, sprite, angle=90):
+    def __init__(self, sprite, angle=120):
         self.sprite = sprite
         self.cos_min = cos(radians(angle / 2))
 
