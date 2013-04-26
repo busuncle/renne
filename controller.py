@@ -226,6 +226,7 @@ class SpriteStay(State):
     def check_conditions(self):
         sp = self.sprite
         if sp.brain.target is not None:
+            sp.set_emotion(cfg.SpriteEmotion.ALERT)
             # discover a target
             if sp.attacker.chance(sp.brain.target):
                 #print "to attack"
@@ -276,6 +277,7 @@ class SpritePatrol(State):
     def check_conditions(self):
         sp = self.sprite
         if sp.brain.target is not None:
+            sp.set_emotion(cfg.SpriteEmotion.ALERT)
             if sp.attacker.chance(sp.brain.target):
                 #print "patrol to attack"
                 return cfg.SpriteState.OFFENCE
@@ -315,8 +317,6 @@ class SpriteChase(State):
         if last_state and last_state.id in (cfg.SpriteState.STAY, cfg.SpriteState.PATROL):
             # discover hero right now, record the time for action delay
             self.enter_timer.begin(self.ai.CHASE_GO_DELAY_TIME)
-            # set corresponding emotion
-            sp.set_emotion(cfg.SpriteEmotion.ALERT)
 
         sp.direction = cal_face_direct(sp.pos.as_tuple(), sp.brain.target.pos.as_tuple())
         sp.brain.destination = sp.brain.target.pos.copy()
