@@ -131,7 +131,16 @@ class Renne(object):
 
 
                 
-class SkeletonWarrior(object):
+class Enemy(object):
+    DEAD_TICK = 1.5
+    DEAD_BLINK_TIMES = 3
+    VIEW_RANGE = 380
+    VIEW_ANGLE = 120 
+    CHASE_RANGE = 420
+
+
+
+class SkeletonWarrior(Enemy):
     NAME = "SkeletonWarrior"
     HP = 200
     ATK = 40
@@ -163,14 +172,11 @@ class SkeletonWarrior(object):
     }
 
     WALK_SPEED = 160
-    VIEW_RANGE = 380
-    VIEW_ANGLE = 120 
-    CHASE_RANGE = VIEW_RANGE + 20
     NEARBY_ALLIANCE_RANGE = 260
 
 
 
-class CastleWarrior(object):
+class CastleWarrior(Enemy):
     NAME = "CastleWarrior" 
     HP = 250
     ATK = 50
@@ -202,14 +208,11 @@ class CastleWarrior(object):
     }
 
     WALK_SPEED = 160
-    VIEW_RANGE = 380
-    VIEW_ANGLE = 120 
-    CHASE_RANGE = VIEW_RANGE + 20
     NEARBY_ALLIANCE_RANGE = 260
 
 
 
-class SkeletonArcher(object):
+class SkeletonArcher(Enemy):
     NAME = "SkeletonArcher"
     HP = 180
     ATK = 35
@@ -242,9 +245,6 @@ class SkeletonArcher(object):
     }
 
     WALK_SPEED = 140
-    VIEW_RANGE = 380
-    VIEW_ANGLE = 120 
-    CHASE_RANGE = VIEW_RANGE + 40
     NEARBY_ALLIANCE_RANGE = 260
 
 
@@ -398,12 +398,6 @@ class SpriteStatus(object):
 
 
 
-class Enemy(object):
-    DEAD_TICK = 1.5
-    DEAD_BLINK_TIMES = 3
-
-
-
 class Achievement(object):
     KILL_ICON_RECT = (224, 0, 32, 32)
     N_HIT_ICON_RECT = (192, 32, 32, 32)
@@ -546,6 +540,7 @@ class Music(object):
 SPRITE_SETTING_LIST = [
     SkeletonWarrior,
     CastleWarrior,
+    SkeletonArcher,
 ]
 
 STATIC_OBJECT_SETTING_LIST = [
@@ -590,6 +585,11 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.ATTACK: "attack_8.png",
     }),
     2: ("castle_warrior", {
+        cfg.EnemyAction.WALK: "walk_8.png",
+        cfg.EnemyAction.STAND: "stand_8.png",
+        cfg.EnemyAction.ATTACK: "attack_8.png",
+    }),
+    3: ("skeleton_archer", {
         cfg.EnemyAction.WALK: "walk_8.png",
         cfg.EnemyAction.STAND: "stand_8.png",
         cfg.EnemyAction.ATTACK: "attack_8.png",

@@ -1,4 +1,5 @@
-from base.util import LineSegment, line_segment_intersect_with_rect, cos_for_vec, manhattan_distance
+from base.util import LineSegment, line_segment_intersect_with_rect, cos_for_vec
+from base.util import manhattan_distance, Timer
 import etc.constant as cfg
 import etc.setting as sfg
 import math
@@ -17,7 +18,7 @@ class Attacker(object):
         self.sprite = sprite
         # during one attack(will be clear after when the attack is finish)
         self.has_hits = set()
-        self.under_attack_begin_time = None
+        self.under_attack_timer = Timer(0.05)
 
 
     def run(self):
@@ -29,7 +30,7 @@ class Attacker(object):
 
 
     def under_attack_tick(self):
-        if time() - self.under_attack_begin_time > 0.05:
+        if self.under_attack_timer.exceed():
             self.sprite.status["under_attack"] = False
 
 
@@ -104,7 +105,7 @@ class RenneAttacker(AngleAttacker):
             enemy.hp = max(enemy.hp - damage, 0)
             enemy.status["hp"] = enemy.attacker.cal_sprite_status(enemy.hp, enemy.setting.HP)
             enemy.status["under_attack"] = True
-            enemy.attacker.under_attack_begin_time = time()
+            enemy.attacker.under_attack_timer.begin()
 
             # calculate enemy's emotion
             angry_hp_threshold = enemy.setting.HP * enemy.brain.ai.ANGRY_HP_RATIO
@@ -151,13 +152,46 @@ class EnemyShortAttacker(AngleAttacker):
             hero.hp = max(hero.hp - damage, 0)
             hero.status["hp"] = hero.attacker.cal_sprite_status(hero.hp, hero.setting.HP)
             hero.status["under_attack"] = True
-            hero.attacker.under_attack_begin_time = time()
+            hero.attacker.under_attack_timer.begin()
             return True
         return False
         
 
     def finish(self):
         len(self.has_hits) > 0 and self.has_hits.clear()
+
+
+
+class EnemyLongAttacker(AngleAttacker):
+    def __init__(self, sprite, attacker_params):
+        attack_range = attacker_params["range"]
+        angle = attacker_params["angle"]
+        key_frames = attacker_params["key_frames"]
+        super(EnemyLongAttacker, self).__init__(sprite, attack_range, angle, key_frames)
+
+
+    def chance(self, target):
+        sp = self.sprite
+        distance_to_target = sp.pos.get_distance_to(target.pos)
+        if distance_to_target <= self.attack_range:
+            direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
+            vec_to_target = Vector2.from_points(sp.area.center, target.area.center)
+            cos_val = cos_for_vec(direct_vec, vec_to_target)
+            if cos_val >= self.cos_min:
+                return True
+
+        return False
+
+
+    def run(self, hero, current_frame_add):
+        if self.hit(hero, current_frame_add):
+            damage = self.sprite.atk - hero.dfs
+            hero.hp = max(hero.hp - damage, 0)
+            hero.status["hp"] = hero.attacker.cal_sprite_status(hero.hp, hero.setting.HP)
+            hero.status["under_attack"] = True
+            hero.attacker.under_attack_timer.begin()
+            return True
+        return False
 
 
 
@@ -200,6 +234,7 @@ class ViewSensor(object):
 
 ENEMY_ATTACKER_MAPPING = {
     cfg.SpriteAttackType.SHORT: EnemyShortAttacker,
+    cfg.SpriteAttackType.LONG: EnemyLongAttacker,
 }
 
 
