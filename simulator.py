@@ -194,6 +194,10 @@ class EnemyLongAttacker(AngleAttacker):
         return False
 
 
+    def finish(self):
+        len(self.has_hits) > 0 and self.has_hits.clear()
+
+
 
 class ViewSensor(object):
     """

@@ -219,7 +219,7 @@ class SkeletonArcher(Enemy):
     DFS = 2
 
     RADIUS = 24
-    HEIGHT = 70
+    HEIGHT = 65
     POS_RECT_DELTA_Y = 35
     SHADOW_RECT_DELTA_Y = 55
     SHADOW_INDEX = 3
@@ -240,7 +240,7 @@ class SkeletonArcher(Enemy):
 
     ATTACKER_PARAMS = {
         "range": 400,
-        "angle": 20,
+        "angle": 12,
         "key_frames": (4, 5),
     }
 
