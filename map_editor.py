@@ -214,8 +214,9 @@ def run(chapter):
                     selected_object = selected_object_toggle(selected_object, game_world)
 
                 if event.key == K_e:
-                    game_world.remove_object(selected_object)
-                    selected_object = None
+                    if selected_object is not None:
+                        game_world.remove_object(selected_object)
+                        selected_object = None
 
                 if event.key == K_t:
                     selected_object = turn_sprite_direction(selected_object)
