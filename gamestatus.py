@@ -271,9 +271,9 @@ class GameStatus(object):
                 # all enemies are gone, hero win
                 self.status = cfg.GameStatus.HERO_WIN
                 # only call incr_next_value one for chapter score
-                score = self.achievement.kill_score.current_value \
-                    + self.achievement.n_hit_score.current_value \
-                    + self.achievement.n_kill_score.current_value
+                score = self.achievement.kill_score.next_value \
+                    + self.achievement.n_hit_score.next_value \
+                    + self.achievement.n_kill_score.next_value
                 self.achievement.chapter_score.incr_next_value(score)
                 return 
 
