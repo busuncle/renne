@@ -152,6 +152,7 @@ class Renne(GameSprite):
 
     def draw(self, camera):
         self.draw_image(camera)
+        self.animation.draw(camera)
 
 
     def move(self, speed, passed_seconds):
@@ -288,6 +289,8 @@ class Renne(GameSprite):
         elif self.action == cfg.HeroAction.STAND:
             self.stand(passed_seconds)
 
+        self.animation.update()
+
 
 
 class Enemy(GameSprite):
@@ -351,6 +354,8 @@ class Enemy(GameSprite):
         self.draw_hp_bar(camera)
         if self.emotion_animation.image is not None:
             self.draw_emotion(camera)
+
+        self.animation.draw(camera)
 
 
     def move(self, speed, passed_seconds, check_reachable=False):
@@ -470,6 +475,9 @@ class Enemy(GameSprite):
             is_finish = self.emotion_animation.run_sequence_frame(self.emotion, passed_seconds)
             if is_finish:
                 self.emotion = cfg.SpriteEmotion.NORMAL
+
+        self.animation.update()
+
 
 
 ######## sprite group subclass ########

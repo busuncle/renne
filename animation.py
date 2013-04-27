@@ -1,5 +1,6 @@
 import pygame
 from time import time
+from random import guass
 from base.util import ImageController, SpriteImageController, Timer
 import etc.setting as sfg
 import etc.constant as cfg
@@ -18,6 +19,31 @@ cg_image_controller = ImageController(sfg.CG_IMAGES[0])
 cg_image_controller.add_from_list(sfg.CG_IMAGES[1])
 
 
+
+class WordsRenderer(object):
+    def __init__(self):
+        self.blit_list = []
+
+
+    def add_blit_words(self, words, rel_pos, time_len):
+        self.blit_list.append({"words": words, "rel_pos": rel_pos, "timer": Timer(time_len)})
+
+
+    def update(self):
+        for i, bw in enumerate(self.blit_list):
+            if not bw["timer"].is_begin():
+                bw["timer"].begin()
+            elif bw["timer"].exceed():
+                self.blit_list.pop(i)
+
+
+    def draw(self, camera):
+        for bw in self.blit_list:
+            camera.scree.blit(bw["words"], (bw["rel_pos"][0] - camera.rect.left, 
+                bw["rel_pos"][1] - camera.rect.top))
+
+
+
 class SpriteAnimator(object):
     def __init__(self, sprite):
         self.sprite = sprite
@@ -32,6 +58,7 @@ class SpriteAnimator(object):
         self.rect = self.image.get_rect()
         self.shadow_image = self.gen_shadow_image(sprite.setting.SHADOW_INDEX)
         self.shadow_rect = self.shadow_image.get_rect()
+        self.words_renderer = WordsRenderer()
 
 
     def gen_shadow_image(self, shadow_index):
@@ -42,6 +69,13 @@ class SpriteAnimator(object):
 
     def get_current_frame_add(self, action):
         return self.frame_adds[action]
+
+
+    def show_cost_hp(self, hp):
+        sp = self.sprite
+        words = sfg.Font.ARIAL_32.render("-%s" % hp, True, pygame.Color(255, 0, 0, 128))
+        rel_pos = (gauss(sp.pos.x, 6), gauss(sp.pos.y / 2 - sp.setting.HEIGHT - 10, 2))
+        self.words_renderer.add_blit_words(words, rel_pos, 1)
 
 
     def run_circle_frame(self, action, passed_seconds):
@@ -63,6 +97,14 @@ class SpriteAnimator(object):
             self.image = self.sprite_image_contoller.get_surface(action)[
                 self.sprite.direction + cfg.Direction.TOTAL * int(self.frame_adds[action])]
             return False
+
+
+    def update(self):
+        self.words_renderer.update()
+
+
+    def draw(self, camera):
+        self.words_renderer.draw(camera)
 
 
 

@@ -106,6 +106,7 @@ class RenneAttacker(AngleAttacker):
             enemy.status["hp"] = enemy.attacker.cal_sprite_status(enemy.hp, enemy.setting.HP)
             enemy.status["under_attack"] = True
             enemy.attacker.under_attack_timer.begin()
+            enemy.animation.show_cost_hp(damage)
 
             # calculate enemy's emotion
             angry_hp_threshold = enemy.setting.HP * enemy.brain.ai.ANGRY_HP_RATIO
@@ -153,6 +154,7 @@ class EnemyShortAttacker(AngleAttacker):
             hero.status["hp"] = hero.attacker.cal_sprite_status(hero.hp, hero.setting.HP)
             hero.status["under_attack"] = True
             hero.attacker.under_attack_timer.begin()
+            hero.animation.show_cost_hp(damage)
             return True
         return False
         
@@ -190,6 +192,7 @@ class EnemyLongAttacker(AngleAttacker):
             hero.status["hp"] = hero.attacker.cal_sprite_status(hero.hp, hero.setting.HP)
             hero.status["under_attack"] = True
             hero.attacker.under_attack_timer.begin()
+            hero.animation.show_cost_hp(damage)
             return True
         return False
 
