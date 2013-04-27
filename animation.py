@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import BLEND_ADD
 from time import time
-from random import gauss
+from random import randint
 from base.util import ImageController, SpriteImageController, Timer
 import etc.setting as sfg
 import etc.constant as cfg
@@ -76,9 +76,12 @@ class SpriteAnimator(object):
         sp = self.sprite
         words = sfg.SpriteStatus.COST_HP_WORDS_FONT.render("-%s" % hp, True, 
             sfg.SpriteStatus.COST_HP_WORDS_COLOR)
-        rel_pos = (gauss(sp.pos.x, sfg.SpriteStatus.COST_HP_WORDS_BLIT_X_SIGMA), 
-            gauss(sp.pos.y / 2 - sp.setting.HEIGHT - sfg.SpriteStatus.COST_HP_WORDS_BLIT_HEIGHT_OFFSET, 
-            sfg.SpriteStatus.COST_HP_WORDS_BLIT_Y_SIGMA))
+
+        dx = sfg.SpriteStatus.COST_HP_WORDS_BLIT_X_SIGMA
+        dy = sfg.SpriteStatus.COST_HP_WORDS_BLIT_Y_SIGMA
+        x = sp.pos.x
+        y = sp.pos.y / 2 - sp.setting.HEIGHT - sfg.SpriteStatus.COST_HP_WORDS_BLIT_HEIGHT_OFFSET
+        rel_pos = (randint(int(x - dx), int(x + dx)), randint(int(y - dy), int(y + dy)))
         self.words_renderer.add_blit_words(words, rel_pos, sfg.SpriteStatus.COST_HP_WORDS_SHOW_TIME)
 
 
