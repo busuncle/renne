@@ -79,33 +79,6 @@ class GameSprite(pygame.sprite.DirtySprite):
         shadow_rect.center = (rect.center[0], rect.center[1] + self.setting.SHADOW_RECT_DELTA_Y)
 
 
-    def draw_image(self, camera):
-
-        image = self.animation.image
-        if image is None:
-            return 
-
-        shadow_image = self.animation.shadow_image
-
-        rect = self.animation.rect
-        shadow_rect = self.animation.shadow_rect
-
-        # don't modify rect itself, but pass the relative topleft point to the blit function
-        image_blit_pos = (rect.left - camera.rect.left, rect.top - camera.rect.top)
-        shadow_blit_pos = (shadow_rect.left - camera.rect.left, shadow_rect.top - camera.rect.top)
-
-        if self.status["under_attack"]:
-            # add mix color to the image for simulating a under-attack effect, like a blink body, pretty good
-            self.attacker.under_attack_tick()
-            image_mix = image.copy()
-            image_mix.fill(pygame.Color("gray"), special_flags=BLEND_ADD)
-            image = image_mix
-
-        # draw shadow first, and then the sprite itself
-        camera.screen.blit(shadow_image, shadow_blit_pos)
-        camera.screen.blit(image, image_blit_pos)
-
-
     def draw(self, camera):
         pass
 
@@ -151,7 +124,6 @@ class Renne(GameSprite):
 
 
     def draw(self, camera):
-        self.draw_image(camera)
         self.animation.draw(camera)
 
 
@@ -274,6 +246,8 @@ class Renne(GameSprite):
                 # user pause the game, don't update animation
                 return
 
+        self.animation.update()
+
         if self.action == cfg.HeroAction.ATTACK:
             self.attack(passed_seconds)
 
@@ -288,8 +262,6 @@ class Renne(GameSprite):
 
         elif self.action == cfg.HeroAction.STAND:
             self.stand(passed_seconds)
-
-        self.animation.update()
 
 
 
@@ -346,7 +318,7 @@ class Enemy(GameSprite):
 
 
     def draw(self, camera):
-        self.draw_image(camera)
+        self.animation.draw(camera)
 
         if self.status["hp"] == cfg.SpriteStatus.DIE:
             return
@@ -355,7 +327,6 @@ class Enemy(GameSprite):
         if self.emotion_animation.image is not None:
             self.draw_emotion(camera)
 
-        self.animation.draw(camera)
 
 
     def move(self, speed, passed_seconds, check_reachable=False):
@@ -456,6 +427,8 @@ class Enemy(GameSprite):
                 # user pause the game, don't update animation
                 return
 
+        self.animation.update()
+
         if not self.status["under_attack"] and self.status["hp"] == cfg.SpriteStatus.DIE:
             return
 
@@ -475,8 +448,6 @@ class Enemy(GameSprite):
             is_finish = self.emotion_animation.run_sequence_frame(self.emotion, passed_seconds)
             if is_finish:
                 self.emotion = cfg.SpriteEmotion.NORMAL
-
-        self.animation.update()
 
 
 

@@ -396,6 +396,13 @@ class SpriteStatus(object):
     HERO_HEAD_SIZE = (128, 128)
     HERO_HEAD_BLIT_POS = (-20, -38)
 
+    COST_HP_WORDS_COLOR = pygame.Color("red")
+    COST_HP_WORDS_FONT = Font.ARIAL_BLACK_32
+    COST_HP_WORDS_SHOW_TIME = 0.3
+    COST_HP_WORDS_BLIT_HEIGHT_OFFSET = 35
+    COST_HP_WORDS_BLIT_X_SIGMA = 10
+    COST_HP_WORDS_BLIT_Y_SIGMA = 5
+
 
 
 class Achievement(object):

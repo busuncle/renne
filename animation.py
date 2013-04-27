@@ -1,6 +1,7 @@
 import pygame
+from pygame.locals import BLEND_ADD
 from time import time
-from random import guass
+from random import gauss
 from base.util import ImageController, SpriteImageController, Timer
 import etc.setting as sfg
 import etc.constant as cfg
@@ -39,7 +40,7 @@ class WordsRenderer(object):
 
     def draw(self, camera):
         for bw in self.blit_list:
-            camera.scree.blit(bw["words"], (bw["rel_pos"][0] - camera.rect.left, 
+            camera.screen.blit(bw["words"], (bw["rel_pos"][0] - camera.rect.left, 
                 bw["rel_pos"][1] - camera.rect.top))
 
 
@@ -73,9 +74,12 @@ class SpriteAnimator(object):
 
     def show_cost_hp(self, hp):
         sp = self.sprite
-        words = sfg.Font.ARIAL_32.render("-%s" % hp, True, pygame.Color(255, 0, 0, 128))
-        rel_pos = (gauss(sp.pos.x, 6), gauss(sp.pos.y / 2 - sp.setting.HEIGHT - 10, 2))
-        self.words_renderer.add_blit_words(words, rel_pos, 1)
+        words = sfg.SpriteStatus.COST_HP_WORDS_FONT.render("-%s" % hp, True, 
+            sfg.SpriteStatus.COST_HP_WORDS_COLOR)
+        rel_pos = (gauss(sp.pos.x, sfg.SpriteStatus.COST_HP_WORDS_BLIT_X_SIGMA), 
+            gauss(sp.pos.y / 2 - sp.setting.HEIGHT - sfg.SpriteStatus.COST_HP_WORDS_BLIT_HEIGHT_OFFSET, 
+            sfg.SpriteStatus.COST_HP_WORDS_BLIT_Y_SIGMA))
+        self.words_renderer.add_blit_words(words, rel_pos, sfg.SpriteStatus.COST_HP_WORDS_SHOW_TIME)
 
 
     def run_circle_frame(self, action, passed_seconds):
@@ -100,10 +104,25 @@ class SpriteAnimator(object):
 
 
     def update(self):
+        if self.sprite.status["under_attack"]:
+            self.sprite.attacker.under_attack_tick()
+            image_mix = self.image.copy()
+            image_mix.fill(pygame.Color("gray"), special_flags=BLEND_ADD)
+            self.image = image_mix
+
         self.words_renderer.update()
 
 
     def draw(self, camera):
+        if self.image is not None:
+            # don't modify rect itself, but pass the relative topleft point to the blit function
+            image_blit_pos = (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top)
+            shadow_blit_pos = (self.shadow_rect.left - camera.rect.left, self.shadow_rect.top - camera.rect.top)
+
+            # draw shadow first, and then the sprite itself
+            camera.screen.blit(self.shadow_image, shadow_blit_pos)
+            camera.screen.blit(self.image, image_blit_pos)
+
         self.words_renderer.draw(camera)
 
 
