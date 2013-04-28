@@ -227,6 +227,14 @@ class SpriteEmotionAnimator(object):
             return False
 
 
+    def update(self, passed_seconds):
+        sp = self.sprite
+        if sp.status["emotion"] != cfg.SpriteEmotion.NORMAL:
+            is_finish = self.run_sequence_frame(sp.status["emotion"], passed_seconds)
+            if is_finish:
+                sp.status["emotion"] = cfg.SpriteEmotion.NORMAL
+
+
     def draw(self, camera):
         if self.image is not None:
             sp = self.sprite
@@ -234,3 +242,4 @@ class SpriteEmotionAnimator(object):
             rect.center = (sp.pos.x, sp.pos.y / 2 - sp.setting.HEIGHT)
             camera.screen.blit(self.image, 
                 (rect.left - camera.rect.left, rect.top - camera.rect.top))
+

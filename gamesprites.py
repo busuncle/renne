@@ -418,6 +418,7 @@ class Enemy(GameSprite):
                 return
 
         self.animation.update()
+        self.emotion_animation.update(passed_seconds)
 
         if not self.status["under_attack"] and self.status["hp"] == cfg.SpriteStatus.DIE:
             return
@@ -433,12 +434,6 @@ class Enemy(GameSprite):
 
         elif self.action == cfg.EnemyAction.WALK:
             self.walk(passed_seconds, True)
-
-        if self.status["emotion"] != cfg.SpriteEmotion.NORMAL:
-            is_finish = self.emotion_animation.run_sequence_frame(
-                self.status["emotion"], passed_seconds)
-            if is_finish:
-                self.status["emotion"] = cfg.SpriteEmotion.NORMAL
 
 
 
