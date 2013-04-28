@@ -261,7 +261,7 @@ class Renne(GameSprite):
         elif self.action == cfg.HeroAction.STAND:
             self.stand(passed_seconds)
 
-        self.animation.update()
+        self.animation.update(passed_seconds)
 
 
 
@@ -432,7 +432,7 @@ class Enemy(GameSprite):
         elif self.action == cfg.EnemyAction.WALK:
             self.walk(passed_seconds, True)
 
-        self.animation.update()
+        self.animation.update(passed_seconds)
         self.emotion_animation.update(passed_seconds)
 
 

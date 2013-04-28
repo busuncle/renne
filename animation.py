@@ -26,16 +26,24 @@ class WordsRenderer(object):
         self.blit_list = []
 
 
-    def add_blit_words(self, words, rel_pos, time_len):
-        self.blit_list.append({"words": words, "rel_pos": rel_pos, "timer": Timer(time_len)})
+    def add_blit_words(self, words, rel_pos, time_len, pos_move_rate=None):
+        self.blit_list.append({"words": words, "rel_pos": rel_pos, 
+            "timer": Timer(time_len), "pos_move_rate": pos_move_rate})
 
 
-    def update(self):
+    def update(self, passed_seconds):
         for i, bw in enumerate(self.blit_list):
             if not bw["timer"].is_begin():
                 bw["timer"].begin()
             elif bw["timer"].exceed():
                 self.blit_list.pop(i)
+            else:
+                mr = bw.get("pos_move_rate")
+                if mr is not None:
+                    x, y = bw["pos"]
+                    x += mr[0] * passed_seconds
+                    y += mr[1] * passed_seconds
+                    bw["pos"] = (x, y)
 
 
     def draw(self, camera):
@@ -82,7 +90,9 @@ class SpriteAnimator(object):
         x = sp.pos.x
         y = sp.pos.y / 2 - sp.setting.HEIGHT - sfg.SpriteStatus.COST_HP_WORDS_BLIT_HEIGHT_OFFSET
         rel_pos = (randint(int(x - dx), int(x + dx)), randint(int(y - dy), int(y + dy)))
-        self.words_renderer.add_blit_words(words, rel_pos, sfg.SpriteStatus.COST_HP_WORDS_SHOW_TIME)
+        self.words_renderer.add_blit_words(words, rel_pos, 
+            sfg.SpriteStatus.COST_HP_WORDS_SHOW_TIME,
+            sfg.SpriteStatus.COST_HP_WORDS_POS_MOVE_RATE)
 
 
     def run_circle_frame(self, action, passed_seconds):
@@ -106,14 +116,14 @@ class SpriteAnimator(object):
             return False
 
 
-    def update(self):
+    def update(self, passed_seconds):
         if self.sprite.status["under_attack"]:
             self.sprite.attacker.under_attack_tick()
             image_mix = self.image.copy()
             image_mix.fill(pygame.Color("gray"), special_flags=BLEND_ADD)
             self.image = image_mix
 
-        self.words_renderer.update()
+        self.words_renderer.update(passed_seconds)
 
 
     def draw(self, camera):
