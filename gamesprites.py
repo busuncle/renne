@@ -278,7 +278,7 @@ class Enemy(GameSprite):
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
         self.area.center = self.pos('xy')
 
-        self.hp_bar = pygame.Surface(sfg.SpriteStatus.ENEMY_HP_BAR_SIZE).convert_alpha()
+        #self.hp_bar = pygame.Surface(sfg.SpriteStatus.ENEMY_HP_BAR_SIZE).convert_alpha()
 
 
     def activate(self, ai, allsprites, hero, static_objects, game_map):
@@ -293,29 +293,12 @@ class Enemy(GameSprite):
         self.brain = SpriteBrain(self, ai, game_map.waypoints)
 
 
-    def draw_hp_bar(self, camera):
-        # fill color to hp_bar according to the sprite hp
-        self.hp_bar.fill(sfg.SpriteStatus.SPRITE_BAR_BG_COLOR)
-        r = self.hp_bar.get_rect()
-        r.width *= float(self.hp) / self.setting.HP
-        hp_color = sfg.SpriteStatus.SPRITE_HP_COLORS.get(self.status["hp"], pygame.Color("black"))
-        self.hp_bar.fill(hp_color, r)
-
-        # adjust hp_bar position relative to screen
-        r = self.hp_bar.get_rect()
-        r.center = (self.pos.x, self.pos.y / 2 - self.setting.HEIGHT)
-        r.top -= camera.rect.top
-        r.left -= camera.rect.left
-        camera.screen.blit(self.hp_bar, r)
-
-
     def draw(self, camera):
         self.animation.draw(camera)
 
         if self.status["hp"] == cfg.SpriteStatus.DIE:
             return
 
-        self.draw_hp_bar(camera)
         self.emotion_animation.draw(camera)
 
 
@@ -417,20 +400,19 @@ class Enemy(GameSprite):
                 # user pause the game, don't update animation
                 return
 
-        if not self.status["under_attack"] and self.status["hp"] == cfg.SpriteStatus.DIE:
-            return
+        if self.status["hp"] != cfg.SpriteStatus.DIE:
 
-        if self.action == cfg.EnemyAction.ATTACK:
-            self.attack(passed_seconds)
+            if self.action == cfg.EnemyAction.ATTACK:
+                self.attack(passed_seconds)
 
-        elif self.action == cfg.EnemyAction.STEER:
-            self.walk(passed_seconds)
+            elif self.action == cfg.EnemyAction.STEER:
+                self.walk(passed_seconds)
 
-        elif self.action == cfg.EnemyAction.STAND:
-            self.stand(passed_seconds)
+            elif self.action == cfg.EnemyAction.STAND:
+                self.stand(passed_seconds)
 
-        elif self.action == cfg.EnemyAction.WALK:
-            self.walk(passed_seconds, True)
+            elif self.action == cfg.EnemyAction.WALK:
+                self.walk(passed_seconds, True)
 
         self.animation.update(passed_seconds)
         self.emotion_animation.update(passed_seconds)

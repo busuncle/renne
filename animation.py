@@ -40,10 +40,10 @@ class WordsRenderer(object):
             else:
                 mr = bw.get("pos_move_rate")
                 if mr is not None:
-                    x, y = bw["pos"]
+                    x, y = bw["rel_pos"]
                     x += mr[0] * passed_seconds
                     y += mr[1] * passed_seconds
-                    bw["pos"] = (x, y)
+                    bw["rel_pos"] = (x, y)
 
 
     def draw(self, camera):
@@ -117,7 +117,8 @@ class SpriteAnimator(object):
 
 
     def update(self, passed_seconds):
-        if self.sprite.status["under_attack"]:
+        if self.sprite.status["under_attack"] \
+            and self.sprite.status["hp"] != cfg.SpriteStatus.DIE:
             self.sprite.attacker.under_attack_tick()
             image_mix = self.image.copy()
             image_mix.fill(pygame.Color("gray"), special_flags=BLEND_ADD)
@@ -136,7 +137,8 @@ class SpriteAnimator(object):
             camera.screen.blit(self.shadow_image, shadow_blit_pos)
             camera.screen.blit(self.image, image_blit_pos)
 
-        self.words_renderer.draw(camera)
+        if self.sprite.status["hp"] != cfg.SpriteStatus.VANISH:
+            self.words_renderer.draw(camera)
 
 
 
@@ -168,7 +170,7 @@ class EnemyAnimator(SpriteAnimator):
         super(EnemyAnimator, self).__init__(sprite)
         self.die_image = None
         self.dead_timer = Timer(sfg.Enemy.DEAD_TICK)
-        self.dead_blink_unit = float(sfg.Enemy.DEAD_TICK) / sfg.Enemy.DEAD_BLINK_TIMES
+        self.hp_bar = pygame.Surface(sfg.SpriteStatus.ENEMY_HP_BAR_SIZE).convert_alpha()
 
 
     def dead_tick(self):
@@ -183,12 +185,36 @@ class EnemyAnimator(SpriteAnimator):
             pass_time = self.dead_timer.passed_time()
             # in 1 blink unit, one half show image, another half hide it
             # make it like a blink effect
-            if pass_time % self.dead_blink_unit < self.dead_blink_unit * 0.5:
+            dead_blink_unit = float(sfg.Enemy.DEAD_TICK) / sfg.Enemy.DEAD_BLINK_TIMES
+            if pass_time % dead_blink_unit < dead_blink_unit * 0.5:
                 self.image = self.die_image
             else:
                 self.image = None
 
         return False
+
+
+    def draw_hp_bar(self, camera):
+        # fill color to hp_bar according to the sprite hp
+        sp = self.sprite
+        self.hp_bar.fill(sfg.SpriteStatus.SPRITE_BAR_BG_COLOR)
+        r = self.hp_bar.get_rect()
+        r.width *= float(sp.hp) / sp.setting.HP
+        hp_color = sfg.SpriteStatus.SPRITE_HP_COLORS[sp.status["hp"]]
+        self.hp_bar.fill(hp_color, r)
+
+        # adjust hp_bar position relative to screen
+        r = self.hp_bar.get_rect()
+        r.center = (sp.pos.x, sp.pos.y / 2 - sp.setting.HEIGHT)
+        r.top -= camera.rect.top
+        r.left -= camera.rect.left
+        camera.screen.blit(self.hp_bar, r)
+
+
+    def draw(self, camera):
+        super(EnemyAnimator, self).draw(camera)
+        if self.sprite.status["hp"] != cfg.SpriteStatus.VANISH:
+            self.draw_hp_bar(camera)
 
 
 
