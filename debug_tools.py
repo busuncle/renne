@@ -33,10 +33,10 @@ def draw_waypoins(camera, waypoints):
 def draw_fps(camera, clock):
     fps = int(clock.get_fps())
     if fps < 50:
-        font = sfg.Font.ARIAL_BOLD_16
+        font = sfg.Font.ARIAL_BOLD_32
         color = pygame.Color("pink")
     else:
-        font = sfg.Font.ARIAL_16
+        font = sfg.Font.ARIAL_32
         color = pygame.Color("red")
 
     w = "%s fps" % fps

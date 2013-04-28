@@ -21,6 +21,7 @@ class Font(object):
 
     ARIAL_BOLD_12 = pygame.font.Font(ARIAL_BOLD_FILEPATH, 12)
     ARIAL_BOLD_16 = pygame.font.Font(ARIAL_BOLD_FILEPATH, 16)
+    ARIAL_BOLD_32 = pygame.font.Font(ARIAL_BOLD_FILEPATH, 32)
 
     ARIAL_BLACK_28 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 28)
     ARIAL_BLACK_32 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 32)
