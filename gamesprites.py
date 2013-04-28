@@ -269,7 +269,7 @@ class Enemy(GameSprite):
     def __init__(self, setting, pos, direction):
         super(Enemy, self).__init__(setting.NAME, setting.HP, setting.ATK, setting.DFS, pos, direction)
         self.setting = setting
-        self.emotion = cfg.SpriteEmotion.NORMAL
+        self.status["emotion"] = cfg.SpriteEmotion.NORMAL
         self.emotion_animation = SpriteEmotionAnimator(self)
 
         self.animation = EnemyAnimator(self)
@@ -378,8 +378,8 @@ class Enemy(GameSprite):
 
 
     def set_emotion(self, emotion):
-        self.emotion_animation.reset_frame(self.emotion)
-        self.emotion = emotion
+        self.emotion_animation.reset_frame(self.status["emotion"])
+        self.status["emotion"] = emotion
 
 
     def event_handle(self, pressed_keys=None, external_event=None):
@@ -444,10 +444,11 @@ class Enemy(GameSprite):
         elif self.action == cfg.EnemyAction.WALK:
             self.walk(passed_seconds, True)
 
-        if self.emotion != cfg.SpriteEmotion.NORMAL:
-            is_finish = self.emotion_animation.run_sequence_frame(self.emotion, passed_seconds)
+        if self.status["emotion"] != cfg.SpriteEmotion.NORMAL:
+            is_finish = self.emotion_animation.run_sequence_frame(
+                self.status["emotion"], passed_seconds)
             if is_finish:
-                self.emotion = cfg.SpriteEmotion.NORMAL
+                self.status["emotion"] = cfg.SpriteEmotion.NORMAL
 
 
 
