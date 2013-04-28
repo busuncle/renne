@@ -225,3 +225,12 @@ class SpriteEmotionAnimator(object):
         else:
             self.image = self.frame_mapping[emotion][int(self.frame_adds[emotion])]
             return False
+
+
+    def draw(self, camera):
+        if self.image is not None:
+            sp = self.sprite
+            rect = self.image.get_rect()
+            rect.center = (sp.pos.x, sp.pos.y / 2 - sp.setting.HEIGHT)
+            camera.screen.blit(self.image, 
+                (rect.left - camera.rect.left, rect.top - camera.rect.top))

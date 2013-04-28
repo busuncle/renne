@@ -293,14 +293,6 @@ class Enemy(GameSprite):
         self.brain = SpriteBrain(self, ai, game_map.waypoints)
 
 
-    def draw_emotion(self, camera):
-        rect = self.emotion_animation.image.get_rect()
-        rect.center = (self.pos.x, self.pos.y / 2 - self.setting.HEIGHT)
-        rect.top -= camera.rect.top
-        rect.left -= camera.rect.left
-        camera.screen.blit(self.emotion_animation.image, rect)
-
-
     def draw_hp_bar(self, camera):
         # fill color to hp_bar according to the sprite hp
         self.hp_bar.fill(sfg.SpriteStatus.SPRITE_BAR_BG_COLOR)
@@ -324,9 +316,7 @@ class Enemy(GameSprite):
             return
 
         self.draw_hp_bar(camera)
-        if self.emotion_animation.image is not None:
-            self.draw_emotion(camera)
-
+        self.emotion_animation.draw(camera)
 
 
     def move(self, speed, passed_seconds, check_reachable=False):
