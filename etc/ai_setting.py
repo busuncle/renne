@@ -10,16 +10,16 @@ class AIBase(object):
     # when hp drops to 0.5 * full-hp, monster gets angry
     ANGRY_HP_RATIO = 0.5
 
-
-
-class ShortNormalAI(AIBase):
-    # this ai is for some short-distance-attack monster
-
     # used in gauss function, MU is the mean, SIGMA is the standard deviation
     STAY_TIME_MU = 1
     STAY_TIME_SIGMA = 0.1
     WALK_TIME_MU = 0.8
     WALK_TIME_SIGMA = 0.1
+
+
+
+class ShortNormalAI(AIBase):
+    # this ai is for some short-distance-attack monster
 
     # the probability(between 0 and 1, both sides include) that give rise an emotion on the sprite
     EMOTION_SILENT_PROB = 0.2
@@ -32,7 +32,7 @@ class ShortNormalAI(AIBase):
 
     # all states transition probability
     STAY_TO_PATROL_PROB = 0.2
-    STAY_TO_CHASE_PROB = 1
+    STAY_TO_CHASE_PROB = 0.8
 
     PATROL_TO_CHASE_PROB = 1
 
@@ -45,12 +45,6 @@ class ShortNormalAI(AIBase):
 
 class LongNormalAI(AIBase):
     # this ai is for some long-distance-attack monster
-
-    # used in gauss function, MU is the mean, SIGMA is the standard deviation
-    STAY_TIME_MU = 1
-    STAY_TIME_SIGMA = 0.1
-    WALK_TIME_MU = 0.8
-    WALK_TIME_SIGMA = 0.1
 
     # the probability(between 0 and 1, both sides include) that give rise an emotion on the sprite
     EMOTION_SILENT_PROB = 0.2
@@ -71,6 +65,29 @@ class LongNormalAI(AIBase):
 
     DEFENCE_TO_OFFENCE_PROB = 0.9
     DEFENCE_TO_CHASE_PROB = 0.2
+
+
+
+class BossAI(AIBase):
+    # the probability(between 0 and 1, both sides include) that give rise an emotion on the sprite
+    EMOTION_SILENT_PROB = 0.05
+
+    CHASE_GO_DELAY_TIME = 0.5
+    OFFENCE_GO_DELAY_TIME_MU = 0.5
+    OFFENCE_GO_DELAY_TIME_SIGMA = 0.1
+
+    STAY_CHANGE_DIRECTION_PROB = 0.05
+
+    # all states transition probability
+    STAY_TO_PATROL_PROB = 0
+    STAY_TO_CHASE_PROB = 1
+
+    PATROL_TO_CHASE_PROB = 1
+
+    OFFENCE_TO_CHASE_PROB = 1
+
+    DEFENCE_TO_OFFENCE_PROB = 1
+    DEFENCE_TO_CHASE_PROB = 1
 
 
 
