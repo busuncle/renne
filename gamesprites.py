@@ -246,8 +246,6 @@ class Renne(GameSprite):
                 # user pause the game, don't update animation
                 return
 
-        self.animation.update()
-
         if self.action == cfg.HeroAction.ATTACK:
             self.attack(passed_seconds)
 
@@ -262,6 +260,8 @@ class Renne(GameSprite):
 
         elif self.action == cfg.HeroAction.STAND:
             self.stand(passed_seconds)
+
+        self.animation.update()
 
 
 
@@ -417,9 +417,6 @@ class Enemy(GameSprite):
                 # user pause the game, don't update animation
                 return
 
-        self.animation.update()
-        self.emotion_animation.update(passed_seconds)
-
         if not self.status["under_attack"] and self.status["hp"] == cfg.SpriteStatus.DIE:
             return
 
@@ -434,6 +431,9 @@ class Enemy(GameSprite):
 
         elif self.action == cfg.EnemyAction.WALK:
             self.walk(passed_seconds, True)
+
+        self.animation.update()
+        self.emotion_animation.update(passed_seconds)
 
 
 
