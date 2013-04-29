@@ -263,7 +263,73 @@ class WoodenCase(object):
     IMAGE_KEY = "s1"
     IMAGE_RECT = (64, 64, 48, 64)
     POS_RECT_DELTA_Y = 16
-    AREA_RECT = (0, 0, 48, 66)
+    AREA_RECT = (0, 0, 48, 64)
+    IS_BLOCK = True
+    IS_VIEW_BLOCK = False
+
+
+
+class WoodenCase2(object):
+    NAME = "WoodenCase2"
+    IMAGE_KEY = "s1"
+    IMAGE_RECT = (112, 64, 48, 64)
+    POS_RECT_DELTA_Y = 16
+    AREA_RECT = (0, 0, 48, 64)
+    IS_BLOCK = True
+    IS_VIEW_BLOCK = False
+
+
+
+class WoodenCase2_1(object):
+    NAME = "WoodenCase2_1"
+    IMAGE_KEY = "s1"
+    IMAGE_RECT = (0, 64, 32, 64)
+    POS_RECT_DELTA_Y = 16
+    AREA_RECT = (0, 0, 32, 64)
+    IS_BLOCK = True
+    IS_VIEW_BLOCK = False
+
+
+
+class WoodenCase2_2(object):
+    NAME = "WoodenCase2_2"
+    IMAGE_KEY = "s1"
+    IMAGE_RECT = (32, 64, 32, 64)
+    POS_RECT_DELTA_Y = 16
+    AREA_RECT = (0, 0, 32, 64)
+    IS_BLOCK = True
+    IS_VIEW_BLOCK = False
+
+
+
+class WoodenCase3(object):
+    NAME = "WoodenCase3"
+    IMAGE_KEY = "s1"
+    IMAGE_RECT = (32, 128, 48, 64)
+    POS_RECT_DELTA_Y = 16
+    AREA_RECT = (0, 0, 48, 64)
+    IS_BLOCK = True
+    IS_VIEW_BLOCK = False
+
+
+
+class WoodenCase3_1(object):
+    NAME = "WoodenCase3_1"
+    IMAGE_KEY = "s1"
+    IMAGE_RECT = (0, 128, 32, 64)
+    POS_RECT_DELTA_Y = 16
+    AREA_RECT = (0, 0, 32, 64)
+    IS_BLOCK = True
+    IS_VIEW_BLOCK = False
+
+
+
+class WoodenCase4(object):
+    NAME = "WoodenCase4"
+    IMAGE_KEY = "s1"
+    IMAGE_RECT = (112, 128, 48, 64)
+    POS_RECT_DELTA_Y = 16
+    AREA_RECT = (0, 0, 48, 64)
     IS_BLOCK = True
     IS_VIEW_BLOCK = False
 
@@ -572,6 +638,12 @@ STATIC_OBJECT_SETTING_LIST = [
     StoneWall2,
     StoneWall2_1,
     StoneWall3,
+    WoodenCase2,
+    WoodenCase2_1,
+    WoodenCase2_2,
+    WoodenCase3,
+    WoodenCase3_1,
+    WoodenCase4,
 ]
 
 
