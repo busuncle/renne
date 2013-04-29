@@ -136,7 +136,7 @@ class Enemy(object):
     DEAD_TICK = 1.5
     DEAD_BLINK_TIMES = 3
     VIEW_RANGE = 380
-    VIEW_ANGLE = 120 
+    VIEW_ANGLE = 150 
     CHASE_RANGE = 420
 
 
@@ -329,6 +329,17 @@ class StoneWall2_1(object):
     IMAGE_RECT = (32, 0, 96, 192)
     POS_RECT_DELTA_Y = 80
     AREA_RECT = (0, 0, 96, 64)
+    IS_BLOCK = True
+    IS_VIEW_BLOCK = True
+
+
+
+class StoneWall3(object):
+    NAME = "StoneWall3"
+    IMAGE_KEY = "s7"
+    IMAGE_RECT = (0, 128, 128, 128)
+    POS_RECT_DELTA_Y = 32
+    AREA_RECT = (0, 0, 128, 128)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
 
@@ -560,6 +571,7 @@ STATIC_OBJECT_SETTING_LIST = [
     StoneWall,
     StoneWall2,
     StoneWall2_1,
+    StoneWall3,
 ]
 
 
@@ -613,6 +625,7 @@ STATIC_OBJECT_IMAGES = ("static_object", {
     "s4": "s4.png",
     "s5": "s5.png",
     "s6": "s6.png", 
+    "s7": "s7.png", 
 })
 
 # (folder, {image_key: image_filename, ...})
