@@ -213,7 +213,7 @@ class EnemyAnimator(SpriteAnimator):
 
     def draw(self, camera):
         super(EnemyAnimator, self).draw(camera)
-        if self.sprite.status["hp"] != cfg.SpriteStatus.VANISH:
+        if self.sprite.status["hp"] in cfg.SpriteStatus.ALIVE:
             self.draw_hp_bar(camera)
 
 

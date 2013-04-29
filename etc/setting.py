@@ -86,7 +86,7 @@ class Renne(object):
     NAME = "Renne"
     HP = 300
     # stamina
-    SP = 100
+    SP = 150
     ATK = 30
     DFS = 5
 

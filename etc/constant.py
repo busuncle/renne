@@ -104,6 +104,8 @@ class SpriteStatus(object):
     DIE = 3
     VANISH = 4
 
+    ALIVE = (HEALTHY, WOUNDED, DANGER)
+
 
 
 class SpriteEmotion(object):

@@ -11,7 +11,7 @@ from base.util import Timer
 
 
 
-bg_box = BackgroundBox(sfg.Music.BACKGROUND_VOLUME)
+bg_box = BackgroundBox()
 
 battle_images = ImageController(sfg.BATTLE_IMAGES[0])
 battle_images.add_from_list(sfg.BATTLE_IMAGES[1])

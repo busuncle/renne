@@ -182,12 +182,16 @@ if __name__ == "__main__":
         (["--waypoints"], {"dest": "waypoints", "action": "store_true"}),
         (["--area"], {"dest": "area", "action": "store_true"}),
         (["--pos"], {"dest": "pos", "action": "store_true"}),
+        (["--mute"], {"dest": "mute", "action": "store_true"}),
     ])
     COMMAND_DEBUG_MODE = args.debug is True
     COMMAND_DEBUG_OPTIONS["waypoints"] = args.waypoints
     COMMAND_DEBUG_OPTIONS["fps"] = args.fps
     COMMAND_DEBUG_OPTIONS["area"] = args.area
     COMMAND_DEBUG_OPTIONS["pos"] = args.pos
+    if args.mute:
+        sfg.Music.BACKGROUND_VOLUME = 0
+        sfg.Music.SOUND_VOLUME = 0
 
     main(args)
 
