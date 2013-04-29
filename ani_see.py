@@ -11,7 +11,7 @@ check animation
 screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
 
 direction = 0
-frame_speed = 12
+frame_speed = 8
 frame_no_max = 8
 
 
@@ -28,6 +28,7 @@ def run(args):
     frame_no = 0
     frame_add = 0.0
     running = True
+    frame_no_max = image.get_rect().height / 8 / 256
 
     while running:
         for event in pygame.event.get(): # User did something
@@ -49,11 +50,13 @@ def run(args):
             (0, frame_no * animate_size.width, animate_size.width, animate_size.width)
         ))
 
-        #screen.blit(blit_image, (0, 0))
+        if args.laplacian:
+            lap_sf = laplacian(blit_image)
+            screen.blit(lap_sf, (0, 0))
+            pygame.draw.rect(screen, pygame.Color("blue"), blit_image.get_bounding_rect(), 1)
+        else:
+            screen.blit(blit_image, (0, 0))
 
-        lap_sf = laplacian(blit_image)
-        screen.blit(lap_sf, (0, 0))
-        pygame.draw.rect(screen, pygame.Color("blue"), blit_image.get_bounding_rect(), 1)
 
         pygame.display.update()
 
@@ -62,6 +65,7 @@ if __name__ == "__main__":
     args = util.parse_command_line([
         (["-f", "--file-path"], {"dest": "filepath", "action": "store"}),
         (["-b", "--background-color"], {"dest": "background_color", "action": "store"}),
+        (["-l", "--laplacian"], {"dest": "laplacian", "action": "store_true"}),
     ])
     if args.filepath is None:
         print "please specify the param filepath, using -f or --file-path option"
