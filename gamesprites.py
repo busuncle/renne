@@ -5,7 +5,7 @@ from gameobjects.vector2 import Vector2
 import simulator
 from animation import SpriteEmotionAnimator, RenneAnimator, EnemyAnimator
 from musicbox import SoundBox
-from controller import SpriteBrain
+import controller
 import etc.constant as cfg
 import etc.setting as sfg
 
@@ -278,8 +278,6 @@ class Enemy(GameSprite):
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
         self.area.center = self.pos('xy')
 
-        #self.hp_bar = pygame.Surface(sfg.SpriteStatus.ENEMY_HP_BAR_SIZE).convert_alpha()
-
 
     def activate(self, ai, allsprites, hero, static_objects, game_map):
         # activate the enemy by passing all the nessary external information and ai to it
@@ -290,7 +288,7 @@ class Enemy(GameSprite):
         self.attacker = simulator.ENEMY_ATTACKER_MAPPING[self.setting.ATTACKTYPE](
             self, self.setting.ATTACKER_PARAMS)
         self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
-        self.brain = SpriteBrain(self, ai, game_map.waypoints)
+        self.brain = controller.SpriteBrain(self, ai, game_map.waypoints)
 
 
     def draw(self, camera):
@@ -416,6 +414,22 @@ class Enemy(GameSprite):
 
         self.animation.update(passed_seconds)
         self.emotion_animation.update(passed_seconds)
+
+
+
+class Leonhardt(Enemy):
+    def activate(self, ai, hero, static_objects, game_map):
+        self.game_map = game_map
+        self.hero = hero
+        self.static_objects = static_objects
+        self.attacker = None
+        self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
+        self.brain = None
+
+
+    def run(self, passed_seconds):
+        self.move(self.setting.RUN_SPEED, passed_seconds, check_reachable=False)
+        self.animation.run_circle_frame(cfg.EnemyAction.RUN, passed_seconds)
 
 
 

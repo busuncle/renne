@@ -9,6 +9,11 @@ from gameobjects.vector2 import Vector2
 
 
 
+class EnergyBall(object):
+    pass
+
+
+
 class Attacker(object):
     """
     attack related calculation in one attack action
