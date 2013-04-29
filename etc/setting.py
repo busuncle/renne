@@ -228,7 +228,7 @@ class SkeletonArcher(Enemy):
     FRAME_RATES = {
         cfg.EnemyAction.STAND: 12,
         cfg.EnemyAction.WALK: 12,
-        cfg.EnemyAction.ATTACK: 10,
+        cfg.EnemyAction.ATTACK: 8,
     }
 
     FRAME_NUMS = {
@@ -740,6 +740,7 @@ BACKGROUND_MUSICS = ("background", {
     "chapter_2": "chapter_2.ogg",
     "chapter_3": "chapter_3.ogg",
     "chapter_4": "chapter_4.ogg",
+    "chapter_5": "chapter_5.ogg",
     "hero_win": "hero_win.wav",
     "hero_lose": "hero_lose.wav",
 })
