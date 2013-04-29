@@ -122,6 +122,7 @@ class SpriteImage(object):
     SIZE = [WIDTH, HEIGHT]
 
 
+
 class GameStatus(object):
     INIT = 0
     IN_PROGRESS = 1
@@ -151,3 +152,6 @@ class Achievement(object):
 
 
 
+class Magic(object):
+    STATUS_ALIVE = 0 
+    STATUS_VANISH = 1

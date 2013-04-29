@@ -10,7 +10,36 @@ from gameobjects.vector2 import Vector2
 
 
 class EnergyBall(object):
-    pass
+    def __init__(self, target_list, params):
+        self.target_list = target_list
+        self.damage = params["damage"]
+        self.pos = params["pos"]
+        self.area = pygame.Rect(0, 0, params["radius"] * 2, params["radius"] * 2)
+        self.speed = params["speed"]
+        self.status = cfg.Magic.STATUS_ALIVE
+        self.key_vec = Vector2.from_points(params["pos"], params["target_pos"])
+        self.key_vec.normalize()
+        self.image = None
+
+
+    def update(self, passed_seconds):
+        self.pos += self.key_vec * self.speed * passed_seconds
+        self.area.center = self.pos("xy")
+        hit = False
+        for sp in self.target_list:
+            if sp.area.colliderect(self.area):
+                print "bingo!"
+                hit = True
+
+        if hit:
+            self.status = cfg.Magic.STATUS_VANISH
+
+
+    def draw(self, camera):
+        if self.status == cfg.Magic.STATUS_ALIVE:
+            self.image = pygame.Surface((self.area.width, self.area.height/2))
+            camera.screen.blit(self.image, 
+                (self.area.x - camera.rect.x, self.area.y - camera.rect.y / 2))
 
 
 
