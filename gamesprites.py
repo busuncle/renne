@@ -488,6 +488,8 @@ class Leonhardt(Enemy):
         self.emotion_animation.update(passed_seconds)
 
 
+
+
 ######## sprite group subclass ########
 class GameSpritesGroup(pygame.sprite.LayeredDirty):
     def __init__(self):

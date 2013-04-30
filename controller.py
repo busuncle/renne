@@ -6,7 +6,7 @@ from random import randint, choice, gauss, random
 import etc.constant as cfg
 import etc.setting as sfg
 import pathfinding
-from base.util import cos_for_vec, Timer
+from base.util import cos_for_vec, Timer, happen
 
 
 
@@ -25,11 +25,6 @@ def cal_face_direct(start_point, end_point):
             best_direct = direct
 
     return best_direct
-
-
-def happen(probability):
-    # calculate whether the event will happen according the probability
-    return random() < probability
 
 
 
@@ -228,7 +223,7 @@ class SpriteStay(State):
         if sp.brain.target is not None:
             sp.set_emotion(cfg.SpriteEmotion.ALERT)
             # discover a target
-            if sp.attacker.chance(sp.brain.target):
+            if happen(self.ai.STAY_TO_OFFENCE_PROB) and sp.attacker.chance(sp.brain.target):
                 #print "to attack"
                 return cfg.SpriteState.OFFENCE
 
@@ -340,7 +335,7 @@ class SpriteChase(State):
     def check_conditions(self):
         sp = self.sprite
 
-        if sp.attacker.chance(sp.brain.target):
+        if happen(self.ai.CHASE_TO_OFFENCE_PROB) and sp.attacker.chance(sp.brain.target):
             #print "to attack"
             return cfg.SpriteState.OFFENCE
 

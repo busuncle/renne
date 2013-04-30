@@ -283,6 +283,10 @@ class LeonHardt(Enemy):
         "range": 70,
         "angle": 60,
         "key_frames": (5, 6),
+        "energy_ball":{
+            "range": 300,
+            "damage": 50,
+        },
     }
 
     RUN_SPEED = 200

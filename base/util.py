@@ -3,11 +3,17 @@ from pygame.locals import *
 from gameobjects.vector2 import Vector2
 import weakref
 import os
+from random import random
 from time import time
 import pprint
 import imp
 
 
+
+
+def happen(probability):
+    # calculate whether the event will happen according the probability
+    return random() < probability
 
 
 def get_project_root():

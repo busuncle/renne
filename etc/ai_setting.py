@@ -34,9 +34,12 @@ class ShortNormalAI(AIBase):
 
     # all states transition probability
     STAY_TO_PATROL_PROB = 0.2
+    STAY_TO_OFFENCE_PROB = 1
     STAY_TO_CHASE_PROB = 0.8
 
     PATROL_TO_CHASE_PROB = 1
+
+    CHASE_TO_OFFENCE_PROB = 1
 
     OFFENCE_TO_CHASE_PROB = 0.9
 
@@ -61,9 +64,12 @@ class LongNormalAI(AIBase):
 
     # all states transition probability
     STAY_TO_PATROL_PROB = 0.01
+    STAY_TO_OFFENCE_PROB = 1
     STAY_TO_CHASE_PROB = 0.2
 
     PATROL_TO_CHASE_PROB = 0.2
+
+    CHASE_TO_OFFENCE_PROB = 1
 
     OFFENCE_TO_CHASE_PROB = 0.1
 
@@ -87,9 +93,12 @@ class LeonHardtAI(AIBase):
 
     # all states transition probability
     STAY_TO_PATROL_PROB = 0
+    STAY_TO_OFFENCE_PROB = 0.5
     STAY_TO_CHASE_PROB = 1
 
     PATROL_TO_CHASE_PROB = 1
+
+    CHASE_TO_OFFENCE_PROB = 0.2
 
     OFFENCE_TO_CHASE_PROB = 1
 
