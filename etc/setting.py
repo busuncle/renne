@@ -664,16 +664,14 @@ class MapEditor(object):
 
 
 class Music(object):
-    # TODO: mute all music before release
     BACKGROUND_VOLUME = 0.4
     SOUND_VOLUME = 0.2
-    #BACKGROUND_VOLUME = 0
-    #SOUND_VOLUME = 0
 
 
 
 class Effect(object):
     BLOOD_HEAD_RECT = (206, 206, 38, 46)
+    PURPLE_ENERGY_CHOP = (0, 64, 64, 64)
 
 
 
@@ -819,5 +817,5 @@ SOUND_EFFECT = ("sound", {
 })
 
 EFFECT = ("effect", {
-    1: "1.png",
+    "e1": "e1.png",
 })

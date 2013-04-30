@@ -242,7 +242,7 @@ class EnemyLongAttacker(AngleAttacker):
 
 
 class LeonhardtAttacker(AngleAttacker):
-    effect_blood_head = animation.effect_image_controller.get(1).convert_alpha().subsurface(
+    effect_blood_head = animation.effect_image_controller.get("e1").convert_alpha().subsurface(
         sfg.Effect.BLOOD_HEAD_RECT)
     def __init__(self, sprite, attacker_params):
         super(LeonhardtAttacker, self).__init__(sprite, 
