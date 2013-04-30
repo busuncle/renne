@@ -420,11 +420,11 @@ class SpriteDefence(State):
 
     def check_conditions(self):
         sp = self.sprite
-        if sp.attacker.chance(sp.brain.target) and happen(self.ai.DEFENCE_TO_OFFENCE_PROB):
+        if happen(self.ai.DEFENCE_TO_OFFENCE_PROB) and sp.attacker.chance(sp.brain.target):
             return cfg.SpriteState.OFFENCE
 
         distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
-        if distance_to_target <= self.ai.CHASE_RANGE and happen(self.ai.DEFENCE_TO_CHASE_PROB):
+        if happen(self.ai.DEFENCE_TO_CHASE_PROB) and distance_to_target <= self.ai.CHASE_RANGE :
             return cfg.SpriteState.CHASE
 
         if distance_to_target > self.ai.CHASE_RANGE:

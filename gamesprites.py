@@ -423,6 +423,7 @@ class Enemy(GameSprite):
 class Leonhardt(Enemy):
     def __init__(self, setting, pos, direction):
         super(Leonhardt, self).__init__(setting, pos, direction)
+        self.mp = self.setting.MP
 
 
     def draw(self, camera):
@@ -440,8 +441,6 @@ class Leonhardt(Enemy):
     def attack(self, passed_seconds):
         if self.attacker.method is None:
             self.attacker.choose_good_method(self.brain.target)
-            #if self.attacker.method == "energy_ball":
-            #    self.attacker.throw_energy_ball(self.brain.target)
 
         is_finish = self.animation.run_sequence_frame(cfg.EnemyAction.ATTACK, passed_seconds)
         if is_finish:
@@ -510,6 +509,8 @@ class Leonhardt(Enemy):
                 self.attacker.energy_ball = None
             else:
                 self.attacker.energy_ball.update(passed_seconds)
+
+        self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
 
 
 

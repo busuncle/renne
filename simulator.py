@@ -1,6 +1,6 @@
 import pygame
 from base.util import LineSegment, line_segment_intersect_with_rect, cos_for_vec
-from base.util import manhattan_distance, Timer
+from base.util import manhattan_distance, Timer, happen
 import etc.constant as cfg
 import etc.setting as sfg
 import math
@@ -36,6 +36,7 @@ class EnergyBall(object):
                 continue
             if sp.area.colliderect(self.area):
                 sp.status["under_attack"] = True
+                sp.hp -= self.damage
                 sp.attacker.under_attack_timer.begin()
                 self.has_hits.add(sp)
                 print "bingo!"
@@ -255,7 +256,12 @@ class LeonhardtAttacker(AngleAttacker):
         # totally for ai, because player can judge whether it's a good attack chance himself
         sp = self.sprite
         distance_to_target = sp.pos.get_distance_to(target.pos)
-        if distance_to_target <= self.energy_ball_params["range"]:
+        if happen(sp.brain.ai.ATTACK_ENERGY_BALL_PROB) \
+            and sp.mp > self.energy_ball_params["mana"] \
+            and distance_to_target <= self.energy_ball_params["range"]:
+            return True
+        if happen(sp.brain.ai.ATTACK_COMMON_PROB) \
+            and distance_to_target <= self.attack_range:
             return True
         return False
 
@@ -263,16 +269,19 @@ class LeonhardtAttacker(AngleAttacker):
     def choose_good_method(self, target):
         sp = self.sprite
         distance_to_target = sp.pos.get_distance_to(target.pos)
-        if distance_to_target < self.attack_range:
+        if distance_to_target < self.attack_range or sp.mp < self.energy_ball_params["mana"]:
             self.method = "common"
         else:
             self.method = "energy_ball"
 
 
     def throw_energy_ball(self, target, current_frame_add):
+        sp = self.sprite
         if self.energy_ball is None and int(current_frame_add) in self.key_frames:
+            sp.mp -= self.energy_ball_params["mana"]
+            print "mp left: %s" % sp.mp
             self.energy_ball = EnergyBall(self.effect_blood_head, [target, ], 
-                self.energy_ball_params, self.sprite.pos, target.pos)
+                self.energy_ball_params, sp.pos, target.pos)
 
 
     def run(self, hero, current_frame_add):

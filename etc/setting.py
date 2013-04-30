@@ -256,8 +256,10 @@ class LeonHardt(Enemy):
 
     NAME = "LeonHardt"
     HP = 500
+    MP = 400
     ATK = 60
     DFS = 5
+    MP_RECOVERY_RATE = 10
 
     RADIUS = 24
     HEIGHT = 80
@@ -289,6 +291,7 @@ class LeonHardt(Enemy):
             "speed": 250,
             "radius": 15,
             "height": 30,
+            "mana": 50,
         },
     }
 
