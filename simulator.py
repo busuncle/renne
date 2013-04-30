@@ -125,10 +125,8 @@ class AngleAttacker(Attacker):
 
 class RenneAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
-        attack_range = attacker_params["range"]
-        angle = attacker_params["angle"]
-        key_frames = attacker_params["key_frames"]
-        super(RenneAttacker, self).__init__(sprite, attack_range, angle, key_frames)
+        super(RenneAttacker, self).__init__(sprite, 
+            attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
         self.hit_record = []
         self.kill_record = []
 
@@ -166,10 +164,8 @@ class RenneAttacker(AngleAttacker):
 
 class EnemyShortAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
-        attack_range = attacker_params["range"]
-        angle = attacker_params["angle"]
-        key_frames = attacker_params["key_frames"]
-        super(EnemyShortAttacker, self).__init__(sprite, attack_range, angle, key_frames)
+        super(EnemyShortAttacker, self).__init__(sprite, 
+            attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
 
 
     def chance(self, target):
@@ -273,9 +269,43 @@ class ViewSensor(object):
 
 
 
+class LeonhardtAttacker(AngleAttacker):
+    def __init__(self, sprite, attacker_params):
+        super(LeonhardtAttacker, self).__init__(sprite, 
+            attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
+        self.energy_balls = []
+
+
+    def chance(self, target):
+        # totally for ai, because player can judge whether it's a good attack chance himself
+        sp = self.sprite
+        distance_to_target = sp.pos.get_distance_to(target.pos)
+        if distance_to_target <= self.attack_range:
+            return True
+        return False
+
+
+    def run(self, hero, current_frame_add):
+        if self.hit(hero, current_frame_add):
+            damage = self.sprite.atk - hero.dfs
+            hero.hp = max(hero.hp - damage, 0)
+            hero.status["hp"] = hero.attacker.cal_sprite_status(hero.hp, hero.setting.HP)
+            hero.status["under_attack"] = True
+            hero.attacker.under_attack_timer.begin()
+            hero.animation.show_cost_hp(damage)
+            return True
+        return False
+        
+
+    def finish(self):
+        len(self.has_hits) > 0 and self.has_hits.clear()
+
+
+
 ENEMY_ATTACKER_MAPPING = {
     cfg.SpriteAttackType.SHORT: EnemyShortAttacker,
     cfg.SpriteAttackType.LONG: EnemyLongAttacker,
+    cfg.SpriteAttackType.LEONHARDT: LeonhardtAttacker,
 }
 
 

@@ -353,18 +353,21 @@ class Enemy(GameSprite):
         self.status["emotion"] = emotion
 
 
+    def external_event_handle(self, external_event):
+        if external_event == cfg.GameStatus.INIT:
+            self.action = cfg.EnemyAction.STAND
+        elif external_event == cfg.GameStatus.HERO_LOSE:
+            self.reset_action()
+        elif external_event == cfg.GameStatus.PAUSE:
+            # do nothing
+            pass
+
+
     def event_handle(self, pressed_keys=None, external_event=None):
         # perception and belief control level
-        if external_event is not None:
-            if external_event == cfg.GameStatus.INIT:
-                self.action = cfg.EnemyAction.STAND
-                return
-            elif external_event == cfg.GameStatus.HERO_LOSE:
-                self.reset_action()
-                return 
-            elif external_event == cfg.GameStatus.PAUSE:
-                # do nothing
-                return
+        if external_event is not None and external_event != cfg.GameStatus.IN_PROGRESS:
+            self.external_event_handle(external_event)
+            return
 
         if self.status["hp"] == cfg.SpriteStatus.DIE:
             return
@@ -418,19 +421,71 @@ class Enemy(GameSprite):
 
 
 class Leonhardt(Enemy):
-    def activate(self, ai, hero, static_objects, game_map):
-        self.game_map = game_map
-        self.hero = hero
-        self.static_objects = static_objects
-        self.attacker = None
-        self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
-        self.brain = None
+    def __init__(self, setting, pos, direction):
+        super(Leonhardt, self).__init__(setting, pos, direction)
 
 
     def run(self, passed_seconds):
         self.move(self.setting.RUN_SPEED, passed_seconds, check_reachable=False)
         self.animation.run_circle_frame(cfg.EnemyAction.RUN, passed_seconds)
 
+
+    def attack(self, passed_seconds):
+        is_finish = self.animation.run_sequence_frame(cfg.EnemyAction.ATTACK, passed_seconds)
+        if is_finish:
+            self.attacker.finish()
+            self.brain.persistent = False
+        else:
+            hit_it = self.attacker.run(self.brain.target, 
+                self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
+            if hit_it:
+                self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
+
+
+    def event_handle(self, pressed_keys=None, external_event=None):
+        if external_event is not None and external_event != cfg.GameStatus.IN_PROGRESS:
+            self.external_event_handle(external_event)
+            return
+
+        if self.status["hp"] == cfg.SpriteStatus.DIE:
+            return
+
+        self.brain.think()
+        for action in self.brain.actions:
+            if action == cfg.EnemyAction.ATTACK:
+                self.action = cfg.EnemyAction.ATTACK
+            
+            elif action == cfg.EnemyAction.STEER:
+                self.action = cfg.EnemyAction.STEER
+
+            elif action == cfg.EnemyAction.LOOKOUT:
+                # tell its brain the current target found(or None if no target in view scope)
+                self.brain.target = self.brain.target or self.view_sensor.detect(self.hero)
+
+            elif action == cfg.EnemyAction.STAND:
+                self.action = cfg.EnemyAction.STAND
+
+
+    def update(self, passed_seconds, external_event=None):
+        # physics level
+        if external_event is not None:
+            if external_event == cfg.GameStatus.PAUSE:
+                # user pause the game, don't update animation
+                return
+
+        if self.status["hp"] != cfg.SpriteStatus.DIE:
+
+            if self.action == cfg.EnemyAction.ATTACK:
+                self.attack(passed_seconds)
+
+            elif self.action == cfg.EnemyAction.STEER:
+                self.run(passed_seconds)
+
+            elif self.action == cfg.EnemyAction.STAND:
+                self.stand(passed_seconds)
+
+        self.animation.update(passed_seconds)
+        self.emotion_animation.update(passed_seconds)
 
 
 ######## sprite group subclass ########
@@ -456,3 +511,8 @@ class GameSpritesGroup(pygame.sprite.LayeredDirty):
 
 
 
+ENEMY_CLASS_MAPPING = {
+    cfg.SpriteAttackType.SHORT: Enemy, 
+    cfg.SpriteAttackType.LONG: Enemy, 
+    cfg.SpriteAttackType.LEONHARDT: Leonhardt,
+}
