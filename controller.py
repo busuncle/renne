@@ -345,7 +345,7 @@ class SpriteChase(State):
             return cfg.SpriteState.OFFENCE
 
         distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
-        if distance_to_target <= sp.setting.CHASE_RANGE:
+        if distance_to_target <= self.ai.CHASE_RANGE:
             target_move = sp.brain.destination.get_distance_to(sp.brain.target.pos)
             if target_move > self.target_move_threshold or self.steerer.is_end:
                 #print "chase to chase"
@@ -429,10 +429,10 @@ class SpriteDefence(State):
             return cfg.SpriteState.OFFENCE
 
         distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
-        if distance_to_target <= sp.setting.CHASE_RANGE and happen(self.ai.DEFENCE_TO_CHASE_PROB):
+        if distance_to_target <= self.ai.CHASE_RANGE and happen(self.ai.DEFENCE_TO_CHASE_PROB):
             return cfg.SpriteState.CHASE
 
-        if distance_to_target > sp.setting.CHASE_RANGE:
+        if distance_to_target > self.ai.CHASE_RANGE:
             sp.brain.target = None
             return cfg.SpriteState.STAY
 

@@ -137,7 +137,6 @@ class Enemy(object):
     DEAD_BLINK_TIMES = 3
     VIEW_RANGE = 380
     VIEW_ANGLE = 150 
-    CHASE_RANGE = 420
 
 
 
