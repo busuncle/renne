@@ -1,3 +1,4 @@
+import pygame
 from base.util import LineSegment, line_segment_intersect_with_rect, cos_for_vec
 from base.util import manhattan_distance, Timer
 import etc.constant as cfg
@@ -10,16 +11,16 @@ from gameobjects.vector2 import Vector2
 
 
 class EnergyBall(object):
-    def __init__(self, target_list, params):
+    def __init__(self, target_list, params, pos, target_pos):
         self.target_list = target_list
         self.damage = params["damage"]
         self.range = params["range"]
-        self.pos = params["pos"]
+        self.pos = pos.copy()
         self.origin_pos = self.pos.copy()
         self.area = pygame.Rect(0, 0, params["radius"] * 2, params["radius"] * 2)
         self.speed = params["speed"]
         self.status = cfg.Magic.STATUS_ALIVE
-        self.key_vec = Vector2.from_points(params["pos"], params["target_pos"])
+        self.key_vec = Vector2.from_points(pos, target_pos)
         self.key_vec.normalize()
         self.image = None
 
@@ -42,8 +43,9 @@ class EnergyBall(object):
     def draw(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
             self.image = pygame.Surface((self.area.width, self.area.height/2))
+            self.image.fill(pygame.Color("white"))
             camera.screen.blit(self.image, 
-                (self.area.x - camera.rect.x, self.area.y - camera.rect.y / 2))
+                (self.area.x - camera.rect.x, self.area.y / 2 - camera.rect.y))
 
 
 
@@ -242,6 +244,7 @@ class LeonhardtAttacker(AngleAttacker):
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
         self.energy_ball_params = attacker_params["energy_ball"]
         self.energy_ball = None
+        self.method = None
 
 
     def chance(self, target):
@@ -257,9 +260,14 @@ class LeonhardtAttacker(AngleAttacker):
         sp = self.sprite
         distance_to_target = sp.pos.get_distance_to(target.pos)
         if distance_to_target < self.attack_range:
-            return "common"
+            self.method = "common"
         else:
-            return "energy_ball"
+            self.method = "energy_ball"
+
+
+    def throw_energy_ball(self, target, current_frame_add):
+        if self.energy_ball is None and int(current_frame_add) in self.key_frames:
+            self.energy_ball = EnergyBall([target, ], self.energy_ball_params, self.sprite.pos, target.pos)
 
 
     def run(self, hero, current_frame_add):
@@ -276,7 +284,7 @@ class LeonhardtAttacker(AngleAttacker):
 
     def finish(self):
         len(self.has_hits) > 0 and self.has_hits.clear()
-
+        self.method = None
 
 
 class ViewSensor(object):

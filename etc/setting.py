@@ -286,6 +286,8 @@ class LeonHardt(Enemy):
         "energy_ball":{
             "range": 300,
             "damage": 50,
+            "speed": 300,
+            "radius": 10,
         },
     }
 

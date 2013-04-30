@@ -425,21 +425,38 @@ class Leonhardt(Enemy):
         super(Leonhardt, self).__init__(setting, pos, direction)
 
 
+    def draw(self, camera):
+        super(Leonhardt, self).draw(camera)
+        # some attack effect
+        if self.attacker.energy_ball is not None:
+            self.attacker.energy_ball.draw(camera)
+
+
     def run(self, passed_seconds):
         self.move(self.setting.RUN_SPEED, passed_seconds, check_reachable=False)
         self.animation.run_circle_frame(cfg.EnemyAction.RUN, passed_seconds)
 
 
     def attack(self, passed_seconds):
+        if self.attacker.method is None:
+            self.attacker.choose_good_method(self.brain.target)
+            #if self.attacker.method == "energy_ball":
+            #    self.attacker.throw_energy_ball(self.brain.target)
+
         is_finish = self.animation.run_sequence_frame(cfg.EnemyAction.ATTACK, passed_seconds)
         if is_finish:
             self.attacker.finish()
             self.brain.persistent = False
         else:
-            hit_it = self.attacker.run(self.brain.target, 
-                self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
-            if hit_it:
-                self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
+            if self.attacker.method == "common":
+                hit_it = self.attacker.run(self.brain.target, 
+                    self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
+                if hit_it:
+                    self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
+
+            elif self.attacker.method == "energy_ball":
+                self.attacker.throw_energy_ball(self.brain.target, 
+                    self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
 
 
     def event_handle(self, pressed_keys=None, external_event=None):
@@ -486,6 +503,13 @@ class Leonhardt(Enemy):
 
         self.animation.update(passed_seconds)
         self.emotion_animation.update(passed_seconds)
+
+        # some attack effects
+        if self.attacker.energy_ball is not None:
+            if self.attacker.energy_ball.status == cfg.Magic.STATUS_VANISH:
+                self.attacker.energy_ball = None
+            else:
+                self.attacker.energy_ball.update(passed_seconds)
 
 
 
