@@ -286,8 +286,9 @@ class LeonHardt(Enemy):
         "energy_ball":{
             "range": 300,
             "damage": 50,
-            "speed": 300,
-            "radius": 10,
+            "speed": 250,
+            "radius": 15,
+            "height": 30,
         },
     }
 
@@ -666,6 +667,11 @@ class Music(object):
 
 
 
+class Effect(object):
+    BLOOD_HEAD_RECT = (206, 206, 38, 46)
+
+
+
 ######### mapping for factory ########
 # control all objects in list, their order will detemine the attribute "ID" of their own
 SPRITE_SETTING_LIST = [
@@ -805,4 +811,8 @@ SOUND_EFFECT = ("sound", {
     "renne_win": "renne_win.wav",
     "attack_hit": "attack_hit.wav",
     "attack_hit2": "attack_hit2.wav",
+})
+
+EFFECT = ("effect", {
+    1: "1.png",
 })

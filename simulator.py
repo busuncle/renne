@@ -7,14 +7,16 @@ import math
 from math import pow, radians, sqrt, tan, cos
 from time import time
 from gameobjects.vector2 import Vector2
+import animation
 
 
 
 class EnergyBall(object):
-    def __init__(self, target_list, params, pos, target_pos):
+    def __init__(self, image, target_list, params, pos, target_pos):
         self.target_list = target_list
         self.damage = params["damage"]
         self.range = params["range"]
+        self.height = params["height"]
         self.pos = pos.copy()
         self.origin_pos = self.pos.copy()
         self.area = pygame.Rect(0, 0, params["radius"] * 2, params["radius"] * 2)
@@ -22,7 +24,7 @@ class EnergyBall(object):
         self.status = cfg.Magic.STATUS_ALIVE
         self.key_vec = Vector2.from_points(pos, target_pos)
         self.key_vec.normalize()
-        self.image = None
+        self.image = image
 
 
     def update(self, passed_seconds):
@@ -42,10 +44,8 @@ class EnergyBall(object):
 
     def draw(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
-            self.image = pygame.Surface((self.area.width, self.area.height/2))
-            self.image.fill(pygame.Color("white"))
             camera.screen.blit(self.image, 
-                (self.area.x - camera.rect.x, self.area.y / 2 - camera.rect.y))
+                (self.area.x - camera.rect.x, self.area.y / 2 - camera.rect.y - self.height))
 
 
 
@@ -239,6 +239,8 @@ class EnemyLongAttacker(AngleAttacker):
 
 
 class LeonhardtAttacker(AngleAttacker):
+    effect_blood_head = animation.effect_image_controller.get(1).convert_alpha().subsurface(
+        sfg.Effect.BLOOD_HEAD_RECT)
     def __init__(self, sprite, attacker_params):
         super(LeonhardtAttacker, self).__init__(sprite, 
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
@@ -267,7 +269,8 @@ class LeonhardtAttacker(AngleAttacker):
 
     def throw_energy_ball(self, target, current_frame_add):
         if self.energy_ball is None and int(current_frame_add) in self.key_frames:
-            self.energy_ball = EnergyBall([target, ], self.energy_ball_params, self.sprite.pos, target.pos)
+            self.energy_ball = EnergyBall(self.effect_blood_head, [target, ], 
+                self.energy_ball_params, self.sprite.pos, target.pos)
 
 
     def run(self, hero, current_frame_add):

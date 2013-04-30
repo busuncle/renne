@@ -19,6 +19,9 @@ basic_image_controller.add_from_list(sfg.BASIC_IMAGES[1])
 cg_image_controller = ImageController(sfg.CG_IMAGES[0])
 cg_image_controller.add_from_list(sfg.CG_IMAGES[1])
 
+effect_image_controller = ImageController(sfg.EFFECT[0])
+effect_image_controller.add_from_list(sfg.EFFECT[1])
+
 
 
 class WordsRenderer(object):
