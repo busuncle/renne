@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from gamesprites import Renne, Enemy, GameSpritesGroup, enemy_in_one_screen
+from gamesprites import Renne, GameSpritesGroup, enemy_in_one_screen, ENEMY_CLASS_MAPPING
 import etc.setting as sfg
 import etc.constant as cfg
 import etc.ai_setting as ai
@@ -81,7 +81,8 @@ def enter_chapter(screen, chapter, renne):
     monster_init = map_setting["monsters"]
     for monster_id, pos, direct in monster_init:
         monster_setting = sfg.SPRITE_SETTING_MAPPING[monster_id]
-        monster = Enemy(monster_setting, pos, direct)
+        EnemyClass = ENEMY_CLASS_MAPPING[monster_setting.ATTACKTYPE]
+        monster = EnemyClass(monster_setting, pos, direct)
         monster_ai_setting = ai.ATTACKTYPE_AI_MAPPING[monster_setting.ATTACKTYPE]
         monster.activate(monster_ai_setting, allsprites, renne, static_objects, game_map)
 

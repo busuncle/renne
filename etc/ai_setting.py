@@ -72,18 +72,18 @@ class LongNormalAI(AIBase):
 
 
 
-class LeonHeardtAI(AIBase):
+class LeonHardtAI(AIBase):
 
     CHASE_RANGE = 1500
 
     # the probability(between 0 and 1, both sides include) that give rise an emotion on the sprite
-    EMOTION_SILENT_PROB = 0.05
+    EMOTION_SILENT_PROB = 0
 
     CHASE_GO_DELAY_TIME = 0.5
     OFFENCE_GO_DELAY_TIME_MU = 0.5
     OFFENCE_GO_DELAY_TIME_SIGMA = 0.1
 
-    STAY_CHANGE_DIRECTION_PROB = 0.05
+    STAY_CHANGE_DIRECTION_PROB = 0
 
     # all states transition probability
     STAY_TO_PATROL_PROB = 0
@@ -101,4 +101,5 @@ class LeonHeardtAI(AIBase):
 ATTACKTYPE_AI_MAPPING = {
     cfg.SpriteAttackType.SHORT: ShortNormalAI,
     cfg.SpriteAttackType.LONG: LongNormalAI,
+    cfg.SpriteAttackType.LEONHARDT: LeonHardtAI,
 }

@@ -29,7 +29,7 @@ def cal_face_direct(start_point, end_point):
 
 def happen(probability):
     # calculate whether the event will happen according the probability
-    return random() <= probability
+    return random() < probability
 
 
 
