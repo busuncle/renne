@@ -25,20 +25,22 @@ class EnergyBall(object):
         self.key_vec = Vector2.from_points(pos, target_pos)
         self.key_vec.normalize()
         self.image = image
+        self.has_hits= set()
 
 
     def update(self, passed_seconds):
         self.pos += self.key_vec * self.speed * passed_seconds
         self.area.center = self.pos("xy")
-        hit = False
         for sp in self.target_list:
+            if sp in self.has_hits:
+                continue
             if sp.area.colliderect(self.area):
                 sp.status["under_attack"] = True
                 sp.attacker.under_attack_timer.begin()
+                self.has_hits.add(sp)
                 print "bingo!"
-                hit = True
 
-        if hit or self.origin_pos.get_distance_to(self.pos) > self.range:
+        if self.origin_pos.get_distance_to(self.pos) > self.range:
             self.status = cfg.Magic.STATUS_VANISH
 
 
