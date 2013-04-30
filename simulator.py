@@ -247,8 +247,9 @@ class LeonhardtAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
         super(LeonhardtAttacker, self).__init__(sprite, 
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
-        self.energy_ball_params = attacker_params["energy_ball"]
-        self.energy_ball = None
+        self.blood_head_params = attacker_params["blood_head"]
+        self.magic_list = []
+        self.curren_magic = None
         self.method = None
 
 
@@ -257,8 +258,8 @@ class LeonhardtAttacker(AngleAttacker):
         sp = self.sprite
         distance_to_target = sp.pos.get_distance_to(target.pos)
         if happen(sp.brain.ai.ATTACK_ENERGY_BALL_PROB) \
-            and sp.mp > self.energy_ball_params["mana"] \
-            and distance_to_target <= self.energy_ball_params["range"]:
+            and sp.mp > self.blood_head_params["mana"] \
+            and distance_to_target <= self.blood_head_params["range"]:
             return True
         if happen(sp.brain.ai.ATTACK_COMMON_PROB) \
             and distance_to_target <= self.attack_range:
@@ -269,19 +270,20 @@ class LeonhardtAttacker(AngleAttacker):
     def choose_good_method(self, target):
         sp = self.sprite
         distance_to_target = sp.pos.get_distance_to(target.pos)
-        if distance_to_target < self.attack_range or sp.mp < self.energy_ball_params["mana"]:
-            self.method = "common"
+        if distance_to_target < self.attack_range or sp.mp < self.blood_head_params["mana"]:
+            self.method = "regular"
         else:
-            self.method = "energy_ball"
+            self.method = "magic"
 
 
-    def throw_energy_ball(self, target, current_frame_add):
+    def throw_blood_head(self, target, current_frame_add):
         sp = self.sprite
-        if self.energy_ball is None and int(current_frame_add) in self.key_frames:
-            sp.mp -= self.energy_ball_params["mana"]
+        if self.curren_magic is None and int(current_frame_add) in self.key_frames:
+            sp.mp -= self.blood_head_params["mana"]
             print "mp left: %s" % sp.mp
-            self.energy_ball = EnergyBall(self.effect_blood_head, [target, ], 
-                self.energy_ball_params, sp.pos, target.pos)
+            self.curren_magic = EnergyBall(self.effect_blood_head, [target, ], 
+                self.blood_head_params, sp.pos, target.pos)
+            self.magic_list.append(self.curren_magic)
 
 
     def run(self, hero, current_frame_add):
@@ -299,6 +301,8 @@ class LeonhardtAttacker(AngleAttacker):
     def finish(self):
         len(self.has_hits) > 0 and self.has_hits.clear()
         self.method = None
+        self.curren_magic = None
+
 
 
 class ViewSensor(object):

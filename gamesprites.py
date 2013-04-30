@@ -429,8 +429,8 @@ class Leonhardt(Enemy):
     def draw(self, camera):
         super(Leonhardt, self).draw(camera)
         # some attack effect
-        if self.attacker.energy_ball is not None:
-            self.attacker.energy_ball.draw(camera)
+        for magic in self.attacker.magic_list:
+            magic.draw(camera)
 
 
     def run(self, passed_seconds):
@@ -447,14 +447,14 @@ class Leonhardt(Enemy):
             self.attacker.finish()
             self.brain.persistent = False
         else:
-            if self.attacker.method == "common":
+            if self.attacker.method == "regular":
                 hit_it = self.attacker.run(self.brain.target, 
                     self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
                 if hit_it:
                     self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
 
-            elif self.attacker.method == "energy_ball":
-                self.attacker.throw_energy_ball(self.brain.target, 
+            elif self.attacker.method == "magic":
+                self.attacker.throw_blood_head(self.brain.target, 
                     self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
 
 
@@ -504,11 +504,11 @@ class Leonhardt(Enemy):
         self.emotion_animation.update(passed_seconds)
 
         # some attack effects
-        if self.attacker.energy_ball is not None:
-            if self.attacker.energy_ball.status == cfg.Magic.STATUS_VANISH:
-                self.attacker.energy_ball = None
+        for i, magic in enumerate(self.attacker.magic_list):
+            if magic.status == cfg.Magic.STATUS_VANISH:
+                self.attacker.magic_list.pop(i)
             else:
-                self.attacker.energy_ball.update(passed_seconds)
+                magic.update(passed_seconds)
 
         self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
 

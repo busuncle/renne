@@ -85,12 +85,14 @@ class Stuff(object):
 class Renne(object):
     NAME = "Renne"
     HP = 300
+    MP = 200
     # stamina
     SP = 150
     ATK = 30
     DFS = 5
 
     SP_COST_RATE = 15
+    MP_RECOVERY_RATE = 10
     SP_RECOVERY_RATE = 12
     # sprite radius
     RADIUS = 18 
@@ -285,7 +287,7 @@ class LeonHardt(Enemy):
         "range": 70,
         "angle": 60,
         "key_frames": (5, 6),
-        "energy_ball":{
+        "blood_head":{
             "range": 300,
             "damage": 50,
             "speed": 250,
