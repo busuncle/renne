@@ -163,11 +163,17 @@ class AngleAttacker(Attacker):
 
 
 class RenneAttacker(AngleAttacker):
+    destroy_line_image = animation.effect_image_controller.get("e2").convert_alpha().subsurface(
+        sfg.Effect.DESTROY_LINE_RECT)
     def __init__(self, sprite, attacker_params):
         super(RenneAttacker, self).__init__(sprite, 
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
         self.hit_record = []
         self.kill_record = []
+        self.destroy_line_params = attacker_params["destroy_line"]
+        self.magic_list = []
+        self.current_magic = None
+        self.method = None
 
 
     def run(self, enemy, current_frame_add):
@@ -191,6 +197,17 @@ class RenneAttacker(AngleAttacker):
         return False
 
 
+    def destroy_line(self, current_frame_add):
+        sp = self.sprite
+        direct_vec = cfg.Direction.DIRECT_TO_VEC[sp.direction]
+        if self.current_magic is None and int(current_frame_add) in self.key_frames:
+            sp.mp -= self.destroy_line_params["mana"]
+            self.current_magic = EnergyBall(self.destroy_line_image, sp.enemies,
+                self.destroy_line_params, sp.pos, sp.pos + direct_vec)
+            self.magic_list.append(self.current_magic)
+        
+
+
     def finish(self):
         if len(self.has_hits) > 0:
             self.hit_record.append({"time": time(), "n_hit": len(self.has_hits)})
@@ -198,6 +215,9 @@ class RenneAttacker(AngleAttacker):
                 if sp.status["hp"] == cfg.SpriteStatus.DIE:
                     self.kill_record.append({"time": time()})
             self.has_hits.clear()
+
+        self.method = None
+        self.current_magic = None
 
 
 
@@ -279,7 +299,7 @@ class LeonhardtAttacker(AngleAttacker):
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
         self.death_coil_params = attacker_params["death_coil"]
         self.magic_list = []
-        self.curren_magic = None
+        self.current_magic = None
         self.method = None
 
 
@@ -308,12 +328,11 @@ class LeonhardtAttacker(AngleAttacker):
 
     def death_coil(self, target, current_frame_add):
         sp = self.sprite
-        if self.curren_magic is None and int(current_frame_add) in self.key_frames:
+        if self.current_magic is None and int(current_frame_add) in self.key_frames:
             sp.mp -= self.death_coil_params["mana"]
-            print "mp left: %s" % sp.mp
-            self.curren_magic = EnergyBall(self.death_coil_image, [target, ], 
+            self.current_magic = EnergyBall(self.death_coil_image, [target, ], 
                 self.death_coil_params, sp.pos, target.pos)
-            self.magic_list.append(self.curren_magic)
+            self.magic_list.append(self.current_magic)
 
 
     def run(self, hero, current_frame_add):
@@ -331,7 +350,7 @@ class LeonhardtAttacker(AngleAttacker):
     def finish(self):
         len(self.has_hits) > 0 and self.has_hits.clear()
         self.method = None
-        self.curren_magic = None
+        self.current_magic = None
 
 
 

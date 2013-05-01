@@ -70,7 +70,8 @@ class SpriteAction(object):
 
 
 class HeroAction(SpriteAction):
-    WIN = 13
+    ATTACK_DESTORY_LINE = 13
+    WIN = 19
 
 
 

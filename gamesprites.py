@@ -89,6 +89,7 @@ class Renne(GameSprite):
         super(Renne, self).__init__(setting.NAME, setting.HP, setting.ATK, setting.DFS, pos, direction)
 
         self.setting = setting
+        self.mp = self.setting.MP
         self.sp = self.setting.SP
         self.level = 1
         self.exp = 0
@@ -125,6 +126,8 @@ class Renne(GameSprite):
 
     def draw(self, camera):
         self.animation.draw(camera)
+        for magic in self.attacker.magic_list:
+            magic.draw(camera)
 
 
     def move(self, speed, passed_seconds):
@@ -161,20 +164,26 @@ class Renne(GameSprite):
         self.animation.run_circle_frame(cfg.HeroAction.RUN, passed_seconds)
 
 
-    def attack(self, passed_seconds):
+    def attack(self, method, passed_seconds):
+        if self.attacker.method is None:
+            self.attacker.method = method
         is_finish = self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds)
         if is_finish:
             self.attacker.finish()
             self.action = cfg.HeroAction.STAND
         else:
-            hit_count = 0
-            for em in self.enemies:
-                hit_it = self.attacker.run(em, self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
-                if hit_it:
-                    hit_count += 1
+            if self.attacker.method == "regular":
+                hit_count = 0
+                for em in self.enemies:
+                    hit_it = self.attacker.run(em, self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
+                    if hit_it:
+                        hit_count += 1
 
-            if hit_count > 0:
-                self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
+                if hit_count > 0:
+                    self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
+
+            elif self.attacker.method == "magic":
+                self.attacker.destroy_line(self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
 
 
     def win(self, passed_seconds):
@@ -197,7 +206,7 @@ class Renne(GameSprite):
                 # do nothin
                 return
 
-        if self.action == cfg.HeroAction.ATTACK:
+        if self.action in (cfg.HeroAction.ATTACK, cfg.HeroAction.ATTACK_DESTORY_LINE):
             # attacking, return directly
             return
 
@@ -224,6 +233,12 @@ class Renne(GameSprite):
             if atk_snd is not None:
                 self.sound_box.play(atk_snd)
 
+        elif pressed_keys[sfg.UserKey.ATTACK_DESTORY_LINE]:
+            if self.mp > self.attacker.destroy_line_params["mana"]:
+                atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3"))
+                self.sound_box.play(atk_snd)
+                self.action = cfg.HeroAction.ATTACK_DESTORY_LINE
+
         elif self.key_vec:
             if pressed_keys[sfg.UserKey.RUN] and self.sp > 0:
                 # press run and stamina enough
@@ -247,7 +262,10 @@ class Renne(GameSprite):
                 return
 
         if self.action == cfg.HeroAction.ATTACK:
-            self.attack(passed_seconds)
+            self.attack("regular", passed_seconds)
+
+        elif self.action == cfg.HeroAction.ATTACK_DESTORY_LINE:
+            self.attack("magic", passed_seconds)
 
         elif self.action == cfg.HeroAction.RUN:
             self.run(passed_seconds)
@@ -262,6 +280,14 @@ class Renne(GameSprite):
             self.stand(passed_seconds)
 
         self.animation.update(passed_seconds)
+
+        for i, magic in enumerate(self.attacker.magic_list):
+            if magic.status == cfg.Magic.STATUS_VANISH:
+                self.attacker.magic_list.pop(i)
+            else:
+                magic.update(passed_seconds)
+
+        self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
 
 
 
