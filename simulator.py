@@ -63,8 +63,9 @@ class EnergyBall(object):
             if sp in self.has_hits:
                 continue
             if sp.area.colliderect(self.area):
+                sp.hp = max(sp.hp - self.damage, 0)
+                sp.status["hp"] = sp.attacker.cal_sprite_status(sp.hp, sp.setting.HP)
                 sp.status["under_attack"] = True
-                sp.hp -= self.damage
                 sp.attacker.under_attack_timer.begin()
                 sp.animation.show_cost_hp(self.damage)
                 self.has_hits.add(sp)
