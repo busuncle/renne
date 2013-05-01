@@ -315,7 +315,7 @@ class SpriteChase(State):
 
         sp.direction = cal_face_direct(sp.pos.as_tuple(), sp.brain.target.pos.as_tuple())
         sp.brain.destination = sp.brain.target.pos.copy()
-        path = self.pathfinder.find(sp.brain.destination.as_tuple(), sfg.WayPoint.STEP_WIDTH)
+        path = self.pathfinder.find(sp.brain.destination.as_tuple(), sfg.WayPoint.STEP_WIDTH * 2)
         self.steerer.init(path)
 
 
