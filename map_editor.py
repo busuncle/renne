@@ -275,15 +275,17 @@ def run(chapter):
 
         game_map.draw(camera)
 
-        # in map editor, we should sort all the objects, included static ones
-        game_world.static_objects.sort(key=lambda sp: sp.pos.y)
-        game_world.draw(camera)
-
-        for sp in game_world.all_objects():
+        for sp in sorted(game_world.all_objects(), key=lambda sp: sp.pos.y):
             if sp.setting.GAME_OBJECT_TYPE == cfg.GameObject.TYPE_DYNAMIC:
                 # select current image for corresponding direction
-                sp.animation.image = sp.animation.sprite_image_contoller.get_surface(
-                    cfg.SpriteAction.STAND)[sp.direction]
+                sp.adjust_rect()
+                image = sp.animation.sprite_image_contoller.get_surface(cfg.SpriteAction.STAND)[sp.direction]
+                rect = sp.animation.rect
+            else:
+                image = sp.image
+                rect = sp.rect
+
+            camera.screen.blit(image, (rect.x - camera.rect.x, rect.y - camera.rect.y))
 
             if DEBUG_DRAW["pos"]:
                 debug_tools.draw_pos(camera, sp)
