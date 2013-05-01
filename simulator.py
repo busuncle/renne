@@ -66,6 +66,7 @@ class EnergyBall(object):
                 sp.status["under_attack"] = True
                 sp.hp -= self.damage
                 sp.attacker.under_attack_timer.begin()
+                sp.animation.show_cost_hp(self.damage)
                 self.has_hits.add(sp)
                 print "bingo!"
 
