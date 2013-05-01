@@ -454,7 +454,7 @@ class Leonhardt(Enemy):
                     self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
 
             elif self.attacker.method == "magic":
-                self.attacker.throw_blood_head(self.brain.target, 
+                self.attacker.death_coil(self.brain.target, 
                     self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
 
 

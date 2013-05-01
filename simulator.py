@@ -1,4 +1,5 @@
 import pygame
+from pygame.locals import BLEND_ADD
 from base.util import LineSegment, line_segment_intersect_with_rect, cos_for_vec
 from base.util import manhattan_distance, Timer, happen
 import etc.constant as cfg
@@ -8,6 +9,31 @@ from math import pow, radians, sqrt, tan, cos
 from time import time
 from gameobjects.vector2 import Vector2
 import animation
+
+
+
+class Blink(object):
+    def __init__(self):
+        self.rate = 256
+        self.depth_section = (32, 128)
+        self.depth = self.depth_section[0]
+        self.direct = 1
+
+
+    def make(self, image, passed_seconds):
+        image_mix = image.copy()
+        self.depth += self.rate * self.direct * passed_seconds
+        if self.depth < self.depth_section[0]:
+            self.depth = self.depth_section[0]
+            self.direct = 1
+        elif self.depth > self.depth_section[1]:
+            self.depth = self.depth_section[1]
+            self.direct = -1
+
+        self.depth = int(self.depth)
+
+        image_mix.fill(pygame.Color(self.depth, self.depth, self.depth), special_flags=BLEND_ADD)
+        return image_mix
 
 
 
@@ -25,6 +51,8 @@ class EnergyBall(object):
         self.key_vec = Vector2.from_points(pos, target_pos)
         self.key_vec.normalize()
         self.image = image
+        self.image_mix = None
+        self.blink = Blink()
         self.has_hits= set()
 
 
@@ -41,13 +69,15 @@ class EnergyBall(object):
                 self.has_hits.add(sp)
                 print "bingo!"
 
+        self.image_mix = self.blink.make(self.image, passed_seconds)
+
         if self.origin_pos.get_distance_to(self.pos) > self.range:
             self.status = cfg.Magic.STATUS_VANISH
 
 
     def draw(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
-            camera.screen.blit(self.image, 
+            camera.screen.blit(self.image_mix,
                 (self.area.x - camera.rect.x, self.area.y / 2 - camera.rect.y - self.height))
 
 
@@ -242,12 +272,12 @@ class EnemyLongAttacker(AngleAttacker):
 
 
 class LeonhardtAttacker(AngleAttacker):
-    effect_blood_head = animation.effect_image_controller.get("e1").convert_alpha().subsurface(
-        sfg.Effect.BLOOD_HEAD_RECT)
+    death_coil_image = animation.effect_image_controller.get("e1").convert_alpha().subsurface(
+        sfg.Effect.DEATH_COIL_RECT)
     def __init__(self, sprite, attacker_params):
         super(LeonhardtAttacker, self).__init__(sprite, 
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
-        self.blood_head_params = attacker_params["blood_head"]
+        self.death_coil_params = attacker_params["death_coil"]
         self.magic_list = []
         self.curren_magic = None
         self.method = None
@@ -258,8 +288,8 @@ class LeonhardtAttacker(AngleAttacker):
         sp = self.sprite
         distance_to_target = sp.pos.get_distance_to(target.pos)
         if happen(sp.brain.ai.ATTACK_ENERGY_BALL_PROB) \
-            and sp.mp > self.blood_head_params["mana"] \
-            and distance_to_target <= self.blood_head_params["range"]:
+            and sp.mp > self.death_coil_params["mana"] \
+            and distance_to_target <= self.death_coil_params["range"]:
             return True
         if happen(sp.brain.ai.ATTACK_COMMON_PROB) \
             and distance_to_target <= self.attack_range:
@@ -270,19 +300,19 @@ class LeonhardtAttacker(AngleAttacker):
     def choose_good_method(self, target):
         sp = self.sprite
         distance_to_target = sp.pos.get_distance_to(target.pos)
-        if distance_to_target < self.attack_range or sp.mp < self.blood_head_params["mana"]:
+        if distance_to_target < self.attack_range or sp.mp < self.death_coil_params["mana"]:
             self.method = "regular"
         else:
             self.method = "magic"
 
 
-    def throw_blood_head(self, target, current_frame_add):
+    def death_coil(self, target, current_frame_add):
         sp = self.sprite
         if self.curren_magic is None and int(current_frame_add) in self.key_frames:
-            sp.mp -= self.blood_head_params["mana"]
+            sp.mp -= self.death_coil_params["mana"]
             print "mp left: %s" % sp.mp
-            self.curren_magic = EnergyBall(self.effect_blood_head, [target, ], 
-                self.blood_head_params, sp.pos, target.pos)
+            self.curren_magic = EnergyBall(self.death_coil_image, [target, ], 
+                self.death_coil_params, sp.pos, target.pos)
             self.magic_list.append(self.curren_magic)
 
 

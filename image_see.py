@@ -2,6 +2,7 @@ import os
 import pygame
 from pygame import transform
 from pygame.locals import *
+from random import randint
 import etc.setting as sfg
 from base import util
 
@@ -14,11 +15,12 @@ screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption("Renne Image See")
 
 def run(args):
-    img = pygame.image.load(args.filepath).convert()
+    img = pygame.image.load(args.filepath).convert_alpha()
     #img = img.subsurface((294, 720, 68, 74))
     img_rect = img.get_rect()
     words_blit_pos = img_rect.bottomleft
     background_color = args.background_color or "black"
+    #mask = pygame.Surface((256, 256)).convert_alpha()
 
     clock = pygame.time.Clock()
     while True:
@@ -29,8 +31,11 @@ def run(args):
                 return
 
         screen.fill(pygame.Color(background_color))
-        #img.set_alpha(20)
-        screen.blit(img, (0, 0))
+        mask = img.copy()
+        mask.fill(pygame.Color(32, 32, 32), special_flags=BLEND_ADD)
+        #img.set_alpha(128)
+        #screen.blit(img, (0, 0))
+        screen.blit(mask, (0, 0))
 
         mouse_pos = pygame.mouse.get_pos()
         if mouse_pos[0] > img_rect.right or mouse_pos[1] > img_rect.bottom:

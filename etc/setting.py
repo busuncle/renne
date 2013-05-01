@@ -287,7 +287,7 @@ class LeonHardt(Enemy):
         "range": 70,
         "angle": 60,
         "key_frames": (5, 6),
-        "blood_head":{
+        "death_coil":{
             "range": 300,
             "damage": 50,
             "speed": 250,
@@ -670,7 +670,7 @@ class Music(object):
 
 
 class Effect(object):
-    BLOOD_HEAD_RECT = (206, 206, 38, 46)
+    DEATH_COIL_RECT = (206, 206, 38, 46)
     PURPLE_ENERGY_CHOP = (0, 64, 64, 64)
 
 
