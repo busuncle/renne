@@ -783,6 +783,7 @@ TILE_IMAGES = ("tiles", {
     3: "3.png", 
     4: "4.png", 
     5: "5.png", 
+    6: "6.png", 
 })
 
 # (folder, {image_key: image_filename, ...})
