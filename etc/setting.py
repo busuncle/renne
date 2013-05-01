@@ -86,15 +86,14 @@ class Stuff(object):
 class Renne(object):
     NAME = "Renne"
     HP = 300
-    MP = 200
-    # stamina
+    MP = 180
+    MP_RECOVERY_RATE = 10
     SP = 150
+    SP_COST_RATE = 15
+    SP_RECOVERY_RATE = 12
     ATK = 30
     DFS = 5
 
-    SP_COST_RATE = 15
-    MP_RECOVERY_RATE = 10
-    SP_RECOVERY_RATE = 12
     # sprite radius
     RADIUS = 18 
     HEIGHT = 60
@@ -133,7 +132,7 @@ class Renne(object):
         "key_frames": (4, 5),
         "destroy_line": {
             "range": 300,
-            "damage": 50,
+            "damage": 40,
             "speed": 250,
             "radius": 20,
             "height": 35,
