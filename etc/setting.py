@@ -506,6 +506,7 @@ class SpriteStatus(object):
     # all words
     WORDS = {
         "hero_hp": Font.ARIAL_BOLD_12.render("HP", True, pygame.Color("white")),
+        "hero_mp": Font.ARIAL_BOLD_12.render("MP", True, pygame.Color("white")),
         "hero_sp": Font.ARIAL_BOLD_12.render("SP", True, pygame.Color("white")),
     }
 
@@ -518,13 +519,20 @@ class SpriteStatus(object):
     }
     SPRITE_BAR_BG_COLOR = pygame.Color(0, 0, 0, 128)
     HERO_ALL_BAR_SIZE = (100, 10)
-    HERO_HP_TITLE_BLIT_POS = (82, 18)
-    HERO_HP_BLIT_POS = (104, 20)
 
-    # stamina point related
+    # hp related
+    HERO_HP_TITLE_BLIT_POS = (82, 14)
+    HERO_HP_BLIT_POS = (104, 16)
+
+    # mp related
+    HERO_MP_COLOR = pygame.Color(0, 128, 128, 128),
+    HERO_MP_TITLE_BLIT_POS = (82, 31)
+    HERO_MP_BLIT_POS = (104, 33)
+
+    # sp related
     HERO_SP_COLOR = pygame.Color(0, 64, 128, 128),
-    HERO_SP_TITLE_BLIT_POS = (82, 35)
-    HERO_SP_BLIT_POS = (104, 37)
+    HERO_SP_TITLE_BLIT_POS = (82, 48)
+    HERO_SP_BLIT_POS = (104, 50)
 
     ENEMY_HP_BAR_SIZE = (50, 5)
 

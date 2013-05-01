@@ -355,6 +355,7 @@ class HeroStatus(object):
         self.status_panel = gen_panel(battle_images, "status", 
             sfg.SpriteStatus.HERO_PANEL_RECT, sfg.SpriteStatus.HERO_PANEL_SCALE_SIZE)
         self.hero_hp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
+        self.hero_mp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
         self.hero_sp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
 
 
@@ -389,13 +390,19 @@ class HeroStatus(object):
         # Renne's head, showing her status
         camera.screen.blit(self.get_current_head(self.hero.status["hp"]), sfg.SpriteStatus.HERO_HEAD_BLIT_POS)
 
+        # hp, mp, sp words
         camera.screen.blit(sfg.SpriteStatus.WORDS["hero_hp"], sfg.SpriteStatus.HERO_HP_TITLE_BLIT_POS)
+        camera.screen.blit(sfg.SpriteStatus.WORDS["hero_mp"], sfg.SpriteStatus.HERO_MP_TITLE_BLIT_POS)
         camera.screen.blit(sfg.SpriteStatus.WORDS["hero_sp"], sfg.SpriteStatus.HERO_SP_TITLE_BLIT_POS)
 
         # draw the hp bar for Renne
         self.draw_hero_bar(camera, self.hero.hp, self.hero.setting.HP, self.hero_hp_bar, 
             sfg.SpriteStatus.SPRITE_HP_COLORS[self.hero.status["hp"]], 
             sfg.SpriteStatus.HERO_HP_BLIT_POS)
+
+        # draw the mp bar for Renne
+        self.draw_hero_bar(camera, self.hero.mp, self.hero.setting.MP, self.hero_mp_bar,
+            sfg.SpriteStatus.HERO_MP_COLOR, sfg.SpriteStatus.HERO_MP_BLIT_POS)
 
         # draw the sp bar for Renne
         self.draw_hero_bar(camera, self.hero.sp, self.hero.setting.SP, self.hero_sp_bar,

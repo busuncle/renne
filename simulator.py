@@ -68,7 +68,6 @@ class EnergyBall(object):
                 sp.attacker.under_attack_timer.begin()
                 sp.animation.show_cost_hp(self.damage)
                 self.has_hits.add(sp)
-                print "bingo!"
 
         self.image_mix = self.blink.make(self.image, passed_seconds)
 
