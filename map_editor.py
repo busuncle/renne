@@ -287,6 +287,7 @@ def run(chapter):
 
             camera.screen.blit(image, (rect.x - camera.rect.x, rect.y - camera.rect.y))
 
+        for sp in game_world.all_objects():
             if DEBUG_DRAW["pos"]:
                 debug_tools.draw_pos(camera, sp)
             if DEBUG_DRAW["area"]:
