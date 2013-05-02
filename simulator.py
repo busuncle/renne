@@ -38,7 +38,8 @@ class Blink(object):
 
 
 class EnergyBall(object):
-    def __init__(self, image, target_list, static_objects, params, pos, target_pos):
+    def __init__(self, image, sprite, target_list, static_objects, params, pos, target_pos):
+        self.sprite = sprite
         self.target_list = target_list
         self.static_objects = static_objects
         self.damage = params["damage"]
@@ -210,8 +211,8 @@ class RenneAttacker(AngleAttacker):
         direct_vec = cfg.Direction.DIRECT_TO_VEC[sp.direction]
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
             sp.mp -= self.destroy_line_params["mana"]
-            self.current_magic = EnergyBall(self.destroy_line_image, sp.enemies, sp.static_objects,
-                self.destroy_line_params, sp.pos, sp.pos + direct_vec)
+            self.current_magic = EnergyBall(self.destroy_line_image, sp, sp.enemies, 
+                sp.static_objects, self.destroy_line_params, sp.pos, sp.pos + direct_vec)
             self.magic_list.append(self.current_magic)
         
 
@@ -330,8 +331,8 @@ class LeonhardtAttacker(AngleAttacker):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
             sp.mp -= self.death_coil_params["mana"]
-            self.current_magic = EnergyBall(self.death_coil_image, [target, ], sp.static_objects,
-                self.death_coil_params, sp.pos, target.pos)
+            self.current_magic = EnergyBall(self.death_coil_image, sp, [target, ], 
+                sp.static_objects, self.death_coil_params, sp.pos, target.pos)
             self.magic_list.append(self.current_magic)
 
 
