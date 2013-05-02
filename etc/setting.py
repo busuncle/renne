@@ -470,6 +470,17 @@ class StoneWall3(object):
 
 
 
+class StoneWall4(object):
+    NAME = "StoneWall4"
+    IMAGE_KEY = "s8"
+    IMAGE_RECT = (0, 0, 256, 128)
+    POS_RECT_DELTA_Y = 32
+    AREA_RECT = (0, 0, 256, 128)
+    IS_BLOCK = True
+    IS_VIEW_BLOCK = True
+
+
+
 class WayPoint(object):
     DIR = os.path.join("etc", "waypoints")
     STEP_WIDTH = 24
@@ -715,6 +726,7 @@ STATIC_OBJECT_SETTING_LIST = [
     WoodenCase3,
     WoodenCase3_1,
     WoodenCase4,
+    StoneWall4,
 ]
 
 
@@ -774,6 +786,7 @@ STATIC_OBJECT_IMAGES = ("static_object", {
     "s5": "s5.png",
     "s6": "s6.png", 
     "s7": "s7.png", 
+    "s8": "s8.png",
 })
 
 # (folder, {image_key: image_filename, ...})
