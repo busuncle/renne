@@ -64,11 +64,7 @@ class EnergyBall(object):
             if sp in self.has_hits:
                 continue
             if sp.area.colliderect(self.area):
-                sp.hp = max(sp.hp - self.damage, 0)
-                sp.status["hp"] = sp.attacker.cal_sprite_status(sp.hp, sp.setting.HP)
-                sp.status["under_attack"] = True
-                sp.attacker.under_attack_timer.begin()
-                sp.animation.show_cost_hp(self.damage)
+                sp.attacker.handle_under_attack(self.damage)
                 self.has_hits.add(sp)
 
         self.image_mix = self.blink.make(self.image, passed_seconds)
@@ -124,6 +120,15 @@ class Attacker(object):
             return cfg.SpriteStatus.DANGER
         else:
             return cfg.SpriteStatus.DIE
+
+
+    def handle_under_attack(self, cost_hp):
+        sp = self.sprite
+        sp.hp = max(sp.hp - cost_hp, 0)
+        sp.status["hp"] = self.cal_sprite_status(sp.hp, sp.setting.HP)
+        sp.status["under_attack"] = True
+        self.under_attack_timer.begin()
+        sp.animation.show_cost_hp(cost_hp)
 
 
     def finish(self):
@@ -186,11 +191,7 @@ class RenneAttacker(AngleAttacker):
     def run(self, enemy, current_frame_add):
         if self.hit(enemy, current_frame_add):
             damage = self.sprite.atk - enemy.dfs
-            enemy.hp = max(enemy.hp - damage, 0)
-            enemy.status["hp"] = enemy.attacker.cal_sprite_status(enemy.hp, enemy.setting.HP)
-            enemy.status["under_attack"] = True
-            enemy.attacker.under_attack_timer.begin()
-            enemy.animation.show_cost_hp(damage)
+            enemy.attacker.handle_under_attack(damage)
 
             # calculate enemy's emotion
             angry_hp_threshold = enemy.setting.HP * enemy.brain.ai.ANGRY_HP_RATIO
@@ -246,11 +247,7 @@ class EnemyShortAttacker(AngleAttacker):
     def run(self, hero, current_frame_add):
         if self.hit(hero, current_frame_add):
             damage = self.sprite.atk - hero.dfs
-            hero.hp = max(hero.hp - damage, 0)
-            hero.status["hp"] = hero.attacker.cal_sprite_status(hero.hp, hero.setting.HP)
-            hero.status["under_attack"] = True
-            hero.attacker.under_attack_timer.begin()
-            hero.animation.show_cost_hp(damage)
+            hero.attacker.handle_under_attack(damage)
             return True
         return False
         
@@ -284,11 +281,7 @@ class EnemyLongAttacker(AngleAttacker):
     def run(self, hero, current_frame_add):
         if self.hit(hero, current_frame_add):
             damage = self.sprite.atk - hero.dfs
-            hero.hp = max(hero.hp - damage, 0)
-            hero.status["hp"] = hero.attacker.cal_sprite_status(hero.hp, hero.setting.HP)
-            hero.status["under_attack"] = True
-            hero.attacker.under_attack_timer.begin()
-            hero.animation.show_cost_hp(damage)
+            hero.attacker.handle_under_attack(damage)
             return True
         return False
 
@@ -345,11 +338,7 @@ class LeonhardtAttacker(AngleAttacker):
     def run(self, hero, current_frame_add):
         if self.hit(hero, current_frame_add):
             damage = self.sprite.atk - hero.dfs
-            hero.hp = max(hero.hp - damage, 0)
-            hero.status["hp"] = hero.attacker.cal_sprite_status(hero.hp, hero.setting.HP)
-            hero.status["under_attack"] = True
-            hero.attacker.under_attack_timer.begin()
-            hero.animation.show_cost_hp(damage)
+            hero.attacker.handle_under_attack(damage)
             return True
         return False
 
