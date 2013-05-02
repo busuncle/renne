@@ -182,7 +182,7 @@ class Renne(GameSprite):
                 if hit_count > 0:
                     self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
 
-            elif self.attacker.method == "magic":
+            elif self.attacker.method == "destroy_line":
                 self.attacker.destroy_line(self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
 
 
@@ -265,7 +265,7 @@ class Renne(GameSprite):
             self.attack("regular", passed_seconds)
 
         elif self.action == cfg.HeroAction.ATTACK_DESTORY_LINE:
-            self.attack("magic", passed_seconds)
+            self.attack("destroy_line", passed_seconds)
 
         elif self.action == cfg.HeroAction.RUN:
             self.run(passed_seconds)
@@ -479,7 +479,7 @@ class Leonhardt(Enemy):
                 if hit_it:
                     self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
 
-            elif self.attacker.method == "magic":
+            elif self.attacker.method == "death_coil":
                 self.attacker.death_coil(self.brain.target, 
                     self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
 

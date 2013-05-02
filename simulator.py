@@ -330,7 +330,7 @@ class LeonhardtAttacker(AngleAttacker):
         if distance_to_target < self.attack_range or sp.mp < self.death_coil_params["mana"]:
             self.method = "regular"
         else:
-            self.method = "magic"
+            self.method = "death_coil"
 
 
     def death_coil(self, target, current_frame_add):
