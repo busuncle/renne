@@ -65,7 +65,7 @@ class EnergyBall(object):
             if sp in self.has_hits:
                 continue
             if sp.area.colliderect(self.area):
-                sp.attacker.handle_under_attack(self.damage)
+                sp.attacker.handle_under_attack(self.sprite, self.damage)
                 self.has_hits.add(sp)
 
         self.image_mix = self.blink.make(self.image, passed_seconds)
@@ -123,13 +123,16 @@ class Attacker(object):
             return cfg.SpriteStatus.DIE
 
 
-    def handle_under_attack(self, cost_hp):
+    def handle_under_attack(self, from_who, cost_hp):
         sp = self.sprite
         sp.hp = max(sp.hp - cost_hp, 0)
         sp.status["hp"] = self.cal_sprite_status(sp.hp, sp.setting.HP)
         sp.status["under_attack"] = True
         self.under_attack_timer.begin()
         sp.animation.show_cost_hp(cost_hp)
+        if sp.setting.ROLE == cfg.SpriteRole.ENEMY:
+            sp.cal_angry(cost_hp)
+            sp.get_target(from_who)
 
 
     def finish(self):
@@ -192,16 +195,7 @@ class RenneAttacker(AngleAttacker):
     def run(self, enemy, current_frame_add):
         if self.hit(enemy, current_frame_add):
             damage = self.sprite.atk - enemy.dfs
-            enemy.attacker.handle_under_attack(damage)
-
-            # calculate enemy's emotion
-            angry_hp_threshold = enemy.setting.HP * enemy.brain.ai.ANGRY_HP_RATIO
-            if enemy.hp < angry_hp_threshold and enemy.hp + damage >= angry_hp_threshold:
-                enemy.set_emotion(cfg.SpriteEmotion.ANGRY)
-
-            if enemy.brain.target is None:
-                enemy.brain.target = self.sprite
-
+            enemy.attacker.handle_under_attack(self.sprite, damage)
             return True
         return False
 
@@ -248,7 +242,7 @@ class EnemyShortAttacker(AngleAttacker):
     def run(self, hero, current_frame_add):
         if self.hit(hero, current_frame_add):
             damage = self.sprite.atk - hero.dfs
-            hero.attacker.handle_under_attack(damage)
+            hero.attacker.handle_under_attack(self.sprite, damage)
             return True
         return False
         
@@ -282,7 +276,7 @@ class EnemyLongAttacker(AngleAttacker):
     def run(self, hero, current_frame_add):
         if self.hit(hero, current_frame_add):
             damage = self.sprite.atk - hero.dfs
-            hero.attacker.handle_under_attack(damage)
+            hero.attacker.handle_under_attack(self.sprite, damage)
             return True
         return False
 
@@ -339,7 +333,7 @@ class LeonhardtAttacker(AngleAttacker):
     def run(self, hero, current_frame_add):
         if self.hit(hero, current_frame_add):
             damage = self.sprite.atk - hero.dfs
-            hero.attacker.handle_under_attack(damage)
+            hero.attacker.handle_under_attack(self.sprite, damage)
             return True
         return False
 

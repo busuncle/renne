@@ -374,6 +374,18 @@ class Enemy(GameSprite):
             self.action = cfg.EnemyAction.STAND
 
 
+    def cal_angry(self, damage):
+        # calculate enemy's emotion
+        angry_hp_threshold = self.setting.HP * self.brain.ai.ANGRY_HP_RATIO
+        if self.hp < angry_hp_threshold and self.hp + damage >= angry_hp_threshold:
+            self.set_emotion(cfg.SpriteEmotion.ANGRY)
+
+
+    def get_target(self, target):
+        if self.brain.target is None:
+            self.brain.target = target
+
+
     def set_emotion(self, emotion):
         self.emotion_animation.reset_frame(self.status["emotion"])
         self.status["emotion"] = emotion

@@ -61,6 +61,12 @@ class GameObject(object):
 
 
 
+class SpriteRole(object):
+    HERO = 1
+    ENEMY = 2
+
+
+
 class SpriteAction(object):
     STAND = 1
     WALK = 2

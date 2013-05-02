@@ -85,6 +85,7 @@ class Stuff(object):
 
 class Renne(object):
     NAME = "Renne"
+    ROLE = cfg.SpriteRole.HERO
     HP = 300
     MP = 180
     MP_RECOVERY_RATE = 10
@@ -143,6 +144,7 @@ class Renne(object):
 
                 
 class Enemy(object):
+    ROLE = cfg.SpriteRole.ENEMY
     DEAD_TICK = 1.5
     DEAD_BLINK_TIMES = 3
     VIEW_RANGE = 380
