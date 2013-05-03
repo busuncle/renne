@@ -135,7 +135,7 @@ class Renne(object):
             "range": 300,
             "damage": 40,
             "speed": 250,
-            "radius": 20,
+            "radius": 18,
             "height": 35,
             "mana": 40,
         },
