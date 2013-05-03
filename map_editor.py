@@ -287,6 +287,12 @@ def run(chapter):
 
             camera.screen.blit(image, (rect.x - camera.rect.x, rect.y - camera.rect.y))
 
+        if selected_object is not None:
+            selected_object_name = sfg.Font.ARIAL_32.render(
+                selected_object.setting.NAME, True, pygame.Color("black"))
+            camera.screen.blit(selected_object_name, (5, 5))
+
+        # debug drawings
         for sp in game_world.all_objects():
             if DEBUG_DRAW["pos"]:
                 debug_tools.draw_pos(camera, sp)
