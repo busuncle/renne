@@ -477,9 +477,6 @@ class Leonhardt(Enemy):
 
 
     def attack(self, passed_seconds):
-        if self.attacker.method is None:
-            self.attacker.choose_good_method(self.brain.target)
-
         is_finish = self.animation.run_sequence_frame(cfg.EnemyAction.ATTACK, passed_seconds)
         if is_finish:
             self.attacker.finish()

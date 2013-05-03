@@ -300,25 +300,19 @@ class LeonhardtAttacker(AngleAttacker):
 
     def chance(self, target):
         # totally for ai, because player can judge whether it's a good attack chance himself
+        # at the same time, choose which method to attack hero
         sp = self.sprite
         distance_to_target = sp.pos.get_distance_to(target.pos)
+        if happen(sp.brain.ai.ATTACK_REGULAR_PROB) \
+            and distance_to_target <= self.attack_range:
+            self.method = "regular"
+            return True
         if happen(sp.brain.ai.ATTACK_ENERGY_BALL_PROB) \
             and sp.mp > self.death_coil_params["mana"] \
             and distance_to_target <= self.death_coil_params["range"]:
-            return True
-        if happen(sp.brain.ai.ATTACK_COMMON_PROB) \
-            and distance_to_target <= self.attack_range:
+            self.method = "death_coil"
             return True
         return False
-
-
-    def choose_good_method(self, target):
-        sp = self.sprite
-        distance_to_target = sp.pos.get_distance_to(target.pos)
-        if distance_to_target < self.attack_range or sp.mp < self.death_coil_params["mana"]:
-            self.method = "regular"
-        else:
-            self.method = "death_coil"
 
 
     def death_coil(self, target, current_frame_add):

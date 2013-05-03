@@ -106,7 +106,7 @@ class LeonHardtAI(AIBase):
     DEFENCE_TO_CHASE_PROB = 0.4
 
     # attack method related
-    ATTACK_COMMON_PROB = 0.7
+    ATTACK_REGULAR_PROB = 0.7
     ATTACK_ENERGY_BALL_PROB = 0.3
 
 
