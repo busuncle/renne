@@ -13,9 +13,9 @@ import animation
 
 
 class Blink(object):
-    def __init__(self):
-        self.rate = 256
-        self.depth_section = (32, 128)
+    def __init__(self, rate=256, depth_section=(32, 128)):
+        self.rate = rate
+        self.depth_section = depth_section
         self.depth = self.depth_section[0]
         self.direct = 1
 
