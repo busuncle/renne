@@ -1,6 +1,3 @@
-import sys
-sys.path.insert(0, __file__[:__file__.rfind('/')])
-
 import pygame
 from pygame.locals import *
 from gamesprites import Renne, GameSpritesGroup, enemy_in_one_screen, ENEMY_CLASS_MAPPING

@@ -25,18 +25,15 @@ def get_project_root():
 
 
 def load_map_setting(chapter):
-    project_root = get_project_root()
     name = "chapter_%s" % chapter
-    path = os.path.join(project_root, "etc", "maps", "chapter_%s.py" % chapter)
-    m = imp.load_source(name, path)
+    m = imp.load_source(name, os.path.join("etc", "maps", name+".py"))
 
     return getattr(m, "map_setting")
 
 
 def save_map_setting(chapter, map_setting):
-    project_root = get_project_root()
     res = pprint.pformat(map_setting)
-    with open(os.path.join(project_root, "etc", "maps", "chapter_%s.py" % chapter), "w") as fp:
+    with open(os.path.join("etc", "maps", "chapter_%s.py" % chapter), "w") as fp:
         fp.write("map_setting = " + res)
 
 

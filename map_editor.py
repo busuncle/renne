@@ -12,9 +12,6 @@ from etc import setting as sfg
 
 
 
-PROJECT_ROOT = util.get_project_root()
-assert os.path.basename(PROJECT_ROOT) == "renne"
-
 DEBUG_DRAW = {
     "pos": False,
     "area": False,

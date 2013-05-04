@@ -1,6 +1,6 @@
 map_setting = {'hero': [[96, 610], 6],
  'monster': [],
- 'monsters': [],
+ 'monsters': [[1, [834, 774], 0]],
  'size': [1536, 1792],
  'static_objects': [[1, [376, 432]],
                     [2, [518, 348]],
