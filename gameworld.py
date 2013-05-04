@@ -4,8 +4,8 @@ from pygame.locals import *
 from gameobjects.vector2 import Vector2
 from pygame.transform import smoothscale
 from base.util import ImageController
-import etc.setting as sfg
-import etc.constant as cfg
+from base import constant as cfg
+from etc import setting as sfg
 
 
 

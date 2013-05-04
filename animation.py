@@ -3,8 +3,8 @@ from pygame.locals import BLEND_ADD
 from time import time
 from random import randint
 from base.util import ImageController, SpriteImageController, Timer
-import etc.setting as sfg
-import etc.constant as cfg
+from base import constant as cfg
+from etc import setting as sfg
 
 
 # init SpriteImageController

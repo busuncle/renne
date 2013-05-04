@@ -5,9 +5,9 @@ from pygame.transform import smoothscale, scale2x
 from animation import cg_image_controller, basic_image_controller
 from musicbox import BackgroundBox
 from base.util import ImageController
-import etc.setting as sfg
-import etc.constant as cfg
 from base.util import Timer
+from base import constant as cfg
+from etc import setting as sfg
 
 
 

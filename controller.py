@@ -1,12 +1,11 @@
 from gameobjects.vector2 import Vector2
 import math
 import os
-from time import time
 from random import randint, choice, gauss, random
-import etc.constant as cfg
-import etc.setting as sfg
 import pathfinding
 from base.util import cos_for_vec, Timer, happen
+from base import constant as cfg
+from etc import setting as sfg
 
 
 

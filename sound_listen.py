@@ -1,8 +1,8 @@
 import os
 import pygame
 from pygame.locals import *
-import etc.setting as sfg
 from base import util
+from etc import setting as sfg
 
 
 screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)

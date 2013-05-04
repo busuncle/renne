@@ -1,8 +1,9 @@
 import pygame
 from pygame.locals import *
 from pygame.transform import laplacian
-import etc.setting as sfg
 from base import util
+from etc import setting as sfg
+
 
 """
 check animation

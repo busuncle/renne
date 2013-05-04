@@ -1,6 +1,6 @@
-import etc.setting as sfg
 import pygame
 from pygame.locals import HWSURFACE, DOUBLEBUF
+from etc import setting as sfg
 
 
 

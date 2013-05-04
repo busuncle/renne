@@ -1,7 +1,7 @@
 import pygame
 from base.util import MusicController
-import etc.setting as sfg
-import etc.constant as cfg
+from base import constant as cfg
+from etc import setting as sfg
 
 
 

@@ -1,9 +1,12 @@
+import sys
+sys.path.insert(0, __file__[:__file__.rfind('/')])
+
 import pygame
 from pygame.locals import *
 from gamesprites import Renne, GameSpritesGroup, enemy_in_one_screen, ENEMY_CLASS_MAPPING
-import etc.setting as sfg
-import etc.constant as cfg
-import etc.ai_setting as ai
+from base import constant as cfg
+from etc import setting as sfg
+from etc import ai_setting as ai
 from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObject
 from gamestatus import GameStatus, Menu, bg_box, start_game, loading_chapter_picture, end_game
 from renderer import Camera

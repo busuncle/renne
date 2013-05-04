@@ -2,13 +2,13 @@ import pygame
 from pygame.locals import BLEND_ADD
 from base.util import LineSegment, line_segment_intersect_with_rect, cos_for_vec
 from base.util import manhattan_distance, Timer, happen
-import etc.constant as cfg
-import etc.setting as sfg
 import math
 from math import pow, radians, sqrt, tan, cos
 from time import time
 from gameobjects.vector2 import Vector2
 import animation
+from base import constant as cfg
+from etc import setting as sfg
 
 
 

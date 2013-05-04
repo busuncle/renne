@@ -6,8 +6,8 @@ import simulator
 from animation import SpriteEmotionAnimator, RenneAnimator, EnemyAnimator
 from musicbox import SoundBox
 import controller
-import etc.constant as cfg
-import etc.setting as sfg
+from base import constant as cfg
+from etc import setting as sfg
 
 
 

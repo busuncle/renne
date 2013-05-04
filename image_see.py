@@ -3,7 +3,7 @@ import pygame
 from pygame import transform
 from pygame.locals import *
 from random import randint
-import etc.setting as sfg
+from etc import setting as sfg
 from base import util
 
 """

@@ -2,8 +2,8 @@ import pygame
 import math
 from heapq import heappush, heappop
 from gameobjects.vector2 import Vector2
-import etc.constant as cfg
-import etc.setting as sfg
+from base import constant as cfg
+from etc import setting as sfg
 
 
 

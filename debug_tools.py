@@ -1,5 +1,5 @@
 import pygame
-import etc.setting as sfg
+from etc import setting as sfg
 
 
 

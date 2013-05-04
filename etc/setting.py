@@ -1,5 +1,5 @@
 import os
-import constant as cfg
+from base import constant as cfg
 import pygame
 from pygame.locals import *
 

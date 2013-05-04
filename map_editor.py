@@ -3,14 +3,12 @@ import pygame
 from pygame.locals import *
 from gamesprites import Renne, Enemy, GameSpritesGroup
 from gameobjects.vector2 import Vector2
-import etc.setting as sfg
-import etc.constant as cfg
-import sys
-from time import time
 from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObject
 from renderer import Camera
 from base import util
 import debug_tools
+from base import constant as cfg
+from etc import setting as sfg
 
 
 
