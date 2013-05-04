@@ -281,11 +281,17 @@ def run(chapter):
                 sp.adjust_rect()
                 image = sp.animation.sprite_image_contoller.get_surface(cfg.SpriteAction.STAND)[sp.direction]
                 rect = sp.animation.rect
+                shd_image = sp.animation.shadow_image
+                shd_rect = sp.animation.shadow_rect 
+                camera.screen.blit(shd_image, (shd_rect.x - camera.rect.x, shd_rect.y - camera.rect.y))
+                camera.screen.blit(image, (rect.x - camera.rect.x, rect.y - camera.rect.y))
+                if sp.setting.ROLE == cfg.SpriteRole.ENEMY:
+                    sp.animation.draw_hp_bar(camera)
             else:
                 image = sp.image
                 rect = sp.rect
+                camera.screen.blit(image, (rect.x - camera.rect.x, rect.y - camera.rect.y))
 
-            camera.screen.blit(image, (rect.x - camera.rect.x, rect.y - camera.rect.y))
 
         if selected_object is not None:
             selected_object_name = sfg.Font.ARIAL_32.render(
