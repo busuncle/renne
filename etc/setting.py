@@ -315,6 +315,43 @@ class LeonHardt(Enemy):
 
 
 
+class ArmouredShooter(Enemy):
+    NAME = "ArmouredShooter"
+    HP = 220
+    ATK = 38
+    DFS = 3
+
+    RADIUS = 24
+    HEIGHT = 70
+    POS_RECT_DELTA_Y = 35
+    SHADOW_RECT_DELTA_Y = 55
+    SHADOW_INDEX = 3
+
+    FRAME_RATES = {
+        cfg.EnemyAction.STAND: 12,
+        cfg.EnemyAction.WALK: 12,
+        cfg.EnemyAction.ATTACK: 10,
+    }
+
+    FRAME_NUMS = {
+        cfg.EnemyAction.STAND: 8,
+        cfg.EnemyAction.WALK: 8,
+        cfg.EnemyAction.ATTACK: 10,
+    }
+
+    ATTACKTYPE = cfg.SpriteAttackType.LONG
+
+    ATTACKER_PARAMS = {
+        "range": 420,
+        "angle": 12,
+        "key_frames": (5, 6),
+    }
+
+    WALK_SPEED = 150
+    NEARBY_ALLIANCE_RANGE = 260
+
+
+
 class GameMap(object):
     TILE_SIZE = 256
     ONE_SCREEN_DISTANCE_WIDTH = TILE_SIZE * 4
@@ -727,6 +764,7 @@ SPRITE_SETTING_LIST = [
     CastleWarrior,
     SkeletonArcher,
     LeonHardt,
+    ArmouredShooter,
 ]
 
 STATIC_OBJECT_SETTING_LIST = [
@@ -795,6 +833,11 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.ATTACK: "attack_8.png",
         cfg.EnemyAction.ATTACK2: "attack2_8.png",
         cfg.EnemyAction.ATTACK3: "attack3_8.png",
+    }),
+    5: ("armoured_shooter", {
+        cfg.EnemyAction.WALK: "walk_8.png",
+        cfg.EnemyAction.STAND: "stand_8.png",
+        cfg.EnemyAction.ATTACK: "attack_10.png",
     }),
 }
 
