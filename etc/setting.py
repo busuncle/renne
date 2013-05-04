@@ -352,6 +352,42 @@ class ArmouredShooter(Enemy):
 
 
 
+class SwordRobber(Enemy):
+    NAME = "SwordRobber"
+    HP = 300
+    ATK = 60 
+    DFS = 5
+
+    RADIUS = 24
+    HEIGHT = 75
+    POS_RECT_DELTA_Y = 40
+    SHADOW_RECT_DELTA_Y = 60
+    SHADOW_INDEX = 3
+
+    FRAME_RATES = {
+        cfg.EnemyAction.STAND: 12,
+        cfg.EnemyAction.WALK: 14,
+        cfg.EnemyAction.ATTACK: 8,
+    }
+
+    FRAME_NUMS = {
+        cfg.EnemyAction.STAND: 8,
+        cfg.EnemyAction.WALK: 8,
+        cfg.EnemyAction.ATTACK: 7,
+    }
+
+    ATTACKTYPE = cfg.SpriteAttackType.SHORT
+    ATTACKER_PARAMS = {
+        "range": 90,
+        "angle": 60,
+        "key_frames": (3, 4),
+    }
+
+    WALK_SPEED = 170
+    NEARBY_ALLIANCE_RANGE = 260
+
+
+
 class GameMap(object):
     TILE_SIZE = 256
     ONE_SCREEN_DISTANCE_WIDTH = TILE_SIZE * 4
@@ -765,6 +801,7 @@ SPRITE_SETTING_LIST = [
     SkeletonArcher,
     LeonHardt,
     ArmouredShooter,
+    SwordRobber,
 ]
 
 STATIC_OBJECT_SETTING_LIST = [
@@ -838,6 +875,11 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.WALK: "walk_8.png",
         cfg.EnemyAction.STAND: "stand_8.png",
         cfg.EnemyAction.ATTACK: "attack_10.png",
+    }),
+    6: ("sword_robber", {
+        cfg.EnemyAction.WALK: "walk_8.png",
+        cfg.EnemyAction.STAND: "stand_8.png",
+        cfg.EnemyAction.ATTACK: "attack_7.png",
     }),
 }
 
