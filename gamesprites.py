@@ -462,6 +462,8 @@ class Leonhardt(Enemy):
     def __init__(self, setting, pos, direction):
         super(Leonhardt, self).__init__(setting, pos, direction)
         self.mp = self.setting.MP
+        self.attack_types = (cfg.EnemyAction.ATTACK, cfg.EnemyAction.ATTACK2, cfg.EnemyAction.ATTACK3)
+        self.running_attack_type = None
 
 
     def draw(self, camera):
@@ -477,20 +479,24 @@ class Leonhardt(Enemy):
 
 
     def attack(self, passed_seconds):
-        is_finish = self.animation.run_sequence_frame(cfg.EnemyAction.ATTACK, passed_seconds)
+        if self.running_attack_type is None:
+            self.running_attack_type = random.choice(self.attack_types)
+
+        is_finish = self.animation.run_sequence_frame(self.running_attack_type, passed_seconds)
         if is_finish:
             self.attacker.finish()
+            self.running_attack_type = None
             self.brain.persistent = False
         else:
             if self.attacker.method == "regular":
                 hit_it = self.attacker.run(self.brain.target, 
-                    self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
+                    self.animation.get_current_frame_add(self.running_attack_type))
                 if hit_it:
                     self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
 
             elif self.attacker.method == "death_coil":
                 self.attacker.death_coil(self.brain.target, 
-                    self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
+                    self.animation.get_current_frame_add(self.running_attack_type))
 
 
     def event_handle(self, pressed_keys=None, external_event=None):

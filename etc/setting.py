@@ -283,12 +283,16 @@ class LeonHardt(Enemy):
         cfg.EnemyAction.STAND: 12,
         cfg.EnemyAction.RUN: 14,
         cfg.EnemyAction.ATTACK: 12,
+        cfg.EnemyAction.ATTACK2: 12,
+        cfg.EnemyAction.ATTACK3: 12,
     }
 
     FRAME_NUMS = {
         cfg.EnemyAction.STAND: 8,
         cfg.EnemyAction.RUN: 8,
         cfg.EnemyAction.ATTACK: 8,
+        cfg.EnemyAction.ATTACK2: 8,
+        cfg.EnemyAction.ATTACK3: 8,
     }
 
     ATTACKTYPE = cfg.SpriteAttackType.LEONHARDT
@@ -296,7 +300,7 @@ class LeonHardt(Enemy):
     ATTACKER_PARAMS = {
         "range": 70,
         "angle": 60,
-        "key_frames": (5, 6),
+        "key_frames": (4, 5),
         "death_coil":{
             "range": 300,
             "damage": 50,
@@ -789,6 +793,8 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.RUN: "run_8.png",
         cfg.EnemyAction.STAND: "stand_8.png",
         cfg.EnemyAction.ATTACK: "attack_8.png",
+        cfg.EnemyAction.ATTACK2: "attack2_8.png",
+        cfg.EnemyAction.ATTACK3: "attack3_8.png",
     }),
 }
 

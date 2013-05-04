@@ -27,6 +27,7 @@ def run(args):
     frame_add = 0.0
     running = True
     frame_no_max = image.get_rect().height / 8 / 256
+    print "frame_no_max: %s" % frame_no_max
 
     while running:
         for event in pygame.event.get(): # User did something

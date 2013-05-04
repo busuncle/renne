@@ -82,6 +82,8 @@ class HeroAction(SpriteAction):
 
 
 class EnemyAction(SpriteAction):
+    ATTACK2 = 41
+    ATTACK3 = 42
     UNDER_ATTACK = 21
     DIE = 22
     LOOKOUT = 23
