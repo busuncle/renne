@@ -407,14 +407,15 @@ class IronCase(object):
 
     
 
-class ThickGrass(object):
-    NAME = "ThickGrass"
-    IMAGE_KEY = "s3"
-    IMAGE_RECT = (192, 64, 64, 64)
-    POS_RECT_DELTA_Y = 26
-    AREA_RECT = (0, 0, 64, 64)
-    IS_BLOCK = False 
-    IS_VIEW_BLOCK = True 
+class IronCase2(object):
+    NAME = "IronCase2"
+    IMAGE_KEY = "s9"
+    IMAGE_RECT = (64, 0, 64, 128)
+    POS_RECT_DELTA_Y = 32
+    AREA_RECT = (0, 0, 64, 128)
+    IS_BLOCK = True
+    IS_VIEW_BLOCK = True
+
 
 
 class GrassWall(object):
@@ -727,7 +728,7 @@ SPRITE_SETTING_LIST = [
 STATIC_OBJECT_SETTING_LIST = [
     WoodenCase,
     IronCase,
-    ThickGrass,
+    IronCase2,
     GrassWall,
     StoneWall,
     StoneWall2,
@@ -801,6 +802,7 @@ STATIC_OBJECT_IMAGES = ("static_object", {
     "s6": "s6.png", 
     "s7": "s7.png", 
     "s8": "s8.png",
+    "s9": "s9.png",
 })
 
 # (folder, {image_key: image_filename, ...})
