@@ -481,6 +481,7 @@ class Leonhardt(Enemy):
     def attack(self, passed_seconds):
         if self.running_attack_type is None:
             self.running_attack_type = random.choice(self.attack_types)
+            self.sound_box.play(random.choice(("leonhardt_attack", "leonhardt_attack2", "leonhardt_attack3")))
 
         is_finish = self.animation.run_sequence_frame(self.running_attack_type, passed_seconds)
         if is_finish:

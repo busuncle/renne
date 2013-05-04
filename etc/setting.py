@@ -976,6 +976,9 @@ SOUND_EFFECT = ("sound", {
     "renne_win": "renne_win.wav",
     "attack_hit": "attack_hit.wav",
     "attack_hit2": "attack_hit2.wav",
+    "leonhardt_attack": "leonhardt_attack.wav",
+    "leonhardt_attack2": "leonhardt_attack2.wav",
+    "leonhardt_attack3": "leonhardt_attack3.wav",
 })
 
 EFFECT = ("effect", {
