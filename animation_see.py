@@ -10,10 +10,6 @@ check animation
 
 screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
 
-direction = 0
-frame_speed = 8
-frame_no_max = 8
-
 
 def run(args):
 
@@ -25,6 +21,8 @@ def run(args):
     clock = pygame.time.Clock()
 
 
+    direction = 0
+    frame_speed = 8
     frame_no = 0
     frame_add = 0.0
     running = True
@@ -34,8 +32,15 @@ def run(args):
         for event in pygame.event.get(): # User did something
             if event.type == pygame.QUIT: # If user clicked close
                 running = False
-            if event.type == KEYDOWN and event.key == K_ESCAPE:
-                running = False
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
+                elif event.key == K_t:
+                    direction = (direction + 1) % 8
+                elif event.key == K_UP:
+                    frame_speed += 1
+                elif event.key == K_DOWN:
+                    frame_speed -= 1
 
         screen.fill(pygame.Color(background_color))
 
