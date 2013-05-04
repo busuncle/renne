@@ -113,6 +113,7 @@ class Renne(GameSprite):
     def recover(self):
         # recover renne's whole status, usually when the current chapter pass
         self.hp = self.setting.HP
+        self.mp = self.setting.MP
         self.sp = self.setting.SP
         self.status["hp"] = cfg.SpriteStatus.HEALTHY 
         self.status["under_attack"] = False
@@ -146,7 +147,7 @@ class Renne(GameSprite):
 
     def stand(self, passed_seconds):
         # stamina recover when standing
-        if self.hp > 0:
+        if self.status["hp"] != cfg.SpriteStatus.DIE:
             self.sp = min(self.setting.SP, 
                 self.sp + self.setting.SP_RECOVERY_RATE * passed_seconds)
         self.animation.run_circle_frame(cfg.HeroAction.STAND, passed_seconds)
@@ -287,7 +288,8 @@ class Renne(GameSprite):
             else:
                 magic.update(passed_seconds)
 
-        self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
+        if self.status["hp"] != cfg.SpriteStatus.DIE:
+            self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
 
 
 
