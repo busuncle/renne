@@ -366,7 +366,7 @@ class Enemy(GameSprite):
             hit_it = self.attacker.run(self.brain.target, 
                 self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
             if hit_it:
-                self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
+                self.sound_box.play(random.choice(("attack_hit", "attack_hit2", "attack_hit3")))
 
 
     def reset_action(self):
@@ -493,7 +493,7 @@ class Leonhardt(Enemy):
                 hit_it = self.attacker.run(self.brain.target, 
                     self.animation.get_current_frame_add(self.running_attack_type))
                 if hit_it:
-                    self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
+                    self.sound_box.play(random.choice(("attack_hit", "attack_hit2", "attack_hit3")))
 
             elif self.attacker.method == "death_coil":
                 self.attacker.death_coil(self.brain.target, 
