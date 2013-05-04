@@ -148,26 +148,29 @@ def start_game(screen):
 
         time_passed = clock.tick(sfg.FPS)
         passed_seconds = time_passed / 1000.0
-        pic_alpha = int(min(pic_alpha + passed_seconds * fade_in_delta, 255))
+        if pic_alpha < 255:
+            pic_alpha = int(min(pic_alpha + passed_seconds * fade_in_delta, 255))
         pic.set_alpha(pic_alpha)
         screen.blit(pic, pic_rect)
 
-        if pic_alpha >= 255:
-            # no events accepted until the renne's picure is fully displayed
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT: 
-                    return cfg.GameControl.QUIT
-                if event.type == KEYDOWN:
-                    if event.key == K_RETURN:
-                        if menu.current_menu() == "START":
-                            return cfg.GameControl.NEXT
-                        elif menu.current_menu() == "QUIT":
-                            return cfg.GameControl.QUIT
-                    elif event.key == K_ESCAPE:
+        for event in pygame.event.get():
+            if pic_alpha < 255:
+                continue
+                # no events will be handled until the renne's picure is fully displayed
+            if event.type == pygame.QUIT: 
+                return cfg.GameControl.QUIT
+            if event.type == KEYDOWN:
+                if event.key == K_RETURN:
+                    if menu.current_menu() == "START":
+                        return cfg.GameControl.NEXT
+                    elif menu.current_menu() == "QUIT":
                         return cfg.GameControl.QUIT
+                elif event.key == K_ESCAPE:
+                    return cfg.GameControl.QUIT
 
-                    menu.update(event.key)
+                menu.update(event.key)
 
+        if pic_alpha == 255:
             menu.draw(screen)
 
         pygame.display.flip()
