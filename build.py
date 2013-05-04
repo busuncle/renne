@@ -64,7 +64,9 @@ class BuildExe:
                 wc_name = self.opj(dirname, wc)
                 for f in files:
                     filename = self.opj(dirname, f)
-                    if filename.endswith(".py~") or filename.endswith(".pyc"):
+                    base_name = os.path.basename(filename)
+                    if base_name.startswith(".") or base_name.endswith("~") or base_name.endswith(".pyc") \
+                        or base_name.endswith(".pyo"):
                         continue
 
                     if fnmatch.fnmatch(filename, wc_name) and not os.path.isdir(filename):
