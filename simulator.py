@@ -123,15 +123,23 @@ class DestroyBomb(object):
         # this 3 list are related, put them together
         self.pos_list = []
         self.bomb_ranges_list = []
-        for i in xrange(3):
+        for i in xrange(5):
             self.pos_list.append(pos.copy())
             self.bomb_ranges_list.append(list(params["bomb_ranges"]))
-        self.key_vec_list = [Vector2(cfg.Direction.DIRECT_TO_VEC[direction]), 
-            Vector2(cfg.Direction.DIRECT_TO_VEC[(direction - 1) % cfg.Direction.TOTAL]),
-            Vector2(cfg.Direction.DIRECT_TO_VEC[(direction + 1) % cfg.Direction.TOTAL]),]
+        vec = Vector2(cfg.Direction.DIRECT_TO_VEC[direction])
+        vec_left = Vector2(cfg.Direction.DIRECT_TO_VEC[(direction - 1) % cfg.Direction.TOTAL])
+        vec_right = Vector2(cfg.Direction.DIRECT_TO_VEC[(direction + 1) % cfg.Direction.TOTAL])
+        self.key_vec_list = [vec, vec_left, vec_right, 
+            self.normalized_vec_between_two(vec, vec_left), self.normalized_vec_between_two(vec, vec_right)]
 
         self.bomb_list = []
         self.has_hits = set()
+
+
+    def normalized_vec_between_two(self, vec1, vec2):
+        v = vec1 + vec2
+        v.normalize()
+        return v
 
 
     def update(self, passed_seconds):
@@ -170,6 +178,7 @@ class DestroyBomb(object):
                 if sp.area.colliderect(bomb["area"]):
                     sp.attacker.handle_under_attack(self.sprite, self.damage)
                     self.has_hits.add(sp)
+                    break
 
         for i, bomb in enumerate(self.bomb_list):
             bomb["alive_time"] += passed_seconds
@@ -322,7 +331,6 @@ class RenneAttacker(AngleAttacker):
     def destroy_bomb(self, current_frame_add):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
-            print "destroy_bomb"
             sp.mp -= self.destroy_bomb_params["mana"]
             self.current_magic = DestroyBomb(sp, sp.enemies,
                 sp.static_objects, self.destroy_bomb_params, sp.pos, sp.direction)
