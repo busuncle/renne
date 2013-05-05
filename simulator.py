@@ -86,9 +86,29 @@ class EnergyBall(object):
 
 
 
+class DestroyFire(EnergyBall):
+    # Renne skill
+    destroy_fire_image = animation.effect_image_controller.get("e2").convert_alpha().subsurface(
+        sfg.Effect.DESTROY_FIRE_RECT)
+    def __init__(self, sprite, target_list, static_objects, params, pos, target_pos):
+        super(DestroyFire, self).__init__(self.destroy_fire_image,
+            sprite, target_list, static_objects, params, pos, target_pos)
+
+
+
 class DestroyBomb(object):
     # Renne skill
     pass
+
+
+
+class DeathCoil(EnergyBall):
+    death_coil_image = animation.effect_image_controller.get("e1").convert_alpha().subsurface(
+        sfg.Effect.DEATH_COIL_RECT)
+    def __init__(self, sprite, target_list, static_objects, params, pos, target_pos):
+        super(DeathCoil, self).__init__(self.death_coil_image,
+            sprite, target_list, static_objects, params, pos, target_pos)
+
 
 
 class Attacker(object):
@@ -184,8 +204,6 @@ class AngleAttacker(Attacker):
 
 
 class RenneAttacker(AngleAttacker):
-    destroy_fire_image = animation.effect_image_controller.get("e2").convert_alpha().subsurface(
-        sfg.Effect.DESTROY_FIRE_RECT)
     def __init__(self, sprite, attacker_params):
         super(RenneAttacker, self).__init__(sprite, 
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
@@ -210,7 +228,7 @@ class RenneAttacker(AngleAttacker):
         direct_vec = cfg.Direction.DIRECT_TO_VEC[sp.direction]
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
             sp.mp -= self.destroy_fire_params["mana"]
-            self.current_magic = EnergyBall(self.destroy_fire_image, sp, sp.enemies, 
+            self.current_magic = DestroyFire(sp, sp.enemies,
                 sp.static_objects, self.destroy_fire_params, sp.pos, sp.pos + direct_vec)
             self.magic_list.append(self.current_magic)
 
@@ -291,8 +309,6 @@ class EnemyLongAttacker(AngleAttacker):
 
 
 class LeonhardtAttacker(AngleAttacker):
-    death_coil_image = animation.effect_image_controller.get("e1").convert_alpha().subsurface(
-        sfg.Effect.DEATH_COIL_RECT)
     def __init__(self, sprite, attacker_params):
         super(LeonhardtAttacker, self).__init__(sprite, 
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
@@ -323,7 +339,7 @@ class LeonhardtAttacker(AngleAttacker):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
             sp.mp -= self.death_coil_params["mana"]
-            self.current_magic = EnergyBall(self.death_coil_image, sp, [target, ], 
+            self.current_magic = DeathCoil(sp, [target, ],
                 sp.static_objects, self.death_coil_params, sp.pos, target.pos)
             self.magic_list.append(self.current_magic)
 
