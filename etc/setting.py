@@ -63,7 +63,8 @@ class UserKey(object):
     LEFT = K_a
     RIGHT = K_d
     ATTACK = K_j
-    ATTACK_DESTORY_FIRE = K_k
+    ATTACK_DESTROY_FIRE = K_k
+    ATTACK_DESTROY_BOMB = K_i
     RUN = K_l
     WIN = K_u
 
@@ -136,9 +137,22 @@ class Renne(object):
             "damage": 40,
             "speed": 250,
             "radius": 18,
-            "height": 35,
+            "dx": 15,
+            "dy": 35,
             "mana": 40,
         },
+        "destroy_bomb": {
+            "range": 360,
+            "damage": 50,
+            "speed": 280,
+            "mana": 9,
+            #"mana": 90,
+            "bomb_radius": 18,
+            "dx": 35,
+            "dy": 50,
+            "bomb_life": 0.4,
+            "bomb_ranges": range(50, 360, 25),
+        }
     }
 
 
@@ -306,7 +320,8 @@ class LeonHardt(Enemy):
             "damage": 50,
             "speed": 250,
             "radius": 15,
-            "height": 30,
+            "dx": 0,
+            "dy": 30,
             "mana": 50,
         },
     }
@@ -819,6 +834,7 @@ class Music(object):
 class Effect(object):
     DEATH_COIL_RECT = (206, 206, 38, 46)
     DESTROY_FIRE_RECT = (64, 0, 64, 64)
+    DESTORY_BOMB_RECT = (0, 0, 192, 128)
 
 
 
@@ -992,4 +1008,5 @@ SOUND_EFFECT = ("sound", {
 EFFECT = ("effect", {
     "e1": "e1.png",
     "e2": "e2.png",
+    "e3": "e3.png",
 })

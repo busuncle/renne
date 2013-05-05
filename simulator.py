@@ -3,6 +3,7 @@ from pygame.locals import BLEND_ADD
 from base.util import LineSegment, line_segment_intersect_with_rect, cos_for_vec
 from base.util import manhattan_distance, Timer, happen
 import math
+from random import gauss, randint
 from math import pow, radians, sqrt, tan, cos
 from time import time
 from gameobjects.vector2 import Vector2
@@ -44,7 +45,8 @@ class EnergyBall(object):
         self.static_objects = static_objects
         self.damage = params["damage"]
         self.range = params["range"]
-        self.height = params["height"]
+        self.dx = params["dx"]
+        self.dy = params["dy"]
         self.pos = pos.copy()
         self.origin_pos = self.pos.copy()
         self.area = pygame.Rect(0, 0, params["radius"] * 2, params["radius"] * 2)
@@ -82,7 +84,7 @@ class EnergyBall(object):
     def draw(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
             camera.screen.blit(self.image_mix,
-                (self.area.x - camera.rect.x, self.area.y / 2 - camera.rect.y - self.height))
+                (self.area.x - camera.rect.x - self.dx, self.area.y / 2 - camera.rect.y - self.dy))
 
 
 
@@ -98,7 +100,90 @@ class DestroyFire(EnergyBall):
 
 class DestroyBomb(object):
     # Renne skill
-    pass
+    destory_bombs_image = animation.effect_image_controller.get("e3").convert_alpha().subsurface(
+        sfg.Effect.DESTORY_BOMB_RECT)
+    destory_bomb_images = []
+    for i in xrange(3):
+        for j in xrange(2):
+            destory_bomb_images.append(destory_bombs_image.subsurface((i * 64, j * 64, 64, 64)))
+    def __init__(self, sprite, target_list, static_objects, params, pos, direction):
+        self.sprite = sprite
+        self.target_list = target_list
+        self.static_objects = static_objects
+        self.origin_pos = pos.copy()
+        self.bomb_radius = params["bomb_radius"]
+        self.damage = params["damage"]
+        self.dx = params["dx"]
+        self.dy = params["dy"]
+        self.speed = params["speed"]
+        self.range = params["range"]
+        self.bomb_life = params["bomb_life"]
+        self.status = cfg.Magic.STATUS_ALIVE
+
+        # this 3 list are related, put them together
+        self.pos_list = []
+        self.bomb_ranges_list = []
+        for i in xrange(3):
+            self.pos_list.append(pos.copy())
+            self.bomb_ranges_list.append(list(params["bomb_ranges"]))
+        self.key_vec_list = [Vector2(cfg.Direction.DIRECT_TO_VEC[direction]), 
+            Vector2(cfg.Direction.DIRECT_TO_VEC[(direction - 1) % cfg.Direction.TOTAL]),
+            Vector2(cfg.Direction.DIRECT_TO_VEC[(direction + 1) % cfg.Direction.TOTAL]),]
+
+        self.bomb_list = []
+        self.has_hits = set()
+
+
+    def update(self, passed_seconds):
+        range_over_num = 0
+        for i, pos in enumerate(self.pos_list):
+            pos += self.key_vec_list[i] * self.speed * passed_seconds
+            pos_range = self.origin_pos.get_distance_to(pos)
+            if pos_range > self.range:
+                range_over_num += 1
+            if len(self.bomb_ranges_list[i]) > 0 and pos_range > self.bomb_ranges_list[i][0]:
+                # create bomb and pop this range
+                self.bomb_ranges_list[i].pop(0)
+                b_rect = pygame.Rect(0, 0, self.bomb_radius * 2, self.bomb_radius * 2)
+                #b_rect.center = pos
+                b_rect.center = (gauss(pos.x, 10), gauss(pos.y, 10))
+                can_create = True
+                for obj in self.static_objects:
+                    if obj.area.colliderect(b_rect):
+                        can_create = False
+                        break
+
+                if can_create:
+                    img_id = randint(0, len(self.destory_bomb_images) - 1)
+                    self.bomb_list.append({"img_id": img_id, "area": b_rect, "alive_time": 0})
+                else:
+                    # this line can be dropped
+                    self.pos_list.pop(i)
+
+        if range_over_num == len(self.pos_list):
+            self.status = cfg.Magic.STATUS_VANISH
+
+        for sp in self.target_list:
+            if sp in self.has_hits:
+                continue
+            for bomb in self.bomb_list:
+                if sp.area.colliderect(bomb["area"]):
+                    sp.attacker.handle_under_attack(self.sprite, self.damage)
+                    self.has_hits.add(sp)
+
+        for i, bomb in enumerate(self.bomb_list):
+            bomb["alive_time"] += passed_seconds
+            if bomb["alive_time"] > self.bomb_life:
+                self.bomb_list.pop(i)
+        
+
+    def draw(self, camera):
+        if self.status == cfg.Magic.STATUS_ALIVE:
+            for bomb in self.bomb_list:
+                p = bomb["area"].center
+                b_id = bomb["img_id"]
+                camera.screen.blit(self.destory_bomb_images[b_id],
+                    (p[0] - camera.rect.x - self.dx, p[1] / 2 - camera.rect.y - self.dy))
 
 
 
@@ -210,6 +295,7 @@ class RenneAttacker(AngleAttacker):
         self.hit_record = []
         self.kill_record = []
         self.destroy_fire_params = attacker_params["destroy_fire"]
+        self.destroy_bomb_params = attacker_params["destroy_bomb"]
         self.magic_list = []
         self.current_magic = None
         self.method = None
@@ -230,6 +316,16 @@ class RenneAttacker(AngleAttacker):
             sp.mp -= self.destroy_fire_params["mana"]
             self.current_magic = DestroyFire(sp, sp.enemies,
                 sp.static_objects, self.destroy_fire_params, sp.pos, sp.pos + direct_vec)
+            self.magic_list.append(self.current_magic)
+
+
+    def destroy_bomb(self, current_frame_add):
+        sp = self.sprite
+        if self.current_magic is None and int(current_frame_add) in self.key_frames:
+            print "destroy_bomb"
+            sp.mp -= self.destroy_bomb_params["mana"]
+            self.current_magic = DestroyBomb(sp, sp.enemies,
+                sp.static_objects, self.destroy_bomb_params, sp.pos, sp.direction)
             self.magic_list.append(self.current_magic)
 
 

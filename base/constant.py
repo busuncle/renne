@@ -76,7 +76,8 @@ class SpriteAction(object):
 
 
 class HeroAction(SpriteAction):
-    ATTACK_DESTORY_FIRE = 13
+    ATTACK_DESTROY_FIRE = 13
+    ATTACK_DESTROY_BOMB = 14
     WIN = 19
 
 
