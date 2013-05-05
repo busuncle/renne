@@ -183,8 +183,8 @@ class Renne(GameSprite):
                 if hit_count > 0:
                     self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
 
-            elif self.attacker.method == "destroy_line":
-                self.attacker.destroy_line(self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
+            elif self.attacker.method == "destroy_fire":
+                self.attacker.destroy_fire(self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
 
 
     def win(self, passed_seconds):
@@ -207,7 +207,7 @@ class Renne(GameSprite):
                 # do nothin
                 return
 
-        if self.action in (cfg.HeroAction.ATTACK, cfg.HeroAction.ATTACK_DESTORY_LINE):
+        if self.action in (cfg.HeroAction.ATTACK, cfg.HeroAction.ATTACK_DESTORY_FIRE):
             # attacking, return directly
             return
 
@@ -234,11 +234,11 @@ class Renne(GameSprite):
             if atk_snd is not None:
                 self.sound_box.play(atk_snd)
 
-        elif pressed_keys[sfg.UserKey.ATTACK_DESTORY_LINE]:
-            if self.mp > self.attacker.destroy_line_params["mana"]:
+        elif pressed_keys[sfg.UserKey.ATTACK_DESTORY_FIRE]:
+            if self.mp > self.attacker.destroy_fire_params["mana"]:
                 atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3"))
                 self.sound_box.play(atk_snd)
-                self.action = cfg.HeroAction.ATTACK_DESTORY_LINE
+                self.action = cfg.HeroAction.ATTACK_DESTORY_FIRE
 
         elif self.key_vec:
             if pressed_keys[sfg.UserKey.RUN] and self.sp > 0:
@@ -265,8 +265,8 @@ class Renne(GameSprite):
         if self.action == cfg.HeroAction.ATTACK:
             self.attack("regular", passed_seconds)
 
-        elif self.action == cfg.HeroAction.ATTACK_DESTORY_LINE:
-            self.attack("destroy_line", passed_seconds)
+        elif self.action == cfg.HeroAction.ATTACK_DESTORY_FIRE:
+            self.attack("destroy_fire", passed_seconds)
 
         elif self.action == cfg.HeroAction.RUN:
             self.run(passed_seconds)

@@ -63,7 +63,7 @@ class UserKey(object):
     LEFT = K_a
     RIGHT = K_d
     ATTACK = K_j
-    ATTACK_DESTORY_LINE = K_k
+    ATTACK_DESTORY_FIRE = K_k
     RUN = K_l
     WIN = K_u
 
@@ -131,7 +131,7 @@ class Renne(object):
         "range": 100,
         "angle": 120,
         "key_frames": (4, 5),
-        "destroy_line": {
+        "destroy_fire": {
             "range": 300,
             "damage": 40,
             "speed": 250,
@@ -818,7 +818,7 @@ class Music(object):
 
 class Effect(object):
     DEATH_COIL_RECT = (206, 206, 38, 46)
-    DESTROY_LINE_RECT = (64, 0, 64, 64)
+    DESTROY_FIRE_RECT = (64, 0, 64, 64)
 
 
 

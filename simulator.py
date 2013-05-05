@@ -86,6 +86,11 @@ class EnergyBall(object):
 
 
 
+class DestroyBomb(object):
+    # Renne skill
+    pass
+
+
 class Attacker(object):
     """
     attack related calculation in one attack action
@@ -179,14 +184,14 @@ class AngleAttacker(Attacker):
 
 
 class RenneAttacker(AngleAttacker):
-    destroy_line_image = animation.effect_image_controller.get("e2").convert_alpha().subsurface(
-        sfg.Effect.DESTROY_LINE_RECT)
+    destroy_fire_image = animation.effect_image_controller.get("e2").convert_alpha().subsurface(
+        sfg.Effect.DESTROY_FIRE_RECT)
     def __init__(self, sprite, attacker_params):
         super(RenneAttacker, self).__init__(sprite, 
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
         self.hit_record = []
         self.kill_record = []
-        self.destroy_line_params = attacker_params["destroy_line"]
+        self.destroy_fire_params = attacker_params["destroy_fire"]
         self.magic_list = []
         self.current_magic = None
         self.method = None
@@ -200,15 +205,14 @@ class RenneAttacker(AngleAttacker):
         return False
 
 
-    def destroy_line(self, current_frame_add):
+    def destroy_fire(self, current_frame_add):
         sp = self.sprite
         direct_vec = cfg.Direction.DIRECT_TO_VEC[sp.direction]
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
-            sp.mp -= self.destroy_line_params["mana"]
-            self.current_magic = EnergyBall(self.destroy_line_image, sp, sp.enemies, 
-                sp.static_objects, self.destroy_line_params, sp.pos, sp.pos + direct_vec)
+            sp.mp -= self.destroy_fire_params["mana"]
+            self.current_magic = EnergyBall(self.destroy_fire_image, sp, sp.enemies, 
+                sp.static_objects, self.destroy_fire_params, sp.pos, sp.pos + direct_vec)
             self.magic_list.append(self.current_magic)
-        
 
 
     def finish(self):
