@@ -586,4 +586,6 @@ ENEMY_CLASS_MAPPING = {
     cfg.SpriteAttackType.SHORT: Enemy, 
     cfg.SpriteAttackType.LONG: Enemy, 
     cfg.SpriteAttackType.LEONHARDT: Leonhardt,
+    cfg.SpriteAttackType.SWORDROBBER: Enemy,
+    cfg.SpriteAttackType.ARMOUREDSHOOTER: Enemy,
 }

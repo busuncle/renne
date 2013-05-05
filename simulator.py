@@ -380,6 +380,8 @@ ENEMY_ATTACKER_MAPPING = {
     cfg.SpriteAttackType.SHORT: EnemyShortAttacker,
     cfg.SpriteAttackType.LONG: EnemyLongAttacker,
     cfg.SpriteAttackType.LEONHARDT: LeonhardtAttacker,
+    cfg.SpriteAttackType.SWORDROBBER: EnemyShortAttacker,
+    cfg.SpriteAttackType.ARMOUREDSHOOTER: EnemyLongAttacker,
 }
 
 

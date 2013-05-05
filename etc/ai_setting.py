@@ -110,8 +110,23 @@ class LeonHardtAI(AIBase):
     ATTACK_ENERGY_BALL_PROB = 0.3
 
 
+
+class SwordRobberAI(ShortNormalAI):
+    STAY_CHANGE_DIRECTION_PROB = 0.1
+    STAY_TO_PATROL_PROB = 0.05
+
+
+
+class ArmouredShooterAI(LongNormalAI):
+    STAY_CHANGE_DIRECTION_PROB = 0.1
+    STAY_TO_PATROL_PROB = 0.05
+
+
+
 ATTACKTYPE_AI_MAPPING = {
     cfg.SpriteAttackType.SHORT: ShortNormalAI,
     cfg.SpriteAttackType.LONG: LongNormalAI,
     cfg.SpriteAttackType.LEONHARDT: LeonHardtAI,
+    cfg.SpriteAttackType.SWORDROBBER: SwordRobberAI,
+    cfg.SpriteAttackType.ARMOUREDSHOOTER: ArmouredShooterAI,
 }

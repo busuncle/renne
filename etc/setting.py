@@ -321,6 +321,10 @@ class ArmouredShooter(Enemy):
     ATK = 38
     DFS = 3
 
+    # overwrite
+    VIEW_RANGE = 400
+    VIEW_ANGLE = 180 
+
     RADIUS = 24
     HEIGHT = 70
     POS_RECT_DELTA_Y = 35
@@ -339,7 +343,7 @@ class ArmouredShooter(Enemy):
         cfg.EnemyAction.ATTACK: 10,
     }
 
-    ATTACKTYPE = cfg.SpriteAttackType.LONG
+    ATTACKTYPE = cfg.SpriteAttackType.ARMOUREDSHOOTER
 
     ATTACKER_PARAMS = {
         "range": 420,
@@ -357,6 +361,9 @@ class SwordRobber(Enemy):
     HP = 300
     ATK = 60 
     DFS = 5
+
+    # overwrite
+    VIEW_ANGLE = 160 
 
     RADIUS = 24
     HEIGHT = 75
@@ -376,7 +383,7 @@ class SwordRobber(Enemy):
         cfg.EnemyAction.ATTACK: 7,
     }
 
-    ATTACKTYPE = cfg.SpriteAttackType.SHORT
+    ATTACKTYPE = cfg.SpriteAttackType.SWORDROBBER
     ATTACKER_PARAMS = {
         "range": 90,
         "angle": 60,
