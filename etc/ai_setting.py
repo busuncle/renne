@@ -107,7 +107,8 @@ class LeonHardtAI(AIBase):
 
     # attack method related
     ATTACK_REGULAR_PROB = 0.7
-    ATTACK_ENERGY_BALL_PROB = 0.3
+    ATTACK_DEATH_COIL_PROB = 0.3
+    ATTACK_HELL_CLAW_PROB = 0.3
 
 
 

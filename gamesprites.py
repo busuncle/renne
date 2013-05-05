@@ -514,6 +514,10 @@ class Leonhardt(Enemy):
                 self.attacker.death_coil(self.brain.target, 
                     self.animation.get_current_frame_add(self.running_attack_type))
 
+            elif self.attacker.method == "hell_claw":
+                self.attacker.hell_claw(self.brain.target,
+                    self.animation.get_current_frame_add(self.running_attack_type))
+
 
     def event_handle(self, pressed_keys=None, external_event=None):
         if external_event is not None and external_event != cfg.GameStatus.IN_PROGRESS:

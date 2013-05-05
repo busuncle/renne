@@ -138,7 +138,7 @@ class Renne(object):
             "speed": 250,
             "radius": 18,
             "dx": 15,
-            "dy": 35,
+            "dy": 40,
             "mana": 40,
         },
         "destroy_bomb": {
@@ -314,15 +314,27 @@ class LeonHardt(Enemy):
         "range": 70,
         "angle": 60,
         "key_frames": (4, 5),
-        "death_coil":{
+        "death_coil": {
             "range": 300,
             "damage": 50,
             "speed": 250,
             "radius": 15,
             "dx": 0,
             "dy": 30,
-            "mana": 50,
+            "mana": 60,
         },
+        "hell_claw": {
+            "range": 300,
+            "damage": 60,
+            "claw_radius": 18,
+            "dx": 30, 
+            "dy": 64,
+            "claw_num_max": 6,
+            "trigger_times": (0.2, 0.4, 0.6, 0.8, 1, 1.2),
+            "claw_damage_cal_time": 0.3,
+            "claw_alive_time": 0.6,
+            "mana": 120,
+        }
     }
 
     RUN_SPEED = 200
@@ -831,9 +843,10 @@ class Music(object):
 
 
 class Effect(object):
-    DEATH_COIL_RECT = (206, 206, 38, 46)
     DESTROY_FIRE_RECT = (64, 0, 64, 64)
     DESTORY_BOMB_RECT = (0, 0, 192, 128)
+    DEATH_COIL_RECT = (206, 206, 38, 46)
+    HELL_CLAW_RECT = (0, 180, 128, 76)
 
 
 

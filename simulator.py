@@ -197,11 +197,84 @@ class DestroyBomb(object):
 
 
 class DeathCoil(EnergyBall):
+    # Leon Hardt skill
     death_coil_image = animation.effect_image_controller.get("e1").convert_alpha().subsurface(
         sfg.Effect.DEATH_COIL_RECT)
-    def __init__(self, sprite, target_list, static_objects, params, pos, target_pos):
+    def __init__(self, sprite, target, static_objects, params, pos, target_pos):
         super(DeathCoil, self).__init__(self.death_coil_image,
-            sprite, target_list, static_objects, params, pos, target_pos)
+            sprite, [target], static_objects, params, pos, target_pos)
+
+
+
+class HellClaw(object):
+    # Leon Hardt skill
+    hell_claw_image = animation.effect_image_controller.get("e1").convert_alpha().subsurface(
+        sfg.Effect.HELL_CLAW_RECT)
+    claw_image_list = [hell_claw_image.subsurface((i * 64, 0, 64, 76)) for i in xrange(2)]
+    def __init__(self, sprite, target, static_objects, params):
+        self.sprite = sprite
+        self.target = target
+        self.target_pos = target.pos.copy()
+        self.static_objects = static_objects
+        self.range = params["range"]
+        self.damage = params["damage"]
+        self.claw_radius = params["claw_radius"]
+        self.claw_alive_time = params["claw_alive_time"]
+        self.dx = params["dx"]
+        self.dy = params["dy"]
+        self.trigger_times = list(params["trigger_times"])
+        self.claw_damage_cal_time = params["claw_damage_cal_time"]
+        self.passed_seconds = 0
+        self.status = cfg.Magic.STATUS_ALIVE
+        self.claw_list = []
+        self.claw_num_max = params["claw_num_max"]
+        self.claw_num = 0
+        self.img_id = 0
+        self.has_hits = set()
+
+
+    def update(self, passed_seconds):
+        self.passed_seconds += passed_seconds
+        if len(self.trigger_times) > 0 and self.passed_seconds > self.trigger_times[0]:
+            # trigger a hell claw
+            self.trigger_times.pop(0)
+            c_rect = pygame.Rect(0, 0, self.claw_radius * 2, self.claw_radius * 2)
+            c_rect.center = (gauss(self.target_pos.x, 20), gauss(self.target_pos.y, 20))
+            can_create = True
+            for obj in self.static_objects:
+                if obj.area.colliderect(c_rect):
+                    can_create = False
+                    break
+
+            # incr 1 whether can create or not, for the stop condition
+            self.claw_num += 1
+            if can_create:
+                self.claw_list.append({"img_id": self.img_id, "area": c_rect, "alive_time": 0,
+                    "blink": Blink()})
+                self.img_id = 1 - self.img_id
+
+        for i, claw in enumerate(self.claw_list):
+            if self.target not in self.has_hits \
+                and claw["alive_time"] > self.claw_damage_cal_time \
+                and claw["area"].colliderect(self.target.area):
+                self.has_hits.add(self.target)
+                self.target.attacker.handle_under_attack(self.sprite, self.damage)
+
+            claw["alive_time"] += passed_seconds
+            claw["img_mix"] = claw["blink"].make(self.claw_image_list[claw["img_id"]], passed_seconds)
+            if claw["alive_time"] > self.claw_alive_time:
+                self.claw_list.pop(i)
+
+        if self.claw_num == self.claw_num_max and len(self.claw_list) == 0:
+            self.status = cfg.Magic.STATUS_VANISH
+
+
+    def draw(self, camera):
+        if self.status == cfg.Magic.STATUS_ALIVE:
+            for claw in self.claw_list:
+                p = claw["area"].center
+                camera.screen.blit(claw["img_mix"], 
+                    (p[0] - camera.rect.x - self.dx, p[1] / 2 - camera.rect.y - self.dy))
 
 
 
@@ -417,6 +490,7 @@ class LeonhardtAttacker(AngleAttacker):
         super(LeonhardtAttacker, self).__init__(sprite, 
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
         self.death_coil_params = attacker_params["death_coil"]
+        self.hell_claw_params = attacker_params["hell_claw"]
         self.magic_list = []
         self.current_magic = None
         self.method = None
@@ -431,10 +505,15 @@ class LeonhardtAttacker(AngleAttacker):
             and distance_to_target <= self.attack_range:
             self.method = "regular"
             return True
-        if happen(sp.brain.ai.ATTACK_ENERGY_BALL_PROB) \
+        if happen(sp.brain.ai.ATTACK_DEATH_COIL_PROB) \
             and sp.mp > self.death_coil_params["mana"] \
             and distance_to_target <= self.death_coil_params["range"]:
             self.method = "death_coil"
+            return True
+        if happen(sp.brain.ai.ATTACK_HELL_CLAW_PROB) \
+            and sp.mp > self.hell_claw_params["mana"] \
+            and distance_to_target <= self.hell_claw_params["range"]:
+            self.method = "hell_claw"
             return True
         return False
 
@@ -443,8 +522,17 @@ class LeonhardtAttacker(AngleAttacker):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
             sp.mp -= self.death_coil_params["mana"]
-            self.current_magic = DeathCoil(sp, [target, ],
+            self.current_magic = DeathCoil(sp, target,
                 sp.static_objects, self.death_coil_params, sp.pos, target.pos)
+            self.magic_list.append(self.current_magic)
+
+
+    def hell_claw(self, target, current_frame_add):
+        sp = self.sprite
+        if self.current_magic is None and int(current_frame_add) in self.key_frames:
+            sp.mp -= self.hell_claw_params["mana"]
+            self.current_magic = HellClaw(sp, target, 
+                sp.static_objects, self.hell_claw_params)
             self.magic_list.append(self.current_magic)
 
 
