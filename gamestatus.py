@@ -186,6 +186,10 @@ def loading_chapter_picture(screen):
     delta = 256 / sfg.Chapter.LOADING_PICTURE_FADE_IN_TIME
     clock = pygame.time.Clock()
     while alpha < 255:
+        for event in pygame.event.get():
+            # no event handle, avoiding "mouse stuck"
+            pass
+
         screen.fill(pygame.Color("black"))
         time_passed = clock.tick(sfg.FPS)
         passed_seconds = time_passed / 1000.0
