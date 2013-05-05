@@ -202,7 +202,7 @@ def loading_chapter_picture(screen):
 
 
 def end_game(screen):
-    bg_box.play("end_game")
+    bg_box.play("end_game", loops=0)
 
     screen_centerx = sfg.Screen.SIZE[0] / 2
 
