@@ -74,7 +74,7 @@ class SpriteAnimator(object):
 
 
     def gen_shadow_image(self, shadow_index):
-        return basic_image_controller.get("sprite_shadow").convert_alpha().subsurface(
+        return basic_image_controller.get(sfg.Sprite.SHADOW_IMAGE_KEY).convert_alpha().subsurface(
             pygame.Rect((64 * (shadow_index % 4), 128 * (shadow_index / 4)), (64, 128))
         )
 
@@ -124,7 +124,7 @@ class SpriteAnimator(object):
             and self.sprite.status["hp"] != cfg.SpriteStatus.DIE:
             self.sprite.attacker.under_attack_tick()
             image_mix = self.image.copy()
-            image_mix.fill(pygame.Color("gray"), special_flags=BLEND_ADD)
+            image_mix.fill(sfg.Sprite.UNDER_ATTACK_MIX_COLOR, special_flags=BLEND_ADD)
             self.image = image_mix
 
         self.words_renderer.update(passed_seconds)

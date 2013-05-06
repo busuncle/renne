@@ -300,7 +300,7 @@ class Attacker(object):
         self.sprite = sprite
         # during one attack(will be clear after when the attack is finish)
         self.has_hits = set()
-        self.under_attack_timer = Timer(0.05)
+        self.under_attack_timer = Timer(sfg.Sprite.UNDER_ATTACK_TIMER_LEN)
 
 
     def run(self):

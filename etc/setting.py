@@ -85,6 +85,13 @@ class Stuff(object):
 
 
 
+class Sprite(object):
+    SHADOW_IMAGE_KEY = "sprite_shadow"
+    UNDER_ATTACK_MIX_COLOR = pygame.Color("gray")
+    UNDER_ATTACK_TIMER_LEN = 0.05
+
+
+
 class Renne(object):
     NAME = "Renne"
     ROLE = cfg.SpriteRole.HERO
