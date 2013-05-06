@@ -843,10 +843,18 @@ class Music(object):
 
 
 class Effect(object):
+    DESTROY_FIRE_IMAGE_KEY = "e2"
     DESTROY_FIRE_RECT = (64, 0, 64, 64)
+    DESTORY_BOMB_IMAGE_KEY = "e3"
     DESTORY_BOMB_RECT = (0, 0, 192, 128)
+    DEATH_COIL_IMAGE_KEY = "e1"
     DEATH_COIL_RECT = (206, 206, 38, 46)
+    HELL_CLAW_IMAGE_KEY = "e1"
     HELL_CLAW_RECT = (0, 180, 128, 76)
+
+
+    BLINK_RATE = 256
+    BLINK_DEPTH_SECTION = (32, 128)
 
 
 

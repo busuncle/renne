@@ -14,7 +14,7 @@ from etc import setting as sfg
 
 
 class Blink(object):
-    def __init__(self, rate=256, depth_section=(32, 128)):
+    def __init__(self, rate=sfg.Effect.BLINK_RATE, depth_section=sfg.Effect.BLINK_DEPTH_SECTION):
         self.rate = rate
         self.depth_section = depth_section
         self.depth = self.depth_section[0]
@@ -90,7 +90,8 @@ class EnergyBall(object):
 
 class DestroyFire(EnergyBall):
     # Renne skill
-    destroy_fire_image = animation.effect_image_controller.get("e2").convert_alpha().subsurface(
+    destroy_fire_image = animation.effect_image_controller.get(
+        sfg.Effect.DESTROY_FIRE_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.DESTROY_FIRE_RECT)
     def __init__(self, sprite, target_list, static_objects, params, pos, target_pos):
         super(DestroyFire, self).__init__(self.destroy_fire_image,
@@ -100,12 +101,17 @@ class DestroyFire(EnergyBall):
 
 class DestroyBomb(object):
     # Renne skill
-    destory_bombs_image = animation.effect_image_controller.get("e3").convert_alpha().subsurface(
+    destory_bombs_image = animation.effect_image_controller.get(
+        sfg.Effect.DESTORY_BOMB_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.DESTORY_BOMB_RECT)
     destory_bomb_images = []
     for i in xrange(3):
         for j in xrange(2):
             destory_bomb_images.append(destory_bombs_image.subsurface((i * 64, j * 64, 64, 64)))
+    bombs_direct_num = 5
+    bomb_shake_on_x = 10
+    bomb_shake_on_y = 10
+
     def __init__(self, sprite, target_list, static_objects, params, pos, direction):
         self.sprite = sprite
         self.target_list = target_list
@@ -123,7 +129,7 @@ class DestroyBomb(object):
         # this 3 list are related, put them together
         self.pos_list = []
         self.bomb_ranges_list = []
-        for i in xrange(5):
+        for i in xrange(self.bombs_direct_num):
             self.pos_list.append(pos.copy())
             self.bomb_ranges_list.append(list(params["bomb_ranges"]))
         vec = Vector2(cfg.Direction.DIRECT_TO_VEC[direction])
@@ -154,7 +160,8 @@ class DestroyBomb(object):
                 self.bomb_ranges_list[i].pop(0)
                 b_rect = pygame.Rect(0, 0, self.bomb_radius * 2, self.bomb_radius * 2)
                 #b_rect.center = pos
-                b_rect.center = (gauss(pos.x, 10), gauss(pos.y, 10))
+                b_rect.center = (gauss(pos.x, self.bomb_shake_on_x), 
+                    gauss(pos.y, self.bomb_shake_on_y))
                 can_create = True
                 for obj in self.static_objects:
                     if obj.area.colliderect(b_rect):
@@ -198,7 +205,8 @@ class DestroyBomb(object):
 
 class DeathCoil(EnergyBall):
     # Leon Hardt skill
-    death_coil_image = animation.effect_image_controller.get("e1").convert_alpha().subsurface(
+    death_coil_image = animation.effect_image_controller.get(
+        sfg.Effect.DEATH_COIL_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.DEATH_COIL_RECT)
     def __init__(self, sprite, target, static_objects, params, pos, target_pos):
         super(DeathCoil, self).__init__(self.death_coil_image,
@@ -208,9 +216,12 @@ class DeathCoil(EnergyBall):
 
 class HellClaw(object):
     # Leon Hardt skill
-    hell_claw_image = animation.effect_image_controller.get("e1").convert_alpha().subsurface(
+    hell_claw_image = animation.effect_image_controller.get(
+        sfg.Effect.HELL_CLAW_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.HELL_CLAW_RECT)
     claw_image_list = [hell_claw_image.subsurface((i * 64, 0, 64, 76)) for i in xrange(2)]
+    claw_shake_on_x = 20
+    claw_shake_on_y = 20
     def __init__(self, sprite, target, static_objects, params):
         self.sprite = sprite
         self.target = target
@@ -239,7 +250,8 @@ class HellClaw(object):
             # trigger a hell claw
             self.trigger_times.pop(0)
             c_rect = pygame.Rect(0, 0, self.claw_radius * 2, self.claw_radius * 2)
-            c_rect.center = (gauss(self.target_pos.x, 20), gauss(self.target_pos.y, 20))
+            c_rect.center = (gauss(self.target_pos.x, self.claw_shake_on_x), 
+                gauss(self.target_pos.y, self.claw_shake_on_y))
             can_create = True
             for obj in self.static_objects:
                 if obj.area.colliderect(c_rect):
@@ -261,7 +273,8 @@ class HellClaw(object):
                 self.target.attacker.handle_under_attack(self.sprite, self.damage)
 
             claw["alive_time"] += passed_seconds
-            claw["img_mix"] = claw["blink"].make(self.claw_image_list[claw["img_id"]], passed_seconds)
+            claw["img_mix"] = claw["blink"].make(
+                self.claw_image_list[claw["img_id"]], passed_seconds)
             if claw["alive_time"] > self.claw_alive_time:
                 self.claw_list.pop(i)
 
