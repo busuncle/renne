@@ -495,7 +495,12 @@ class Leonhardt(Enemy):
 
     def attack(self, passed_seconds):
         if self.running_attack_type is None:
-            self.running_attack_type = random.choice(self.attack_types)
+            if self.attacker.method == "hell_claw":
+                # hell claw use this attack frame
+                self.running_attack_type = self.attack_types[2]
+            else:
+                # random attack frame for others
+                self.running_attack_type = random.choice(self.attack_types[:2])
             self.sound_box.play(random.choice(("leonhardt_attack", "leonhardt_attack2", "leonhardt_attack3")))
 
         is_finish = self.animation.run_sequence_frame(self.running_attack_type, passed_seconds)
