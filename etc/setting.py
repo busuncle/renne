@@ -635,6 +635,29 @@ class StoneWall6(object):
 
 
 
+class StoneWall7(object):
+    NAME = "StoneWall7"
+    IMAGE_KEY = "s11"
+    IMAGE_RECT = (0, 0, 256, 128)
+    POS_RECT_DELTA_Y = 32
+    AREA_RECT = (0, 0, 256, 128)
+    IS_BLOCK = True
+    IS_VIEW_BLOCK = True
+
+
+
+class StoneWall7_1(object):
+    NAME = "StoneWall7_1"
+    IMAGE_KEY = "s11"
+    IMAGE_RECT = (0, 128, 256, 128)
+    POS_RECT_DELTA_Y = 32
+    AREA_RECT = (0, 0, 256, 128)
+    IS_BLOCK = True
+    IS_VIEW_BLOCK = True
+
+
+
+
 class WayPoint(object):
     DIR = os.path.join("etc", "waypoints")
     STEP_WIDTH = 24
@@ -916,6 +939,8 @@ STATIC_OBJECT_SETTING_LIST = [
     StoneWall4_2,
     StoneWall5,
     StoneWall6,
+    StoneWall7,
+    StoneWall7_1,
 ]
 
 
@@ -992,6 +1017,7 @@ STATIC_OBJECT_IMAGES = ("static_object", {
     "s8": "s8.png",
     "s9": "s9.png",
     "s10": "s10.png",
+    "s11": "s11.png",
 })
 
 # (folder, {image_key: image_filename, ...})
@@ -1002,6 +1028,8 @@ TILE_IMAGES = ("tiles", {
     4: "4.png", 
     5: "5.png", 
     6: "6.png", 
+    7: "7.png", 
+    8: "8.png", 
 })
 
 # (folder, {image_key: image_filename, ...})
