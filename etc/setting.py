@@ -34,6 +34,7 @@ class Font(object):
 
 
 class Menu(object):
+    RENNE_CURSOR_IMAGE_KEY = "head_status"
     RENNE_CURSOR_RECT = (224, 64, 32, 32)
     PAUSE = {
         "options": ["CONTINUE", "MAIN", "QUIT"],
@@ -655,6 +656,9 @@ class EmotionImage(object):
 
 
 class SpriteStatus(object):
+    HERO_PANEL_IMAGE_KEY = "status"
+    HERO_HEAD_IMAGE_KEY = "renne_head"
+
     HEALTHY_RATIO_FLOOR = 2.0 / 3
     WOUNDED_RATIO_FLOOR = 1.0 / 3
     DANGER_RATIO_FLOOR = 0
@@ -709,10 +713,13 @@ class SpriteStatus(object):
 
 
 class Achievement(object):
+    KILL_ICON_IMAGE_KEY = "status5"
+    N_HIT_ICON_IMAGE_KEY = "status5"
+    N_KILL_ICON_IMAGE_KEY = "status5"
+    SCORE_PANEL_IMAGE_KEY = "status"
     KILL_ICON_RECT = (224, 0, 32, 32)
     N_HIT_ICON_RECT = (192, 32, 32, 32)
     N_KILL_ICON_RECT = (192, 0, 32, 32)
-    #SCORE_PANEL_RECT = (192, 55, 64, 25)
     SCORE_PANEL_RECT = (0, 0, 144, 56)
     SCORE_PANEL_SCALE_SIZE = (220, 36)
 
@@ -758,6 +765,13 @@ class Achievement(object):
 
 
 class GameStatus(object):
+    HERO_WIN_PANEL_IMAGE_KEY = "status2"
+    HERO_LOSE_PANEL_IMAGE_KEY = "status2"
+    CHAPTER_SCORE_ICON_IMAGE_KEY = "status2"
+    BONUS_ICON_IMAGE_KEY = "status6"
+    CHAPTER_SCORE_LINE_IMAGE_KEY = "status3"
+    NUMBER_IMAGE_KEY1 = "status4"
+
     NUMBER_RECT1 = (0, 280, 340, 60)
     NUMBER_SIZE1 = (34, 60)
     NUMBER_RECT2 = (96, 160, 160, 16)
@@ -811,6 +825,7 @@ class GameStatus(object):
 
 
 class Chapter(object):
+    LOADING_PICTURE_IMAGE_KEY = "loading_chapter"
     LOADING_PICTURE_FADE_IN_TIME = 1    # in second unit, show up the picture
     LOADING_WORD = Font.ARIAL_BLACK_28.render("now loading ...", True, pygame.Color("white"))
     LOADING_WORD_BLIT_POS = (760, 700)
@@ -818,6 +833,7 @@ class Chapter(object):
 
 
 class StartGame(object):
+    PICTURE_IMAGE_KEY = "start_game"
     PICTURE_FADE_IN_TIME = 3 # in second unit, show up the picture
     PICTURE_BLIT_Y = 30
 
@@ -839,6 +855,11 @@ class MapEditor(object):
 class Music(object):
     BACKGROUND_VOLUME = 0.4
     SOUND_VOLUME = 0.2
+    START_GAME_KEY = "start_game"
+    END_GAME_KEY = "end_game"
+    CHAPTER_KEY_PREFIX = "chapter_"
+    HERO_WIN_KEY = "hero_win"
+    HERO_LOSE_KEY = "hero_lose"
 
 
 
@@ -907,6 +928,8 @@ STATIC_OBJECT_SETTING_MAPPING = dict((cls.ID, cls) for cls in STATIC_OBJECT_SETT
 
 
 ########### resource mapping ###########
+RENNE_IMAGE_FILENAME = "renne.png"
+
 SPRITE_FRAMES = {
     # {sprite_id: (folder, {sprite_action: image_filename, ...}), ...}
     0: ("renne", {

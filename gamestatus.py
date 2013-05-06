@@ -54,7 +54,8 @@ class Menu(object):
         self.font_off = menu_setting["font_off"]
         self.color_on = menu_setting["color_on"]
         self.color_off = menu_setting["color_off"]
-        self.renne_cursor = basic_image_controller.get("head_status").subsurface(
+        self.renne_cursor = basic_image_controller.get(
+            sfg.Menu.RENNE_CURSOR_IMAGE_KEY).subsurface(
             pygame.Rect(sfg.Menu.RENNE_CURSOR_RECT)).convert_alpha()
 
 
@@ -129,9 +130,9 @@ class Score(object):
 
 
 def start_game(screen):
-    bg_box.play("start_game")
+    bg_box.play(sfg.Music.START_GAME_KEY)
 
-    pic = cg_image_controller.get("start_game").convert()
+    pic = cg_image_controller.get(sfg.StartGame.PICTURE_IMAGE_KEY).convert()
     pic_rect = pic.get_rect()
 
     screen_centerx = sfg.Screen.SIZE[0] / 2
@@ -178,7 +179,7 @@ def start_game(screen):
 
 
 def loading_chapter_picture(screen):
-    img = cg_image_controller.get("loading_chapter").convert()
+    img = cg_image_controller.get(sfg.Chapter.LOADING_PICTURE_IMAGE_KEY).convert()
     img_rect = img.get_rect()
     img_rect.center = map(lambda x: x/2, sfg.Screen.SIZE)
 
@@ -202,11 +203,11 @@ def loading_chapter_picture(screen):
 
 
 def end_game(screen):
-    bg_box.play("end_game", loops=0)
+    bg_box.play(sfg.Music.END_GAME_KEY, loops=0)
 
     screen_centerx = sfg.Screen.SIZE[0] / 2
 
-    renne_image = pygame.image.load("renne.png").convert_alpha()
+    renne_image = pygame.image.load(sfg.RENNE_IMAGE_FILENAME).convert_alpha()
     renne_image_rect = renne_image.get_rect()
     renne_image_rect.centerx = screen_centerx
     renne_image_rect.centery = sfg.EndGame.RENNE_IMAGE_BLIT_Y
@@ -249,14 +250,21 @@ class GameStatus(object):
         self.hero = hero
         self.enemy_list = enemy_list
         self.status = cfg.GameStatus.INIT
-        self.win_panel = gen_panel(battle_images, "status2", sfg.GameStatus.HERO_WIN_PANEL_RECT)
-        self.lose_panel = gen_panel(battle_images, "status2", sfg.GameStatus.HERO_LOSE_PANEL_RECT)
-        self.chapter_score_icon = gen_panel(battle_images, "status2", 
-            sfg.GameStatus.CHAPTER_SCORE_ICON_RECT, sfg.GameStatus.CHAPTER_SCORE_ICON_SCALE_SIZE)
-        self.bonus_icon = gen_panel(battle_images, "status6", sfg.GameStatus.BONUS_ICON_RECT)
-        self.chapter_score_line = gen_panel(battle_images, "status3", 
-            sfg.GameStatus.CHAPTER_SCORE_LINE_RECT, sfg.GameStatus.CHAPTER_SCORE_LINE_SCALE_SIZE)
-        self.numbers1 = gen_numbers(battle_images, "status4", 
+        self.win_panel = gen_panel(battle_images, 
+            sfg.GameStatus.HERO_WIN_PANEL_IMAGE_KEY, sfg.GameStatus.HERO_WIN_PANEL_RECT)
+        self.lose_panel = gen_panel(battle_images, 
+            sfg.GameStatus.HERO_LOSE_PANEL_IMAGE_KEY, sfg.GameStatus.HERO_LOSE_PANEL_RECT)
+        self.chapter_score_icon = gen_panel(battle_images, 
+            sfg.GameStatus.CHAPTER_SCORE_ICON_IMAGE_KEY, 
+            sfg.GameStatus.CHAPTER_SCORE_ICON_RECT, 
+            sfg.GameStatus.CHAPTER_SCORE_ICON_SCALE_SIZE)
+        self.bonus_icon = gen_panel(battle_images, 
+            sfg.GameStatus.BONUS_ICON_IMAGE_KEY, sfg.GameStatus.BONUS_ICON_RECT)
+        self.chapter_score_line = gen_panel(battle_images, 
+            sfg.GameStatus.CHAPTER_SCORE_LINE_IMAGE_KEY, 
+            sfg.GameStatus.CHAPTER_SCORE_LINE_RECT, 
+            sfg.GameStatus.CHAPTER_SCORE_LINE_SCALE_SIZE)
+        self.numbers1 = gen_numbers(battle_images, sfg.GameStatus.NUMBER_IMAGE_KEY1, 
             sfg.GameStatus.NUMBER_RECT1, sfg.GameStatus.NUMBER_SIZE1)
         self.begin_timer = Timer()
         self.hero_status = HeroStatus(hero)
@@ -264,7 +272,7 @@ class GameStatus(object):
         self.menu = Menu(sfg.Menu.PAUSE)
         self.mask = sfg.Screen.DEFAULT_SURFACE
 
-        bg_box.play("chapter_%s" % chapter)
+        bg_box.play("%s%s" % (sfg.Music.CHAPTER_KEY_PREFIX, chapter))
 
 
     def update(self, passed_seconds):
@@ -340,15 +348,15 @@ class GameStatus(object):
                 self.achievement.n_kill_score.draw(camera, sfg.GameStatus.CHAPTER_N_KILL_BLIT_POS)
                 self.achievement.chapter_score.draw(camera)
 
-                if bg_box.current_playing != "hero_win":
-                    bg_box.play("hero_win", 0)
+                if bg_box.current_playing != sfg.Music.HERO_WIN_KEY:
+                    bg_box.play(sfg.Music.HERO_WIN_KEY, 0)
 
             elif self.status == cfg.GameStatus.HERO_LOSE:
                 camera.screen.blit(self.lose_panel, sfg.GameStatus.HERO_LOSE_BLIT_POS)
                 screen_draw_y_symmetric(camera, sfg.GameStatus.CHAPTER_AGAIN, 
                     sfg.GameStatus.CHAPTER_AGAIN_BLIT_Y)
-                if bg_box.current_playing != "hero_lose":
-                    bg_box.play("hero_lose", 0)
+                if bg_box.current_playing != sfg.Music.HERO_LOSE_KEY:
+                    bg_box.play(sfg.Music.HERO_LOSE_KEY, 0)
             
             elif self.status == cfg.GameStatus.PAUSE:
                 self.menu.draw(camera.screen)
@@ -359,7 +367,7 @@ class HeroStatus(object):
     def __init__(self, hero):
         self.hero = hero
         self.head_images_list = self.gen_head_images_list()
-        self.status_panel = gen_panel(battle_images, "status", 
+        self.status_panel = gen_panel(battle_images, sfg.SpriteStatus.HERO_PANEL_IMAGE_KEY, 
             sfg.SpriteStatus.HERO_PANEL_RECT, sfg.SpriteStatus.HERO_PANEL_SCALE_SIZE)
         self.hero_hp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
         self.hero_mp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
@@ -372,7 +380,8 @@ class HeroStatus(object):
         w, h = sfg.SpriteStatus.HERO_HEAD_SIZE
         for row in (0, 1):
             for column in (0, 1):
-                res.append(battle_images.get("renne_head").convert_alpha().subsurface(
+                res.append(battle_images.get(
+                    sfg.SpriteStatus.HERO_HEAD_IMAGE_KEY).convert_alpha().subsurface(
                     pygame.Rect(w * column, h * row, w, h)
                 ))
         return res
@@ -423,17 +432,20 @@ class Achievement(object):
         self.enemy_list = enemy_list
         self.n_kill_list = []
         self.kill_time_list = []
-        self.kill_icon = gen_panel(battle_images, "status5", sfg.Achievement.KILL_ICON_RECT)
-        self.n_hit_icon = gen_panel(battle_images, "status5", sfg.Achievement.N_HIT_ICON_RECT)
-        self.n_kill_icon = gen_panel(battle_images, "status5", sfg.Achievement.N_KILL_ICON_RECT)
-        self.numbers2 = gen_numbers(battle_images, "icon1", sfg.GameStatus.NUMBER_RECT2, sfg.GameStatus.NUMBER_SIZE2)
+        self.kill_icon = gen_panel(battle_images, 
+            sfg.Achievement.KILL_ICON_IMAGE_KEY, sfg.Achievement.KILL_ICON_RECT)
+        self.n_hit_icon = gen_panel(battle_images, 
+            sfg.Achievement.N_HIT_ICON_IMAGE_KEY, sfg.Achievement.N_HIT_ICON_RECT)
+        self.n_kill_icon = gen_panel(battle_images, 
+            sfg.Achievement.N_KILL_ICON_IMAGE_KEY, sfg.Achievement.N_KILL_ICON_RECT)
 
         self.kill_score = Score(sfg.Achievement.KILL_SCORE)
         self.n_hit_score = Score(sfg.Achievement.N_HIT_SCORE)
         self.n_kill_score = Score(sfg.Achievement.N_KILL_SCORE)
         self.chapter_score = Score(sfg.GameStatus.CHAPTER_SCORE)
 
-        self.score_panel = gen_panel(battle_images, "status", sfg.Achievement.SCORE_PANEL_RECT,
+        self.score_panel = gen_panel(battle_images, 
+            sfg.Achievement.SCORE_PANEL_IMAGE_KEY, sfg.Achievement.SCORE_PANEL_RECT,
             sfg.Achievement.SCORE_PANEL_SCALE_SIZE)
 
 

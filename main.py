@@ -14,7 +14,7 @@ from base import util
 
 screen = sfg.Screen.DEFAULT_SCREEN
 pygame.display.set_caption("Renne")
-pygame.display.set_icon(pygame.image.load("renne.png").convert_alpha())
+pygame.display.set_icon(pygame.image.load(sfg.RENNE_IMAGE_FILENAME).convert_alpha())
 
 
 COMMAND_DEBUG_MODE = False
@@ -97,8 +97,6 @@ def enter_chapter(screen, chapter, renne):
     allsprites.add(renne)
     allsprites.add(enemies)
 
-    #game_world.add(allsprites)
-    #game_world.add(static_objects)
     game_world.batch_add(allsprites)
     game_world.batch_add(static_objects)
 
