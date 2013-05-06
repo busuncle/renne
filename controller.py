@@ -30,6 +30,7 @@ def cal_face_direct(start_point, end_point):
 class Steerer(object):
     def __init__(self, sprite):
         self.sprite = sprite
+        self.is_end = True
 
     def path_smoothing(self, coord_list):
         # coord_list will be a list containing the path goes *backwards*, that means:
@@ -66,6 +67,7 @@ class Steerer(object):
     def init(self, coord_list):
         if coord_list is None or len(coord_list) == 0:
             self.is_ok = False
+            self.is_end = True
             return
 
         self.is_ok = True
