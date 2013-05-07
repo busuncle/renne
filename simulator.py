@@ -101,13 +101,13 @@ class DestroyFire(EnergyBall):
 
 class DestroyBomb(object):
     # Renne skill
-    destory_bombs_image = animation.effect_image_controller.get(
+    destroy_bombs_image = animation.effect_image_controller.get(
         sfg.Effect.DESTORY_BOMB_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.DESTORY_BOMB_RECT)
-    destory_bomb_images = []
+    destroy_bomb_images = []
     for i in xrange(3):
         for j in xrange(2):
-            destory_bomb_images.append(destory_bombs_image.subsurface((i * 64, j * 64, 64, 64)))
+            destroy_bomb_images.append(destroy_bombs_image.subsurface((i * 64, j * 64, 64, 64)))
 
     def __init__(self, sprite, target_list, static_objects, params, pos, direction):
         self.sprite = sprite
@@ -169,7 +169,7 @@ class DestroyBomb(object):
                         break
 
                 if can_create:
-                    img_id = randint(0, len(self.destory_bomb_images) - 1)
+                    img_id = randint(0, len(self.destroy_bomb_images) - 1)
                     self.bomb_list.append({"img_id": img_id, "area": b_rect, "alive_time": 0})
                 else:
                     # this line can be dropped
@@ -198,7 +198,7 @@ class DestroyBomb(object):
             for bomb in self.bomb_list:
                 p = bomb["area"].center
                 b_id = bomb["img_id"]
-                camera.screen.blit(self.destory_bomb_images[b_id],
+                camera.screen.blit(self.destroy_bomb_images[b_id],
                     (p[0] - camera.rect.x - self.dx, p[1] / 2 - camera.rect.y - self.dy))
 
 
@@ -218,9 +218,67 @@ class DestroyAerolite(object):
         self.aerolite_radius = params["aerolite_radius"]
         self.aerolite_damage_cal_time = params["aerolite_damage_cal_time"]
         self.aerolite_alive_time = params["aerolite_alive_time"]
+        self.dx = params["dx"]
+        self.dy = params["dy"]
         self.aerolite_list = []
         self.has_hits = set()
         self.status = cfg.Magic.STATUS_ALIVE
+        self.passed_seconds = 0
+        self.trigger_times = list(params["trigger_times"])
+        self.aerolite_shake_on_x = params["aerolite_shake_on_x"]
+        self.aerolite_shake_on_y = params["aerolite_shake_on_y"]
+
+
+    def update(self, passed_seconds):
+        self.passed_seconds += passed_seconds
+        if len(self.trigger_times) > 0 and self.passed_seconds > self.trigger_times[0]:
+            # trigger a aerolite
+            self.trigger_times.pop(0)
+            a_rect = pygame.Rect(0, 0, self.aerolite_radius * 2, self.aerolite_radius * 2)
+            #a_rect.center = (self.sprite.pos.x, self.sprite.pos.y)
+            a_rect.center = (gauss(self.sprite.pos.x, self.aerolite_shake_on_x),
+                gauss(self.sprite.pos.y, self.aerolite_shake_on_y))
+            can_create = True
+            for obj in self.static_objects:
+                if obj.area.colliderect(a_rect):
+                    can_create = False
+                    break
+            
+            if can_create:
+                self.aerolite_list.append({"area": a_rect, "alive_time": 0, "blink": Blink(),
+                    "v": 0, "s": 0})
+
+        for i, aerolite in enumerate(self.aerolite_list):
+            # s = v0 * t + a * t^2 / 2
+            if aerolite["s"] < self.fall_range:
+                s = aerolite["v"] * passed_seconds + 0.5 * self.acceleration * pow(passed_seconds, 2)
+                aerolite["s"] += s
+                # v = v0 + a * t
+                aerolite["v"] += self.acceleration * passed_seconds
+
+                for sp in self.target_list:
+                    if sp not in self.has_hits \
+                        and aerolite["alive_time"] > self.aerolite_damage_cal_time \
+                        and aerolite["area"].colliderect(sp.area):
+                        self.has_hits.add(sp)
+                        sp.attacker.handle_under_attack(self.sprite, self.damage)
+
+            aerolite["alive_time"] += passed_seconds
+            if aerolite["alive_time"] > self.aerolite_alive_time:
+                self.aerolite_list.pop(i)
+            else:
+                aerolite["img_mix"] = aerolite["blink"].make(self.destroy_aerolite_image, passed_seconds)
+
+        if len(self.trigger_times) == 0 and len(self.aerolite_list) == 0:
+            self.status = cfg.Magic.STATUS_VANISH
+
+
+    def draw(self, camera):
+        if self.status == cfg.Magic.STATUS_ALIVE:
+            for aerolite in self.aerolite_list:
+                p = aerolite["area"].center
+                camera.screen.blit(aerolite["img_mix"],
+                    (p[0] - camera.rect.x - self.dx, p[1] / 2 - camera.rect.y - self.dy + aerolite["s"]))
 
 
 
@@ -259,8 +317,6 @@ class HellClaw(object):
         self.passed_seconds = 0
         self.status = cfg.Magic.STATUS_ALIVE
         self.claw_list = []
-        self.claw_num_max = params["claw_num_max"]
-        self.claw_num = 0
         self.img_id = 0
         self.has_hits = set()
 
@@ -279,8 +335,6 @@ class HellClaw(object):
                     can_create = False
                     break
 
-            # incr 1 whether can create or not, for the stop condition
-            self.claw_num += 1
             if can_create:
                 self.claw_list.append({"img_id": self.img_id, "area": c_rect, "alive_time": 0,
                     "blink": Blink()})
@@ -294,12 +348,13 @@ class HellClaw(object):
                 self.target.attacker.handle_under_attack(self.sprite, self.damage)
 
             claw["alive_time"] += passed_seconds
-            claw["img_mix"] = claw["blink"].make(
-                self.claw_image_list[claw["img_id"]], passed_seconds)
             if claw["alive_time"] > self.claw_alive_time:
                 self.claw_list.pop(i)
+            else:
+                claw["img_mix"] = claw["blink"].make(
+                    self.claw_image_list[claw["img_id"]], passed_seconds)
 
-        if self.claw_num == self.claw_num_max and len(self.claw_list) == 0:
+        if len(self.trigger_times) == 0 and len(self.claw_list) == 0:
             self.status = cfg.Magic.STATUS_VANISH
 
 
@@ -412,6 +467,7 @@ class RenneAttacker(AngleAttacker):
         self.kill_record = []
         self.destroy_fire_params = attacker_params["destroy_fire"]
         self.destroy_bomb_params = attacker_params["destroy_bomb"]
+        self.destroy_aerolite_params = attacker_params["destroy_aerolite"]
         self.magic_list = []
         self.current_magic = None
         self.method = None
@@ -441,6 +497,15 @@ class RenneAttacker(AngleAttacker):
             sp.mp -= self.destroy_bomb_params["mana"]
             self.current_magic = DestroyBomb(sp, sp.enemies,
                 sp.static_objects, self.destroy_bomb_params, sp.pos, sp.direction)
+            self.magic_list.append(self.current_magic)
+
+
+    def destroy_aerolite(self, current_frame_add):
+        sp = self.sprite
+        if self.current_magic is None and int(current_frame_add) in self.key_frames:
+            sp.mp -= self.destroy_aerolite_params["mana"]
+            self.current_magic = DestroyAerolite(sp, sp.enemies, 
+                sp.static_objects, self.destroy_aerolite_params, sp.pos)
             self.magic_list.append(self.current_magic)
 
 

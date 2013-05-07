@@ -189,6 +189,9 @@ class Renne(GameSprite):
             elif self.attacker.method == "destroy_bomb":
                 self.attacker.destroy_bomb(self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
 
+            elif self.attacker.method == "destroy_aerolite":
+                self.attacker.destroy_aerolite(self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
+
 
     def win(self, passed_seconds):
         # painted egg!
@@ -211,7 +214,8 @@ class Renne(GameSprite):
                 return
 
         if self.action in (cfg.HeroAction.ATTACK, 
-            cfg.HeroAction.ATTACK_DESTROY_FIRE, cfg.HeroAction.ATTACK_DESTROY_BOMB):
+            cfg.HeroAction.ATTACK_DESTROY_FIRE, cfg.HeroAction.ATTACK_DESTROY_BOMB,
+            cfg.HeroAction.ATTACK_DESTROY_AEROLITE):
             # attacking, return directly
             return
 
@@ -250,6 +254,12 @@ class Renne(GameSprite):
                 self.sound_box.play(atk_snd)
                 self.action = cfg.HeroAction.ATTACK_DESTROY_BOMB
 
+        elif pressed_keys[sfg.UserKey.ATTACK_DESTROY_AEROLITE]:
+            if self.mp > self.attacker.destroy_aerolite_params["mana"]:
+                atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3"))
+                self.sound_box.play(atk_snd)
+                self.action = cfg.HeroAction.ATTACK_DESTROY_AEROLITE
+
         elif self.key_vec:
             if pressed_keys[sfg.UserKey.RUN] and self.sp > 0:
                 # press run and stamina enough
@@ -280,6 +290,9 @@ class Renne(GameSprite):
 
         elif self.action == cfg.HeroAction.ATTACK_DESTROY_BOMB:
             self.attack("destroy_bomb", passed_seconds)
+
+        elif self.action == cfg.HeroAction.ATTACK_DESTROY_AEROLITE:
+            self.attack("destroy_aerolite", passed_seconds)
 
         elif self.action == cfg.HeroAction.RUN:
             self.run(passed_seconds)

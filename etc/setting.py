@@ -66,6 +66,7 @@ class UserKey(object):
     ATTACK = K_j
     ATTACK_DESTROY_FIRE = K_k
     ATTACK_DESTROY_BOMB = K_i
+    ATTACK_DESTROY_AEROLITE = K_o
     RUN = K_l
     WIN = K_u
 
@@ -164,13 +165,19 @@ class Renne(object):
             "bomb_ranges": range(50, 360, 25),
         },
         "destroy_aerolite": {
-            "fall_range": 180,
+            "fall_range": 120,
             "damage": 60,
-            "acceleration": 180,
+            "acceleration": 400,
             "mana": 60,
+            "dx": 32,
+            "dy": 240,
+            "trigger_times": (0.2, 0.4, 0.6, 0.8, 1.0, 1.2),
+            #"trigger_times": (0.2, ),
             "aerolite_radius": 18,
             "aerolite_damage_cal_time": 0.5,
             "aerolite_alive_time": 1.5,
+            "aerolite_shake_on_x": 30,
+            "aerolite_shake_on_y": 30,
         }
     }
 
