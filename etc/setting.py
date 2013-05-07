@@ -100,7 +100,7 @@ class Renne(object):
     MP_RECOVERY_RATE = 10
     SP = 150
     SP_COST_RATE = 15
-    SP_RECOVERY_RATE = 15
+    SP_RECOVERY_RATE = 20
     ATK = 30
     DFS = 5
 

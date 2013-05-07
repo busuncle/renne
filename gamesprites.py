@@ -154,10 +154,6 @@ class Renne(GameSprite):
 
 
     def walk(self, passed_seconds):
-        if self.status["hp"] != cfg.SpriteStatus.DIE:
-            # sp recover when walk, in a 0.6 * rate
-            self.sp = min(self.setting.SP, 
-                self.sp + self.setting.SP_RECOVERY_RATE * 0.6 * passed_seconds)
         self.move(self.setting.WALK_SPEED, passed_seconds)
         self.animation.run_circle_frame(cfg.HeroAction.WALK, passed_seconds)
 
