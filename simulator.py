@@ -108,9 +108,6 @@ class DestroyBomb(object):
     for i in xrange(3):
         for j in xrange(2):
             destory_bomb_images.append(destory_bombs_image.subsurface((i * 64, j * 64, 64, 64)))
-    bombs_direct_num = 5
-    bomb_shake_on_x = 10
-    bomb_shake_on_y = 10
 
     def __init__(self, sprite, target_list, static_objects, params, pos, direction):
         self.sprite = sprite
@@ -124,6 +121,9 @@ class DestroyBomb(object):
         self.speed = params["speed"]
         self.range = params["range"]
         self.bomb_life = params["bomb_life"]
+        self.bombs_direct_num = params["bombs_direct_num"]
+        self.bomb_shake_on_x = params["bomb_shake_on_x"]
+        self.bomb_shake_on_y = params["bomb_shake_on_y"]
         self.status = cfg.Magic.STATUS_ALIVE
 
         # this 3 list are related, put them together
@@ -203,6 +203,27 @@ class DestroyBomb(object):
 
 
 
+class DestroyAerolite(object):
+    # Renne skill
+    destroy_aerolite_image = animation.effect_image_controller.get(
+        sfg.Effect.DESTROY_AEROLITE_IMAGE_KEY).convert_alpha().subsurface(
+        sfg.Effect.DESTROY_AEROLITE_RECT)
+    def __init__(self, sprite, target_list, static_objects, params, pos):
+        self.sprite = sprite
+        self.target_list = target_list
+        self.static_objects = static_objects
+        self.fall_range = params["fall_range"]
+        self.damage = params["damage"]
+        self.acceleration = params["acceleration"]
+        self.aerolite_radius = params["aerolite_radius"]
+        self.aerolite_damage_cal_time = params["aerolite_damage_cal_time"]
+        self.aerolite_alive_time = params["aerolite_alive_time"]
+        self.aerolite_list = []
+        self.has_hits = set()
+        self.status = cfg.Magic.STATUS_ALIVE
+
+
+
 class DeathCoil(EnergyBall):
     # Leon Hardt skill
     death_coil_image = animation.effect_image_controller.get(
@@ -220,8 +241,6 @@ class HellClaw(object):
         sfg.Effect.HELL_CLAW_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.HELL_CLAW_RECT)
     claw_image_list = [hell_claw_image.subsurface((i * 64, 0, 64, 76)) for i in xrange(2)]
-    claw_shake_on_x = 20
-    claw_shake_on_y = 20
     def __init__(self, sprite, target, static_objects, params):
         self.sprite = sprite
         self.target = target
@@ -231,6 +250,8 @@ class HellClaw(object):
         self.damage = params["damage"]
         self.claw_radius = params["claw_radius"]
         self.claw_alive_time = params["claw_alive_time"]
+        self.claw_shake_on_x = params["claw_shake_on_x"]
+        self.claw_shake_on_y = params["claw_shake_on_y"]
         self.dx = params["dx"]
         self.dy = params["dy"]
         self.trigger_times = list(params["trigger_times"])

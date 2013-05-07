@@ -157,8 +157,20 @@ class Renne(object):
             "bomb_radius": 18,
             "dx": 35,
             "dy": 50,
+            "bombs_direct_num": 5,
+            "bomb_shake_on_x": 10,
+            "bomb_shake_on_y": 10,
             "bomb_life": 0.4,
             "bomb_ranges": range(50, 360, 25),
+        },
+        "destroy_aerolite": {
+            "fall_range": 180,
+            "damage": 60,
+            "acceleration": 180,
+            "mana": 60,
+            "aerolite_radius": 18,
+            "aerolite_damage_cal_time": 0.5,
+            "aerolite_alive_time": 1.5,
         }
     }
 
@@ -341,6 +353,8 @@ class LeonHardt(Enemy):
             "trigger_times": (0.2, 0.4, 0.6, 0.8, 1, 1.2),
             "claw_damage_cal_time": 0.3,
             "claw_alive_time": 0.6,
+            "claw_shake_on_x": 20,
+            "claw_shake_on_y": 20,
             "mana": 120,
         }
     }
@@ -898,11 +912,12 @@ class Effect(object):
     DESTROY_FIRE_RECT = (64, 0, 64, 64)
     DESTORY_BOMB_IMAGE_KEY = "e3"
     DESTORY_BOMB_RECT = (0, 0, 192, 128)
+    DESTROY_AEROLITE_IMAGE_KEY = "e3"
+    DESTROY_AEROLITE_RECT = (192, 0, 64, 128)
     DEATH_COIL_IMAGE_KEY = "e1"
     DEATH_COIL_RECT = (206, 206, 38, 46)
     HELL_CLAW_IMAGE_KEY = "e1"
     HELL_CLAW_RECT = (0, 180, 128, 76)
-
 
     BLINK_RATE = 256
     BLINK_DEPTH_SECTION = (32, 128)
