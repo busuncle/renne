@@ -152,7 +152,7 @@ class Renne(object):
         },
         "destroy_bomb": {
             "range": 360,
-            "damage": 50,
+            "damage": 60,
             "speed": 280,
             "mana": 60,
             "bomb_radius": 18,
@@ -169,15 +169,16 @@ class Renne(object):
             "damage": 60,
             "acceleration": 400,
             "mana": 60,
+            #"mana": 6,
             "dx": 32,
-            "dy": 240,
-            "trigger_times": (0.2, 0.4, 0.6, 0.8, 1.0, 1.2),
+            "dy": 230,
+            "trigger_times": (0.2, 0.4, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2),
             #"trigger_times": (0.2, ),
             "aerolite_radius": 18,
             "aerolite_damage_cal_time": 0.5,
             "aerolite_alive_time": 1.5,
-            "aerolite_shake_on_x": 30,
-            "aerolite_shake_on_y": 30,
+            "aerolite_shake_on_x": 90,
+            "aerolite_shake_on_y": 90,
         }
     }
 
@@ -921,6 +922,7 @@ class Effect(object):
     DESTORY_BOMB_RECT = (0, 0, 192, 128)
     DESTROY_AEROLITE_IMAGE_KEY = "e3"
     DESTROY_AEROLITE_RECT = (192, 0, 64, 128)
+    DESTROY_AEROLITE_SHADOW_INDEX = 3
     DEATH_COIL_IMAGE_KEY = "e1"
     DEATH_COIL_RECT = (206, 206, 38, 46)
     HELL_CLAW_IMAGE_KEY = "e1"

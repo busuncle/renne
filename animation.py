@@ -22,6 +22,13 @@ cg_image_controller.add_from_list(sfg.CG_IMAGES[1])
 effect_image_controller = ImageController(sfg.EFFECT[0])
 effect_image_controller.add_from_list(sfg.EFFECT[1])
 
+shadow_images = basic_image_controller.get(sfg.Sprite.SHADOW_IMAGE_KEY).convert_alpha()
+
+
+
+def get_shadow_image(shadow_index):
+    return shadow_images.subsurface(
+        pygame.Rect((64 * (shadow_index % 4), 128 * (shadow_index / 4)), (64, 128)))
 
 
 class WordsRenderer(object):
@@ -68,15 +75,9 @@ class SpriteAnimator(object):
 
         self.image = self.sprite_image_contoller.get_surface(sprite.action)[sprite.direction]
         self.rect = self.image.get_rect()
-        self.shadow_image = self.gen_shadow_image(sprite.setting.SHADOW_INDEX)
+        self.shadow_image = get_shadow_image(sprite.setting.SHADOW_INDEX)
         self.shadow_rect = self.shadow_image.get_rect()
         self.words_renderer = WordsRenderer()
-
-
-    def gen_shadow_image(self, shadow_index):
-        return basic_image_controller.get(sfg.Sprite.SHADOW_IMAGE_KEY).convert_alpha().subsurface(
-            pygame.Rect((64 * (shadow_index % 4), 128 * (shadow_index / 4)), (64, 128))
-        )
 
 
     def get_current_frame_add(self, action):

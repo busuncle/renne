@@ -208,6 +208,7 @@ class DestroyAerolite(object):
     destroy_aerolite_image = animation.effect_image_controller.get(
         sfg.Effect.DESTROY_AEROLITE_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.DESTROY_AEROLITE_RECT)
+    shadow_image = animation.get_shadow_image(sfg.Effect.DESTROY_AEROLITE_SHADOW_INDEX)
     def __init__(self, sprite, target_list, static_objects, params, pos):
         self.sprite = sprite
         self.target_list = target_list
@@ -275,8 +276,12 @@ class DestroyAerolite(object):
 
     def draw(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
-            for aerolite in self.aerolite_list:
+            for aerolite in sorted(self.aerolite_list, key=lambda x: x["area"].centery):
                 p = aerolite["area"].center
+                shd_rect = self.shadow_image.get_rect()
+                shd_rect.center = p
+                camera.screen.blit(self.shadow_image, 
+                    (shd_rect.x - camera.rect.x, shd_rect.y / 2 - camera.rect.y))
                 camera.screen.blit(aerolite["img_mix"],
                     (p[0] - camera.rect.x - self.dx, p[1] / 2 - camera.rect.y - self.dy + aerolite["s"]))
 
@@ -360,7 +365,7 @@ class HellClaw(object):
 
     def draw(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
-            for claw in self.claw_list:
+            for claw in sorted(self.claw_list, key=lambda x: x["area"].centery):
                 p = claw["area"].center
                 camera.screen.blit(claw["img_mix"], 
                     (p[0] - camera.rect.x - self.dx, p[1] / 2 - camera.rect.y - self.dy))
