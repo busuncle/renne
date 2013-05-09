@@ -38,12 +38,6 @@ class Blink(object):
 
 
 
-class MagicSkill(object):
-    def draw_shadow(self, camera):
-        pass
-
-
-
 class MagicSprite(pygame.sprite.DirtySprite):
     def __init__(self, pos, radius, dx, dy, damage, image):
         super(MagicSprite, self).__init__()
@@ -175,7 +169,7 @@ class DestroyBomb(MagicSprite):
         
 
 
-class DestroyBombSet(MagicSkill):
+class DestroyBombSet(object):
     # Renne skill
     destroy_bombs_image = animation.effect_image_controller.get(
         sfg.Effect.DESTORY_BOMB_IMAGE_KEY).convert_alpha().subsurface(
@@ -309,12 +303,12 @@ class DestroyAerolite(MagicSprite):
         shd_rect.center = self.pos
         camera.screen.blit(self.shadow_image,
             (shd_rect.x - camera.rect.x, shd_rect.y / 2 - camera.rect.y - self.shadow_rect_delta_y))
-        if self.alive_time > self.damage_cal_time:
-            r = pygame.Rect(0, 0, self.area.width, self.area.height / 2)
-            r.center = (self.pos.x, self.pos.y / 2)
-            r.top -= camera.rect.top
-            r.left -= camera.rect.left
-            pygame.draw.rect(camera.screen, pygame.Color("red"), r, 1)
+        #if self.alive_time > self.damage_cal_time:
+        #    r = pygame.Rect(0, 0, self.area.width, self.area.height / 2)
+        #    r.center = (self.pos.x, self.pos.y / 2)
+        #    r.top -= camera.rect.top
+        #    r.left -= camera.rect.left
+        #    pygame.draw.rect(camera.screen, pygame.Color("red"), r, 1)
 
 
     def draw(self, camera):
@@ -323,7 +317,7 @@ class DestroyAerolite(MagicSprite):
         
 
 
-class DestroyAeroliteSet(MagicSkill):
+class DestroyAeroliteSet(object):
     # Renne skill
     destroy_aerolite_image = animation.effect_image_controller.get(
         sfg.Effect.DESTROY_AEROLITE_IMAGE_KEY).convert_alpha().subsurface(
@@ -405,7 +399,41 @@ class DeathCoil(EnergyBallSet):
 
 
 
-class HellClaw(MagicSkill):
+class HellClaw(MagicSprite):
+    def __init__(self, pos, radius, dx, dy, damage, image, life, damage_cal_time,
+            shake_on_x, shake_on_y):
+        super(HellClaw, self).__init__(pos, radius, dx, dy, damage, image)
+        self.pos.x = gauss(self.pos.x, shake_on_x)
+        self.pos.y = gauss(self.pos.y, shake_on_y)
+        self.area.center = self.pos
+        self.damage = damage
+        self.life = life
+        self.damage_cal_time = damage_cal_time
+        self.alive_time = 0
+        self.image_mix = None
+        self.blink = Blink()
+
+
+    def update(self, passed_seconds):
+        self.image_mix = self.blink.make(self.image, passed_seconds)
+        self.alive_time += passed_seconds
+        if self.alive_time > self.life:
+            self.status = cfg.Magic.STATUS_VANISH
+
+
+    def draw(self, camera):
+        camera.screen.blit(self.image_mix,
+            (self.pos.x - camera.rect.x - self.dx, self.pos.y / 2 - camera.rect.y - self.dy))
+        #if self.alive_time > self.damage_cal_time:
+        #    r = pygame.Rect(0, 0, self.area.width, self.area.height / 2)
+        #    r.center = (self.pos.x, self.pos.y / 2)
+        #    r.top -= camera.rect.top
+        #    r.left -= camera.rect.left
+        #    pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
+
+
+
+class HellClawSet(object):
     # Leon Hardt skill
     hell_claw_image = animation.effect_image_controller.get(
         sfg.Effect.HELL_CLAW_IMAGE_KEY).convert_alpha().subsurface(
@@ -417,20 +445,13 @@ class HellClaw(MagicSkill):
         self.target_pos = target.pos.copy()
         self.static_objects = static_objects
         self.range = params["range"]
-        self.damage = params["damage"]
-        self.claw_radius = params["claw_radius"]
-        self.claw_alive_time = params["claw_alive_time"]
-        self.claw_shake_on_x = params["claw_shake_on_x"]
-        self.claw_shake_on_y = params["claw_shake_on_y"]
-        self.dx = params["dx"]
-        self.dy = params["dy"]
+        self.params = params
         self.trigger_times = list(params["trigger_times"])
-        self.claw_damage_cal_time = params["claw_damage_cal_time"]
         self.passed_seconds = 0
         self.status = cfg.Magic.STATUS_ALIVE
-        self.claw_list = []
         self.img_id = 0
         self.has_hits = set()
+        self.magic_sprites = []
 
 
     def update(self, passed_seconds):
@@ -438,44 +459,40 @@ class HellClaw(MagicSkill):
         if len(self.trigger_times) > 0 and self.passed_seconds > self.trigger_times[0]:
             # trigger a hell claw
             self.trigger_times.pop(0)
-            c_rect = pygame.Rect(0, 0, self.claw_radius * 2, self.claw_radius * 2)
-            c_rect.center = (gauss(self.target_pos.x, self.claw_shake_on_x), 
-                gauss(self.target_pos.y, self.claw_shake_on_y))
+            claw = HellClaw(self.target_pos, self.params["claw_radius"], self.params["dx"], self.params["dy"],
+                self.params["damage"], self.claw_image_list[self.img_id], self.params["claw_life"],
+                self.params["claw_damage_cal_time"],
+                self.params["claw_shake_on_x"], self.params["claw_shake_on_y"])
+
             can_create = True
             for obj in self.static_objects:
-                if obj.area.colliderect(c_rect):
+                if obj.area.colliderect(claw.area):
                     can_create = False
                     break
 
             if can_create:
-                self.claw_list.append({"img_id": self.img_id, "area": c_rect, "alive_time": 0,
-                    "blink": Blink()})
+                self.magic_sprites.append(claw)
                 self.img_id = 1 - self.img_id
 
-        for i, claw in enumerate(self.claw_list):
+        for i, claw in enumerate(self.magic_sprites):
             if self.target not in self.has_hits \
-                and claw["alive_time"] > self.claw_damage_cal_time \
-                and claw["area"].colliderect(self.target.area):
+                and claw.alive_time > claw.damage_cal_time \
+                and claw.area.colliderect(self.target.area):
                 self.has_hits.add(self.target)
-                self.target.attacker.handle_under_attack(self.sprite, self.damage)
+                self.target.attacker.handle_under_attack(self.sprite, claw.damage)
 
-            claw["alive_time"] += passed_seconds
-            if claw["alive_time"] > self.claw_alive_time:
-                self.claw_list.pop(i)
-            else:
-                claw["img_mix"] = claw["blink"].make(
-                    self.claw_image_list[claw["img_id"]], passed_seconds)
+            claw.update(passed_seconds)
+            if claw.status == cfg.Magic.STATUS_VANISH:
+                self.magic_sprites.pop(i)
 
-        if len(self.trigger_times) == 0 and len(self.claw_list) == 0:
+        if len(self.trigger_times) == 0 and len(self.magic_sprites) == 0:
             self.status = cfg.Magic.STATUS_VANISH
 
 
     def draw(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
-            for claw in sorted(self.claw_list, key=lambda x: x["area"].centery):
-                p = claw["area"].center
-                camera.screen.blit(claw["img_mix"], 
-                    (p[0] - camera.rect.x - self.dx, p[1] / 2 - camera.rect.y - self.dy))
+            for claw in self.magic_sprites:
+                claw.draw(camera)
 
 
 
@@ -742,7 +759,7 @@ class LeonhardtAttacker(AngleAttacker):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
             sp.mp -= self.hell_claw_params["mana"]
-            self.current_magic = HellClaw(sp, target, 
+            self.current_magic = HellClawSet(sp, target, 
                 sp.static_objects, self.hell_claw_params)
             self.magic_list.append(self.current_magic)
 
