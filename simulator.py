@@ -38,7 +38,13 @@ class Blink(object):
 
 
 
-class EnergyBall(object):
+class MagicSkill(object):
+    def draw_shadow(self):
+        pass
+
+
+
+class EnergyBall(MagicSkill):
     def __init__(self, image, sprite, target_list, static_objects, params, pos, target_pos):
         self.sprite = sprite
         self.target_list = target_list
@@ -99,7 +105,7 @@ class DestroyFire(EnergyBall):
 
 
 
-class DestroyBomb(object):
+class DestroyBomb(MagicSkill):
     # Renne skill
     destroy_bombs_image = animation.effect_image_controller.get(
         sfg.Effect.DESTORY_BOMB_IMAGE_KEY).convert_alpha().subsurface(
@@ -203,7 +209,7 @@ class DestroyBomb(object):
 
 
 
-class DestroyAerolite(object):
+class DestroyAerolite(MagicSkill):
     # Renne skill
     destroy_aerolite_image = animation.effect_image_controller.get(
         sfg.Effect.DESTROY_AEROLITE_IMAGE_KEY).convert_alpha().subsurface(
@@ -274,14 +280,19 @@ class DestroyAerolite(object):
             self.status = cfg.Magic.STATUS_VANISH
 
 
+    def draw_shadow(self, camera):
+        if self.status == cfg.Magic.STATUS_ALIVE:
+            for aerolite in self.aerolite_list:
+                shd_rect = self.shadow_image.get_rect()
+                shd_rect.center = aerolite["area"].center
+                camera.screen.blit(self.shadow_image, 
+                    (shd_rect.x - camera.rect.x, shd_rect.y / 2 - camera.rect.y))
+
+
     def draw(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
             for aerolite in sorted(self.aerolite_list, key=lambda x: x["area"].centery):
                 p = aerolite["area"].center
-                shd_rect = self.shadow_image.get_rect()
-                shd_rect.center = p
-                camera.screen.blit(self.shadow_image, 
-                    (shd_rect.x - camera.rect.x, shd_rect.y / 2 - camera.rect.y))
                 camera.screen.blit(aerolite["img_mix"],
                     (p[0] - camera.rect.x - self.dx, p[1] / 2 - camera.rect.y - self.dy + aerolite["s"]))
 
@@ -298,7 +309,7 @@ class DeathCoil(EnergyBall):
 
 
 
-class HellClaw(object):
+class HellClaw(MagicSkill):
     # Leon Hardt skill
     hell_claw_image = animation.effect_image_controller.get(
         sfg.Effect.HELL_CLAW_IMAGE_KEY).convert_alpha().subsurface(

@@ -136,7 +136,7 @@ class Renne(object):
     WALK_SPEED = 100
     RUN_SPEED = 200
 
-    ATTACKTYPE = cfg.SpriteAttackType.SHORT
+    ATTACKTYPE = cfg.SpriteAttackType.RENNE
     ATTACKER_PARAMS = {
         "range": 100,
         "angle": 120,

@@ -119,25 +119,6 @@ class GameWorld(pygame.sprite.LayeredDirty):
         self.static_objects.sort(key=lambda obj: obj.pos.y)
 
 
-    def yield_objects_in_screen(self, camera):
-        for obj in self.sprites():
-            if obj.setting.GAME_OBJECT_TYPE == cfg.GameObject.TYPE_STATIC:
-                rect = obj.rect
-            else:
-                # dynamic object, adjust its rect first!
-                obj.adjust_rect()
-                rect = obj.animation.rect
-
-            if rect.colliderect(camera.rect):
-                yield obj
-
-
-    def draw2(self, camera):
-        objs = sorted(self.yield_objects_in_screen(camera), key=lambda sp: sp.pos.y)
-        for v in objs:
-            v.draw(camera)
-
-
     def update(self):
         for i, sp in enumerate(self.dynamic_objects):
             if sp.status["hp"] == cfg.SpriteStatus.VANISH:
@@ -148,6 +129,16 @@ class GameWorld(pygame.sprite.LayeredDirty):
         # only sort dynamic objects, static object is sorted in nature and no longer change 
         # the algorithm is inspired by merge sort
         self.dynamic_objects.sort(key=lambda obj: obj.pos.y)
+
+        # draw shawdow first
+        for sp in self.dynamic_objects:
+            # adjust_rect by the way
+            sp.adjust_rect()
+            sp.animation.draw_shadow(camera)
+            if sp.setting.ATTACKTYPE in cfg.SpriteAttackType.HAS_MAGIC_SKILLS:
+                for magic in sp.attacker.magic_list:
+                    magic.draw_shadow(camera)
+
         dy_idx = 0
         st_idx = 0
         while dy_idx < len(self.dynamic_objects) and st_idx < len(self.static_objects):
@@ -157,13 +148,11 @@ class GameWorld(pygame.sprite.LayeredDirty):
                 st_idx += 1
 
             else:
-                self.dynamic_objects[dy_idx].adjust_rect()
                 if self.dynamic_objects[dy_idx].animation.rect.colliderect(camera.rect):
                     self.dynamic_objects[dy_idx].draw(camera)
                 dy_idx += 1
 
         while dy_idx < len(self.dynamic_objects):
-            self.dynamic_objects[dy_idx].adjust_rect()
             if self.dynamic_objects[dy_idx].animation.rect.colliderect(camera.rect):
                 self.dynamic_objects[dy_idx].draw(camera)
             dy_idx += 1

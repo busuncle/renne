@@ -131,14 +131,16 @@ class SpriteAnimator(object):
         self.words_renderer.update(passed_seconds)
 
 
+    def draw_shadow(self, camera):
+        if self.image is not None:
+            shadow_blit_pos = (self.shadow_rect.left - camera.rect.left, self.shadow_rect.top - camera.rect.top)
+            camera.screen.blit(self.shadow_image, shadow_blit_pos)
+
+
     def draw(self, camera):
         if self.image is not None:
             # don't modify rect itself, but pass the relative topleft point to the blit function
             image_blit_pos = (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top)
-            shadow_blit_pos = (self.shadow_rect.left - camera.rect.left, self.shadow_rect.top - camera.rect.top)
-
-            # draw shadow first, and then the sprite itself
-            camera.screen.blit(self.shadow_image, shadow_blit_pos)
             camera.screen.blit(self.image, image_blit_pos)
 
         if self.sprite.status["hp"] != cfg.SpriteStatus.VANISH:
