@@ -5,6 +5,7 @@ Renne
 * W,S,A,D represent up,down,left,right respectively.
 * J is attack, K is skill, L is run.
 * I is another powerful skill.
+* O is yet another powerful skill.
 * U is useless, don't press it!
 * Esc is the exit button.
   
