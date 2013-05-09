@@ -44,6 +44,15 @@ class MagicSkill(object):
 
 
 
+class MagicSprite(pygame.sprite.DirtySprite):
+    def __init__(self, pos, rect):
+        super(MagicSprite, self).__init__()
+        self.pos = Vector2(pos)
+        self.area = pygame.Rect(rect)
+        self.area.center = self.pos
+
+
+
 class EnergyBall(MagicSkill):
     def __init__(self, image, sprite, target_list, static_objects, params, pos, target_pos):
         self.sprite = sprite
