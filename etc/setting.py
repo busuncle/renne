@@ -114,7 +114,6 @@ class Renne(object):
     SHADOW_RECT_DELTA_Y = 50
     SHADOW_INDEX = 1
 
-
     FRAME_RATES = {
         cfg.HeroAction.STAND: 12,
         cfg.HeroAction.WALK: 14,

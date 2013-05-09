@@ -126,9 +126,8 @@ class GameWorld(pygame.sprite.LayeredDirty):
 
 
     def draw(self, camera):
-        # only sort dynamic objects, static object is sorted in nature and no longer change 
-        # the algorithm is inspired by merge sort
-        self.dynamic_objects.sort(key=lambda obj: obj.pos.y)
+        movings = []
+        movings.extend(self.dynamic_objects)
 
         # draw shawdow first
         for sp in self.dynamic_objects:
@@ -137,25 +136,29 @@ class GameWorld(pygame.sprite.LayeredDirty):
             sp.animation.draw_shadow(camera)
             if sp.setting.ATTACKTYPE in cfg.SpriteAttackType.HAS_MAGIC_SKILLS:
                 for magic in sp.attacker.magic_list:
+                    # magic sprite is dynamic objects too, put them into movings
+                    movings.extend(magic.magic_sprites)
                     for msp in magic.magic_sprites:
                         msp.draw_shadow(camera)
 
+        # only sort dynamic objects, static object is sorted in nature and no longer change 
+        # the algorithm is inspired by merge sort
+        movings.sort(key=lambda obj: obj.pos.y)
+
         dy_idx = 0
         st_idx = 0
-        while dy_idx < len(self.dynamic_objects) and st_idx < len(self.static_objects):
-            if self.static_objects[st_idx].pos.y <= self.dynamic_objects[dy_idx].pos.y:
+        while dy_idx < len(movings) and st_idx < len(self.static_objects):
+            if self.static_objects[st_idx].pos.y <= movings[dy_idx].pos.y:
                 if self.static_objects[st_idx].rect.colliderect(camera.rect):
                     self.static_objects[st_idx].draw(camera)
                 st_idx += 1
 
             else:
-                if self.dynamic_objects[dy_idx].animation.rect.colliderect(camera.rect):
-                    self.dynamic_objects[dy_idx].draw(camera)
+                movings[dy_idx].draw(camera)
                 dy_idx += 1
 
-        while dy_idx < len(self.dynamic_objects):
-            if self.dynamic_objects[dy_idx].animation.rect.colliderect(camera.rect):
-                self.dynamic_objects[dy_idx].draw(camera)
+        while dy_idx < len(movings):
+            movings[dy_idx].draw(camera)
             dy_idx += 1
 
         while st_idx < len(self.static_objects):

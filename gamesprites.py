@@ -127,8 +127,6 @@ class Renne(GameSprite):
 
     def draw(self, camera):
         self.animation.draw(camera)
-        for magic in self.attacker.magic_list:
-            magic.draw(camera)
 
 
     def move(self, speed, passed_seconds):
@@ -496,9 +494,6 @@ class Leonhardt(Enemy):
 
     def draw(self, camera):
         super(Leonhardt, self).draw(camera)
-        # some attack effect
-        for magic in self.attacker.magic_list:
-            magic.draw(camera)
 
 
     def run(self, passed_seconds):
