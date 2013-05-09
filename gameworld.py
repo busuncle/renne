@@ -137,7 +137,8 @@ class GameWorld(pygame.sprite.LayeredDirty):
             sp.animation.draw_shadow(camera)
             if sp.setting.ATTACKTYPE in cfg.SpriteAttackType.HAS_MAGIC_SKILLS:
                 for magic in sp.attacker.magic_list:
-                    magic.draw_shadow(camera)
+                    for msp in magic.magic_sprites:
+                        msp.draw_shadow(camera)
 
         dy_idx = 0
         st_idx = 0

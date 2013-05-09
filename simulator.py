@@ -3,7 +3,7 @@ from pygame.locals import BLEND_ADD
 from base.util import LineSegment, line_segment_intersect_with_rect, cos_for_vec
 from base.util import manhattan_distance, Timer, happen
 import math
-from random import gauss, randint
+from random import gauss, randint, choice
 from math import pow, radians, sqrt, tan, cos
 from time import time
 from gameobjects.vector2 import Vector2
@@ -39,71 +39,115 @@ class Blink(object):
 
 
 class MagicSkill(object):
-    def draw_shadow(self):
+    def draw_shadow(self, camera):
         pass
 
 
 
 class MagicSprite(pygame.sprite.DirtySprite):
-    def __init__(self, pos, rect):
+    def __init__(self, pos, radius, dx, dy, damage, image):
         super(MagicSprite, self).__init__()
         self.pos = Vector2(pos)
-        self.area = pygame.Rect(rect)
+        self.area = pygame.Rect(0, 0, radius * 2, radius * 2)
         self.area.center = self.pos
-
-
-
-class EnergyBall(MagicSkill):
-    def __init__(self, image, sprite, target_list, static_objects, params, pos, target_pos):
-        self.sprite = sprite
-        self.target_list = target_list
-        self.static_objects = static_objects
-        self.damage = params["damage"]
-        self.range = params["range"]
-        self.dx = params["dx"]
-        self.dy = params["dy"]
-        self.pos = pos.copy()
-        self.origin_pos = self.pos.copy()
-        self.area = pygame.Rect(0, 0, params["radius"] * 2, params["radius"] * 2)
-        self.speed = params["speed"]
-        self.status = cfg.Magic.STATUS_ALIVE
-        self.key_vec = Vector2.from_points(pos, target_pos)
-        self.key_vec.normalize()
+        self.damage = damage
+        self.dx = dx
+        self.dy = dy
         self.image = image
-        self.image_mix = None
-        self.blink = Blink()
-        self.has_hits= set()
+        self.status = cfg.Magic.STATUS_ALIVE
 
 
     def update(self, passed_seconds):
+        pass
+
+
+    def draw_shadow(self, camera):
+        pass
+
+
+    def draw(self, camera):
+        if self.status == cfg.Magic.STATUS_ALIVE:
+            camera.screen.blit(self.image,
+                (self.pos.x - camera.rect.x - self.dx, self.pos.y / 2 - camera.rect.y - self.dy))
+
+
+
+class EnergyBall(MagicSprite):
+    def __init__(self, pos, radius, dx, dy, damage, image, target_pos, range, speed):
+        super(EnergyBall, self).__init__(pos, radius, dx, dy, damage, image)
+        self.range = range
+        self.speed = speed
+        self.origin_pos = self.pos.copy()
+        self.key_vec = Vector2.from_points(pos, target_pos)
+        self.key_vec.normalize()
+        self.image_mix = self.image.copy()
+        self.blink = Blink()
+
+        
+    def update(self, passed_seconds):
         self.pos += self.key_vec * self.speed * passed_seconds
         self.area.center = self.pos("xy")
-        for sp in self.target_list:
-            if sp in self.has_hits:
-                continue
-            if sp.area.colliderect(self.area):
-                sp.attacker.handle_under_attack(self.sprite, self.damage)
-                self.has_hits.add(sp)
-
         self.image_mix = self.blink.make(self.image, passed_seconds)
-
         if self.origin_pos.get_distance_to(self.pos) > self.range:
             self.status = cfg.Magic.STATUS_VANISH
-
-        for obj in self.static_objects:
-            if obj.area.colliderect(self.area):
-                self.status = cfg.Magic.STATUS_VANISH
-                return
 
 
     def draw(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
             camera.screen.blit(self.image_mix,
-                (self.area.x - camera.rect.x - self.dx, self.area.y / 2 - camera.rect.y - self.dy))
+                (self.pos.x - camera.rect.x - self.dx, self.pos.y / 2 - camera.rect.y - self.dy))
 
 
 
-class DestroyFire(EnergyBall):
+class EnergyBallSet(object):
+    def __init__(self, image, sprite, target_list, static_objects, params, pos, target_pos):
+        self.sprite = sprite
+        self.target_list = target_list
+        self.static_objects = static_objects
+        self.status = cfg.Magic.STATUS_ALIVE
+        self.has_hits = set()
+        self.magic_sprites = []
+        # only one ball right now
+        self.magic_sprites.append(EnergyBall(pos, params["radius"], params["dx"], params["dy"], 
+            params["damage"], image, target_pos, params["range"], params["speed"]))
+
+
+    def update(self, passed_seconds):
+        vanish_num = 0
+        for msp in self.magic_sprites:
+            if msp.status == cfg.Magic.STATUS_VANISH:
+                vanish_num += 1
+                continue
+
+            msp.update(passed_seconds)
+
+            for sp in self.target_list:
+                if sp in self.has_hits:
+                    continue
+
+                if sp.area.colliderect(msp.area):
+                    sp.attacker.handle_under_attack(self.sprite, msp.damage)
+                    self.has_hits.add(sp)
+
+            for obj in self.static_objects:
+                if obj.area.colliderect(msp.area):
+                    msp.status = cfg.Magic.STATUS_VANISH
+
+        if vanish_num == len(self.magic_sprites):
+            self.status = cfg.Magic.STATUS_VANISH
+
+
+    def draw_shadow(self, camera):
+        pass
+
+
+    def draw(self, camera):
+        for msp in self.magic_sprites:
+            msp.draw(camera)
+
+
+
+class DestroyFire(EnergyBallSet):
     # Renne skill
     destroy_fire_image = animation.effect_image_controller.get(
         sfg.Effect.DESTROY_FIRE_IMAGE_KEY).convert_alpha().subsurface(
@@ -114,7 +158,24 @@ class DestroyFire(EnergyBall):
 
 
 
-class DestroyBomb(MagicSkill):
+class DestroyBomb(MagicSprite):
+    def __init__(self, pos, radius, dx, dy, damage, image, life, shake_on_x, shake_on_y):
+        super(DestroyBomb, self).__init__(pos, radius, dx, dy, damage, image)
+        self.pos.x = gauss(self.pos.x, shake_on_x)
+        self.pos.y = gauss(self.pos.y, shake_on_y)
+        self.area.center = self.pos
+        self.life = life
+        self.alive_time = 0
+
+
+    def update(self, passed_seconds):
+        self.alive_time += passed_seconds
+        if self.alive_time > self.life:
+            self.status = cfg.Magic.STATUS_VANISH
+        
+
+
+class DestroyBombSet(MagicSkill):
     # Renne skill
     destroy_bombs_image = animation.effect_image_controller.get(
         sfg.Effect.DESTORY_BOMB_IMAGE_KEY).convert_alpha().subsurface(
@@ -129,22 +190,15 @@ class DestroyBomb(MagicSkill):
         self.target_list = target_list
         self.static_objects = static_objects
         self.origin_pos = pos.copy()
-        self.bomb_radius = params["bomb_radius"]
-        self.damage = params["damage"]
-        self.dx = params["dx"]
-        self.dy = params["dy"]
+        self.params = params
         self.speed = params["speed"]
         self.range = params["range"]
-        self.bomb_life = params["bomb_life"]
-        self.bombs_direct_num = params["bombs_direct_num"]
-        self.bomb_shake_on_x = params["bomb_shake_on_x"]
-        self.bomb_shake_on_y = params["bomb_shake_on_y"]
         self.status = cfg.Magic.STATUS_ALIVE
 
         # this 3 list are related, put them together
         self.pos_list = []
         self.bomb_ranges_list = []
-        for i in xrange(self.bombs_direct_num):
+        for i in xrange(params["bombs_direct_num"]):
             self.pos_list.append(pos.copy())
             self.bomb_ranges_list.append(list(params["bomb_ranges"]))
         vec = Vector2(cfg.Direction.DIRECT_TO_VEC[direction])
@@ -153,7 +207,7 @@ class DestroyBomb(MagicSkill):
         self.key_vec_list = [vec, vec_left, vec_right, 
             self.normalized_vec_between_two(vec, vec_left), self.normalized_vec_between_two(vec, vec_right)]
 
-        self.bomb_list = []
+        self.magic_sprites = []
         self.has_hits = set()
 
 
@@ -170,22 +224,22 @@ class DestroyBomb(MagicSkill):
             pos_range = self.origin_pos.get_distance_to(pos)
             if pos_range > self.range:
                 range_over_num += 1
+
             if len(self.bomb_ranges_list[i]) > 0 and pos_range > self.bomb_ranges_list[i][0]:
                 # create bomb and pop this range
                 self.bomb_ranges_list[i].pop(0)
-                b_rect = pygame.Rect(0, 0, self.bomb_radius * 2, self.bomb_radius * 2)
-                #b_rect.center = pos
-                b_rect.center = (gauss(pos.x, self.bomb_shake_on_x), 
-                    gauss(pos.y, self.bomb_shake_on_y))
+                bomb = DestroyBomb(pos, self.params["bomb_radius"], self.params["dx"],
+                    self.params["dy"], self.params["damage"], choice(self.destroy_bomb_images),
+                    self.params["bomb_life"], self.params["bomb_shake_on_x"], self.params["bomb_shake_on_y"])
+
                 can_create = True
                 for obj in self.static_objects:
-                    if obj.area.colliderect(b_rect):
+                    if obj.area.colliderect(bomb.area):
                         can_create = False
                         break
 
                 if can_create:
-                    img_id = randint(0, len(self.destroy_bomb_images) - 1)
-                    self.bomb_list.append({"img_id": img_id, "area": b_rect, "alive_time": 0})
+                    self.magic_sprites.append(bomb)
                 else:
                     # this line can be dropped
                     self.pos_list.pop(i)
@@ -196,53 +250,94 @@ class DestroyBomb(MagicSkill):
         for sp in self.target_list:
             if sp in self.has_hits:
                 continue
-            for bomb in self.bomb_list:
-                if sp.area.colliderect(bomb["area"]):
-                    sp.attacker.handle_under_attack(self.sprite, self.damage)
+
+            for bomb in self.magic_sprites:
+                if sp.area.colliderect(bomb.area):
+                    sp.attacker.handle_under_attack(self.sprite, bomb.damage)
                     self.has_hits.add(sp)
                     break
 
-        for i, bomb in enumerate(self.bomb_list):
-            bomb["alive_time"] += passed_seconds
-            if bomb["alive_time"] > self.bomb_life:
-                self.bomb_list.pop(i)
+        for i, bomb in enumerate(self.magic_sprites):
+            bomb.update(passed_seconds)
+            if bomb.status == cfg.Magic.STATUS_VANISH:
+                self.magic_sprites.pop(i)
         
 
     def draw(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
-            for bomb in self.bomb_list:
-                p = bomb["area"].center
-                b_id = bomb["img_id"]
-                camera.screen.blit(self.destroy_bomb_images[b_id],
-                    (p[0] - camera.rect.x - self.dx, p[1] / 2 - camera.rect.y - self.dy))
+            for bomb in self.magic_sprites:
+                bomb.draw(camera)
 
 
 
-class DestroyAerolite(MagicSkill):
+class DestroyAerolite(MagicSprite):
+    shadow_image = animation.get_shadow_image(sfg.Effect.DESTROY_AEROLITE_SHADOW_INDEX)
+    shadow_rect_delta_y = 12
+    def __init__(self, pos, radius, dx, dy, damage, image, fall_range, acceleration, damage_cal_time,
+            life, shake_on_x, shake_on_y):
+        super(DestroyAerolite, self).__init__(pos, radius, dx, dy, damage, image)
+        self.pos.x = gauss(self.pos.x, shake_on_x)
+        self.pos.y = gauss(self.pos.y, shake_on_y)
+        self.area.center = self.pos
+        self.fall_range = fall_range
+        self.acceleration = acceleration
+        self.damage_cal_time = damage_cal_time
+        self.life = life
+        self.fall_v = 0
+        self.fall_s = 0
+        self.alive_time = 0
+        self.blink = Blink()
+        self.image_mix = None
+
+
+    def update(self, passed_seconds):
+        self.image_mix = self.blink.make(self.image, passed_seconds)
+        if self.fall_s < self.fall_range:
+            # s = v0 * t + a * t^2 / 2
+            s = self.fall_v * passed_seconds + 0.5 * self.acceleration * pow(passed_seconds, 2)
+            self.fall_s += s
+            # v = v0 + a * t
+            self.fall_v += self.acceleration * passed_seconds
+
+        self.alive_time += passed_seconds
+        if self.alive_time > self.life:
+            self.status = cfg.Magic.STATUS_VANISH
+
+
+    def draw_shadow(self, camera):
+        shd_rect = self.shadow_image.get_rect()
+        shd_rect.center = self.pos
+        camera.screen.blit(self.shadow_image,
+            (shd_rect.x - camera.rect.x, shd_rect.y / 2 - camera.rect.y - self.shadow_rect_delta_y))
+        if self.alive_time > self.damage_cal_time:
+            r = pygame.Rect(0, 0, self.area.width, self.area.height / 2)
+            r.center = (self.pos.x, self.pos.y / 2)
+            r.top -= camera.rect.top
+            r.left -= camera.rect.left
+            pygame.draw.rect(camera.screen, pygame.Color("red"), r, 1)
+
+
+    def draw(self, camera):
+        camera.screen.blit(self.image_mix,
+            (self.pos.x - camera.rect.x - self.dx, self.pos.y / 2 - camera.rect.y - self.dy + self.fall_s))
+        
+
+
+class DestroyAeroliteSet(MagicSkill):
     # Renne skill
     destroy_aerolite_image = animation.effect_image_controller.get(
         sfg.Effect.DESTROY_AEROLITE_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.DESTROY_AEROLITE_RECT)
-    shadow_image = animation.get_shadow_image(sfg.Effect.DESTROY_AEROLITE_SHADOW_INDEX)
     def __init__(self, sprite, target_list, static_objects, params, pos):
         self.sprite = sprite
         self.target_list = target_list
         self.static_objects = static_objects
-        self.fall_range = params["fall_range"]
-        self.damage = params["damage"]
-        self.acceleration = params["acceleration"]
-        self.aerolite_radius = params["aerolite_radius"]
-        self.aerolite_damage_cal_time = params["aerolite_damage_cal_time"]
-        self.aerolite_alive_time = params["aerolite_alive_time"]
-        self.dx = params["dx"]
-        self.dy = params["dy"]
-        self.aerolite_list = []
+        self.params = params
         self.has_hits = set()
         self.status = cfg.Magic.STATUS_ALIVE
         self.passed_seconds = 0
         self.trigger_times = list(params["trigger_times"])
-        self.aerolite_shake_on_x = params["aerolite_shake_on_x"]
-        self.aerolite_shake_on_y = params["aerolite_shake_on_y"]
+        self.magic_sprites = []
 
 
     def update(self, passed_seconds):
@@ -250,48 +345,41 @@ class DestroyAerolite(MagicSkill):
         if len(self.trigger_times) > 0 and self.passed_seconds > self.trigger_times[0]:
             # trigger a aerolite
             self.trigger_times.pop(0)
-            a_rect = pygame.Rect(0, 0, self.aerolite_radius * 2, self.aerolite_radius * 2)
-            #a_rect.center = (self.sprite.pos.x, self.sprite.pos.y)
-            a_rect.center = (gauss(self.sprite.pos.x, self.aerolite_shake_on_x),
-                gauss(self.sprite.pos.y, self.aerolite_shake_on_y))
+            aerolite = DestroyAerolite(self.sprite.pos, self.params["aerolite_radius"], self.params["dx"],
+                self.params["dy"], self.params["damage"], self.destroy_aerolite_image, 
+                self.params["fall_range"], self.params["acceleration"], 
+                self.params["aerolite_damage_cal_time"], self.params["aerolite_life"],
+                self.params["aerolite_shake_on_x"], self.params["aerolite_shake_on_y"])
+
             can_create = True
             for obj in self.static_objects:
-                if obj.area.colliderect(a_rect):
+                if obj.area.colliderect(aerolite.area):
                     can_create = False
                     break
             
             if can_create:
-                self.aerolite_list.append({"area": a_rect, "alive_time": 0, "blink": Blink(),
-                    "v": 0, "s": 0})
+                self.magic_sprites.append(aerolite)
 
-        for i, aerolite in enumerate(self.aerolite_list):
-            # s = v0 * t + a * t^2 / 2
-            if aerolite["s"] < self.fall_range:
-                s = aerolite["v"] * passed_seconds + 0.5 * self.acceleration * pow(passed_seconds, 2)
-                aerolite["s"] += s
-                # v = v0 + a * t
-                aerolite["v"] += self.acceleration * passed_seconds
+        for i, aerolite in enumerate(self.magic_sprites):
+            aerolite.update(passed_seconds)
+            if aerolite.status == cfg.Magic.STATUS_VANISH:
+                self.magic_sprites.pop(i)
+                continue
 
-                for sp in self.target_list:
-                    if sp not in self.has_hits \
-                        and aerolite["alive_time"] > self.aerolite_damage_cal_time \
-                        and aerolite["area"].colliderect(sp.area):
-                        self.has_hits.add(sp)
-                        sp.attacker.handle_under_attack(self.sprite, self.damage)
+            for sp in self.target_list:
+                if sp not in self.has_hits \
+                    and aerolite.alive_time > aerolite.damage_cal_time \
+                    and sp.area.colliderect(aerolite.area):
+                    self.has_hits.add(sp)
+                    sp.attacker.handle_under_attack(self.sprite, aerolite.damage)
 
-            aerolite["alive_time"] += passed_seconds
-            if aerolite["alive_time"] > self.aerolite_alive_time:
-                self.aerolite_list.pop(i)
-            else:
-                aerolite["img_mix"] = aerolite["blink"].make(self.destroy_aerolite_image, passed_seconds)
-
-        if len(self.trigger_times) == 0 and len(self.aerolite_list) == 0:
+        if len(self.trigger_times) == 0 and len(self.magic_sprites) == 0:
             self.status = cfg.Magic.STATUS_VANISH
 
 
     def draw_shadow(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
-            for aerolite in self.aerolite_list:
+            for aerolite in self.magic_sprites:
                 shd_rect = self.shadow_image.get_rect()
                 shd_rect.center = aerolite["area"].center
                 camera.screen.blit(self.shadow_image, 
@@ -300,20 +388,19 @@ class DestroyAerolite(MagicSkill):
 
     def draw(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
-            for aerolite in sorted(self.aerolite_list, key=lambda x: x["area"].centery):
-                p = aerolite["area"].center
-                camera.screen.blit(aerolite["img_mix"],
-                    (p[0] - camera.rect.x - self.dx, p[1] / 2 - camera.rect.y - self.dy + aerolite["s"]))
+            for aerolite in sorted(self.magic_sprites, key=lambda x: x.area.centery):
+                aerolite.draw(camera)
 
 
 
-class DeathCoil(EnergyBall):
+class DeathCoil(EnergyBallSet):
     # Leon Hardt skill
     death_coil_image = animation.effect_image_controller.get(
         sfg.Effect.DEATH_COIL_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.DEATH_COIL_RECT)
+    image_list = [death_coil_image.subsurface((i * 64, 0, 64, 64)) for i in xrange(2)]
     def __init__(self, sprite, target, static_objects, params, pos, target_pos):
-        super(DeathCoil, self).__init__(self.death_coil_image,
+        super(DeathCoil, self).__init__(choice(self.image_list),
             sprite, [target], static_objects, params, pos, target_pos)
 
 
@@ -323,7 +410,7 @@ class HellClaw(MagicSkill):
     hell_claw_image = animation.effect_image_controller.get(
         sfg.Effect.HELL_CLAW_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.HELL_CLAW_RECT)
-    claw_image_list = [hell_claw_image.subsurface((i * 64, 0, 64, 76)) for i in xrange(2)]
+    claw_image_list = [hell_claw_image.subsurface((i * 64, 0, 64, 72)) for i in xrange(2)]
     def __init__(self, sprite, target, static_objects, params):
         self.sprite = sprite
         self.target = target
@@ -520,7 +607,7 @@ class RenneAttacker(AngleAttacker):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
             sp.mp -= self.destroy_bomb_params["mana"]
-            self.current_magic = DestroyBomb(sp, sp.enemies,
+            self.current_magic = DestroyBombSet(sp, sp.enemies,
                 sp.static_objects, self.destroy_bomb_params, sp.pos, sp.direction)
             self.magic_list.append(self.current_magic)
 
@@ -529,7 +616,7 @@ class RenneAttacker(AngleAttacker):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
             sp.mp -= self.destroy_aerolite_params["mana"]
-            self.current_magic = DestroyAerolite(sp, sp.enemies, 
+            self.current_magic = DestroyAeroliteSet(sp, sp.enemies, 
                 sp.static_objects, self.destroy_aerolite_params, sp.pos)
             self.magic_list.append(self.current_magic)
 

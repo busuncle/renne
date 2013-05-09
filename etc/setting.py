@@ -146,8 +146,8 @@ class Renne(object):
             "damage": 40,
             "speed": 250,
             "radius": 18,
-            "dx": 15,
-            "dy": 40,
+            "dx": 32,
+            "dy": 48,
             "mana": 30,
         },
         "destroy_bomb": {
@@ -156,8 +156,8 @@ class Renne(object):
             "speed": 280,
             "mana": 60,
             "bomb_radius": 18,
-            "dx": 35,
-            "dy": 50,
+            "dx": 32,
+            "dy": 52,
             "bombs_direct_num": 5,
             "bomb_shake_on_x": 10,
             "bomb_shake_on_y": 10,
@@ -165,18 +165,18 @@ class Renne(object):
             "bomb_ranges": range(50, 360, 25),
         },
         "destroy_aerolite": {
-            "fall_range": 120,
+            "fall_range": 128,
             "damage": 60,
             "acceleration": 400,
             "mana": 60,
             #"mana": 6,
             "dx": 32,
-            "dy": 230,
+            "dy": 240,
             "trigger_times": (0.2, 0.4, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2),
             #"trigger_times": (0.2, ),
             "aerolite_radius": 18,
-            "aerolite_damage_cal_time": 0.5,
-            "aerolite_alive_time": 1.5,
+            "aerolite_damage_cal_time": 0.4,
+            "aerolite_life": 1.5,
             "aerolite_shake_on_x": 90,
             "aerolite_shake_on_y": 90,
         }
@@ -347,15 +347,15 @@ class LeonHardt(Enemy):
             "damage": 50,
             "speed": 250,
             "radius": 15,
-            "dx": 0,
-            "dy": 30,
+            "dx": 32,
+            "dy": 52,
             "mana": 60,
         },
         "hell_claw": {
             "range": 300,
             "damage": 60,
             "claw_radius": 18,
-            "dx": 30, 
+            "dx": 32, 
             "dy": 64,
             "claw_num_max": 6,
             "trigger_times": (0.2, 0.4, 0.6, 0.8, 1, 1.2),
@@ -924,9 +924,9 @@ class Effect(object):
     DESTROY_AEROLITE_RECT = (192, 0, 64, 128)
     DESTROY_AEROLITE_SHADOW_INDEX = 3
     DEATH_COIL_IMAGE_KEY = "e1"
-    DEATH_COIL_RECT = (206, 206, 38, 46)
+    DEATH_COIL_RECT = (128, 192, 128, 64)
     HELL_CLAW_IMAGE_KEY = "e1"
-    HELL_CLAW_RECT = (0, 180, 128, 76)
+    HELL_CLAW_RECT = (0, 184, 128, 72)
 
     BLINK_RATE = 256
     BLINK_DEPTH_SECTION = (32, 128)
