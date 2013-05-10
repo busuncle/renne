@@ -43,12 +43,12 @@ class WordsRenderer(object):
 
     def update(self, passed_seconds):
         for i, bw in enumerate(self.blit_list):
+            bw["words_mix"] = bw["blink"].make(bw["words"], passed_seconds)
             if not bw["timer"].is_begin():
                 bw["timer"].begin()
             elif bw["timer"].exceed():
                 self.blit_list.pop(i)
             else:
-                bw["words_mix"] = bw["blink"].make(bw["words"], passed_seconds)
                 mr = bw.get("pos_move_rate")
                 if mr is not None:
                     x, y = bw["rel_pos"]
@@ -59,8 +59,9 @@ class WordsRenderer(object):
 
     def draw(self, camera):
         for bw in self.blit_list:
-            camera.screen.blit(bw["words_mix"], (bw["rel_pos"][0] - camera.rect.left, 
-                bw["rel_pos"][1] - camera.rect.top))
+            if bw["words_mix"] is not None:
+                camera.screen.blit(bw["words_mix"], (bw["rel_pos"][0] - camera.rect.left, 
+                    bw["rel_pos"][1] - camera.rect.top))
 
 
 
