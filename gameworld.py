@@ -69,7 +69,7 @@ class StaticObject(pygame.sprite.DirtySprite):
         if self.setting.IS_ELIMINABLE:
             # the object is eliminable, we should make it blink-blink look!
             self.image_mix = None
-            self.blink = Blink()
+            self.blink = Blink(sfg.Effect.BLINK_RATE2, sfg.Effect.BLINK_DEPTH_SECTION2)
 
 
     def adjust_rect(self):

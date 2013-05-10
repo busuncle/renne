@@ -456,7 +456,7 @@ class GameMap(object):
     TILE_SIZE = 256
     ONE_SCREEN_DISTANCE_WIDTH = TILE_SIZE * 4
     ONE_SCREEN_DISTANCE_HEIGHT = TILE_SIZE * 6
-    CHAPTERS = [0, 1, 2, 3]
+    CHAPTERS = [0, 1, 2, 3, 4, 5]
 
 
 
@@ -732,7 +732,7 @@ class BreadBasket(object):
     NAME = "BreadBasket"
     IMAGE_KEY = "food"
     IMAGE_RECT = (64, 128, 64, 64)
-    POS_RECT_DELTA_Y = 8
+    POS_RECT_DELTA_Y = 16
     AREA_RECT = (0, 0, 32, 32)
     IS_BLOCK = False
     IS_VIEW_BLOCK = False
@@ -746,7 +746,7 @@ class Salad(object):
     NAME = "Salad"
     IMAGE_KEY = "food"
     IMAGE_RECT = (192, 64, 64, 64)
-    POS_RECT_DELTA_Y = 8
+    POS_RECT_DELTA_Y = 16
     AREA_RECT = (0, 0, 32, 32)
     IS_BLOCK = False
     IS_VIEW_BLOCK = False
@@ -1028,6 +1028,12 @@ class Effect(object):
 
     BLINK_RATE = 256
     BLINK_DEPTH_SECTION = (32, 128)
+
+    BLINK_RATE2 = 128
+    BLINK_DEPTH_SECTION2 = (0, 96)
+
+    BLINK_RATE3 = 1024
+    BLINK_DEPTH_SECTION3 = (0, 192)
 
 
 

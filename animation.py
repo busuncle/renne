@@ -38,7 +38,8 @@ class WordsRenderer(object):
 
     def add_blit_words(self, words, rel_pos, time_len, pos_move_rate=None):
         self.blit_list.append({"words": words, "words_mix": None, "rel_pos": rel_pos, 
-            "timer": Timer(time_len), "pos_move_rate": pos_move_rate, "blink": Blink()})
+            "timer": Timer(time_len), "pos_move_rate": pos_move_rate, 
+            "blink": Blink(sfg.Effect.BLINK_RATE3, sfg.Effect.BLINK_DEPTH_SECTION3)})
 
 
     def update(self, passed_seconds):

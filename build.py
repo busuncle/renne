@@ -39,7 +39,7 @@ class BuildExe:
         self.project_description = "Renne, a fan-works ARPG"
         self.icon_file = "renne.ico"
         self.extra_datas = ["res", "renne.png", "README.md", "etc\maps", 
-            "etc\waypoints"]
+            "etc\waypoints", "data"]
         self.extra_modules = ["pygame", "gameobjects", "etc.setting", 
             "etc.ai_setting", "base"]
         self.exclude_modules = []
