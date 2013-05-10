@@ -125,7 +125,7 @@ def enter_chapter(screen, chapter, renne):
 
                 if event.key == K_RETURN:
                     if game_status.status == cfg.GameStatus.HERO_WIN:
-                        util.save_chapter_win_screen_image(chapter, camera.surface)
+                        util.save_chapter_win_screen_image(chapter, camera.screen)
                         return cfg.GameControl.NEXT
                     elif game_status.status == cfg.GameStatus.HERO_LOSE:
                         return cfg.GameControl.AGAIN

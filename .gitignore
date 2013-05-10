@@ -166,6 +166,7 @@ pip-log.txt
 *~
 
 # project custom
+data/*
 .*.png
 .*.ogg
 .*.wav
