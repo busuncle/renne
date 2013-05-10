@@ -465,6 +465,7 @@ class WoodenCase(object):
     AREA_RECT = (0, 0, 48, 64)
     IS_BLOCK = True
     IS_VIEW_BLOCK = False
+    IS_ELIMINABLE = False
 
 
 
@@ -476,6 +477,7 @@ class WoodenCase2(object):
     AREA_RECT = (0, 0, 48, 64)
     IS_BLOCK = True
     IS_VIEW_BLOCK = False
+    IS_ELIMINABLE = False
 
 
 
@@ -487,6 +489,7 @@ class WoodenCase2_1(object):
     AREA_RECT = (0, 0, 32, 64)
     IS_BLOCK = True
     IS_VIEW_BLOCK = False
+    IS_ELIMINABLE = False
 
 
 
@@ -498,6 +501,7 @@ class WoodenCase2_2(object):
     AREA_RECT = (0, 0, 32, 64)
     IS_BLOCK = True
     IS_VIEW_BLOCK = False
+    IS_ELIMINABLE = False
 
 
 
@@ -509,6 +513,7 @@ class WoodenCase3(object):
     AREA_RECT = (0, 0, 48, 64)
     IS_BLOCK = True
     IS_VIEW_BLOCK = False
+    IS_ELIMINABLE = False
 
 
 
@@ -520,6 +525,7 @@ class WoodenCase3_1(object):
     AREA_RECT = (0, 0, 32, 64)
     IS_BLOCK = True
     IS_VIEW_BLOCK = False
+    IS_ELIMINABLE = False
 
 
 
@@ -531,6 +537,7 @@ class WoodenCase4(object):
     AREA_RECT = (0, 0, 48, 64)
     IS_BLOCK = True
     IS_VIEW_BLOCK = False
+    IS_ELIMINABLE = False
 
 
 
@@ -542,6 +549,7 @@ class IronCase(object):
     AREA_RECT = (0, 0, 70, 124)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True 
+    IS_ELIMINABLE = False
 
     
 
@@ -553,6 +561,7 @@ class IronCase2(object):
     AREA_RECT = (0, 0, 64, 128)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
+    IS_ELIMINABLE = False
 
 
 
@@ -564,6 +573,7 @@ class GrassWall(object):
     AREA_RECT = (0, 0, 64, 64)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
+    IS_ELIMINABLE = False
 
 
 
@@ -575,6 +585,7 @@ class StoneWall(object):
     AREA_RECT = (0, 0, 64, 128)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
+    IS_ELIMINABLE = False
 
 
 
@@ -586,6 +597,7 @@ class StoneWall2(object):
     AREA_RECT = (0, 0, 256, 64)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
+    IS_ELIMINABLE = False
 
 
 
@@ -597,6 +609,7 @@ class StoneWall2_1(object):
     AREA_RECT = (0, 0, 96, 64)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
+    IS_ELIMINABLE = False
 
 
 
@@ -608,6 +621,7 @@ class StoneWall3(object):
     AREA_RECT = (0, 0, 128, 128)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
+    IS_ELIMINABLE = False
 
 
 
@@ -619,6 +633,7 @@ class StoneWall4(object):
     AREA_RECT = (0, 0, 256, 128)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
+    IS_ELIMINABLE = False
 
 
 
@@ -630,6 +645,7 @@ class StoneWall4_2(object):
     AREA_RECT = (0, 0, 256, 128)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
+    IS_ELIMINABLE = False
 
 
 
@@ -641,6 +657,7 @@ class StoneWall5(object):
     AREA_RECT = (0, 0, 64, 192)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
+    IS_ELIMINABLE = False
 
 
 
@@ -652,6 +669,7 @@ class StoneWall6(object):
     AREA_RECT = (0, 0, 128, 128)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
+    IS_ELIMINABLE = False
 
 
 
@@ -663,6 +681,7 @@ class StoneWall7(object):
     AREA_RECT = (0, 0, 256, 128)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
+    IS_ELIMINABLE = False
 
 
 
@@ -674,7 +693,21 @@ class StoneWall7_1(object):
     AREA_RECT = (0, 0, 256, 128)
     IS_BLOCK = True
     IS_VIEW_BLOCK = True
+    IS_ELIMINABLE = False
 
+
+
+class RoastChicken(object):
+    NAME = "RoastChicken"
+    IMAGE_KEY = "food"
+    IMAGE_RECT = (192, 192, 64, 64)
+    POS_RECT_DELTA_Y = 8
+    AREA_RECT = (0, 0, 32, 32)
+    IS_BLOCK = False
+    IS_VIEW_BLOCK = False
+    IS_ELIMINABLE = True
+    ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
+    RECOVER_HP = 100
 
 
 
@@ -963,6 +996,7 @@ STATIC_OBJECT_SETTING_LIST = [
     StoneWall6,
     StoneWall7,
     StoneWall7_1,
+    RoastChicken,
 ]
 
 
@@ -1040,6 +1074,7 @@ STATIC_OBJECT_IMAGES = ("static_object", {
     "s9": "s9.png",
     "s10": "s10.png",
     "s11": "s11.png",
+    "food": "food.png",
 })
 
 # (folder, {image_key: image_filename, ...})

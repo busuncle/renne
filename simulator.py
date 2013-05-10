@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import BLEND_ADD
 from base.util import LineSegment, line_segment_intersect_with_rect, cos_for_vec
-from base.util import manhattan_distance, Timer, happen
+from base.util import manhattan_distance, Timer, happen, Blink
 import math
 from random import gauss, randint, choice
 from math import pow, radians, sqrt, tan, cos
@@ -10,31 +10,6 @@ from gameobjects.vector2 import Vector2
 import animation
 from base import constant as cfg
 from etc import setting as sfg
-
-
-
-class Blink(object):
-    def __init__(self, rate=sfg.Effect.BLINK_RATE, depth_section=sfg.Effect.BLINK_DEPTH_SECTION):
-        self.rate = rate
-        self.depth_section = depth_section
-        self.depth = self.depth_section[0]
-        self.direct = 1
-
-
-    def make(self, image, passed_seconds):
-        image_mix = image.copy()
-        self.depth += self.rate * self.direct * passed_seconds
-        if self.depth < self.depth_section[0]:
-            self.depth = self.depth_section[0]
-            self.direct = 1
-        elif self.depth > self.depth_section[1]:
-            self.depth = self.depth_section[1]
-            self.direct = -1
-
-        self.depth = int(self.depth)
-
-        image_mix.fill(pygame.Color(self.depth, self.depth, self.depth), special_flags=BLEND_ADD)
-        return image_mix
 
 
 
@@ -521,22 +496,10 @@ class Attacker(object):
             self.sprite.status["under_attack"] = False
 
 
-    def cal_sprite_status(self, current_hp, full_hp):
-        # calculate the sprite status according the current hp and full hp
-        if current_hp > full_hp * sfg.SpriteStatus.HEALTHY_RATIO_FLOOR:
-            return cfg.SpriteStatus.HEALTHY
-        elif current_hp > full_hp * sfg.SpriteStatus.WOUNDED_RATIO_FLOOR:
-            return cfg.SpriteStatus.WOUNDED
-        elif current_hp > full_hp * sfg.SpriteStatus.DANGER_RATIO_FLOOR:
-            return cfg.SpriteStatus.DANGER
-        else:
-            return cfg.SpriteStatus.DIE
-
-
     def handle_under_attack(self, from_who, cost_hp):
         sp = self.sprite
         sp.hp = max(sp.hp - cost_hp, 0)
-        sp.status["hp"] = self.cal_sprite_status(sp.hp, sp.setting.HP)
+        sp.status["hp"] = sp.cal_sprite_status(sp.hp, sp.setting.HP)
         sp.status["under_attack"] = True
         self.under_attack_timer.begin()
         sp.animation.show_cost_hp(cost_hp)

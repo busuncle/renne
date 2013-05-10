@@ -7,6 +7,7 @@ from random import random
 from time import time
 import pprint
 import imp
+from etc import setting as sfg
 
 
 
@@ -14,6 +15,32 @@ import imp
 def happen(probability):
     # calculate whether the event will happen according the probability
     return random() < probability
+
+
+class Blink(object):
+    # a blink effect maker!
+    def __init__(self, rate=sfg.Effect.BLINK_RATE, depth_section=sfg.Effect.BLINK_DEPTH_SECTION):
+        self.rate = rate
+        self.depth_section = depth_section
+        self.depth = self.depth_section[0]
+        self.direct = 1
+
+
+    def make(self, image, passed_seconds):
+        image_mix = image.copy()
+        self.depth += self.rate * self.direct * passed_seconds
+        if self.depth < self.depth_section[0]:
+            self.depth = self.depth_section[0]
+            self.direct = 1
+        elif self.depth > self.depth_section[1]:
+            self.depth = self.depth_section[1]
+            self.direct = -1
+
+        self.depth = int(self.depth)
+
+        image_mix.fill(pygame.Color(self.depth, self.depth, self.depth), special_flags=BLEND_ADD)
+        return image_mix
+
 
 
 def get_project_root():

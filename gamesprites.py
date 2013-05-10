@@ -51,6 +51,18 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.key_vec = Vector2() # a normal vector represents the direction
         
 
+    def cal_sprite_status(self, current_hp, full_hp):
+        # calculate the sprite status according the current hp and full hp
+        if current_hp > full_hp * sfg.SpriteStatus.HEALTHY_RATIO_FLOOR:
+            return cfg.SpriteStatus.HEALTHY
+        elif current_hp > full_hp * sfg.SpriteStatus.WOUNDED_RATIO_FLOOR:
+            return cfg.SpriteStatus.WOUNDED
+        elif current_hp > full_hp * sfg.SpriteStatus.DANGER_RATIO_FLOOR:
+            return cfg.SpriteStatus.DANGER
+        else:
+            return cfg.SpriteStatus.DIE
+
+
     def is_collide_map_boundry(self):
         max_w, max_h = self.game_map.size
         w, h = self.area.center
@@ -63,6 +75,12 @@ class GameSprite(pygame.sprite.DirtySprite):
         for v in self.static_objects:
             if v.setting.IS_BLOCK and self.area.colliderect(v.area):
                 return True
+
+
+    def get_collide_static_object(self):
+        for v in self.static_objects:
+            if self.area.colliderect(v.area):
+                return v
 
 
     def update(self):
@@ -138,9 +156,20 @@ class Renne(GameSprite):
                 old_coord = getattr(self.pos, coord)
                 setattr(self.pos, coord, old_coord + key_vec_coord * speed * passed_seconds)
                 self.area.center = self.pos("xy")
-                if self.is_collide_static_objects() or self.is_collide_map_boundry():
+                collided_obj = self.get_collide_static_object()
+                if collided_obj is None:
+                    continue
+
+                if collided_obj.setting.IS_BLOCK or self.is_collide_map_boundry():
                     setattr(self.pos, coord, old_coord)
                     self.area.center = self.pos("xy")
+
+                elif collided_obj.setting.IS_ELIMINABLE \
+                    and collided_obj.setting.ELIMINATION_TYPE == cfg.StaticObject.ELIMINATION_TYPE_FOOD:
+                    self.hp += collided_obj.setting.RECOVER_HP
+                    self.status["hp"] = self.cal_sprite_status(self.hp, self.setting.HP)
+                    collided_obj.status = cfg.StaticObject.STATUS_VANISH
+                    collided_obj.kill()
 
 
     def stand(self, passed_seconds):

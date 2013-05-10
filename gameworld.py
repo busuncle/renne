@@ -3,7 +3,7 @@ import pygame
 from pygame.locals import *
 from gameobjects.vector2 import Vector2
 from pygame.transform import smoothscale
-from base.util import ImageController
+from base.util import ImageController, Blink
 from base import constant as cfg
 from etc import setting as sfg
 
@@ -65,14 +65,28 @@ class StaticObject(pygame.sprite.DirtySprite):
         self.area = pygame.Rect(setting.AREA_RECT)
         self.area.center = pos
         self.status = cfg.StaticObject.STATUS_NORMAL
+        if self.setting.IS_ELIMINABLE:
+            # the object is eliminable, we should make it blink-blink look!
+            self.image_mix = None
+            self.blink = Blink()
 
 
     def adjust_rect(self):
         self.rect.center = (self.pos[0], self.pos[1] / 2 - self.setting.POS_RECT_DELTA_Y)
 
 
+    def update(self, passed_seconds):
+        if self.setting.IS_ELIMINABLE:
+            self.image_mix = self.blink.make(self.image, passed_seconds)
+
+
     def draw(self, camera):
-        camera.screen.blit(self.image, (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top))
+        if self.setting.IS_ELIMINABLE:
+            camera.screen.blit(self.image_mix,
+                (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top))
+        else:
+            camera.screen.blit(self.image, 
+                (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top))
 
 
 
@@ -122,6 +136,8 @@ class GameWorld(pygame.sprite.LayeredDirty):
 
     def update(self, passed_seconds):
         for i, obj in enumerate(self.static_objects):
+            if obj.setting.IS_ELIMINABLE:
+                obj.update(passed_seconds)
             if obj.status == cfg.StaticObject.STATUS_VANISH:
                 self.static_objects.pop(i)
 

@@ -173,6 +173,8 @@ class StaticObject(object):
     STATUS_NORMAL = 0
     STATUS_VANISH = 1
 
+    ELIMINATION_TYPE_FOOD = 1
+
 
 
 class Magic(object):
