@@ -1,6 +1,7 @@
 import pygame
 from etc import setting as sfg
 
+RED_ALPHA_128 = (255, 0, 0, 128)
 
 
 def draw_area(camera, sprite):
@@ -8,12 +9,12 @@ def draw_area(camera, sprite):
     r.center = (sprite.pos.x, sprite.pos.y/2)
     r.top -= camera.rect.top
     r.left -= camera.rect.left
-    pygame.draw.rect(camera.screen, pygame.Color("red"), r, 1)
+    pygame.draw.rect(camera.screen, pygame.Color(*RED_ALPHA_128), r, 1)
 
 
 def draw_pos(camera, sprite):
     pos = "(%s, %s)" % tuple(map(int, sprite.pos))
-    info = sfg.Font.ARIAL_16.render(pos, True, pygame.Color("red"))
+    info = sfg.Font.ARIAL_16.render(pos, True, pygame.Color(*RED_ALPHA_128))
     r = pygame.Rect(0, 0, 100, 20)
     r.center = (sprite.pos.x, sprite.pos.y/2)
     r.top -= camera.rect.top
@@ -26,7 +27,7 @@ def draw_waypoins(camera, waypoints):
         ix, iy = map(int, (x, y/2))
         ix -= camera.rect.left
         iy -= camera.rect.top
-        pygame.draw.circle(camera.screen, pygame.Color("red"), (ix, iy), 2)
+        pygame.draw.circle(camera.screen, pygame.Color(*RED_ALPHA_128), (ix, iy), 2)
 
 
 
