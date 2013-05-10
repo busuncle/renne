@@ -90,6 +90,9 @@ class Sprite(object):
     SHADOW_IMAGE_KEY = "sprite_shadow"
     UNDER_ATTACK_MIX_COLOR = pygame.Color("gray")
     UNDER_ATTACK_TIMER_LEN = 0.05
+    RECOVER_HP_MIX_COLOR = pygame.Color("gray")
+    RECOVER_HP_TIMER_LEN = 0.08
+
 
 
 
@@ -793,6 +796,13 @@ class SpriteStatus(object):
     COST_HP_WORDS_BLIT_Y_SIGMA = 10
     COST_HP_WORDS_POS_MOVE_RATE = (0, -60)
 
+    RECOVER_HP_WORDS_COLOR = pygame.Color("green")
+    RECOVER_HP_WORDS_FONT = Font.ARIAL_BLACK_32
+    RECOVER_HP_WORDS_SHOW_TIME = 0.3
+    RECOVER_HP_WORDS_BLIT_HEIGHT_OFFSET = 35
+    RECOVER_HP_WORDS_BLIT_X_SIGMA = 20
+    RECOVER_HP_WORDS_BLIT_Y_SIGMA = 10
+    RECOVER_HP_WORDS_POS_MOVE_RATE = (0, -60)
 
 
 class Achievement(object):

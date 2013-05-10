@@ -99,6 +99,21 @@ class SpriteAnimator(object):
             sfg.SpriteStatus.COST_HP_WORDS_POS_MOVE_RATE)
 
 
+    def show_recover_hp(self, hp):
+        sp = self.sprite
+        words = sfg.SpriteStatus.RECOVER_HP_WORDS_FONT.render("+%s" % hp, True,
+            sfg.SpriteStatus.RECOVER_HP_WORDS_COLOR)
+
+        dx = sfg.SpriteStatus.RECOVER_HP_WORDS_BLIT_X_SIGMA
+        dy = sfg.SpriteStatus.RECOVER_HP_WORDS_BLIT_Y_SIGMA
+        x = sp.pos.x
+        y = sp.pos.y / 2 - sp.setting.HEIGHT - sfg.SpriteStatus.RECOVER_HP_WORDS_BLIT_HEIGHT_OFFSET
+        rel_pos = (randint(int(x - dx), int(x + dx)), randint(int(y - dy), int(y + dy)))
+        self.words_renderer.add_blit_words(words, rel_pos,
+            sfg.SpriteStatus.RECOVER_HP_WORDS_SHOW_TIME,
+            sfg.SpriteStatus.RECOVER_HP_WORDS_POS_MOVE_RATE)
+
+
     def run_circle_frame(self, action, passed_seconds):
         # animation will be running in a circle way
         self.frame_adds[action] += passed_seconds * self.frame_rates[action]
@@ -127,6 +142,14 @@ class SpriteAnimator(object):
             image_mix = self.image.copy()
             image_mix.fill(sfg.Sprite.UNDER_ATTACK_MIX_COLOR, special_flags=BLEND_ADD)
             self.image = image_mix
+
+        if self.sprite.status["recover_hp"]:
+            if self.sprite.recover_hp_timer.exceed():
+                self.sprite.status["recover_hp"] = False
+            else:
+                image_mix = self.image.copy()
+                image_mix.fill(sfg.Sprite.RECOVER_HP_MIX_COLOR, special_flags=BLEND_ADD)
+                self.image = image_mix
 
         self.words_renderer.update(passed_seconds)
 

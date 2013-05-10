@@ -6,6 +6,7 @@ import simulator
 from animation import SpriteEmotionAnimator, RenneAnimator, EnemyAnimator
 from musicbox import SoundBox
 import controller
+from base.util import Timer
 from base import constant as cfg
 from etc import setting as sfg
 
@@ -43,7 +44,8 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.atk = atk
         self.dfs = dfs
         # a chaos dict that holding many kinds of status, i don't want many attributes, so i use it
-        self.status = {"hp": cfg.SpriteStatus.HEALTHY, "under_attack": False}
+        self.status = {"hp": cfg.SpriteStatus.HEALTHY, "under_attack": False,
+            "recover_hp": False}
         self.pos = Vector2(pos)
         self.direction = direction
 
@@ -119,6 +121,8 @@ class Renne(GameSprite):
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
         self.area.center = self.pos('xy')
 
+        self.recover_hp_timer = Timer(sfg.Sprite.RECOVER_HP_TIMER_LEN)
+
 
     def activate(self, allsprites, enemies, static_objects, game_map):
         self.allsprites = allsprites
@@ -135,6 +139,7 @@ class Renne(GameSprite):
         self.sp = self.setting.SP
         self.status["hp"] = cfg.SpriteStatus.HEALTHY 
         self.status["under_attack"] = False
+        self.status["recover_hp"] = False
 
 
     def place(self, pos, direction):
@@ -166,8 +171,13 @@ class Renne(GameSprite):
 
                 elif collided_obj.setting.IS_ELIMINABLE \
                     and collided_obj.setting.ELIMINATION_TYPE == cfg.StaticObject.ELIMINATION_TYPE_FOOD:
-                    self.hp += collided_obj.setting.RECOVER_HP
+                    real_recover_hp = min(self.setting.HP - self.hp, 
+                        collided_obj.setting.RECOVER_HP)
+                    self.hp += real_recover_hp
                     self.status["hp"] = self.cal_sprite_status(self.hp, self.setting.HP)
+                    self.status["recover_hp"] = True
+                    self.recover_hp_timer.begin()
+                    self.animation.show_recover_hp(real_recover_hp)
                     collided_obj.status = cfg.StaticObject.STATUS_VANISH
                     collided_obj.kill()
 
