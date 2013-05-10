@@ -480,7 +480,6 @@ class Attacker(object):
         self.sprite = sprite
         # during one attack(will be clear after when the attack is finish)
         self.has_hits = set()
-        self.under_attack_timer = Timer(sfg.Sprite.UNDER_ATTACK_TIMER_LEN)
 
 
     def run(self):
@@ -491,17 +490,11 @@ class Attacker(object):
         pass
 
 
-    def under_attack_tick(self):
-        if self.under_attack_timer.exceed():
-            self.sprite.status["under_attack"] = False
-
-
     def handle_under_attack(self, from_who, cost_hp):
         sp = self.sprite
         sp.hp = max(sp.hp - cost_hp, 0)
         sp.status["hp"] = sp.cal_sprite_status(sp.hp, sp.setting.HP)
-        sp.status["under_attack"] = True
-        self.under_attack_timer.begin()
+        sp.status["under_attack_effect_time"] = sfg.Sprite.UNDER_ATTACK_EFFECT_TIME
         sp.animation.show_cost_hp(cost_hp)
         if sp.setting.ROLE == cfg.SpriteRole.ENEMY:
             sp.cal_angry(cost_hp)

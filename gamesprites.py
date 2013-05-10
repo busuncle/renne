@@ -44,8 +44,8 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.atk = atk
         self.dfs = dfs
         # a chaos dict that holding many kinds of status, i don't want many attributes, so i use it
-        self.status = {"hp": cfg.SpriteStatus.HEALTHY, "under_attack": False,
-            "recover_hp": False}
+        self.status = {"hp": cfg.SpriteStatus.HEALTHY, 
+            "recover_hp_effect_time": 0, "under_attack_effect_time": 0}
         self.pos = Vector2(pos)
         self.direction = direction
 
@@ -121,8 +121,6 @@ class Renne(GameSprite):
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
         self.area.center = self.pos('xy')
 
-        self.recover_hp_timer = Timer(sfg.Sprite.RECOVER_HP_TIMER_LEN)
-
 
     def activate(self, allsprites, enemies, static_objects, game_map):
         self.allsprites = allsprites
@@ -138,8 +136,8 @@ class Renne(GameSprite):
         self.mp = self.setting.MP
         self.sp = self.setting.SP
         self.status["hp"] = cfg.SpriteStatus.HEALTHY 
-        self.status["under_attack"] = False
-        self.status["recover_hp"] = False
+        self.status["under_attack_effect_time"] = 0
+        self.status["recover_hp_effect_time"] = 0
 
 
     def place(self, pos, direction):
@@ -175,8 +173,7 @@ class Renne(GameSprite):
                         collided_obj.setting.RECOVER_HP)
                     self.hp += real_recover_hp
                     self.status["hp"] = self.cal_sprite_status(self.hp, self.setting.HP)
-                    self.status["recover_hp"] = True
-                    self.recover_hp_timer.begin()
+                    self.status["recover_hp_effect_time"] = sfg.Sprite.RECOVER_HP_EFFECT_TIME
                     self.animation.show_recover_hp(real_recover_hp)
                     collided_obj.status = cfg.StaticObject.STATUS_VANISH
                     collided_obj.kill()

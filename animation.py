@@ -139,20 +139,20 @@ class SpriteAnimator(object):
 
 
     def update(self, passed_seconds):
-        if self.sprite.status["under_attack"] \
-            and self.sprite.status["hp"] != cfg.SpriteStatus.DIE:
-            self.sprite.attacker.under_attack_tick()
+        if self.sprite.status["hp"] != cfg.SpriteStatus.DIE \
+            and self.sprite.status["under_attack_effect_time"] > 0:
+            self.sprite.status["under_attack_effect_time"] = max(0,
+                self.sprite.status["under_attack_effect_time"] - passed_seconds)
             image_mix = self.image.copy()
             image_mix.fill(sfg.Sprite.UNDER_ATTACK_MIX_COLOR, special_flags=BLEND_ADD)
             self.image = image_mix
 
-        if self.sprite.status["recover_hp"]:
-            if self.sprite.recover_hp_timer.exceed():
-                self.sprite.status["recover_hp"] = False
-            else:
-                image_mix = self.image.copy()
-                image_mix.fill(sfg.Sprite.RECOVER_HP_MIX_COLOR, special_flags=BLEND_ADD)
-                self.image = image_mix
+        if self.sprite.status["recover_hp_effect_time"] > 0:
+            self.sprite.status["recover_hp_effect_time"] = max(0,
+                self.sprite.status["recover_hp_effect_time"] - passed_seconds)
+            image_mix = self.image.copy()
+            image_mix.fill(sfg.Sprite.RECOVER_HP_MIX_COLOR, special_flags=BLEND_ADD)
+            self.image = image_mix
 
         self.words_renderer.update(passed_seconds)
 

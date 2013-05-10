@@ -89,10 +89,9 @@ class Stuff(object):
 class Sprite(object):
     SHADOW_IMAGE_KEY = "sprite_shadow"
     UNDER_ATTACK_MIX_COLOR = pygame.Color("gray")
-    UNDER_ATTACK_TIMER_LEN = 0.05
+    UNDER_ATTACK_EFFECT_TIME = 0.05
     RECOVER_HP_MIX_COLOR = pygame.Color("gray")
-    RECOVER_HP_TIMER_LEN = 0.08
-
+    RECOVER_HP_EFFECT_TIME = 0.08
 
 
 
