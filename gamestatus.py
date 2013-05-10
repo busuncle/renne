@@ -203,7 +203,7 @@ def loading_chapter_picture(screen):
 
 def show_chapter_win_screen_images(screen):
     # the chapter 0 is actually start menu
-    chapers = sfg.GameMap.CHAPTERS[1:]
+    chapters = sfg.GameMap.CHAPTERS[1:]
     for chapter in chapters:
         img = load_chapter_win_screen_image(chapter)
         if img is None:
@@ -225,10 +225,10 @@ def show_chapter_win_screen_images(screen):
                 img_alpha = int(min(img_alpha + passed_seconds * fade_in_delta, 255))
             else:
                 img_show_delay_time += passed_seconds
-                if img_show_delay_time > self.EndGame.CHAPTER_WIN_SCREEN_IMAGE_SHOW_DELAY_TIME:
+                if img_show_delay_time > sfg.EndGame.CHAPTER_WIN_SCREEN_IMAGE_SHOW_DELAY_TIME:
                     break
 
-            img.set_alpha(pic_alpha)
+            img.set_alpha(img_alpha)
             screen.blit(img, (0, 0))
 
             for event in pygame.event.get():
