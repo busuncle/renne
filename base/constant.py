@@ -131,6 +131,7 @@ class SpriteEmotion(object):
     ANGRY = 2
     CHAOS = 3
     SILENT = 4
+    STUN = 5
 
 
 

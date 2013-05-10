@@ -45,7 +45,7 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.dfs = dfs
         # a chaos dict that holding many kinds of status, i don't want many attributes, so i use it
         self.status = {"hp": cfg.SpriteStatus.HEALTHY, 
-            "recover_hp_effect_time": 0, "under_attack_effect_time": 0}
+            "recover_hp_effect_time": 0, "under_attack_effect_time": 0, "stun_time": 0}
         self.pos = Vector2(pos)
         self.direction = direction
 
@@ -138,6 +138,7 @@ class Renne(GameSprite):
         self.status["hp"] = cfg.SpriteStatus.HEALTHY 
         self.status["under_attack_effect_time"] = 0
         self.status["recover_hp_effect_time"] = 0
+        self.status["stun_time"] = 0
 
 
     def place(self, pos, direction):
@@ -431,7 +432,11 @@ class Enemy(GameSprite):
                 self.sound_box.play(random.choice(("attack_hit", "attack_hit2", "attack_hit3")))
 
 
-    def reset_action(self):
+    def reset_action(self, force=False):
+        if force:
+            self.brain.persistent = False
+            self.action = cfg.EnemyAction.STAND
+
         if not self.brain.persistent:
             self.action = cfg.EnemyAction.STAND
 
@@ -472,6 +477,10 @@ class Enemy(GameSprite):
         if self.status["hp"] == cfg.SpriteStatus.DIE:
             return
 
+        if self.status["stun_time"] > 0:
+            self.reset_action(force=True)
+            return
+
         self.brain.think()
         for action in self.brain.actions:
 
@@ -501,7 +510,13 @@ class Enemy(GameSprite):
                 # user pause the game, don't update animation
                 return
 
-        if self.status["hp"] != cfg.SpriteStatus.DIE:
+        if self.status["stun_time"] > 0:
+            self.animation.set_init_frame(cfg.EnemyAction.STAND)
+            self.status["stun_time"] = max(0, self.status["stun_time"] - passed_seconds)
+            if self.status["stun_time"] == 0:
+                self.set_emotion(cfg.SpriteEmotion.NORMAL)
+
+        if self.status["hp"] != cfg.SpriteStatus.DIE and self.status["stun_time"] == 0:
 
             if self.action == cfg.EnemyAction.ATTACK:
                 self.attack(passed_seconds)

@@ -117,6 +117,10 @@ class SpriteAnimator(object):
             sfg.SpriteStatus.RECOVER_HP_WORDS_POS_MOVE_RATE)
 
 
+    def set_init_frame(self, action):
+        self.image = self.sprite_image_contoller.get_surface(action)[self.sprite.direction]
+
+
     def run_circle_frame(self, action, passed_seconds):
         # animation will be running in a circle way
         self.frame_adds[action] += passed_seconds * self.frame_rates[action]
@@ -288,13 +292,18 @@ class SpriteEmotionAnimator(object):
 
     def reset_frame(self, emotion):
         self.frame_adds[emotion] = 0
+        self.image = None
 
+
+    def run_circle_frame(self, emotion, passed_seconds):
+        self.frame_adds[emotion] += passed_seconds * self.frame_rates[emotion]
+        self.frame_adds[emotion] %= self.frame_nums[emotion]
+        self.image = self.frame_mapping[emotion][int(self.frame_adds[emotion])]
 
     def run_sequence_frame(self, emotion, passed_seconds):
         self.frame_adds[emotion] += passed_seconds * self.frame_rates[emotion]
         if self.frame_adds[emotion] >= self.frame_nums[emotion]:
-            self.frame_adds[emotion] = 0
-            self.image = None
+            self.reset_frame(emotion)
             return True
         else:
             self.image = self.frame_mapping[emotion][int(self.frame_adds[emotion])]
@@ -304,9 +313,12 @@ class SpriteEmotionAnimator(object):
     def update(self, passed_seconds):
         sp = self.sprite
         if sp.status["emotion"] != cfg.SpriteEmotion.NORMAL:
-            is_finish = self.run_sequence_frame(sp.status["emotion"], passed_seconds)
-            if is_finish:
-                sp.status["emotion"] = cfg.SpriteEmotion.NORMAL
+            if sp.status["emotion"] == cfg.SpriteEmotion.STUN:
+                self.run_circle_frame(sp.status["emotion"], passed_seconds)        
+            else:
+                is_finish = self.run_sequence_frame(sp.status["emotion"], passed_seconds)
+                if is_finish:
+                    sp.status["emotion"] = cfg.SpriteEmotion.NORMAL
 
 
     def draw(self, camera):

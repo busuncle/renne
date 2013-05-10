@@ -341,6 +341,8 @@ class DestroyAeroliteSet(object):
                     and sp.area.colliderect(aerolite.area):
                     self.has_hits.add(sp)
                     sp.attacker.handle_under_attack(self.sprite, aerolite.damage)
+                    sp.status["stun_time"] = self.params["stun_time"]
+                    sp.set_emotion(cfg.SpriteEmotion.STUN)
 
         if len(self.trigger_times) == 0 and len(self.magic_sprites) == 0:
             self.status = cfg.Magic.STATUS_VANISH

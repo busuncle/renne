@@ -169,7 +169,7 @@ class Renne(object):
             "fall_range": 128,
             "damage": 60,
             "acceleration": 400,
-            "mana": 60,
+            "mana": 80,
             #"mana": 6,
             "dx": 32,
             "dy": 240,
@@ -180,6 +180,7 @@ class Renne(object):
             "aerolite_life": 1.5,
             "aerolite_shake_on_x": 90,
             "aerolite_shake_on_y": 90,
+            "stun_time": 5,
         }
     }
 
@@ -792,6 +793,7 @@ class EmotionImage(object):
         cfg.SpriteEmotion.ANGRY: ((12, 14), 2, 2),
         cfg.SpriteEmotion.CHAOS: ((14, 16), 2, 2),
         cfg.SpriteEmotion.SILENT: ((24, 28), 4, 3),
+        cfg.SpriteEmotion.STUN: ((48, 51), 3, 6),
     }
 
 
