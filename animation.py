@@ -155,12 +155,18 @@ class SpriteAnimator(object):
 
 
     def draw_shadow(self, camera):
+        if not self.rect.colliderect(camera.rect):
+            return 
+
         if self.image is not None:
             shadow_blit_pos = (self.shadow_rect.left - camera.rect.left, self.shadow_rect.top - camera.rect.top)
             camera.screen.blit(self.shadow_image, shadow_blit_pos)
 
 
     def draw(self, camera):
+        if not self.rect.colliderect(camera.rect):
+            return 
+
         if self.image is not None:
             # don't modify rect itself, but pass the relative topleft point to the blit function
             image_blit_pos = (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top)

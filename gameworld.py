@@ -45,7 +45,8 @@ class GameMap(object):
     def draw(self, camera):
         for tile, tile_rect in self.map_tiles:
             if tile_rect.colliderect(camera.rect):
-                camera.screen.blit(tile, (tile_rect.left - camera.rect.left, tile_rect.top - camera.rect.top))
+                camera.screen.blit(tile, 
+                    (tile_rect.left - camera.rect.left, tile_rect.top - camera.rect.top))
 
 
 
@@ -81,6 +82,9 @@ class StaticObject(pygame.sprite.DirtySprite):
 
 
     def draw(self, camera):
+        if not self.rect.colliderect(camera.rect):
+            return
+
         if self.setting.IS_ELIMINABLE:
             camera.screen.blit(self.image_mix,
                 (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top))
