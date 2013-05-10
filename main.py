@@ -4,7 +4,7 @@ from gamesprites import Renne, GameSpritesGroup, enemy_in_one_screen, ENEMY_CLAS
 from base import constant as cfg
 from etc import setting as sfg
 from etc import ai_setting as ai
-from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObject
+from gameworld import GameWorld, GameMap, StaticObjectGroup, StaticObject
 from gamestatus import GameStatus, Menu, bg_box, start_game, loading_chapter_picture, end_game
 from renderer import Camera
 import debug_tools
@@ -70,7 +70,7 @@ def enter_chapter(screen, chapter, renne):
     game_world = GameWorld()
     allsprites = GameSpritesGroup()
     enemies = GameSpritesGroup()
-    static_objects = GameStaticObjectGroup()
+    static_objects = StaticObjectGroup()
     game_map = GameMap(chapter, map_setting["size"], map_setting["tiles"])
 
     # load hero
@@ -91,7 +91,7 @@ def enter_chapter(screen, chapter, renne):
     # load static objects
     chapter_static_objects = map_setting["static_objects"]
     for t, p in chapter_static_objects:
-        static_obj = GameStaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[t], p)
+        static_obj = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[t], p)
         static_objects.add(static_obj)
 
     allsprites.add(renne)
@@ -156,7 +156,7 @@ def enter_chapter(screen, chapter, renne):
             if enemy_in_one_screen(renne, enemy):
                 enemy.update(passed_seconds, external_event=game_status.status)
 
-        game_world.update()
+        game_world.update(passed_seconds)
         game_status.update(passed_seconds)
 
         camera.screen_follow(renne.pos)

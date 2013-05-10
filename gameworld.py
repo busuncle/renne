@@ -49,12 +49,12 @@ class GameMap(object):
 
 
 
-class GameStaticObject(pygame.sprite.DirtySprite):
+class StaticObject(pygame.sprite.DirtySprite):
     static_images = ImageController(sfg.STATIC_OBJECT_IMAGES[0])
     static_images.add_from_list(sfg.STATIC_OBJECT_IMAGES[1])
 
     def __init__(self, setting, pos):
-        super(GameStaticObject, self).__init__()
+        super(StaticObject, self).__init__()
         self.setting = setting
         self.pos = Vector2(pos)
         self.image = self.static_images.get(setting.IMAGE_KEY).convert_alpha().subsurface(
@@ -64,6 +64,7 @@ class GameStaticObject(pygame.sprite.DirtySprite):
         self.adjust_rect()
         self.area = pygame.Rect(setting.AREA_RECT)
         self.area.center = pos
+        self.status = cfg.StaticObject.STATUS_NORMAL
 
 
     def adjust_rect(self):
@@ -75,9 +76,9 @@ class GameStaticObject(pygame.sprite.DirtySprite):
 
 
 
-class GameStaticObjectGroup(pygame.sprite.LayeredDirty):
+class StaticObjectGroup(pygame.sprite.LayeredDirty):
     def __init__(self):
-        super(GameStaticObjectGroup, self).__init__()
+        super(StaticObjectGroup, self).__init__()
 
     def draw(self, surface):
         for obj in self.sprites():
@@ -119,7 +120,11 @@ class GameWorld(pygame.sprite.LayeredDirty):
         self.static_objects.sort(key=lambda obj: obj.pos.y)
 
 
-    def update(self):
+    def update(self, passed_seconds):
+        for i, obj in enumerate(self.static_objects):
+            if obj.status == cfg.StaticObject.STATUS_VANISH:
+                self.static_objects.pop(i)
+
         for i, sp in enumerate(self.dynamic_objects):
             if sp.status["hp"] == cfg.SpriteStatus.VANISH:
                 self.dynamic_objects.pop(i)

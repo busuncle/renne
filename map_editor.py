@@ -3,7 +3,7 @@ import pygame
 from pygame.locals import *
 from gamesprites import Renne, Enemy, GameSpritesGroup
 from gameobjects.vector2 import Vector2
-from gameworld import GameWorld, GameMap, GameStaticObjectGroup, GameStaticObject
+from gameworld import GameWorld, GameMap, StaticObjectGroup, StaticObject
 from renderer import Camera
 from base import util
 import debug_tools
@@ -104,7 +104,7 @@ def set_selected_object_follow_mouse(map_pos_for_mouse, selected_object):
 
 
 def mouse_object_toggle(selected_object, game_world):
-    # None -> Enemy -> GameStaticObject -> None ... change in this circle
+    # None -> Enemy -> StaticObject -> None ... change in this circle
     new_selected = None
     if isinstance(selected_object, Renne):
         # Renne is not under this loop, do nothing and return it immediately
@@ -115,9 +115,9 @@ def mouse_object_toggle(selected_object, game_world):
         game_world.add_object(new_selected)
     elif isinstance(selected_object, Enemy):
         game_world.remove_object(selected_object)
-        new_selected = GameStaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[1], (-1000, -1000))
+        new_selected = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[1], (-1000, -1000))
         game_world.add_object(new_selected)
-    elif isinstance(selected_object, GameStaticObject):
+    elif isinstance(selected_object, StaticObject):
         game_world.remove_object(selected_object)
         new_selected = None
 
@@ -133,9 +133,9 @@ def selected_object_toggle(selected_object, game_world):
     if isinstance(selected_object, Enemy):
         new_object_id = (selected_object.setting.ID + 1) % (len(sfg.SPRITE_SETTING_LIST) + 1) or 1
         new_object = Enemy(sfg.SPRITE_SETTING_MAPPING[new_object_id], (-1000, -1000), 0)
-    elif isinstance(selected_object, GameStaticObject):
+    elif isinstance(selected_object, StaticObject):
         new_object_id = (selected_object.setting.ID + 1) % (len(sfg.STATIC_OBJECT_SETTING_LIST) + 1) or 1
-        new_object = GameStaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[new_object_id], (-1000, -1000))
+        new_object = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[new_object_id], (-1000, -1000))
     game_world.add_object(new_object)
         
     return new_object
@@ -145,8 +145,8 @@ def create_new_instance(selected_object):
     if isinstance(selected_object, Enemy):
         return Enemy(sfg.SPRITE_SETTING_MAPPING[selected_object.setting.ID], 
             selected_object.pos.as_tuple(), 0)
-    elif isinstance(selected_object, GameStaticObject):
-        return GameStaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[selected_object.setting.ID],
+    elif isinstance(selected_object, StaticObject):
+        return StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[selected_object.setting.ID],
             selected_object.pos.as_tuple())
     raise Exception("invalid object to create")
 
@@ -182,7 +182,7 @@ def run(chapter):
     # load static objects
     chapter_static_objects = map_setting.get("static_objects", [])
     for t, p in chapter_static_objects:
-        static_obj = GameStaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[t], p)
+        static_obj = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[t], p)
         game_world.add_object(static_obj)
 
 

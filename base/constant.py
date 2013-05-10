@@ -169,6 +169,12 @@ class Achievement(object):
 
 
 
+class StaticObject(object):
+    STATUS_NORMAL = 0
+    STATUS_VANISH = 1
+
+
+
 class Magic(object):
     STATUS_ALIVE = 0 
     STATUS_VANISH = 1
