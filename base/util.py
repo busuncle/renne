@@ -65,16 +65,16 @@ def save_map_setting(chapter, map_setting):
 
 
 def save_chapter_win_screen_image(chapter, surface):
-    filename = "chapter_%s_win.jpg" % chapter
+    filename = "chapter_%s_win.png" % chapter
     filepath = os.path.join("data", "snapshot", filename)
     pygame.image.save(surface, filepath)
 
 
 def load_chapter_win_screen_image(chapter):
-    filename = "chapter_%s_win.jpg" % chapter
+    filename = "chapter_%s_win.png" % chapter
     filepath = os.path.join("data", "snapshot", filename)
     if os.path.exists(filepath):
-        return pygame.image.load(filepath)
+        return pygame.image.load(filepath).convert()
     else:
         return None
 

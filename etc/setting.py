@@ -993,6 +993,7 @@ class EndGame(object):
     BUSUNCLE_WORKS = Font.ARIAL_BLACK_32.render("Busuncle's works", True, pygame.Color("white"))
     BUSUNCLE_WORKS_BLIT_Y = 450
     RENNE_IMAGE_BLIT_Y = 360
+    CHAPTER_WIN_SCREEN_IMAGE_SHOW_DELAY_TIME = 1.5
 
 
 

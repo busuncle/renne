@@ -5,7 +5,7 @@ from pygame.transform import smoothscale, scale2x
 from animation import cg_image_controller, basic_image_controller
 from musicbox import BackgroundBox
 from base.util import ImageController
-from base.util import Timer
+from base.util import Timer, load_chapter_win_screen_image
 from base import constant as cfg
 from etc import setting as sfg
 
@@ -201,9 +201,47 @@ def loading_chapter_picture(screen):
         pygame.display.flip()
 
 
+def show_chapter_win_screen_images(screen):
+    # the chapter 0 is actually start menu
+    chapers = sfg.GameMap.CHAPTERS[1:]
+    for chapter in chapters:
+        img = load_chapter_win_screen_image(chapter)
+        if img is None:
+            continue
+
+        img_alpha = 0
+        fade_in_delta = 256 / (sfg.EndGame.ENDING_FADEIN_TIME \
+            - sfg.EndGame.CHAPTER_WIN_SCREEN_IMAGE_SHOW_DELAY_TIME)
+        clock = pygame.time.Clock()
+        img_show_delay_time = 0
+
+        while True:
+            screen.fill(pygame.Color("black"))
+
+            time_passed = clock.tick(sfg.FPS)
+            passed_seconds = time_passed / 1000.0
+
+            if img_alpha < 255:
+                img_alpha = int(min(img_alpha + passed_seconds * fade_in_delta, 255))
+            else:
+                img_show_delay_time += passed_seconds
+                if img_show_delay_time > self.EndGame.CHAPTER_WIN_SCREEN_IMAGE_SHOW_DELAY_TIME:
+                    break
+
+            img.set_alpha(pic_alpha)
+            screen.blit(img, (0, 0))
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: 
+                    return exit(0)
+
+            pygame.display.flip()
+
 
 def end_game(screen):
     bg_box.play(sfg.Music.END_GAME_KEY, loops=0)
+
+    show_chapter_win_screen_images(screen)
 
     screen_centerx = sfg.Screen.SIZE[0] / 2
 
