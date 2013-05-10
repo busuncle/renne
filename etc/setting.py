@@ -714,6 +714,62 @@ class RoastChicken(object):
 
 
 
+class Omelette(object):
+    NAME = "Omelette"
+    IMAGE_KEY = "food"
+    IMAGE_RECT = (192, 128, 64, 64)
+    POS_RECT_DELTA_Y = 8
+    AREA_RECT = (0, 0, 32, 32)
+    IS_BLOCK = False
+    IS_VIEW_BLOCK = False
+    IS_ELIMINABLE = True
+    ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
+    RECOVER_HP = 100
+
+
+
+class BreadBasket(object):
+    NAME = "BreadBasket"
+    IMAGE_KEY = "food"
+    IMAGE_RECT = (64, 128, 64, 64)
+    POS_RECT_DELTA_Y = 8
+    AREA_RECT = (0, 0, 32, 32)
+    IS_BLOCK = False
+    IS_VIEW_BLOCK = False
+    IS_ELIMINABLE = True
+    ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
+    RECOVER_HP = 100
+
+
+
+class Salad(object):
+    NAME = "Salad"
+    IMAGE_KEY = "food"
+    IMAGE_RECT = (192, 64, 64, 64)
+    POS_RECT_DELTA_Y = 8
+    AREA_RECT = (0, 0, 32, 32)
+    IS_BLOCK = False
+    IS_VIEW_BLOCK = False
+    IS_ELIMINABLE = True
+    ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
+    RECOVER_HP = 100
+
+
+
+class Wine(object):
+    NAME = "Wine"
+    IMAGE_KEY = "food"
+    IMAGE_RECT = (0, 160, 32, 64)
+    POS_RECT_DELTA_Y = 24
+    AREA_RECT = (0, 0, 16, 16)
+    IS_BLOCK = False
+    IS_VIEW_BLOCK = False
+    IS_ELIMINABLE = True
+    ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
+    RECOVER_HP = 50
+
+
+
 class WayPoint(object):
     DIR = os.path.join("etc", "waypoints")
     STEP_WIDTH = 24
@@ -1007,6 +1063,10 @@ STATIC_OBJECT_SETTING_LIST = [
     StoneWall7,
     StoneWall7_1,
     RoastChicken,
+    Omelette,
+    BreadBasket,
+    Salad,
+    Wine,
 ]
 
 
