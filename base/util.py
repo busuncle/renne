@@ -64,6 +64,21 @@ def save_map_setting(chapter, map_setting):
         fp.write("map_setting = " + res)
 
 
+def save_chapter_win_screen_image(chapter, surface):
+    filename = "chapter_%s_win.jpg" % chapter
+    filepath = os.path.join("data", "snapshot", filename)
+    pygame.image.save(surface, filepath)
+
+
+def load_chapter_win_screen_image(chapter):
+    filename = "chapter_%s_win.jpg" % chapter
+    filepath = os.path.join("data", "snapshot", filename)
+    if os.path.exists(filepath):
+        return pygame.image.load(filepath)
+    else:
+        return None
+
+
 def parse_command_line(needed_args_list):
     # for version compatible
     # needed_args_list should be a list containing tuples with args and kwargs that parser accepts
