@@ -64,11 +64,12 @@ class UserKey(object):
     LEFT = K_a
     RIGHT = K_d
     ATTACK = K_j
-    ATTACK_DESTROY_FIRE = K_k
+    ATTACK_DESTROY_FIRE = K_u
     ATTACK_DESTROY_BOMB = K_i
     ATTACK_DESTROY_AEROLITE = K_o
+    REST = K_k
     RUN = K_l
-    WIN = K_u
+    WIN = K_h
 
 
 
@@ -122,6 +123,7 @@ class Renne(object):
         cfg.HeroAction.RUN: 16,
         cfg.HeroAction.ATTACK: 18,
         cfg.HeroAction.WIN: 14,
+        cfg.HeroAction.REST: 8,
     }
 
     FRAME_NUMS = {
@@ -131,6 +133,7 @@ class Renne(object):
         cfg.HeroAction.RUN: 8,
         cfg.HeroAction.ATTACK: 14,
         cfg.HeroAction.WIN: 31,
+        cfg.HeroAction.REST: 4,
     }
 
     # move speed, in pixel unit
@@ -1104,6 +1107,7 @@ SPRITE_FRAMES = {
         cfg.HeroAction.ATTACK: "attack_14.png",
         cfg.HeroAction.STAND: "stand_8.png",
         cfg.HeroAction.WIN: "win_31.png",
+        cfg.HeroAction.REST: "rest_4.png",
     }),
     1: ("skeleton_warrior", {
         cfg.EnemyAction.WALK: "walk_8.png",

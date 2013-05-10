@@ -182,13 +182,19 @@ class Renne(GameSprite):
 
     def stand(self, passed_seconds):
         if self.status["hp"] != cfg.SpriteStatus.DIE:
-            # sp recover when standing
-            self.sp = min(self.setting.SP, 
-                self.sp + self.setting.SP_RECOVERY_RATE * passed_seconds)
+            self.sp = min(self.setting.SP, self.sp + self.setting.SP_RECOVERY_RATE * passed_seconds)
+            self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
         self.animation.run_circle_frame(cfg.HeroAction.STAND, passed_seconds)
 
 
+    def rest(self, passed_seconds):
+        self.sp = min(self.setting.SP, self.sp + self.setting.SP_RECOVERY_RATE * 2 * passed_seconds)
+        self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * 2 * passed_seconds)
+        self.animation.run_circle_frame(cfg.HeroAction.REST, passed_seconds)
+
+
     def walk(self, passed_seconds):
+        self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
         self.move(self.setting.WALK_SPEED, passed_seconds)
         self.animation.run_circle_frame(cfg.HeroAction.WALK, passed_seconds)
 
@@ -196,6 +202,7 @@ class Renne(GameSprite):
     def run(self, passed_seconds):
         # cost some stamina when running
         self.sp = max(0, self.sp - self.setting.SP_COST_RATE * passed_seconds)
+        self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
         self.move(self.setting.RUN_SPEED, passed_seconds)
         self.animation.run_circle_frame(cfg.HeroAction.RUN, passed_seconds)
 
@@ -295,6 +302,9 @@ class Renne(GameSprite):
                 self.sound_box.play(atk_snd)
                 self.action = cfg.HeroAction.ATTACK_DESTROY_AEROLITE
 
+        elif pressed_keys[sfg.UserKey.REST]:
+            self.action = cfg.HeroAction.REST
+
         elif self.key_vec:
             if pressed_keys[sfg.UserKey.RUN] and self.sp > 0:
                 # press run and stamina enough
@@ -338,6 +348,9 @@ class Renne(GameSprite):
         elif self.action == cfg.HeroAction.WIN:
             self.win(passed_seconds)
 
+        elif self.action == cfg.HeroAction.REST:
+            self.rest(passed_seconds)
+
         elif self.action == cfg.HeroAction.STAND:
             self.stand(passed_seconds)
 
@@ -349,8 +362,6 @@ class Renne(GameSprite):
             else:
                 magic.update(passed_seconds)
 
-        if self.status["hp"] != cfg.SpriteStatus.DIE:
-            self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
 
 
 
