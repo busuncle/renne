@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import BLEND_ADD
 from time import time
 from random import randint
-from base.util import ImageController, SpriteImageController, Timer
+from base.util import ImageController, SpriteImageController, Timer, Blink
 from base import constant as cfg
 from etc import setting as sfg
 
@@ -37,8 +37,8 @@ class WordsRenderer(object):
 
 
     def add_blit_words(self, words, rel_pos, time_len, pos_move_rate=None):
-        self.blit_list.append({"words": words, "rel_pos": rel_pos, 
-            "timer": Timer(time_len), "pos_move_rate": pos_move_rate})
+        self.blit_list.append({"words": words, "words_mix": None, "rel_pos": rel_pos, 
+            "timer": Timer(time_len), "pos_move_rate": pos_move_rate, "blink": Blink()})
 
 
     def update(self, passed_seconds):
@@ -48,6 +48,7 @@ class WordsRenderer(object):
             elif bw["timer"].exceed():
                 self.blit_list.pop(i)
             else:
+                bw["words_mix"] = bw["blink"].make(bw["words"], passed_seconds)
                 mr = bw.get("pos_move_rate")
                 if mr is not None:
                     x, y = bw["rel_pos"]
@@ -58,7 +59,7 @@ class WordsRenderer(object):
 
     def draw(self, camera):
         for bw in self.blit_list:
-            camera.screen.blit(bw["words"], (bw["rel_pos"][0] - camera.rect.left, 
+            camera.screen.blit(bw["words_mix"], (bw["rel_pos"][0] - camera.rect.left, 
                 bw["rel_pos"][1] - camera.rect.top))
 
 
