@@ -39,10 +39,16 @@ class MagicSprite(pygame.sprite.DirtySprite):
             camera.screen.blit(self.image,
                 (self.pos.x - camera.rect.x - self.dx, self.pos.y / 2 - camera.rect.y - self.dy))
 
+        #r = pygame.Rect(0, 0, self.area.width, self.area.height / 2)
+        #r.center = (self.pos.x, self.pos.y / 2)
+        #r.top -= camera.rect.top
+        #r.left -= camera.rect.left
+        #pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
+
 
 
 class EnergyBall(MagicSprite):
-    def __init__(self, pos, radius, dx, dy, damage, image, target_pos, range, speed):
+    def __init__(self, pos, radius, dx, dy, damage, image, shadow, target_pos, range, speed):
         super(EnergyBall, self).__init__(pos, radius, dx, dy, damage, image)
         self.range = range
         self.speed = speed
@@ -50,6 +56,7 @@ class EnergyBall(MagicSprite):
         self.key_vec = Vector2.from_points(pos, target_pos)
         self.key_vec.normalize()
         self.image_mix = self.image.copy()
+        self.shadow = shadow
         self.blink = Blink()
 
         
@@ -61,15 +68,27 @@ class EnergyBall(MagicSprite):
             self.status = cfg.Magic.STATUS_VANISH
 
 
+    def draw_shadow(self, camera):
+        shd_rect = self.shadow["image"].get_rect()
+        shd_rect.center = self.pos
+        camera.screen.blit(self.shadow["image"],
+            (shd_rect.x - camera.rect.x, shd_rect.y / 2 - camera.rect.y - self.shadow["dy"]))
+
+
     def draw(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
             camera.screen.blit(self.image_mix,
                 (self.pos.x - camera.rect.x - self.dx, self.pos.y / 2 - camera.rect.y - self.dy))
+            #r = pygame.Rect(0, 0, self.area.width, self.area.height / 2)
+            #r.center = (self.pos.x, self.pos.y / 2)
+            #r.top -= camera.rect.top
+            #r.left -= camera.rect.left
+            #pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
 
 
 
 class EnergyBallSet(object):
-    def __init__(self, image, sprite, target_list, static_objects, params, pos, target_pos):
+    def __init__(self, image, shadow, sprite, target_list, static_objects, params, pos, target_pos):
         self.sprite = sprite
         self.target_list = target_list
         self.static_objects = static_objects
@@ -78,7 +97,7 @@ class EnergyBallSet(object):
         self.magic_sprites = []
         # only one ball right now
         self.magic_sprites.append(EnergyBall(pos, params["radius"], params["dx"], params["dy"], 
-            params["damage"], image, target_pos, params["range"], params["speed"]))
+            params["damage"], image, shadow, target_pos, params["range"], params["speed"]))
 
 
     def update(self, passed_seconds):
@@ -121,13 +140,18 @@ class DestroyFire(EnergyBallSet):
     destroy_fire_image = animation.effect_image_controller.get(
         sfg.Effect.DESTROY_FIRE_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.DESTROY_FIRE_RECT)
+    shadow_image = animation.get_shadow_image(sfg.Effect.DESTROY_FIRE_SHADOW_INDEX)
+    shadow_rect_delta_y = sfg.Effect.DESTROY_FIRE_SHADOW_RECT_DELTA_Y
     def __init__(self, sprite, target_list, static_objects, params, pos, target_pos):
-        super(DestroyFire, self).__init__(self.destroy_fire_image,
+        super(DestroyFire, self).__init__(self.destroy_fire_image, 
+            {"image": self.shadow_image, "dy": self.shadow_rect_delta_y},
             sprite, target_list, static_objects, params, pos, target_pos)
 
 
 
 class DestroyBomb(MagicSprite):
+    shadow_image = animation.get_shadow_image(sfg.Effect.DESTROY_BOMB_SHADOW_INDEX)
+    shadow_rect_delta_y = sfg.Effect.DESTROY_BOMB_SHADOW_RECT_DELTA_Y
     def __init__(self, pos, radius, dx, dy, damage, image, life, shake_on_x, shake_on_y):
         super(DestroyBomb, self).__init__(pos, radius, dx, dy, damage, image)
         self.pos.x = gauss(self.pos.x, shake_on_x)
@@ -143,12 +167,19 @@ class DestroyBomb(MagicSprite):
             self.status = cfg.Magic.STATUS_VANISH
         
 
+    def draw_shadow(self, camera):
+        shd_rect = self.shadow_image.get_rect()
+        shd_rect.center = self.pos
+        camera.screen.blit(self.shadow_image,
+            (shd_rect.x - camera.rect.x, shd_rect.y / 2 - camera.rect.y - self.shadow_rect_delta_y))
+
+
 
 class DestroyBombSet(object):
     # Renne skill
     destroy_bombs_image = animation.effect_image_controller.get(
-        sfg.Effect.DESTORY_BOMB_IMAGE_KEY).convert_alpha().subsurface(
-        sfg.Effect.DESTORY_BOMB_RECT)
+        sfg.Effect.DESTROY_BOMB_IMAGE_KEY).convert_alpha().subsurface(
+        sfg.Effect.DESTROY_BOMB_RECT)
     destroy_bomb_images = []
     for i in xrange(3):
         for j in xrange(2):
@@ -241,7 +272,7 @@ class DestroyBombSet(object):
 
 class DestroyAerolite(MagicSprite):
     shadow_image = animation.get_shadow_image(sfg.Effect.DESTROY_AEROLITE_SHADOW_INDEX)
-    shadow_rect_delta_y = 12
+    shadow_rect_delta_y = sfg.Effect.DESTROY_AEROLITE_SHADOW_RECT_DELTA_Y
     def __init__(self, pos, radius, dx, dy, damage, image, fall_range, acceleration, damage_cal_time,
             life, shake_on_x, shake_on_y):
         super(DestroyAerolite, self).__init__(pos, radius, dx, dy, damage, image)
@@ -370,13 +401,18 @@ class DeathCoil(EnergyBallSet):
         sfg.Effect.DEATH_COIL_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.DEATH_COIL_RECT)
     image_list = [death_coil_image.subsurface((i * 64, 0, 64, 64)) for i in xrange(2)]
+    shadow_image = animation.get_shadow_image(sfg.Effect.DEATH_COIL_SHADOW_INDEX)
+    shadow_rect_delta_y = sfg.Effect.DEATH_COIL_SHADOW_RECT_DELTA_Y
     def __init__(self, sprite, target, static_objects, params, pos, target_pos):
-        super(DeathCoil, self).__init__(choice(self.image_list),
+        super(DeathCoil, self).__init__(choice(self.image_list), 
+            {"image": self.shadow_image, "dy": self.shadow_rect_delta_y},
             sprite, [target], static_objects, params, pos, target_pos)
 
 
 
 class HellClaw(MagicSprite):
+    shadow_image = animation.get_shadow_image(sfg.Effect.HELL_CLAW_SHADOW_INDEX)
+    shadow_rect_delta_y = sfg.Effect.HELL_CLAW_SHADOW_RECT_DELTA_Y
     def __init__(self, pos, radius, dx, dy, damage, image, life, damage_cal_time,
             shake_on_x, shake_on_y):
         super(HellClaw, self).__init__(pos, radius, dx, dy, damage, image)
@@ -398,15 +434,21 @@ class HellClaw(MagicSprite):
             self.status = cfg.Magic.STATUS_VANISH
 
 
+    def draw_shadow(self, camera):
+        shd_rect = self.shadow_image.get_rect()
+        shd_rect.center = self.pos
+        camera.screen.blit(self.shadow_image,
+            (shd_rect.x - camera.rect.x, shd_rect.y / 2 - camera.rect.y - self.shadow_rect_delta_y))
+
+
     def draw(self, camera):
         camera.screen.blit(self.image_mix,
             (self.pos.x - camera.rect.x - self.dx, self.pos.y / 2 - camera.rect.y - self.dy))
-        #if self.alive_time > self.damage_cal_time:
-        #    r = pygame.Rect(0, 0, self.area.width, self.area.height / 2)
-        #    r.center = (self.pos.x, self.pos.y / 2)
-        #    r.top -= camera.rect.top
-        #    r.left -= camera.rect.left
-        #    pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
+        #r = pygame.Rect(0, 0, self.area.width, self.area.height / 2)
+        #r.center = (self.pos.x, self.pos.y / 2)
+        #r.top -= camera.rect.top
+        #r.left -= camera.rect.left
+        #pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
 
 
 

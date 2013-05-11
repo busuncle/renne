@@ -353,7 +353,7 @@ class LeonHardt(Enemy):
             "speed": 250,
             "radius": 15,
             "dx": 32,
-            "dy": 52,
+            "dy": 64,
             "mana": 60,
         },
         "hell_claw": {
@@ -1020,15 +1020,28 @@ class Music(object):
 class Effect(object):
     DESTROY_FIRE_IMAGE_KEY = "e2"
     DESTROY_FIRE_RECT = (64, 0, 64, 64)
-    DESTORY_BOMB_IMAGE_KEY = "e3"
-    DESTORY_BOMB_RECT = (0, 0, 192, 128)
+    DESTROY_FIRE_SHADOW_INDEX = 3
+    DESTROY_FIRE_SHADOW_RECT_DELTA_Y = 12
+
+    DESTROY_BOMB_IMAGE_KEY = "e3"
+    DESTROY_BOMB_RECT = (0, 0, 192, 128)
+    DESTROY_BOMB_SHADOW_INDEX = 1
+    DESTROY_BOMB_SHADOW_RECT_DELTA_Y = 18
+
     DESTROY_AEROLITE_IMAGE_KEY = "e3"
     DESTROY_AEROLITE_RECT = (192, 0, 64, 128)
     DESTROY_AEROLITE_SHADOW_INDEX = 3
+    DESTROY_AEROLITE_SHADOW_RECT_DELTA_Y = 12
+
     DEATH_COIL_IMAGE_KEY = "e1"
     DEATH_COIL_RECT = (128, 192, 128, 64)
+    DEATH_COIL_SHADOW_INDEX = 0
+    DEATH_COIL_SHADOW_RECT_DELTA_Y = 20
+
     HELL_CLAW_IMAGE_KEY = "e1"
     HELL_CLAW_RECT = (0, 184, 128, 72)
+    HELL_CLAW_SHADOW_INDEX = 1
+    HELL_CLAW_SHADOW_RECT_DELTA_Y = 18
 
     BLINK_RATE = 256
     BLINK_DEPTH_SECTION = (32, 128)
