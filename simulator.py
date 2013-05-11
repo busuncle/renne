@@ -118,7 +118,7 @@ class EnergyBallSet(object):
                     self.has_hits.add(sp)
 
             for obj in self.static_objects:
-                if obj.area.colliderect(msp.area):
+                if not obj.setting.IS_ELIMINABLE and obj.area.colliderect(msp.area):
                     msp.status = cfg.Magic.STATUS_VANISH
 
         if vanish_num == len(self.magic_sprites):
@@ -234,7 +234,7 @@ class DestroyBombSet(object):
 
                 can_create = True
                 for obj in self.static_objects:
-                    if obj.area.colliderect(bomb.area):
+                    if not obj.setting.IS_ELIMINABLE and obj.area.colliderect(bomb.area):
                         can_create = False
                         break
 
@@ -353,7 +353,7 @@ class DestroyAeroliteSet(object):
 
             can_create = True
             for obj in self.static_objects:
-                if obj.area.colliderect(aerolite.area):
+                if not obj.setting.IS_ELIMINABLE and obj.area.colliderect(aerolite.area):
                     can_create = False
                     break
             
@@ -485,7 +485,7 @@ class HellClawSet(object):
 
             can_create = True
             for obj in self.static_objects:
-                if obj.area.colliderect(claw.area):
+                if not obj.setting.IS_ELIMINABLE and obj.area.colliderect(claw.area):
                     can_create = False
                     break
 
