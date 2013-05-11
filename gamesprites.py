@@ -240,13 +240,14 @@ class Renne(GameSprite):
 
     def win(self, passed_seconds):
         is_finish = self.animation._run_renne_win_frame(passed_seconds)
-        for sp in self.enemies:
-            if self.pos.get_distance_to(sp.pos) < self.setting.DIZZY_RANGE \
-                and sp not in self.dizzy_targets:
-                self.dizzy_targets.add(sp)
-                if happen(self.setting.DIZZY_PROB):
-                    sp.status["dizzy_time"] = self.setting.DIZZY_TIME
-                    sp.set_emotion(cfg.SpriteEmotion.DIZZY)
+        if int(self.animation.get_current_frame_add(self.action)) in self.setting.DIZZY_KEY_FRAME:
+            for sp in self.enemies:
+                if self.pos.get_distance_to(sp.pos) < self.setting.DIZZY_RANGE \
+                    and sp not in self.dizzy_targets:
+                    self.dizzy_targets.add(sp)
+                    if happen(self.setting.DIZZY_PROB):
+                        sp.status["dizzy_time"] = self.setting.DIZZY_TIME
+                        sp.set_emotion(cfg.SpriteEmotion.DIZZY)
 
         if is_finish:
             self.dizzy_targets.clear()

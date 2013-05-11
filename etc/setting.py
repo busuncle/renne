@@ -192,6 +192,7 @@ class Renne(object):
     DIZZY_RANGE = 800
     DIZZY_MANA = 90
     DIZZY_TIME = 10
+    DIZZY_KEY_FRAME = (5, 6)
 
 
                 
