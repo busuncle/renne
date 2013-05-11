@@ -340,6 +340,9 @@ class SpriteChase(State):
             #print "to attack"
             return cfg.SpriteState.OFFENCE
 
+        if happen(self.ai.CHASE_TO_DEFENCE_PROB):
+            return cfg.SpriteState.DEFENCE
+
         distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
         if distance_to_target <= self.ai.CHASE_RANGE:
             target_move = sp.brain.destination.get_distance_to(sp.brain.target.pos)
