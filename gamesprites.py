@@ -6,7 +6,7 @@ import simulator
 from animation import SpriteEmotionAnimator, RenneAnimator, EnemyAnimator
 from musicbox import SoundBox
 import controller
-from base.util import Timer
+from base.util import Timer, happen
 from base import constant as cfg
 from etc import setting as sfg
 
@@ -45,7 +45,8 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.dfs = dfs
         # a chaos dict that holding many kinds of status, i don't want many attributes, so i use it
         self.status = {"hp": cfg.SpriteStatus.HEALTHY, 
-            "recover_hp_effect_time": 0, "under_attack_effect_time": 0, "stun_time": 0}
+            "recover_hp_effect_time": 0, "under_attack_effect_time": 0, "stun_time": 0,
+            "dizzy_time": 0}
         self.pos = Vector2(pos)
         self.direction = direction
 
@@ -120,6 +121,8 @@ class Renne(GameSprite):
         # represent the sprite area, used for deciding frame layer and collide, attack computing or so
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
         self.area.center = self.pos('xy')
+
+        self.dizzy_targets = set()
 
 
     def activate(self, allsprites, enemies, static_objects, game_map):
@@ -236,9 +239,17 @@ class Renne(GameSprite):
 
 
     def win(self, passed_seconds):
-        # painted egg!
         is_finish = self.animation._run_renne_win_frame(passed_seconds)
+        for sp in self.enemies:
+            if self.pos.get_distance_to(sp.pos) < self.setting.DIZZY_RANGE \
+                and sp not in self.dizzy_targets:
+                self.dizzy_targets.add(sp)
+                if happen(self.setting.DIZZY_PROB):
+                    sp.status["dizzy_time"] = self.setting.DIZZY_TIME
+                    sp.set_emotion(cfg.SpriteEmotion.DIZZY)
+
         if is_finish:
+            self.dizzy_targets.clear()
             self.action = cfg.HeroAction.STAND
         
 
@@ -314,8 +325,10 @@ class Renne(GameSprite):
 
         elif pressed_keys[sfg.UserKey.WIN]:
             # egg, show win animation
-            self.action = cfg.HeroAction.WIN
-            self.sound_box.play("renne_win")
+            if self.mp > self.setting.DIZZY_MANA:
+                self.mp = max(0, self.mp - self.setting.DIZZY_MANA)
+                self.action = cfg.HeroAction.WIN
+                self.sound_box.play("renne_win")
 
         else:
             self.action = cfg.HeroAction.STAND
@@ -464,7 +477,10 @@ class Enemy(GameSprite):
             self.brain.target = target
 
 
-    def set_emotion(self, emotion):
+    def set_emotion(self, emotion, force=False):
+        if not force and self.status["emotion"] in (cfg.SpriteEmotion.STUN, cfg.SpriteEmotion.DIZZY):
+            return
+
         self.emotion_animation.reset_frame(self.status["emotion"])
         self.status["emotion"] = emotion
 
@@ -488,7 +504,7 @@ class Enemy(GameSprite):
         if self.status["hp"] == cfg.SpriteStatus.DIE:
             return
 
-        if self.status["stun_time"] > 0:
+        if self.status["stun_time"] > 0 or self.status["dizzy_time"] > 0:
             self.reset_action(force=True)
             return
 
@@ -512,6 +528,22 @@ class Enemy(GameSprite):
             elif action == cfg.EnemyAction.WALK:
                 self.action = cfg.EnemyAction.WALK
                 self.key_vec.x, self.key_vec.y = cfg.Direction.DIRECT_TO_VEC[self.direction] 
+
+
+    def update_stun(self, passed_seconds):
+        if self.status["stun_time"] > 0:
+            self.animation.set_init_frame(cfg.EnemyAction.STAND)
+            self.status["stun_time"] = max(0, self.status["stun_time"] - passed_seconds)
+            if self.status["stun_time"] == 0:
+                self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
+
+
+    def update_dizzy(self, passed_seconds):
+        if self.status["dizzy_time"] > 0:
+            self.animation.set_init_frame(cfg.EnemyAction.STAND)
+            self.status["dizzy_time"] = max(0, self.status["dizzy_time"] - passed_seconds)
+            if self.status["dizzy_time"] == 0:
+                self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
     
 
     def update(self, passed_seconds, external_event=None):
@@ -521,13 +553,11 @@ class Enemy(GameSprite):
                 # user pause the game, don't update animation
                 return
 
-        if self.status["stun_time"] > 0:
-            self.animation.set_init_frame(cfg.EnemyAction.STAND)
-            self.status["stun_time"] = max(0, self.status["stun_time"] - passed_seconds)
-            if self.status["stun_time"] == 0:
-                self.set_emotion(cfg.SpriteEmotion.NORMAL)
+        self.update_stun(passed_seconds)
+        self.update_dizzy(passed_seconds)
 
-        if self.status["hp"] != cfg.SpriteStatus.DIE and self.status["stun_time"] == 0:
+        if self.status["hp"] != cfg.SpriteStatus.DIE \
+            and self.status["stun_time"] == 0 and self.status["dizzy_time"] == 0:
 
             if self.action == cfg.EnemyAction.ATTACK:
                 self.attack(passed_seconds)
@@ -602,6 +632,10 @@ class Leonhardt(Enemy):
         if self.status["hp"] == cfg.SpriteStatus.DIE:
             return
 
+        if self.status["stun_time"] > 0 or self.status["dizzy_time"] > 0:
+            self.reset_action(force=True)
+            return
+
         self.brain.think()
         for action in self.brain.actions:
             if action == cfg.EnemyAction.ATTACK:
@@ -624,6 +658,9 @@ class Leonhardt(Enemy):
             if external_event == cfg.GameStatus.PAUSE:
                 # user pause the game, don't update animation
                 return
+
+        self.update_stun(passed_seconds)
+        self.update_dizzy(passed_seconds)
 
         if self.status["hp"] != cfg.SpriteStatus.DIE:
 

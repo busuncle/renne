@@ -187,6 +187,12 @@ class Renne(object):
         }
     }
 
+    # painted egg effect
+    DIZZY_PROB = 0.25
+    DIZZY_RANGE = 800
+    DIZZY_MANA = 90
+    DIZZY_TIME = 10
+
 
                 
 class Enemy(object):
@@ -797,6 +803,7 @@ class EmotionImage(object):
         cfg.SpriteEmotion.CHAOS: ((14, 16), 2, 2),
         cfg.SpriteEmotion.SILENT: ((24, 28), 4, 3),
         cfg.SpriteEmotion.STUN: ((48, 51), 3, 6),
+        cfg.SpriteEmotion.DIZZY: ((51, 54), 3, 6),
     }
 
 

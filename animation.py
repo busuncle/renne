@@ -313,7 +313,7 @@ class SpriteEmotionAnimator(object):
     def update(self, passed_seconds):
         sp = self.sprite
         if sp.status["emotion"] != cfg.SpriteEmotion.NORMAL:
-            if sp.status["emotion"] == cfg.SpriteEmotion.STUN:
+            if sp.status["emotion"] in (cfg.SpriteEmotion.STUN, cfg.SpriteEmotion.DIZZY):
                 self.run_circle_frame(sp.status["emotion"], passed_seconds)        
             else:
                 is_finish = self.run_sequence_frame(sp.status["emotion"], passed_seconds)
