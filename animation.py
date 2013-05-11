@@ -193,7 +193,7 @@ class RenneAnimator(SpriteAnimator):
         action = cfg.HeroAction.WIN
         self.frame_adds[action] += passed_seconds * self.frame_rates[action]
         if self.frame_adds[action] >= self.frame_nums[action]:
-            if self.frame_adds[action] < self.frame_nums[action] + 12:
+            if self.frame_adds[action] < self.frame_nums[action] + 10:
                 # delay for better effect
                 self.image = self.sprite_image_contoller.get_surface(action)[self.frame_nums[action] - 1]
                 return False

@@ -4,6 +4,7 @@ from pygame.locals import *
 from gameobjects.vector2 import Vector2
 from pygame.transform import smoothscale
 from base.util import ImageController, Blink
+from animation import get_shadow_image
 from base import constant as cfg
 from etc import setting as sfg
 
@@ -69,6 +70,8 @@ class StaticObject(pygame.sprite.DirtySprite):
         if self.setting.IS_ELIMINABLE:
             # the object is eliminable, we should make it blink-blink look!
             self.image_mix = None
+            self.shadow_image = get_shadow_image(setting.SHADOW_INDEX)
+            self.shadow_rect_delta_y = setting.SHADOW_RECT_DELTA_Y
             self.blink = Blink(sfg.Effect.BLINK_RATE2, sfg.Effect.BLINK_DEPTH_SECTION2)
 
 
@@ -79,6 +82,13 @@ class StaticObject(pygame.sprite.DirtySprite):
     def update(self, passed_seconds):
         if self.setting.IS_ELIMINABLE:
             self.image_mix = self.blink.make(self.image, passed_seconds)
+
+
+    def draw_shadow(self, camera):
+        shd_rect = self.shadow_image.get_rect()
+        shd_rect.center = self.area.center
+        camera.screen.blit(self.shadow_image,
+            (shd_rect.x - camera.rect.x, shd_rect.y / 2 - camera.rect.y - self.shadow_rect_delta_y))
 
 
     def draw(self, camera):
@@ -165,6 +175,10 @@ class GameWorld(pygame.sprite.LayeredDirty):
                     movings.extend(magic.magic_sprites)
                     for msp in magic.magic_sprites:
                         msp.draw_shadow(camera)
+
+        for obj in self.static_objects:
+            if obj.setting.IS_ELIMINABLE:
+                obj.draw_shadow(camera)
 
         # only sort dynamic objects, static object is sorted in nature and no longer change 
         # the algorithm is inspired by merge sort

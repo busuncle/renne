@@ -721,6 +721,8 @@ class RoastChicken(object):
     IS_ELIMINABLE = True
     ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
     RECOVER_HP = 100
+    SHADOW_INDEX = 3
+    SHADOW_RECT_DELTA_Y = 12
 
 
 
@@ -735,6 +737,8 @@ class Omelette(object):
     IS_ELIMINABLE = True
     ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
     RECOVER_HP = 100
+    SHADOW_INDEX = 3
+    SHADOW_RECT_DELTA_Y = 12
 
 
 
@@ -749,6 +753,8 @@ class BreadBasket(object):
     IS_ELIMINABLE = True
     ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
     RECOVER_HP = 100
+    SHADOW_INDEX = 3
+    SHADOW_RECT_DELTA_Y = 12
 
 
 
@@ -763,6 +769,8 @@ class Salad(object):
     IS_ELIMINABLE = True
     ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
     RECOVER_HP = 100
+    SHADOW_INDEX = 3
+    SHADOW_RECT_DELTA_Y = 12
 
 
 
@@ -777,6 +785,8 @@ class Wine(object):
     IS_ELIMINABLE = True
     ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
     RECOVER_HP = 50
+    SHADOW_INDEX = 0
+    SHADOW_RECT_DELTA_Y = 16
 
 
 
