@@ -202,7 +202,7 @@ class Enemy(object):
     DEAD_BLINK_TIMES = 3
     VIEW_RANGE = 480
     VIEW_ANGLE = 160 
-    NEARBY_ALLIANCE_RANGE = 260
+    NEARBY_ALLIANCE_RANGE = 300
 
 
 
