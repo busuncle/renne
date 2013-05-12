@@ -6,6 +6,7 @@ from animation import cg_image_controller, basic_image_controller
 from musicbox import BackgroundBox
 from base.util import ImageController
 from base.util import Timer, load_chapter_win_screen_image
+from base import util
 from base import constant as cfg
 from etc import setting as sfg
 
@@ -143,6 +144,11 @@ def start_game(screen):
     pic_alpha = 0 # picture fades in, alpha changes from 0 to 255
     fade_in_delta = 256 / sfg.StartGame.PICTURE_FADE_IN_TIME
 
+    # check whether autosave data exists
+    autosave = util.load_auto_save()
+    if autosave is not None and "LOAD" not in sfg.Menu.START_GAME["options"]:
+        sfg.Menu.START_GAME["options"].insert(0, "LOAD")
+
     menu = Menu(sfg.Menu.START_GAME)
     while True:
         screen.fill(pygame.Color("black"))
@@ -163,11 +169,14 @@ def start_game(screen):
             if event.type == KEYDOWN:
                 if event.key == K_RETURN:
                     if menu.current_menu() == "START":
-                        return cfg.GameControl.NEXT
+                        return {"status": cfg.GameControl.NEXT}
                     elif menu.current_menu() == "QUIT":
-                        return cfg.GameControl.QUIT
+                        return {"status": cfg.GameControl.QUIT}
+                    elif menu.current_menu() == "LOAD":
+                        return {"status": cfg.GameControl.CONTINUE, 
+                            "current_chapter": autosave["current_chapter"]}
                 elif event.key == K_ESCAPE:
-                    return cfg.GameControl.QUIT
+                    return {"status": cfg.GameControl.QUIT}
 
                 menu.update(event.key)
 

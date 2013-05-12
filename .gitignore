@@ -167,6 +167,7 @@ pip-log.txt
 
 # project custom
 data/snapshot/*.png
+data/save/*.dat
 .*.png
 .*.ogg
 .*.wav

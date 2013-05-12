@@ -3,6 +3,7 @@ from pygame.locals import *
 from gameobjects.vector2 import Vector2
 import weakref
 import os
+import cPickle
 from random import random
 from time import time
 import pprint
@@ -75,8 +76,30 @@ def load_chapter_win_screen_image(chapter):
     filepath = os.path.join("data", "snapshot", filename)
     if os.path.exists(filepath):
         return pygame.image.load(filepath).convert()
-    else:
-        return None
+    return None
+
+
+def load_auto_save():
+    filename = "autosave.dat"
+    filepath = os.path.join("data", "save", filename)
+    if os.path.exists(filepath):
+        try:
+            fp = open(filepath, "rb")
+            dat = cPickle.load(fp)
+            fp.close()
+        except:
+            return None
+        return dat
+    return None
+
+
+def auto_save(save_data):
+    filename = "autosave.dat"
+    filepath = os.path.join("data", "save", filename)
+    fp = open(filepath, "wb")
+    cPickle.dump(save_data, fp)
+    fp.close()
+
 
 
 def parse_command_line(needed_args_list):

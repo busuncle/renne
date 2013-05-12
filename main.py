@@ -40,24 +40,26 @@ def main(args):
     while i < len(sfg.GameMap.CHAPTERS):
         if i == 0:
             # chapter 0 means the main menu
-            status = start_game(screen)
+            res = start_game(screen)
         else:
             chapter = sfg.GameMap.CHAPTERS[i]
             loading_chapter_picture(screen)
-            status = enter_chapter(screen, chapter, renne)
+            res = enter_chapter(screen, chapter, renne)
 
         bg_box.stop()
 
+        status = res["status"]
         if status == cfg.GameControl.NEXT:
             i += 1
             renne.recover()
         elif status == cfg.GameControl.AGAIN:
             renne.recover()
-            continue
         elif status == cfg.GameControl.MAIN:
             i = 0
         elif status == cfg.GameControl.QUIT:
             return
+        elif status == cfg.GameControl.CONTINUE:
+            i = res["current_chapter"] + 1
 
     end_game(screen)
 
@@ -126,17 +128,24 @@ def enter_chapter(screen, chapter, renne):
                 if event.key == K_RETURN:
                     if game_status.status == cfg.GameStatus.HERO_WIN:
                         util.save_chapter_win_screen_image(chapter, camera.screen)
-                        return cfg.GameControl.NEXT
+                        dat = util.load_auto_save() or {}
+                        dat["current_chapter"] = chapter
+                        dat.setdefault("chapter_detail", {})
+                        dat["chapter_detail"].setdefault(chapter, {})
+                        dat["chapter_detail"][chapter]["total_score"] \
+                            = game_status.achievement.chapter_score.next_value
+                        util.auto_save(dat)
+                        return {"status": cfg.GameControl.NEXT}
                     elif game_status.status == cfg.GameStatus.HERO_LOSE:
-                        return cfg.GameControl.AGAIN
+                        return {"status": cfg.GameControl.AGAIN}
                     elif game_status.status == cfg.GameStatus.PAUSE:
                         if game_status.menu.current_menu() == "CONTINUE":
                             game_status.status = cfg.GameStatus.IN_PROGRESS
                             bg_box.unpause()
                         elif game_status.menu.current_menu() == "MAIN":
-                            return cfg.GameControl.MAIN
+                            return {"status": cfg.GameControl.MAIN}
                         elif game_status.menu.current_menu() == "QUIT":
-                            return cfg.GameControl.QUIT
+                            return {"status": cfg.GameControl.QUIT}
 
                 if game_status.status == cfg.GameStatus.PAUSE:
                     game_status.menu.update(event.key)

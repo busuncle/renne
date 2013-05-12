@@ -49,7 +49,7 @@ class Menu(object):
     START_GAME = {
         "options": ["START", "QUIT"],
         "option_rect": (0, 0, 256, 48),
-        "blit_y": 550,
+        "blit_y": 540,
         "font_on": Font.ARIAL_BLACK_48,
         "font_off": Font.ARIAL_BLACK_32,
         "color_on": pygame.Color("white"),

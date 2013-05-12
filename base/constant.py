@@ -156,6 +156,7 @@ class GameControl(object):
     AGAIN = 1
     MAIN = 2
     QUIT = 3
+    CONTINUE = 4
 
 
 class Achievement(object):
