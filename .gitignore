@@ -1,3 +1,7 @@
+Release
 *.pyc
 _*.py
 *.swp
+*~
+data/
+res/
