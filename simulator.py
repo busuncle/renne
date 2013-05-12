@@ -143,8 +143,8 @@ class DestroyFire(EnergyBallSet):
     shadow_image = animation.get_shadow_image(sfg.Effect.DESTROY_FIRE_SHADOW_INDEX)
     shadow_rect_delta_y = sfg.Effect.DESTROY_FIRE_SHADOW_RECT_DELTA_Y
     def __init__(self, sprite, target_list, static_objects, params, pos, target_pos):
-        super(DestroyFire, self).__init__(self.destroy_fire_image, 
-            {"image": self.shadow_image, "dy": self.shadow_rect_delta_y},
+        shadow = {"image": self.shadow_image, "dy": self.shadow_rect_delta_y}
+        super(DestroyFire, self).__init__(self.destroy_fire_image, shadow,
             sprite, target_list, static_objects, params, pos, target_pos)
 
 
@@ -404,8 +404,8 @@ class DeathCoil(EnergyBallSet):
     shadow_image = animation.get_shadow_image(sfg.Effect.DEATH_COIL_SHADOW_INDEX)
     shadow_rect_delta_y = sfg.Effect.DEATH_COIL_SHADOW_RECT_DELTA_Y
     def __init__(self, sprite, target, static_objects, params, pos, target_pos):
-        super(DeathCoil, self).__init__(choice(self.image_list), 
-            {"image": self.shadow_image, "dy": self.shadow_rect_delta_y},
+        shadow = {"image": self.shadow_image, "dy": self.shadow_rect_delta_y}
+        super(DeathCoil, self).__init__(choice(self.image_list), shadow,
             sprite, [target], static_objects, params, pos, target_pos)
 
 
