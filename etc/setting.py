@@ -200,8 +200,9 @@ class Enemy(object):
     ROLE = cfg.SpriteRole.ENEMY
     DEAD_TICK = 1.5
     DEAD_BLINK_TIMES = 3
-    VIEW_RANGE = 380
-    VIEW_ANGLE = 150 
+    VIEW_RANGE = 480
+    VIEW_ANGLE = 160 
+    NEARBY_ALLIANCE_RANGE = 260
 
 
 
@@ -237,7 +238,6 @@ class SkeletonWarrior(Enemy):
     }
 
     WALK_SPEED = 160
-    NEARBY_ALLIANCE_RANGE = 260
 
 
 
@@ -273,7 +273,6 @@ class CastleWarrior(Enemy):
     }
 
     WALK_SPEED = 160
-    NEARBY_ALLIANCE_RANGE = 260
 
 
 
@@ -310,13 +309,12 @@ class SkeletonArcher(Enemy):
     }
 
     WALK_SPEED = 140
-    NEARBY_ALLIANCE_RANGE = 260
 
 
 
 class LeonHardt(Enemy):
     # override some attribute
-    VIEW_RANGE = 500
+    VIEW_RANGE = 520
     VIEW_ANGLE = 180
 
     NAME = "LeonHardt"
@@ -389,7 +387,7 @@ class ArmouredShooter(Enemy):
     DFS = 3
 
     # overwrite
-    VIEW_RANGE = 400
+    VIEW_RANGE = 500
     VIEW_ANGLE = 180 
 
     RADIUS = 24
@@ -419,7 +417,6 @@ class ArmouredShooter(Enemy):
     }
 
     WALK_SPEED = 150
-    NEARBY_ALLIANCE_RANGE = 260
 
 
 
@@ -428,9 +425,6 @@ class SwordRobber(Enemy):
     HP = 300
     ATK = 60 
     DFS = 5
-
-    # overwrite
-    VIEW_ANGLE = 160 
 
     RADIUS = 24
     HEIGHT = 75
@@ -458,7 +452,6 @@ class SwordRobber(Enemy):
     }
 
     WALK_SPEED = 170
-    NEARBY_ALLIANCE_RANGE = 260
 
 
 

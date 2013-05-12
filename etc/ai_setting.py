@@ -21,7 +21,7 @@ class AIBase(object):
 class ShortNormalAI(AIBase):
     # this ai is for some short-distance-attack monster
 
-    CHASE_RANGE = 420
+    CHASE_RANGE = 520
 
     # the probability(between 0 and 1, both sides include) that give rise an emotion on the sprite
     EMOTION_SILENT_PROB = 0.2
@@ -52,7 +52,7 @@ class ShortNormalAI(AIBase):
 class LongNormalAI(AIBase):
     # this ai is for some long-distance-attack monster
 
-    CHASE_RANGE = 480
+    CHASE_RANGE = 580
 
     # the probability(between 0 and 1, both sides include) that give rise an emotion on the sprite
     EMOTION_SILENT_PROB = 0.2
