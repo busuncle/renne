@@ -165,7 +165,7 @@ def start_game(screen):
                 continue
                 # no events will be handled until the renne's picure is fully displayed
             if event.type == pygame.QUIT: 
-                return cfg.GameControl.QUIT
+                return {"status": cfg.GameControl.QUIT}
             if event.type == KEYDOWN:
                 if event.key == K_RETURN:
                     if menu.current_menu() == "START":
@@ -188,9 +188,10 @@ def start_game(screen):
 
 
 def loading_chapter_picture(screen):
-    img = cg_image_controller.get(sfg.Chapter.LOADING_PICTURE_IMAGE_KEY).convert()
+    img = cg_image_controller.get(sfg.Chapter.LOADING_PICTURE_IMAGE_KEY).subsurface(
+        sfg.Chapter.LOADING_PICTURE_RECT).convert()
     img_rect = img.get_rect()
-    img_rect.center = map(lambda x: x/2, sfg.Screen.SIZE)
+    img_rect.center = sfg.Screen.SIZE[0] * 0.5, sfg.Screen.SIZE[1] * 0.45
 
     alpha = 0
     delta = 256 / sfg.Chapter.LOADING_PICTURE_FADE_IN_TIME
@@ -208,6 +209,43 @@ def loading_chapter_picture(screen):
         screen.blit(img, img_rect)
         screen.blit(sfg.Chapter.LOADING_WORD, sfg.Chapter.LOADING_WORD_BLIT_POS)
         pygame.display.flip()
+
+
+def show_the_end(screen):
+    the_end_image = cg_image_controller.get(sfg.EndGame.THE_END_IMAGE_KEY).subsurface(
+        sfg.EndGame.THE_END_IMAGE_RECT).convert()
+    the_end_image_rect = the_end_image.get_rect()
+    the_end_image_rect.center = sfg.Screen.SIZE[0] * 0.5, sfg.Screen.SIZE[1] * 0.4
+
+    the_end_word = sfg.EndGame.THE_END_WORD
+    the_end_word_rect = the_end_word.get_rect()
+    the_end_word_rect.center = sfg.Screen.SIZE[0] * 0.5, sfg.Screen.SIZE[1] * 0.8
+
+    mask_alpha = 255
+    fade_in_delta = 256 / (sfg.EndGame.ENDING_FADEIN_TIME - sfg.EndGame.THE_END_SHOW_DELAY_TIME)
+    delay_time = 0
+    mask = sfg.Screen.DEFAULT_SURFACE
+    clock = pygame.time.Clock()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit(0)
+
+        screen.fill(pygame.Color("black"))
+        screen.blit(the_end_image, the_end_image_rect)
+        screen.blit(the_end_word, the_end_word_rect)
+
+        time_passed = clock.tick(sfg.FPS)
+        passed_seconds = time_passed / 1000.0
+        mask_alpha = int(max(mask_alpha - passed_seconds * fade_in_delta, 0))
+        mask.fill(pygame.Color(0, 0, 0, mask_alpha))
+        screen.blit(mask, (0, 0))
+
+        pygame.display.flip()
+        if mask_alpha == 0:
+            delay_time += passed_seconds
+            if delay_time > sfg.EndGame.THE_END_SHOW_DELAY_TIME:
+                return
 
 
 def show_chapter_win_screen_images(screen):
@@ -250,6 +288,7 @@ def show_chapter_win_screen_images(screen):
 def end_game(screen):
     bg_box.play(sfg.Music.END_GAME_KEY, loops=0)
 
+    show_the_end(screen)
     show_chapter_win_screen_images(screen)
 
     screen_centerx = sfg.Screen.SIZE[0] / 2

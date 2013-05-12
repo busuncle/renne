@@ -990,6 +990,7 @@ class GameStatus(object):
 
 class Chapter(object):
     LOADING_PICTURE_IMAGE_KEY = "loading_chapter"
+    LOADING_PICTURE_RECT = (0, 0, 640, 480)
     LOADING_PICTURE_FADE_IN_TIME = 1    # in second unit, show up the picture
     LOADING_WORD = Font.ARIAL_BLACK_28.render("now loading ...", True, pygame.Color("white"))
     LOADING_WORD_BLIT_POS = (760, 700)
@@ -1004,6 +1005,10 @@ class StartGame(object):
 
 
 class EndGame(object):
+    THE_END_IMAGE_KEY = "the_end"
+    THE_END_IMAGE_RECT = (0, 0, 640, 480)
+    THE_END_WORD = Font.ARIAL_BLACK_32.render("The End", True, pygame.Color("white"))
+    THE_END_SHOW_DELAY_TIME = 1.5
     ENDING_FADEIN_TIME = 5
     BUSUNCLE_WORKS = Font.ARIAL_BLACK_32.render("Busuncle's works", True, pygame.Color("white"))
     BUSUNCLE_WORKS_BLIT_Y = 450
@@ -1215,7 +1220,9 @@ BATTLE_IMAGES = ("battle", {
 
 CG_IMAGES = ("cg", {
     "start_game": "1.png",
-    "loading_chapter": "2.png", 
+    #"loading_chapter": "2.png", 
+    "loading_chapter": "3.png", 
+    "the_end": "4.png",
 })
 
 
