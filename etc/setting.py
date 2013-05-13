@@ -72,7 +72,7 @@ class UserKey(object):
     WIN = K_h
 
     DIRECTION_KEYS = (UP, DOWN, LEFT, RIGHT)
-    RUN_THRESHOLD = 0.25
+    RUN_THRESHOLD = 0.2
 
 
 class Screen(object):
