@@ -117,25 +117,6 @@ class Renne(object):
     SHADOW_RECT_DELTA_Y = 50
     SHADOW_INDEX = 1
 
-    FRAME_RATES = {
-        cfg.HeroAction.STAND: 12,
-        cfg.HeroAction.WALK: 14,
-        cfg.HeroAction.RUN: 16,
-        cfg.HeroAction.ATTACK: 18,
-        cfg.HeroAction.WIN: 14,
-        cfg.HeroAction.REST: 8,
-    }
-
-    FRAME_NUMS = {
-        # the number of a frame sheet
-        cfg.HeroAction.STAND: 8,
-        cfg.HeroAction.WALK: 8,
-        cfg.HeroAction.RUN: 8,
-        cfg.HeroAction.ATTACK: 14,
-        cfg.HeroAction.WIN: 31,
-        cfg.HeroAction.REST: 4,
-    }
-
     # move speed, in pixel unit
     WALK_SPEED = 100
     RUN_SPEED = 200
@@ -218,18 +199,6 @@ class SkeletonWarrior(Enemy):
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
 
-    FRAME_RATES = {
-        cfg.EnemyAction.STAND: 12,
-        cfg.EnemyAction.WALK: 14,
-        cfg.EnemyAction.ATTACK: 10,
-    }
-
-    FRAME_NUMS = {
-        cfg.EnemyAction.STAND: 8,
-        cfg.EnemyAction.WALK: 8,
-        cfg.EnemyAction.ATTACK: 8,
-    }
-
     ATTACKTYPE = cfg.SpriteAttackType.SHORT
     ATTACKER_PARAMS = {
         "range": 60,
@@ -252,18 +221,6 @@ class CastleWarrior(Enemy):
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
-
-    FRAME_RATES = {
-        cfg.EnemyAction.STAND: 12,
-        cfg.EnemyAction.WALK: 14,
-        cfg.EnemyAction.ATTACK: 10,
-    }
-
-    FRAME_NUMS = {
-        cfg.EnemyAction.STAND: 8,
-        cfg.EnemyAction.WALK: 8,
-        cfg.EnemyAction.ATTACK: 8,
-    }
 
     ATTACKTYPE = cfg.SpriteAttackType.SHORT
     ATTACKER_PARAMS = {
@@ -288,20 +245,7 @@ class SkeletonArcher(Enemy):
     SHADOW_RECT_DELTA_Y = 55
     SHADOW_INDEX = 3
 
-    FRAME_RATES = {
-        cfg.EnemyAction.STAND: 12,
-        cfg.EnemyAction.WALK: 12,
-        cfg.EnemyAction.ATTACK: 8,
-    }
-
-    FRAME_NUMS = {
-        cfg.EnemyAction.STAND: 8,
-        cfg.EnemyAction.WALK: 8,
-        cfg.EnemyAction.ATTACK: 8,
-    }
-
     ATTACKTYPE = cfg.SpriteAttackType.LONG
-
     ATTACKER_PARAMS = {
         "range": 400,
         "angle": 12,
@@ -330,24 +274,7 @@ class LeonHardt(Enemy):
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
 
-    FRAME_RATES = {
-        cfg.EnemyAction.STAND: 12,
-        cfg.EnemyAction.RUN: 14,
-        cfg.EnemyAction.ATTACK: 12,
-        cfg.EnemyAction.ATTACK2: 12,
-        cfg.EnemyAction.ATTACK3: 12,
-    }
-
-    FRAME_NUMS = {
-        cfg.EnemyAction.STAND: 8,
-        cfg.EnemyAction.RUN: 8,
-        cfg.EnemyAction.ATTACK: 8,
-        cfg.EnemyAction.ATTACK2: 8,
-        cfg.EnemyAction.ATTACK3: 8,
-    }
-
     ATTACKTYPE = cfg.SpriteAttackType.LEONHARDT
-
     ATTACKER_PARAMS = {
         "range": 70,
         "angle": 60,
@@ -396,20 +323,7 @@ class ArmouredShooter(Enemy):
     SHADOW_RECT_DELTA_Y = 55
     SHADOW_INDEX = 3
 
-    FRAME_RATES = {
-        cfg.EnemyAction.STAND: 12,
-        cfg.EnemyAction.WALK: 12,
-        cfg.EnemyAction.ATTACK: 10,
-    }
-
-    FRAME_NUMS = {
-        cfg.EnemyAction.STAND: 8,
-        cfg.EnemyAction.WALK: 8,
-        cfg.EnemyAction.ATTACK: 10,
-    }
-
     ATTACKTYPE = cfg.SpriteAttackType.ARMOUREDSHOOTER
-
     ATTACKER_PARAMS = {
         "range": 420,
         "angle": 12,
@@ -431,18 +345,6 @@ class SwordRobber(Enemy):
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
-
-    FRAME_RATES = {
-        cfg.EnemyAction.STAND: 12,
-        cfg.EnemyAction.WALK: 14,
-        cfg.EnemyAction.ATTACK: 8,
-    }
-
-    FRAME_NUMS = {
-        cfg.EnemyAction.STAND: 8,
-        cfg.EnemyAction.WALK: 8,
-        cfg.EnemyAction.ATTACK: 7,
-    }
 
     ATTACKTYPE = cfg.SpriteAttackType.SWORDROBBER
     ATTACKER_PARAMS = {
@@ -1129,46 +1031,46 @@ STATIC_OBJECT_SETTING_MAPPING = dict((cls.ID, cls) for cls in STATIC_OBJECT_SETT
 RENNE_IMAGE_FILENAME = "renne.png"
 
 SPRITE_FRAMES = {
-    # {sprite_id: (folder, {sprite_action: image_filename, ...}), ...}
-    0: ("renne", {
-        cfg.HeroAction.WALK: "walk_8.png",
-        cfg.HeroAction.RUN: "run_8.png",
-        cfg.HeroAction.ATTACK: "attack_14.png",
-        cfg.HeroAction.STAND: "stand_8.png",
-        cfg.HeroAction.WIN: "win_31.png",
-        cfg.HeroAction.REST: "rest_4.png",
+    # {sprite_id: (folder, {sprite_action: (image_filename, frame_num, frame_rate), ...}), ...}
+    Renne.ID: ("renne", {
+        cfg.HeroAction.STAND: ("stand_8.png", 8, 12),
+        cfg.HeroAction.WALK: ("walk_8.png", 8, 14),
+        cfg.HeroAction.RUN: ("run_8.png", 8, 16),
+        cfg.HeroAction.ATTACK: ("attack_14.png", 14, 18),
+        cfg.HeroAction.WIN: ("win_31.png", 31, 14),
+        cfg.HeroAction.REST: ("rest_4.png", 4, 8),
     }),
-    1: ("skeleton_warrior", {
-        cfg.EnemyAction.WALK: "walk_8.png",
-        cfg.EnemyAction.STAND: "stand_8.png",
-        cfg.EnemyAction.ATTACK: "attack_8.png",
+    SkeletonWarrior.ID: ("skeleton_warrior", {
+        cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
+        cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
+        cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
     }),
-    2: ("castle_warrior", {
-        cfg.EnemyAction.WALK: "walk_8.png",
-        cfg.EnemyAction.STAND: "stand_8.png",
-        cfg.EnemyAction.ATTACK: "attack_8.png",
+    CastleWarrior.ID: ("castle_warrior", {
+        cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
+        cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
+        cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
     }),
-    3: ("skeleton_archer", {
-        cfg.EnemyAction.WALK: "walk_8.png",
-        cfg.EnemyAction.STAND: "stand_8.png",
-        cfg.EnemyAction.ATTACK: "attack_8.png",
+    SkeletonArcher.ID: ("skeleton_archer", {
+        cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
+        cfg.EnemyAction.WALK: ("walk_8.png", 8, 12),
+        cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 8),
     }),
-    4: ("leonhardt", {
-        cfg.EnemyAction.RUN: "run_8.png",
-        cfg.EnemyAction.STAND: "stand_8.png",
-        cfg.EnemyAction.ATTACK: "attack_8.png",
-        cfg.EnemyAction.ATTACK2: "attack2_8.png",
-        cfg.EnemyAction.ATTACK3: "attack3_8.png",
+    LeonHardt.ID: ("leonhardt", {
+        cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
+        cfg.EnemyAction.RUN: ("run_8.png", 8, 14),
+        cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 12),
+        cfg.EnemyAction.ATTACK2: ("attack2_8.png", 8, 12),
+        cfg.EnemyAction.ATTACK3: ("attack3_8.png", 8, 12),
     }),
-    5: ("armoured_shooter", {
-        cfg.EnemyAction.WALK: "walk_8.png",
-        cfg.EnemyAction.STAND: "stand_8.png",
-        cfg.EnemyAction.ATTACK: "attack_10.png",
+    ArmouredShooter.ID: ("armoured_shooter", {
+        cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
+        cfg.EnemyAction.WALK: ("walk_8.png", 8, 12),
+        cfg.EnemyAction.ATTACK: ("attack_10.png", 10, 10),
     }),
-    6: ("sword_robber", {
-        cfg.EnemyAction.WALK: "walk_8.png",
-        cfg.EnemyAction.STAND: "stand_8.png",
-        cfg.EnemyAction.ATTACK: "attack_7.png",
+    SwordRobber.ID: ("sword_robber", {
+        cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
+        cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
+        cfg.EnemyAction.ATTACK: ("attack_7.png", 7, 8),
     }),
 }
 

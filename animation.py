@@ -7,10 +7,20 @@ from base import constant as cfg
 from etc import setting as sfg
 
 
-# init SpriteImageController
+# init SpriteImageController and related frame_nums, frame_rates
 sprite_image_contollers = {}
-for k, v in sfg.SPRITE_FRAMES.iteritems():
-    sprite_image_contollers[k] = SpriteImageController(v[0])
+sprite_frame_files = {}
+sprite_frame_nums = {}
+sprite_frame_rates = {}
+for sprite_id, (image_folder, res_mapping) in sfg.SPRITE_FRAMES.iteritems():
+    sprite_image_contollers[sprite_id] = SpriteImageController(image_folder)
+    sprite_frame_files[sprite_id] = {}
+    sprite_frame_nums[sprite_id] = {}
+    sprite_frame_rates[sprite_id] = {}
+    for action, (image_name, frame_num, frame_rate) in res_mapping.iteritems():
+        sprite_frame_files[sprite_id][action] = image_name
+        sprite_frame_nums[sprite_id][action] = frame_num
+        sprite_frame_rates[sprite_id][action] = frame_rate
 
 
 basic_image_controller = ImageController(sfg.BASIC_IMAGES[0])
@@ -71,9 +81,9 @@ class SpriteAnimator(object):
         self.sprite = sprite
         self.sprite_image_contoller = sprite_image_contollers[sprite.setting.ID]
         # frames init
-        self.sprite_image_contoller.init_frames(sfg.SPRITE_FRAMES[sprite.setting.ID][1])
-        self.frame_rates = sprite.setting.FRAME_RATES
-        self.frame_nums = sprite.setting.FRAME_NUMS
+        self.sprite_image_contoller.init_frames(sprite_frame_files[sprite.setting.ID])
+        self.frame_nums = sprite_frame_nums[sprite.setting.ID]
+        self.frame_rates = sprite_frame_rates[sprite.setting.ID]
         self.frame_adds = dict((k, 0) for k in self.frame_rates.keys()) 
 
         self.image = self.sprite_image_contoller.get_surface(sprite.action)[sprite.direction]
