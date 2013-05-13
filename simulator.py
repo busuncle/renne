@@ -817,11 +817,12 @@ class ViewSensor(object):
 
 
 ENEMY_ATTACKER_MAPPING = {
-    cfg.SpriteAttackType.SHORT: EnemyShortAttacker,
-    cfg.SpriteAttackType.LONG: EnemyLongAttacker,
-    cfg.SpriteAttackType.LEONHARDT: LeonhardtAttacker,
-    cfg.SpriteAttackType.SWORDROBBER: EnemyShortAttacker,
-    cfg.SpriteAttackType.ARMOUREDSHOOTER: EnemyLongAttacker,
+    sfg.SkeletonWarrior.ID: EnemyShortAttacker,
+    sfg.CastleWarrior.ID: EnemyShortAttacker,
+    sfg.SkeletonArcher.ID: EnemyLongAttacker,
+    sfg.LeonHardt.ID: LeonhardtAttacker,
+    sfg.ArmouredShooter.ID: EnemyLongAttacker,
+    sfg.SwordRobber.ID: EnemyShortAttacker,
 }
 
 

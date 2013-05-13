@@ -399,7 +399,7 @@ class Enemy(GameSprite):
         self.allsprites = allsprites
         self.hero = hero
         self.static_objects = static_objects
-        self.attacker = simulator.ENEMY_ATTACKER_MAPPING[self.setting.ATTACKTYPE](
+        self.attacker = simulator.ENEMY_ATTACKER_MAPPING[self.setting.ID](
             self, self.setting.ATTACKER_PARAMS)
         self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
         self.brain = controller.SpriteBrain(self, ai, game_map.waypoints)
