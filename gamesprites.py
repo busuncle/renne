@@ -581,8 +581,8 @@ class Leonhardt(Enemy):
     def __init__(self, setting, pos, direction):
         super(Leonhardt, self).__init__(setting, pos, direction)
         self.mp = self.setting.MP
-        self.attack_types = (cfg.EnemyAction.ATTACK, cfg.EnemyAction.ATTACK2, cfg.EnemyAction.ATTACK3)
-        self.running_attack_type = None
+        self.attack_frame_types = (cfg.EnemyAction.ATTACK, cfg.EnemyAction.ATTACK2, cfg.EnemyAction.ATTACK3)
+        self.running_attack_frame_type = None
 
 
     def draw(self, camera):
@@ -595,34 +595,34 @@ class Leonhardt(Enemy):
 
 
     def attack(self, passed_seconds):
-        if self.running_attack_type is None:
+        if self.running_attack_frame_type is None:
             if self.attacker.method == "hell_claw":
                 # hell claw use this attack frame
-                self.running_attack_type = self.attack_types[2]
+                self.running_attack_frame_type = self.attack_frame_types[2]
             else:
                 # random attack frame for others
-                self.running_attack_type = random.choice(self.attack_types[:2])
+                self.running_attack_frame_type = random.choice(self.attack_frame_types[:2])
             self.sound_box.play(random.choice(("leonhardt_attack", "leonhardt_attack2", "leonhardt_attack3")))
 
-        is_finish = self.animation.run_sequence_frame(self.running_attack_type, passed_seconds)
+        is_finish = self.animation.run_sequence_frame(self.running_attack_frame_type, passed_seconds)
         if is_finish:
             self.attacker.finish()
-            self.running_attack_type = None
+            self.running_attack_frame_type = None
             self.brain.persistent = False
         else:
             if self.attacker.method == "regular":
                 hit_it = self.attacker.run(self.brain.target, 
-                    self.animation.get_current_frame_add(self.running_attack_type))
+                    self.animation.get_current_frame_add(self.running_attack_frame_type))
                 if hit_it:
                     self.sound_box.play(random.choice(("attack_hit", "attack_hit2", "attack_hit3")))
 
             elif self.attacker.method == "death_coil":
                 self.attacker.death_coil(self.brain.target, 
-                    self.animation.get_current_frame_add(self.running_attack_type))
+                    self.animation.get_current_frame_add(self.running_attack_frame_type))
 
             elif self.attacker.method == "hell_claw":
                 self.attacker.hell_claw(self.brain.target,
-                    self.animation.get_current_frame_add(self.running_attack_type))
+                    self.animation.get_current_frame_add(self.running_attack_frame_type))
 
 
     def event_handle(self, pressed_keys=None, external_event=None):
