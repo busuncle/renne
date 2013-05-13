@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+from time import time
 from gamesprites import Renne, GameSpritesGroup, enemy_in_one_screen, ENEMY_CLASS_MAPPING
 from base import constant as cfg
 from etc import setting as sfg
@@ -110,6 +111,8 @@ def enter_chapter(screen, chapter, renne):
 
     clock = pygame.time.Clock()
     running = True
+    last_direct_key_up = None
+    hero_run = False
     while running:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 
@@ -147,8 +150,19 @@ def enter_chapter(screen, chapter, renne):
                         elif game_status.menu.current_menu() == "QUIT":
                             return {"status": cfg.GameControl.QUIT}
 
+                if event.key in sfg.UserKey.DIRECTION_KEYS:
+                    if last_direct_key_up is not None:
+                        if event.key == last_direct_key_up[0] \
+                            and time() - last_direct_key_up[1] < sfg.UserKey.RUN_THRESHOLD:
+                            # adhoc for special key event
+                            renne.action = cfg.HeroAction.RUN
+
                 if game_status.status == cfg.GameStatus.PAUSE:
                     game_status.menu.update(event.key)
+
+            if event.type == KEYUP:
+                if event.key in sfg.UserKey.DIRECTION_KEYS:
+                    last_direct_key_up = (event.key, time())
 
         pressed_keys = pygame.key.get_pressed()
         renne.event_handle(pressed_keys, external_event=game_status.status)

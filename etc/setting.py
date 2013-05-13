@@ -71,6 +71,8 @@ class UserKey(object):
     RUN = K_l
     WIN = K_h
 
+    DIRECTION_KEYS = (UP, DOWN, LEFT, RIGHT)
+    RUN_THRESHOLD = 0.25
 
 
 class Screen(object):
@@ -213,7 +215,7 @@ class SkeletonWarrior(Enemy):
 class CastleWarrior(Enemy):
     NAME = "CastleWarrior" 
     HP = 250
-    ATK = 50
+    ATK = 45
     DFS = 3
 
     RADIUS = 24
@@ -272,7 +274,7 @@ class LeonHardt(Enemy):
     HEIGHT = 80
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
-    SHADOW_INDEX = 3
+    SHADOW_INDEX = 2
 
     ATTACKTYPE = cfg.SpriteAttackType.LEONHARDT
     ATTACKER_PARAMS = {
@@ -337,7 +339,7 @@ class ArmouredShooter(Enemy):
 class SwordRobber(Enemy):
     NAME = "SwordRobber"
     HP = 300
-    ATK = 60 
+    ATK = 50
     DFS = 5
 
     RADIUS = 24

@@ -317,19 +317,19 @@ class Renne(GameSprite):
         elif pressed_keys[sfg.UserKey.REST]:
             self.action = cfg.HeroAction.REST
 
-        elif self.key_vec:
-            if pressed_keys[sfg.UserKey.RUN] and self.sp > 0:
-                # press run and stamina enough
-                self.action = cfg.HeroAction.RUN
-            else:
-                self.action = cfg.HeroAction.WALK
-
         elif pressed_keys[sfg.UserKey.WIN]:
             # egg, show win animation
             if self.mp > self.setting.DIZZY_MANA:
                 self.mp = max(0, self.mp - self.setting.DIZZY_MANA)
                 self.action = cfg.HeroAction.WIN
                 self.sound_box.play("renne_win")
+
+        elif self.key_vec:
+            if self.action == cfg.HeroAction.RUN and self.sp > 0:
+                # press run and stamina enough
+                self.action = cfg.HeroAction.RUN
+            else:
+                self.action = cfg.HeroAction.WALK
 
         else:
             self.action = cfg.HeroAction.STAND
