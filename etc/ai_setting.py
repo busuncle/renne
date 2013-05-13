@@ -127,10 +127,11 @@ class ArmouredShooterAI(LongNormalAI):
 
 
 
-ATTACKTYPE_AI_MAPPING = {
-    cfg.SpriteAttackType.SHORT: ShortNormalAI,
-    cfg.SpriteAttackType.LONG: LongNormalAI,
-    cfg.SpriteAttackType.LEONHARDT: LeonHardtAI,
-    cfg.SpriteAttackType.SWORDROBBER: SwordRobberAI,
-    cfg.SpriteAttackType.ARMOUREDSHOOTER: ArmouredShooterAI,
+AI_MAPPING = {
+    sfg.SkeletonWarrior.ID: ShortNormalAI,
+    sfg.CastleWarrior.ID: ShortNormalAI,
+    sfg.SkeletonArcher.ID: LongNormalAI,
+    sfg.LeonHardt.ID: LeonHardtAI,
+    sfg.ArmouredShooter.ID: ArmouredShooterAI,
+    sfg.SwordRobber.ID: SwordRobberAI,
 }

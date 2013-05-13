@@ -711,11 +711,11 @@ class GameSpritesGroup(pygame.sprite.LayeredDirty):
 
 
 
-
 ENEMY_CLASS_MAPPING = {
-    cfg.SpriteAttackType.SHORT: Enemy, 
-    cfg.SpriteAttackType.LONG: Enemy, 
-    cfg.SpriteAttackType.LEONHARDT: Leonhardt,
-    cfg.SpriteAttackType.SWORDROBBER: Enemy,
-    cfg.SpriteAttackType.ARMOUREDSHOOTER: Enemy,
+    sfg.SkeletonWarrior.ID: Enemy,
+    sfg.CastleWarrior.ID: Enemy,
+    sfg.SkeletonArcher.ID: Enemy,
+    sfg.LeonHardt.ID: Leonhardt,
+    sfg.ArmouredShooter.ID: Enemy,
+    sfg.SwordRobber.ID: Enemy,
 }
