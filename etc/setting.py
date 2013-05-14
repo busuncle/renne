@@ -767,13 +767,12 @@ class SpriteStatus(object):
     HERO_HEAD_BLIT_POS = (-20, -38)
 
     # Renne magic skill icons
-    DESTROY_FIRE_ICON_IMAGE_KEY = "e2"
-    DESTROY_BOMB_ICON_IMAGE_KEY = "e2"
-    DESTROY_AEROLITE_ICON_IMAGE_KEY = "e3"
-    DESTROY_FIRE_ICON_RECT = (64, 0, 64, 64)
-    DESTROY_BOMB_ICON_RECT = (0, 0, 64, 64)
-    DESTROY_AEROLITE_ICON_RECT = (192, 0, 64, 128)
-    SKILL_ICON_SCALE_SIZE = (32, 32)
+    DESTROY_FIRE_ICON_IMAGE_KEY = "e4"
+    DESTROY_BOMB_ICON_IMAGE_KEY = "e4"
+    DESTROY_AEROLITE_ICON_IMAGE_KEY = "e4"
+    DESTROY_FIRE_ICON_RECT = (64, 64, 32, 32)
+    DESTROY_BOMB_ICON_RECT = (128, 64, 32, 32)
+    DESTROY_AEROLITE_ICON_RECT = (192, 64, 32, 32)
     SKILL_CD_MASK_COLOR = pygame.Color(128, 128, 128, 128)
 
     DESTROY_FIRE_ICON_BLIT_POS = (8, 100)
@@ -1179,4 +1178,5 @@ EFFECT = ("effect", {
     "e1": "e1.png",
     "e2": "e2.png",
     "e3": "e3.png",
+    "e4": "e4.png",
 })

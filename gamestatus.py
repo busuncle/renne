@@ -458,19 +458,16 @@ class HeroStatus(object):
         self.hero_hp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
         self.hero_mp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
         self.hero_sp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
-        # skills
+        # skill icons 
         self.destroy_fire_icon = gen_panel(effect_image_controller, 
             sfg.SpriteStatus.DESTROY_FIRE_ICON_IMAGE_KEY, 
-            sfg.SpriteStatus.DESTROY_FIRE_ICON_RECT,
-            sfg.SpriteStatus.SKILL_ICON_SCALE_SIZE)
+            sfg.SpriteStatus.DESTROY_FIRE_ICON_RECT)
         self.destroy_bomb_icon = gen_panel(effect_image_controller, 
             sfg.SpriteStatus.DESTROY_BOMB_ICON_IMAGE_KEY, 
-            sfg.SpriteStatus.DESTROY_BOMB_ICON_RECT,
-            sfg.SpriteStatus.SKILL_ICON_SCALE_SIZE)
+            sfg.SpriteStatus.DESTROY_BOMB_ICON_RECT)
         self.destroy_aerolite_icon = gen_panel(effect_image_controller,
             sfg.SpriteStatus.DESTROY_AEROLITE_ICON_IMAGE_KEY, 
-            sfg.SpriteStatus.DESTROY_AEROLITE_ICON_RECT,
-            sfg.SpriteStatus.SKILL_ICON_SCALE_SIZE)
+            sfg.SpriteStatus.DESTROY_AEROLITE_ICON_RECT)
 
 
     def gen_head_images_list(self):
