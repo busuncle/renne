@@ -468,6 +468,9 @@ class HeroStatus(object):
         self.destroy_aerolite_icon = gen_panel(effect_image_controller,
             sfg.SpriteStatus.DESTROY_AEROLITE_ICON_IMAGE_KEY, 
             sfg.SpriteStatus.DESTROY_AEROLITE_ICON_RECT)
+        self.dizzy_icon = gen_panel(effect_image_controller,
+            sfg.SpriteStatus.DIZZY_ICON_IMAGE_KEY,
+            sfg.SpriteStatus.DIZZY_ICON_RECT)
 
 
     def gen_head_images_list(self):
@@ -556,6 +559,7 @@ class HeroStatus(object):
         camera.screen.blit(self.destroy_bomb_icon, sfg.SpriteStatus.DESTROY_BOMB_ICON_BLIT_POS)
         camera.screen.blit(self.destroy_aerolite_icon, 
             sfg.SpriteStatus.DESTROY_AEROLITE_ICON_BLIT_POS)
+        camera.screen.blit(self.dizzy_icon, sfg.SpriteStatus.DIZZY_ICON_BLIT_POS)
 
         # draw skill icon masks, if it is in cd status
         cds = self.hero.attacker.magic_cds
@@ -571,6 +575,10 @@ class HeroStatus(object):
             self.draw_skill_icon_mask(camera, self.destroy_aerolite_icon.get_width(),
                 sfg.SpriteStatus.DESTROY_AEROLITE_ICON_BLIT_POS,
                 self.hero.attacker.destroy_aerolite_params["cd"], cds["destroy_aerolite"])
+        if self.hero.dizzy_cd > 0:
+            self.draw_skill_icon_mask(camera, self.dizzy_icon.get_width(),
+                sfg.SpriteStatus.DIZZY_ICON_BLIT_POS,
+                self.hero.setting.DIZZY_CD, self.hero.dizzy_cd)
 
 
 
