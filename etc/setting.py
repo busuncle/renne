@@ -136,12 +136,14 @@ class Renne(object):
             "dx": 32,
             "dy": 48,
             "mana": 30,
+            "cd": 5,
         },
         "destroy_bomb": {
             "range": 360,
             "damage": 60,
             "speed": 280,
             "mana": 60,
+            "cd": 6,
             "bomb_radius": 18,
             "dx": 32,
             "dy": 52,
@@ -156,6 +158,7 @@ class Renne(object):
             "damage": 60,
             "acceleration": 400,
             "mana": 80,
+            "cd": 8,
             #"mana": 6,
             "dx": 32,
             "dy": 240,
@@ -763,6 +766,19 @@ class SpriteStatus(object):
     HERO_HEAD_SIZE = (128, 128)
     HERO_HEAD_BLIT_POS = (-20, -38)
 
+    # Renne magic skill icons
+    DESTROY_FIRE_ICON_IMAGE_KEY = "e2"
+    DESTROY_BOMB_ICON_IMAGE_KEY = "e2"
+    DESTROY_AEROLITE_ICON_IMAGE_KEY = "e3"
+    DESTROY_FIRE_ICON_RECT = (64, 0, 64, 64)
+    DESTROY_BOMB_ICON_RECT = (0, 0, 64, 64)
+    DESTROY_AEROLITE_ICON_RECT = (192, 0, 64, 128)
+    SKILL_ICON_SCALE_SIZE = (32, 32)
+
+    DESTROY_FIRE_ICON_BLIT_POS = (8, 100)
+    DESTROY_BOMB_ICON_BLIT_POS = (58, 100)
+    DESTROY_AEROLITE_ICON_BLIT_POS = (108, 100)
+
     COST_HP_WORDS_COLOR = pygame.Color("red")
     COST_HP_WORDS_FONT = Font.ARIAL_BLACK_32
     COST_HP_WORDS_SHOW_TIME = 0.3
@@ -778,6 +794,7 @@ class SpriteStatus(object):
     RECOVER_HP_WORDS_BLIT_X_SIGMA = 20
     RECOVER_HP_WORDS_BLIT_Y_SIGMA = 10
     RECOVER_HP_WORDS_POS_MOVE_RATE = (0, -60)
+
 
 
 class Achievement(object):

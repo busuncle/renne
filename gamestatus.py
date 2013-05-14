@@ -2,7 +2,7 @@ from time import time
 import pygame
 from pygame.locals import *
 from pygame.transform import smoothscale, scale2x
-from animation import cg_image_controller, basic_image_controller
+from animation import cg_image_controller, basic_image_controller, effect_image_controller
 from musicbox import BackgroundBox
 from base.util import ImageController
 from base.util import Timer, load_chapter_win_screen_image
@@ -458,6 +458,19 @@ class HeroStatus(object):
         self.hero_hp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
         self.hero_mp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
         self.hero_sp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
+        # skills
+        self.destroy_fire_icon = gen_panel(effect_image_controller, 
+            sfg.SpriteStatus.DESTROY_FIRE_ICON_IMAGE_KEY, 
+            sfg.SpriteStatus.DESTROY_FIRE_ICON_RECT,
+            sfg.SpriteStatus.SKILL_ICON_SCALE_SIZE)
+        self.destroy_bomb_icon = gen_panel(effect_image_controller, 
+            sfg.SpriteStatus.DESTROY_BOMB_ICON_IMAGE_KEY, 
+            sfg.SpriteStatus.DESTROY_BOMB_ICON_RECT,
+            sfg.SpriteStatus.SKILL_ICON_SCALE_SIZE)
+        self.destroy_aerolite_icon = gen_panel(effect_image_controller,
+            sfg.SpriteStatus.DESTROY_AEROLITE_ICON_IMAGE_KEY, 
+            sfg.SpriteStatus.DESTROY_AEROLITE_ICON_RECT,
+            sfg.SpriteStatus.SKILL_ICON_SCALE_SIZE)
 
 
     def gen_head_images_list(self):
@@ -485,6 +498,37 @@ class HeroStatus(object):
         camera.screen.blit(bar, blit_pos)
 
 
+    def draw_skill_icon_mask(self, camera, icon, blit_pos, cd, cd_left):
+        # icon is suppose to be square, so width equals height, just use width is ok
+        w = icon.get_width()
+        point_list = [(0.5 * w, 0), (0.5 * w, 0.5 * w)]
+        size_len = w * 4
+        left_ratio = float(cd_left) / cd
+        if left_ratio < 0.125:
+            # less than 1 / 8 of size_len
+            point_list.append(((0.125 - left_ratio) * size_len, 0))
+        elif left_ratio < 0.375:
+            # more than 1 / 8 and less than 3 / 8
+            point_list.append((0, (left_ratio - 0.125) * size_len))
+            point_list.append((0, 0))
+        elif left_ratio < 0.625:
+            # more than 3 / 8 and less than 5 / 8
+            point_list.append(((left_ratio - 0.375) * size_len, w))
+            point_list.extend([(0, w), (0, 0)])
+        elif left_ratio < 0.875:
+            # more than 5 / 8 and less than 7 / 8
+            point_list.append((w, (0.875 - left_ratio) * size_len))
+            point_list.extend([(w, w), (0, w), (0, 0)])
+        else:
+            # more than 7 / 8
+            point_list.append(((1.125 - left_ratio) * size_len, 0))
+            point_list.extend([(w, 0), (w, w), (0, w), (0, 0)])
+    
+        sf = pygame.Surface((w, w)).convert_alpha()
+        pygame.draw.polygon(sf, pygame.Color(128, 128, 128, 128), point_list)
+        camera.screen.blit(sf, blit_pos, special_flags=BLEND_ADD)
+
+
     def draw(self, camera):
         # panel first, other things over it
         camera.screen.blit(self.status_panel, sfg.SpriteStatus.HERO_PANEL_BLIT_POS)
@@ -509,6 +553,27 @@ class HeroStatus(object):
         # draw the sp bar for Renne
         self.draw_hero_bar(camera, self.hero.sp, self.hero.setting.SP, self.hero_sp_bar,
             sfg.SpriteStatus.HERO_SP_COLOR, sfg.SpriteStatus.HERO_SP_BLIT_POS)
+
+        # draw skill icons
+        camera.screen.blit(self.destroy_fire_icon, sfg.SpriteStatus.DESTROY_FIRE_ICON_BLIT_POS)
+        camera.screen.blit(self.destroy_bomb_icon, sfg.SpriteStatus.DESTROY_BOMB_ICON_BLIT_POS)
+        camera.screen.blit(self.destroy_aerolite_icon, 
+            sfg.SpriteStatus.DESTROY_AEROLITE_ICON_BLIT_POS)
+
+        # draw skill icon masks, if it is in cd status
+        cds = self.hero.attacker.magic_cds
+        if cds["destroy_fire"] > 0:
+            self.draw_skill_icon_mask(camera, self.destroy_fire_icon, 
+                sfg.SpriteStatus.DESTROY_FIRE_ICON_BLIT_POS,
+                self.hero.attacker.destroy_fire_params["cd"], cds["destroy_fire"])
+        if cds["destroy_bomb"] > 0:
+            self.draw_skill_icon_mask(camera, self.destroy_bomb_icon,
+                sfg.SpriteStatus.DESTROY_BOMB_ICON_BLIT_POS,
+                self.hero.attacker.destroy_bomb_params["cd"], cds["destroy_bomb"])
+        if cds["destroy_aerolite"] > 0:
+            self.draw_skill_icon_mask(camera, self.destroy_aerolite_icon,
+                sfg.SpriteStatus.DESTROY_AEROLITE_ICON_BLIT_POS,
+                self.hero.attacker.destroy_aerolite_params["cd"], cds["destroy_aerolite"])
 
 
 
