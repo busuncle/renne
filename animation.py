@@ -105,7 +105,7 @@ class SpriteAnimator(object):
         dx = sfg.SpriteStatus.COST_HP_WORDS_BLIT_X_SIGMA
         dy = sfg.SpriteStatus.COST_HP_WORDS_BLIT_Y_SIGMA
         x = sp.pos.x
-        y = sp.pos.y / 2 - sp.setting.HEIGHT - sfg.SpriteStatus.COST_HP_WORDS_BLIT_HEIGHT_OFFSET
+        y = sp.pos.y * 0.5 - sp.setting.HEIGHT - sfg.SpriteStatus.COST_HP_WORDS_BLIT_HEIGHT_OFFSET
         rel_pos = (randint(int(x - dx), int(x + dx)), randint(int(y - dy), int(y + dy)))
         self.words_renderer.add_blit_words(words, rel_pos, 
             sfg.SpriteStatus.COST_HP_WORDS_SHOW_TIME,
@@ -120,7 +120,7 @@ class SpriteAnimator(object):
         dx = sfg.SpriteStatus.RECOVER_HP_WORDS_BLIT_X_SIGMA
         dy = sfg.SpriteStatus.RECOVER_HP_WORDS_BLIT_Y_SIGMA
         x = sp.pos.x
-        y = sp.pos.y / 2 - sp.setting.HEIGHT - sfg.SpriteStatus.RECOVER_HP_WORDS_BLIT_HEIGHT_OFFSET
+        y = sp.pos.y * 0.5 - sp.setting.HEIGHT - sfg.SpriteStatus.RECOVER_HP_WORDS_BLIT_HEIGHT_OFFSET
         rel_pos = (randint(int(x - dx), int(x + dx)), randint(int(y - dy), int(y + dy)))
         self.words_renderer.add_blit_words(words, rel_pos,
             sfg.SpriteStatus.RECOVER_HP_WORDS_SHOW_TIME,
@@ -257,7 +257,7 @@ class EnemyAnimator(SpriteAnimator):
 
         # adjust hp_bar position relative to screen
         r = self.hp_bar.get_rect()
-        r.center = (sp.pos.x, sp.pos.y / 2 - sp.setting.HEIGHT)
+        r.center = (sp.pos.x, sp.pos.y * 0.5 - sp.setting.HEIGHT)
         r.top -= camera.rect.top
         r.left -= camera.rect.left
         camera.screen.blit(self.hp_bar, r)
@@ -335,7 +335,7 @@ class SpriteEmotionAnimator(object):
         if self.image is not None:
             sp = self.sprite
             rect = self.image.get_rect()
-            rect.center = (sp.pos.x, sp.pos.y / 2 - sp.setting.HEIGHT)
+            rect.center = (sp.pos.x, sp.pos.y * 0.5 - sp.setting.HEIGHT)
             camera.screen.blit(self.image, 
                 (rect.left - camera.rect.left, rect.top - camera.rect.top))
 

@@ -76,7 +76,7 @@ class StaticObject(pygame.sprite.DirtySprite):
 
 
     def adjust_rect(self):
-        self.rect.center = (self.pos[0], self.pos[1] / 2 - self.setting.POS_RECT_DELTA_Y)
+        self.rect.center = (self.pos[0], self.pos[1] * 0.5 - self.setting.POS_RECT_DELTA_Y)
 
 
     def update(self, passed_seconds):
@@ -88,7 +88,7 @@ class StaticObject(pygame.sprite.DirtySprite):
         shd_rect = self.shadow_image.get_rect()
         shd_rect.center = self.area.center
         camera.screen.blit(self.shadow_image,
-            (shd_rect.x - camera.rect.x, shd_rect.y / 2 - camera.rect.y - self.shadow_rect_delta_y))
+            (shd_rect.x - camera.rect.x, shd_rect.y * 0.5 - camera.rect.y - self.shadow_rect_delta_y))
 
 
     def draw(self, camera):

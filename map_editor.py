@@ -262,7 +262,7 @@ def run(chapter):
             key_vec.y += 1.0
 
         time_passed = clock.tick(sfg.FPS)
-        passed_seconds = time_passed / 1000.0
+        passed_seconds = time_passed * 0.001
 
         camera.screen_move(key_vec, sfg.MapEditor.SCREEN_MOVE_SPEED, passed_seconds)
         if selected_object is not None:

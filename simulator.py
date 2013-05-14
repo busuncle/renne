@@ -37,10 +37,10 @@ class MagicSprite(pygame.sprite.DirtySprite):
     def draw(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
             camera.screen.blit(self.image,
-                (self.pos.x - camera.rect.x - self.dx, self.pos.y / 2 - camera.rect.y - self.dy))
+                (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy))
 
-        #r = pygame.Rect(0, 0, self.area.width, self.area.height / 2)
-        #r.center = (self.pos.x, self.pos.y / 2)
+        #r = pygame.Rect(0, 0, self.area.width, self.area.height * 0.5)
+        #r.center = (self.pos.x, self.pos.y * 0.5)
         #r.top -= camera.rect.top
         #r.left -= camera.rect.left
         #pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
@@ -72,15 +72,15 @@ class EnergyBall(MagicSprite):
         shd_rect = self.shadow["image"].get_rect()
         shd_rect.center = self.pos
         camera.screen.blit(self.shadow["image"],
-            (shd_rect.x - camera.rect.x, shd_rect.y / 2 - camera.rect.y - self.shadow["dy"]))
+            (shd_rect.x - camera.rect.x, shd_rect.y * 0.5 - camera.rect.y - self.shadow["dy"]))
 
 
     def draw(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
             camera.screen.blit(self.image_mix,
-                (self.pos.x - camera.rect.x - self.dx, self.pos.y / 2 - camera.rect.y - self.dy))
-            #r = pygame.Rect(0, 0, self.area.width, self.area.height / 2)
-            #r.center = (self.pos.x, self.pos.y / 2)
+                (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy))
+            #r = pygame.Rect(0, 0, self.area.width, self.area.height * 0.5)
+            #r.center = (self.pos.x, self.pos.y * 0.5)
             #r.top -= camera.rect.top
             #r.left -= camera.rect.left
             #pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
@@ -171,7 +171,7 @@ class DestroyBomb(MagicSprite):
         shd_rect = self.shadow_image.get_rect()
         shd_rect.center = self.pos
         camera.screen.blit(self.shadow_image,
-            (shd_rect.x - camera.rect.x, shd_rect.y / 2 - camera.rect.y - self.shadow_rect_delta_y))
+            (shd_rect.x - camera.rect.x, shd_rect.y * 0.5 - camera.rect.y - self.shadow_rect_delta_y))
 
 
 
@@ -308,10 +308,10 @@ class DestroyAerolite(MagicSprite):
         shd_rect = self.shadow_image.get_rect()
         shd_rect.center = self.pos
         camera.screen.blit(self.shadow_image,
-            (shd_rect.x - camera.rect.x, shd_rect.y / 2 - camera.rect.y - self.shadow_rect_delta_y))
+            (shd_rect.x - camera.rect.x, shd_rect.y * 0.5 - camera.rect.y - self.shadow_rect_delta_y))
         #if self.alive_time > self.damage_cal_time:
-        #    r = pygame.Rect(0, 0, self.area.width, self.area.height / 2)
-        #    r.center = (self.pos.x, self.pos.y / 2)
+        #    r = pygame.Rect(0, 0, self.area.width, self.area.height * 0.5)
+        #    r.center = (self.pos.x, self.pos.y * 0.5)
         #    r.top -= camera.rect.top
         #    r.left -= camera.rect.left
         #    pygame.draw.rect(camera.screen, pygame.Color("red"), r, 1)
@@ -319,7 +319,7 @@ class DestroyAerolite(MagicSprite):
 
     def draw(self, camera):
         camera.screen.blit(self.image_mix,
-            (self.pos.x - camera.rect.x - self.dx, self.pos.y / 2 - camera.rect.y - self.dy + self.fall_s))
+            (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy + self.fall_s))
         
 
 
@@ -385,7 +385,7 @@ class DestroyAeroliteSet(object):
                 shd_rect = self.shadow_image.get_rect()
                 shd_rect.center = aerolite["area"].center
                 camera.screen.blit(self.shadow_image, 
-                    (shd_rect.x - camera.rect.x, shd_rect.y / 2 - camera.rect.y))
+                    (shd_rect.x - camera.rect.x, shd_rect.y * 0.5 - camera.rect.y))
 
 
     def draw(self, camera):
@@ -438,14 +438,14 @@ class HellClaw(MagicSprite):
         shd_rect = self.shadow_image.get_rect()
         shd_rect.center = self.pos
         camera.screen.blit(self.shadow_image,
-            (shd_rect.x - camera.rect.x, shd_rect.y / 2 - camera.rect.y - self.shadow_rect_delta_y))
+            (shd_rect.x - camera.rect.x, shd_rect.y * 0.5 - camera.rect.y - self.shadow_rect_delta_y))
 
 
     def draw(self, camera):
         camera.screen.blit(self.image_mix,
-            (self.pos.x - camera.rect.x - self.dx, self.pos.y / 2 - camera.rect.y - self.dy))
-        #r = pygame.Rect(0, 0, self.area.width, self.area.height / 2)
-        #r.center = (self.pos.x, self.pos.y / 2)
+            (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy))
+        #r = pygame.Rect(0, 0, self.area.width, self.area.height * 0.5)
+        #r.center = (self.pos.x, self.pos.y * 0.5)
         #r.top -= camera.rect.top
         #r.left -= camera.rect.left
         #pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
@@ -565,7 +565,7 @@ class AngleAttacker(Attacker):
         # so we need angle to be calculated as the min cosine value
         # angle needs to be divide by 2 because of the symmetry
         assert 0 <= angle <= 180
-        self.cos_min = cos(radians(angle / 2))
+        self.cos_min = cos(radians(angle * 0.5))
 
 
     def hit(self, target, current_frame_add):
@@ -790,7 +790,7 @@ class ViewSensor(object):
 
     def __init__(self, sprite, angle=120):
         self.sprite = sprite
-        self.cos_min = cos(radians(angle / 2))
+        self.cos_min = cos(radians(angle * 0.5))
 
 
     def detect(self, target):

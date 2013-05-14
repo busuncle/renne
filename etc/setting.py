@@ -136,14 +136,14 @@ class Renne(object):
             "dx": 32,
             "dy": 48,
             "mana": 30,
-            "cd": 5,
+            "cd": 3,
         },
         "destroy_bomb": {
             "range": 360,
             "damage": 60,
             "speed": 280,
             "mana": 60,
-            "cd": 6,
+            "cd": 5,
             "bomb_radius": 18,
             "dx": 32,
             "dy": 52,
@@ -158,7 +158,7 @@ class Renne(object):
             "damage": 60,
             "acceleration": 400,
             "mana": 80,
-            "cd": 8,
+            "cd": 6,
             #"mana": 6,
             "dx": 32,
             "dy": 240,
@@ -774,6 +774,7 @@ class SpriteStatus(object):
     DESTROY_BOMB_ICON_RECT = (0, 0, 64, 64)
     DESTROY_AEROLITE_ICON_RECT = (192, 0, 64, 128)
     SKILL_ICON_SCALE_SIZE = (32, 32)
+    SKILL_CD_MASK_COLOR = pygame.Color(128, 128, 128, 128)
 
     DESTROY_FIRE_ICON_BLIT_POS = (8, 100)
     DESTROY_BOMB_ICON_BLIT_POS = (58, 100)

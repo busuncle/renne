@@ -172,7 +172,7 @@ def enter_chapter(screen, chapter, renne):
                 enemy.event_handle(pressed_keys, external_event=game_status.status)
 
         time_passed = clock.tick(sfg.FPS)
-        passed_seconds = time_passed / 1000.0
+        passed_seconds = time_passed * 0.001
 
         # update renne, enemies, game_status in sequence
         renne.update(passed_seconds, external_event=game_status.status)

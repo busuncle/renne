@@ -22,7 +22,7 @@ battle_images.add_from_list(sfg.BATTLE_IMAGES[1])
 def screen_draw_y_symmetric(camera, blit_surface, y):
     # given y, draw the surface to screen that it's y-axis symmetric
     r = blit_surface.get_rect()
-    r.centerx = camera.size[0] / 2
+    r.centerx = camera.size[0] * 0.5
     r.top = y
     camera.screen.blit(blit_surface, r)
 
@@ -74,12 +74,12 @@ class Menu(object):
 
     def draw(self, screen):
         menu_blit_y = self.blit_y
-        screen_centerx = sfg.Screen.SIZE[0] / 2
+        screen_centerx = sfg.Screen.SIZE[0] * 0.5
         for i, menu_word in enumerate(self.options):
             if i == self.index:
                 renne_cursor_rect = self.renne_cursor.get_rect()
-                renne_cursor_rect.center = (screen_centerx - self.option_rect.width / 2,
-                    menu_blit_y + self.option_rect.height / 2)
+                renne_cursor_rect.center = (screen_centerx - self.option_rect.width * 0.5,
+                    menu_blit_y + self.option_rect.height * 0.5)
                 screen.blit(self.renne_cursor, renne_cursor_rect)
 
                 m_font = self.font_on
@@ -91,7 +91,7 @@ class Menu(object):
 
             menu = m_font.render(menu_word, True, m_color)
             menu_rect = menu.get_rect()
-            menu_rect.center = (screen_centerx, menu_blit_y + self.option_rect.height / 2)
+            menu_rect.center = (screen_centerx, menu_blit_y + self.option_rect.height * 0.5)
             screen.blit(menu, menu_rect)
 
             menu_blit_y += self.option_rect.height
@@ -136,7 +136,7 @@ def start_game(screen):
     pic = cg_image_controller.get(sfg.StartGame.PICTURE_IMAGE_KEY).convert()
     pic_rect = pic.get_rect()
 
-    screen_centerx = sfg.Screen.SIZE[0] / 2
+    screen_centerx = sfg.Screen.SIZE[0] * 0.5
     pic_rect.centerx = screen_centerx
     pic_rect.top = sfg.StartGame.PICTURE_BLIT_Y
 
@@ -291,7 +291,7 @@ def end_game(screen):
     show_the_end(screen)
     show_chapter_win_screen_images(screen)
 
-    screen_centerx = sfg.Screen.SIZE[0] / 2
+    screen_centerx = sfg.Screen.SIZE[0] * 0.5
 
     renne_image = pygame.image.load(sfg.RENNE_IMAGE_FILENAME).convert_alpha()
     renne_image_rect = renne_image.get_rect()
@@ -498,9 +498,9 @@ class HeroStatus(object):
         camera.screen.blit(bar, blit_pos)
 
 
-    def draw_skill_icon_mask(self, camera, icon, blit_pos, cd, cd_left):
+    def draw_skill_icon_mask(self, camera, icon_width, blit_pos, cd, cd_left):
         # icon is suppose to be square, so width equals height, just use width is ok
-        w = icon.get_width()
+        w = icon_width
         point_list = [(0.5 * w, 0), (0.5 * w, 0.5 * w)]
         size_len = w * 4
         left_ratio = float(cd_left) / cd
@@ -525,7 +525,7 @@ class HeroStatus(object):
             point_list.extend([(w, 0), (w, w), (0, w), (0, 0)])
     
         sf = pygame.Surface((w, w)).convert_alpha()
-        pygame.draw.polygon(sf, pygame.Color(128, 128, 128, 128), point_list)
+        pygame.draw.polygon(sf, sfg.SpriteStatus.SKILL_CD_MASK_COLOR, point_list)
         camera.screen.blit(sf, blit_pos, special_flags=BLEND_ADD)
 
 
@@ -563,15 +563,15 @@ class HeroStatus(object):
         # draw skill icon masks, if it is in cd status
         cds = self.hero.attacker.magic_cds
         if cds["destroy_fire"] > 0:
-            self.draw_skill_icon_mask(camera, self.destroy_fire_icon, 
+            self.draw_skill_icon_mask(camera, self.destroy_fire_icon.get_width(), 
                 sfg.SpriteStatus.DESTROY_FIRE_ICON_BLIT_POS,
                 self.hero.attacker.destroy_fire_params["cd"], cds["destroy_fire"])
         if cds["destroy_bomb"] > 0:
-            self.draw_skill_icon_mask(camera, self.destroy_bomb_icon,
+            self.draw_skill_icon_mask(camera, self.destroy_bomb_icon.get_width(),
                 sfg.SpriteStatus.DESTROY_BOMB_ICON_BLIT_POS,
                 self.hero.attacker.destroy_bomb_params["cd"], cds["destroy_bomb"])
         if cds["destroy_aerolite"] > 0:
-            self.draw_skill_icon_mask(camera, self.destroy_aerolite_icon,
+            self.draw_skill_icon_mask(camera, self.destroy_aerolite_icon.get_width(),
                 sfg.SpriteStatus.DESTROY_AEROLITE_ICON_BLIT_POS,
                 self.hero.attacker.destroy_aerolite_params["cd"], cds["destroy_aerolite"])
 
