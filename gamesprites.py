@@ -210,9 +210,7 @@ class Renne(GameSprite):
         self.animation.run_circle_frame(cfg.HeroAction.RUN, passed_seconds)
 
 
-    def attack(self, method, passed_seconds):
-        if self.attacker.method is None:
-            self.attacker.method = method
+    def attack(self, passed_seconds):
         is_finish = self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds)
         if is_finish:
             self.attacker.finish()
@@ -267,9 +265,7 @@ class Renne(GameSprite):
                 # do nothin
                 return
 
-        if self.action in (cfg.HeroAction.ATTACK, 
-            cfg.HeroAction.ATTACK_DESTROY_FIRE, cfg.HeroAction.ATTACK_DESTROY_BOMB,
-            cfg.HeroAction.ATTACK_DESTROY_AEROLITE):
+        if self.action == cfg.HeroAction.ATTACK:
             # attacking, return directly
             return
 
@@ -291,28 +287,31 @@ class Renne(GameSprite):
 
         if pressed_keys[sfg.UserKey.ATTACK]:
             self.action = cfg.HeroAction.ATTACK
+            self.attacker.method = "regular"
             atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3", 
                 "renne_attack0", "renne_attack0", "renne_attack0"))
-            if atk_snd is not None:
-                self.sound_box.play(atk_snd)
+            self.sound_box.play(atk_snd)
 
         elif pressed_keys[sfg.UserKey.ATTACK_DESTROY_FIRE]:
             if self.mp > self.attacker.destroy_fire_params["mana"]:
                 atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3"))
                 self.sound_box.play(atk_snd)
-                self.action = cfg.HeroAction.ATTACK_DESTROY_FIRE
+                self.action = cfg.HeroAction.ATTACK
+                self.attacker.method = "destroy_fire"
 
         elif pressed_keys[sfg.UserKey.ATTACK_DESTROY_BOMB]:
             if self.mp > self.attacker.destroy_bomb_params["mana"]:
                 atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3"))
                 self.sound_box.play(atk_snd)
-                self.action = cfg.HeroAction.ATTACK_DESTROY_BOMB
+                self.action = cfg.HeroAction.ATTACK
+                self.attacker.method = "destroy_bomb"
 
         elif pressed_keys[sfg.UserKey.ATTACK_DESTROY_AEROLITE]:
             if self.mp > self.attacker.destroy_aerolite_params["mana"]:
                 atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3"))
                 self.sound_box.play(atk_snd)
-                self.action = cfg.HeroAction.ATTACK_DESTROY_AEROLITE
+                self.action = cfg.HeroAction.ATTACK
+                self.attacker.method = "destroy_aerolite"
 
         elif pressed_keys[sfg.UserKey.REST]:
             self.action = cfg.HeroAction.REST
@@ -342,16 +341,7 @@ class Renne(GameSprite):
                 return
 
         if self.action == cfg.HeroAction.ATTACK:
-            self.attack("regular", passed_seconds)
-
-        elif self.action == cfg.HeroAction.ATTACK_DESTROY_FIRE:
-            self.attack("destroy_fire", passed_seconds)
-
-        elif self.action == cfg.HeroAction.ATTACK_DESTROY_BOMB:
-            self.attack("destroy_bomb", passed_seconds)
-
-        elif self.action == cfg.HeroAction.ATTACK_DESTROY_AEROLITE:
-            self.attack("destroy_aerolite", passed_seconds)
+            self.attack(passed_seconds)
 
         elif self.action == cfg.HeroAction.RUN:
             self.run(passed_seconds)
