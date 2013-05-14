@@ -597,6 +597,7 @@ class RenneAttacker(AngleAttacker):
         self.destroy_fire_params = attacker_params["destroy_fire"]
         self.destroy_bomb_params = attacker_params["destroy_bomb"]
         self.destroy_aerolite_params = attacker_params["destroy_aerolite"]
+        self.magic_cds = {"destroy_fire": 0, "destroy_bomb": 0, "destroy_aerolite": 0}
         self.magic_list = []
         self.current_magic = None
         self.method = None
@@ -615,6 +616,7 @@ class RenneAttacker(AngleAttacker):
         direct_vec = cfg.Direction.DIRECT_TO_VEC[sp.direction]
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
             sp.mp -= self.destroy_fire_params["mana"]
+            self.magic_cds["destroy_fire"] = self.destroy_fire_params["cd"]
             self.current_magic = DestroyFire(sp, sp.enemies,
                 sp.static_objects, self.destroy_fire_params, sp.pos, sp.pos + direct_vec)
             self.magic_list.append(self.current_magic)
@@ -624,6 +626,7 @@ class RenneAttacker(AngleAttacker):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
             sp.mp -= self.destroy_bomb_params["mana"]
+            self.magic_cds["destroy_bomb"] = self.destroy_bomb_params["cd"]
             self.current_magic = DestroyBombSet(sp, sp.enemies,
                 sp.static_objects, self.destroy_bomb_params, sp.pos, sp.direction)
             self.magic_list.append(self.current_magic)
@@ -633,6 +636,7 @@ class RenneAttacker(AngleAttacker):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
             sp.mp -= self.destroy_aerolite_params["mana"]
+            self.magic_cds["destroy_aerolite"] = self.destroy_aerolite_params["cd"]
             self.current_magic = DestroyAeroliteSet(sp, sp.enemies, 
                 sp.static_objects, self.destroy_aerolite_params, sp.pos)
             self.magic_list.append(self.current_magic)

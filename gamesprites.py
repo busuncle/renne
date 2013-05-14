@@ -293,21 +293,24 @@ class Renne(GameSprite):
             self.sound_box.play(atk_snd)
 
         elif pressed_keys[sfg.UserKey.ATTACK_DESTROY_FIRE]:
-            if self.mp > self.attacker.destroy_fire_params["mana"]:
+            if self.mp > self.attacker.destroy_fire_params["mana"] \
+                and self.attacker.magic_cds["destroy_fire"] == 0:
                 atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3"))
                 self.sound_box.play(atk_snd)
                 self.action = cfg.HeroAction.ATTACK
                 self.attacker.method = "destroy_fire"
 
         elif pressed_keys[sfg.UserKey.ATTACK_DESTROY_BOMB]:
-            if self.mp > self.attacker.destroy_bomb_params["mana"]:
+            if self.mp > self.attacker.destroy_bomb_params["mana"] \
+                and self.attacker.magic_cds["destroy_bomb"] == 0:
                 atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3"))
                 self.sound_box.play(atk_snd)
                 self.action = cfg.HeroAction.ATTACK
                 self.attacker.method = "destroy_bomb"
 
         elif pressed_keys[sfg.UserKey.ATTACK_DESTROY_AEROLITE]:
-            if self.mp > self.attacker.destroy_aerolite_params["mana"]:
+            if self.mp > self.attacker.destroy_aerolite_params["mana"] \
+                and self.attacker.magic_cds["destroy_aerolite"] == 0:
                 atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3"))
                 self.sound_box.play(atk_snd)
                 self.action = cfg.HeroAction.ATTACK
@@ -360,12 +363,17 @@ class Renne(GameSprite):
 
         self.animation.update(passed_seconds)
 
+        # update magic status
         for i, magic in enumerate(self.attacker.magic_list):
             if magic.status == cfg.Magic.STATUS_VANISH:
                 self.attacker.magic_list.pop(i)
             else:
                 magic.update(passed_seconds)
 
+        # update magic cd
+        for magic_name in self.attacker.magic_cds:
+            self.attacker.magic_cds[magic_name] = max(0, 
+                self.attacker.magic_cds[magic_name] - passed_seconds)
 
 
 
