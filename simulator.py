@@ -125,10 +125,6 @@ class EnergyBallSet(object):
             self.status = cfg.Magic.STATUS_VANISH
 
 
-    def draw_shadow(self, camera):
-        pass
-
-
     def draw(self, camera):
         for msp in self.magic_sprites:
             msp.draw(camera)
@@ -395,6 +391,37 @@ class DestroyAeroliteSet(object):
 
 
 
+class RenneDizzy(object):
+    # Renne skill
+    def __init__(self, sprite, target_list, dizzy_range, dizzy_time, effective_time, prob):
+        self.sprite = sprite
+        self.target_list = target_list
+        self.dizzy_range = dizzy_range
+        self.dizzy_time = dizzy_time
+        self.effective_time = effective_time
+        self.prob = prob
+        self.dizzy_targets = set()
+        self.status = cfg.Magic.STATUS_ALIVE
+        # actually no magic sprite in this skill, but this variable should exist in every magic skill
+        self.magic_sprites = []
+
+
+    def update(self, passed_seconds):
+        sp = self.sprite
+        for target in self.target_list:
+            if sp.pos.get_distance_to(target.pos) < self.dizzy_range \
+                and target not in self.dizzy_targets:
+                self.dizzy_targets.add(target)
+                if happen(self.prob):
+                    target.status["dizzy_time"] = self.dizzy_time
+                    target.set_emotion(cfg.SpriteEmotion.DIZZY)
+
+        self.effective_time -= passed_seconds
+        if self.effective_time <= 0:
+            self.status = cfg.Magic.STATUS_VANISH
+
+
+
 class DeathCoil(EnergyBallSet):
     # Leon Hardt skill
     death_coil_image = animation.effect_image_controller.get(
@@ -597,8 +624,10 @@ class RenneAttacker(AngleAttacker):
         self.destroy_fire_params = attacker_params["destroy_fire"]
         self.destroy_bomb_params = attacker_params["destroy_bomb"]
         self.destroy_aerolite_params = attacker_params["destroy_aerolite"]
-        self.magic_cds = {"destroy_fire": 0, "destroy_bomb": 0, "destroy_aerolite": 0}
+        self.dizzy_params = attacker_params["dizzy"]
+        self.magic_cds = {"destroy_fire": 0, "destroy_bomb": 0, "destroy_aerolite": 0, "dizzy": 0}
         self.magic_list = []
+        # a lock, only one magic is running in an attack
         self.current_magic = None
         self.method = None
 
@@ -639,6 +668,16 @@ class RenneAttacker(AngleAttacker):
             self.magic_cds["destroy_aerolite"] = self.destroy_aerolite_params["cd"]
             self.current_magic = DestroyAeroliteSet(sp, sp.enemies, 
                 sp.static_objects, self.destroy_aerolite_params, sp.pos)
+            self.magic_list.append(self.current_magic)
+
+
+    def dizzy(self, current_frame_add):
+        sp = self.sprite
+        if self.current_magic is None and int(current_frame_add) in self.dizzy_params["key_frames"]:
+            self.magic_cds["dizzy"] = self.dizzy_params["cd"]
+            self.current_magic = RenneDizzy(sp, sp.enemies, self.dizzy_params["range"],
+                self.dizzy_params["time"], self.dizzy_params["effective_time"],
+                self.dizzy_params["prob"])
             self.magic_list.append(self.current_magic)
 
 

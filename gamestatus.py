@@ -575,10 +575,10 @@ class HeroStatus(object):
             self.draw_skill_icon_mask(camera, self.destroy_aerolite_icon.get_width(),
                 sfg.SpriteStatus.DESTROY_AEROLITE_ICON_BLIT_POS,
                 self.hero.attacker.destroy_aerolite_params["cd"], cds["destroy_aerolite"])
-        if self.hero.dizzy_cd > 0:
+        if cds["dizzy"] > 0:
             self.draw_skill_icon_mask(camera, self.dizzy_icon.get_width(),
                 sfg.SpriteStatus.DIZZY_ICON_BLIT_POS,
-                self.hero.setting.DIZZY_CD, self.hero.dizzy_cd)
+                self.hero.attacker.dizzy_params["cd"], cds["dizzy"])
 
 
 

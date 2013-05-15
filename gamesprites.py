@@ -122,9 +122,6 @@ class Renne(GameSprite):
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
         self.area.center = self.pos('xy')
 
-        self.dizzy_cd = 0
-        self.dizzy_targets = set()
-
 
     def activate(self, allsprites, enemies, static_objects, game_map):
         self.allsprites = allsprites
@@ -239,18 +236,11 @@ class Renne(GameSprite):
 
     def win(self, passed_seconds):
         is_finish = self.animation._run_renne_win_frame(passed_seconds)
-        if int(self.animation.get_current_frame_add(self.action)) in self.setting.DIZZY_KEY_FRAME:
-            for sp in self.enemies:
-                if self.pos.get_distance_to(sp.pos) < self.setting.DIZZY_RANGE \
-                    and sp not in self.dizzy_targets:
-                    self.dizzy_targets.add(sp)
-                    if happen(self.setting.DIZZY_PROB):
-                        sp.status["dizzy_time"] = self.setting.DIZZY_TIME
-                        sp.set_emotion(cfg.SpriteEmotion.DIZZY)
-
         if is_finish:
-            self.dizzy_targets.clear()
+            self.attacker.finish()
             self.action = cfg.HeroAction.STAND
+        else:
+            self.attacker.dizzy(self.animation.get_current_frame_add(cfg.HeroAction.WIN))
         
 
     def event_handle(self, pressed_keys, external_event=None):
@@ -263,7 +253,7 @@ class Renne(GameSprite):
                     self.action = cfg.HeroAction.STAND
                 return 
             elif external_event == cfg.GameStatus.PAUSE:
-                # do nothin
+                # do nothing
                 return
 
         if self.action == cfg.HeroAction.ATTACK:
@@ -321,9 +311,7 @@ class Renne(GameSprite):
             self.action = cfg.HeroAction.REST
 
         elif pressed_keys[sfg.UserKey.WIN]:
-            # egg, show win animation
-            if self.dizzy_cd == 0:
-                self.dizzy_cd = self.setting.DIZZY_CD
+            if self.attacker.magic_cds["dizzy"] == 0:
                 self.action = cfg.HeroAction.WIN
                 self.sound_box.play("renne_win")
 
@@ -375,8 +363,6 @@ class Renne(GameSprite):
         for magic_name in self.attacker.magic_cds:
             self.attacker.magic_cds[magic_name] = max(0, 
                 self.attacker.magic_cds[magic_name] - passed_seconds)
-        # special skill dizzy
-        self.dizzy_cd = max(0, self.dizzy_cd - passed_seconds)
 
 
 

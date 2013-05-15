@@ -170,15 +170,16 @@ class Renne(object):
             "aerolite_shake_on_x": 90,
             "aerolite_shake_on_y": 90,
             "stun_time": 5,
-        }
+        },
+        "dizzy": {
+            "prob": 0.25,
+            "range": 700,
+            "cd": 30,
+            "time": 15,
+            "effective_time": 2,
+            "key_frames": (5, 6),
+        },
     }
-
-    # painted egg effect
-    DIZZY_PROB = 0.25
-    DIZZY_RANGE = 800
-    DIZZY_CD = 30
-    DIZZY_TIME = 15
-    DIZZY_KEY_FRAME = (5, 6)
 
 
                 
