@@ -154,7 +154,7 @@ def start_game(screen):
         screen.fill(pygame.Color("black"))
 
         time_passed = clock.tick(sfg.FPS)
-        passed_seconds = time_passed / 1000.0
+        passed_seconds = time_passed * 0.001
         if pic_alpha < 255:
             pic_alpha = int(min(pic_alpha + passed_seconds * fade_in_delta, 255))
         pic.set_alpha(pic_alpha)
@@ -203,7 +203,7 @@ def loading_chapter_picture(screen):
 
         screen.fill(pygame.Color("black"))
         time_passed = clock.tick(sfg.FPS)
-        passed_seconds = time_passed / 1000.0
+        passed_seconds = time_passed * 0.001
         alpha = int(min(alpha + passed_seconds * delta, 255))
         img.set_alpha(alpha)
         screen.blit(img, img_rect)
@@ -236,7 +236,7 @@ def show_the_end(screen):
         screen.blit(the_end_word, the_end_word_rect)
 
         time_passed = clock.tick(sfg.FPS)
-        passed_seconds = time_passed / 1000.0
+        passed_seconds = time_passed * 0.001
         mask_alpha = int(max(mask_alpha - passed_seconds * fade_in_delta, 0))
         mask.fill(pygame.Color(0, 0, 0, mask_alpha))
         screen.blit(mask, (0, 0))
@@ -266,7 +266,7 @@ def show_chapter_win_screen_images(screen):
             screen.fill(pygame.Color("black"))
 
             time_passed = clock.tick(sfg.FPS)
-            passed_seconds = time_passed / 1000.0
+            passed_seconds = time_passed * 0.001
 
             if img_alpha < 255:
                 img_alpha = int(min(img_alpha + passed_seconds * fade_in_delta, 255))
@@ -321,7 +321,7 @@ def end_game(screen):
         screen.blit(word, word_rect)
 
         time_passed = clock.tick(sfg.FPS)
-        passed_seconds = time_passed / 1000.0
+        passed_seconds = time_passed * 0.001
         mask_alpha = int(max(mask_alpha - passed_seconds * fade_in_delta, 0))
         mask.fill(pygame.Color(0, 0, 0, mask_alpha))
         screen.blit(mask, (0, 0))
