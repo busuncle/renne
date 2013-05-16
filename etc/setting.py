@@ -124,7 +124,6 @@ class Renne(object):
     WALK_SPEED = 100
     RUN_SPEED = 200
 
-    ATTACKTYPE = cfg.SpriteAttackType.RENNE
     ATTACKER_PARAMS = {
         "range": 100,
         "angle": 120,
@@ -206,7 +205,6 @@ class SkeletonWarrior(Enemy):
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
 
-    ATTACKTYPE = cfg.SpriteAttackType.SHORT
     ATTACKER_PARAMS = {
         "range": 60,
         "angle": 90,
@@ -229,7 +227,6 @@ class CastleWarrior(Enemy):
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
 
-    ATTACKTYPE = cfg.SpriteAttackType.SHORT
     ATTACKER_PARAMS = {
         "range": 90,
         "angle": 60,
@@ -252,7 +249,6 @@ class SkeletonArcher(Enemy):
     SHADOW_RECT_DELTA_Y = 55
     SHADOW_INDEX = 3
 
-    ATTACKTYPE = cfg.SpriteAttackType.LONG
     ATTACKER_PARAMS = {
         "range": 400,
         "angle": 12,
@@ -281,7 +277,6 @@ class LeonHardt(Enemy):
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 2
 
-    ATTACKTYPE = cfg.SpriteAttackType.LEONHARDT
     ATTACKER_PARAMS = {
         "range": 70,
         "angle": 60,
@@ -330,7 +325,6 @@ class ArmouredShooter(Enemy):
     SHADOW_RECT_DELTA_Y = 55
     SHADOW_INDEX = 3
 
-    ATTACKTYPE = cfg.SpriteAttackType.ARMOUREDSHOOTER
     ATTACKER_PARAMS = {
         "range": 420,
         "angle": 12,
@@ -353,7 +347,6 @@ class SwordRobber(Enemy):
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
 
-    ATTACKTYPE = cfg.SpriteAttackType.SWORDROBBER
     ATTACKER_PARAMS = {
         "range": 90,
         "angle": 60,
@@ -1049,6 +1042,9 @@ for i, cls in enumerate(STATIC_OBJECT_SETTING_LIST):
 
 SPRITE_SETTING_MAPPING = dict((cls.ID, cls) for cls in SPRITE_SETTING_LIST)
 STATIC_OBJECT_SETTING_MAPPING = dict((cls.ID, cls) for cls in STATIC_OBJECT_SETTING_LIST)
+
+
+SPRITES_WITH_MAGIC_SKILL = (Renne.ID, LeonHardt.ID)
 
 
 ########### resource mapping ###########

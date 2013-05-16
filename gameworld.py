@@ -169,7 +169,7 @@ class GameWorld(pygame.sprite.LayeredDirty):
             # adjust_rect by the way
             sp.adjust_rect()
             sp.animation.draw_shadow(camera)
-            if sp.setting.ATTACKTYPE in cfg.SpriteAttackType.HAS_MAGIC_SKILLS:
+            if sp.setting.ID in sfg.SPRITES_WITH_MAGIC_SKILL:
                 for magic in sp.attacker.magic_list:
                     # magic sprite is dynamic objects too, put them into movings
                     movings.extend(magic.magic_sprites)

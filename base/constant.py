@@ -92,18 +92,6 @@ class EnemyAction(SpriteAction):
 
 
 
-class SpriteAttackType(object):
-    RENNE = 0
-    SHORT = 1
-    LONG = 2
-    LEONHARDT = 3
-    SWORDROBBER = 4
-    ARMOUREDSHOOTER = 5
-
-    HAS_MAGIC_SKILLS = (RENNE, LEONHARDT)
-
-
-
 class SpriteState(object):
     STAY = 1
     PATROL = 2
