@@ -357,6 +357,29 @@ class SwordRobber(Enemy):
 
 
 
+class SkeletonWarrior2(Enemy):
+    NAME = "SkeletonWarrior2"
+    HP = 250
+    ATK = 30
+    DFS = 2
+
+    RADIUS = 24
+    HEIGHT = 80
+    POS_RECT_DELTA_Y = 40
+    SHADOW_RECT_DELTA_Y = 60
+    SHADOW_INDEX = 3
+
+    ATTACKER_PARAMS = {
+        "range": 60,
+        "angle": 90,
+        "key_frames": (3, 4),
+        "poison_damage_per_second": 5,
+        "poison_persist_time": 5,
+    }
+
+    WALK_SPEED = 160
+
+
 class GameMap(object):
     TILE_SIZE = 256
     ONE_SCREEN_DISTANCE_WIDTH = TILE_SIZE * 4
@@ -998,6 +1021,7 @@ SPRITE_SETTING_LIST = [
     LeonHardt,
     ArmouredShooter,
     SwordRobber,
+    SkeletonWarrior2,
 ]
 
 STATIC_OBJECT_SETTING_LIST = [
@@ -1091,6 +1115,11 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
         cfg.EnemyAction.ATTACK: ("attack_7.png", 7, 8),
+    }),
+    SkeletonWarrior2.ID: ("skeleton_warrior2", {
+        cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
+        cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
+        cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
     }),
 }
 
