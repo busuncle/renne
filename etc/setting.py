@@ -97,6 +97,8 @@ class Sprite(object):
     RECOVER_HP_MIX_COLOR = pygame.Color("gray")
     RECOVER_HP_EFFECT_TIME = 0.08
 
+    DEBUFF_POISON_MIX_COLOR = pygame.Color("green")
+
 
 
 class Renne(object):
@@ -372,9 +374,10 @@ class SkeletonWarrior2(Enemy):
     ATTACKER_PARAMS = {
         "range": 60,
         "angle": 90,
-        "key_frames": (3, 4),
+        "key_frames": (4, 5),
         "poison_damage_per_second": 5,
         "poison_persist_time": 5,
+        "poison_prob": 0.4,
     }
 
     WALK_SPEED = 160

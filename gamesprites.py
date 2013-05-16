@@ -47,6 +47,8 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.status = {"hp": cfg.SpriteStatus.HEALTHY, 
             "recover_hp_effect_time": 0, "under_attack_effect_time": 0, "stun_time": 0,
             "dizzy_time": 0}
+        self.buff = {}
+        self.debuff = {}
         self.pos = Vector2(pos)
         self.direction = direction
 
@@ -134,6 +136,8 @@ class Renne(GameSprite):
         self.status["under_attack_effect_time"] = 0
         self.status["recover_hp_effect_time"] = 0
         self.status["stun_time"] = 0
+        self.buff = {}
+        self.debuff = {}
 
 
     def place(self, pos, direction):
@@ -343,6 +347,19 @@ class Renne(GameSprite):
 
         elif self.action == cfg.HeroAction.STAND:
             self.stand(passed_seconds)
+
+        # update some debuff
+        if self.debuff.get("poison") is not None:
+            poison = self.debuff["poison"]
+            if poison["time_left"] < 0:
+                self.debuff.pop("poison")
+            else:
+                poison["time_left"] -= passed_seconds
+                if len(poison["time_list"]) > 0 and poison["time_left"] <= poison["time_list"][-1]:
+                    poison["time_list"].pop()
+                    self.hp -= poison["dps"]
+                    self.status["hp"] = self.cal_sprite_status(self.hp, self.setting.HP)
+                    self.animation.show_cost_hp(poison["dps"])
 
         self.animation.update(passed_seconds)
 
@@ -700,4 +717,5 @@ ENEMY_CLASS_MAPPING = {
     sfg.LeonHardt.ID: Leonhardt,
     sfg.ArmouredShooter.ID: Enemy,
     sfg.SwordRobber.ID: Enemy,
+    sfg.SkeletonWarrior2.ID: Enemy,
 }

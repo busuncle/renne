@@ -672,6 +672,23 @@ class EnemyShortAttacker(AngleAttacker):
 
 
 
+class EnemyPoisonShortAttacker(EnemyShortAttacker):
+    def __init__(self, sprite, attacker_params):
+        super(EnemyPoisonShortAttacker, self).__init__(sprite, attacker_params)
+        self.poison_dps = attacker_params["poison_damage_per_second"]
+        self.poison_time = attacker_params["poison_persist_time"]
+        self.poison_prob = attacker_params["poison_prob"]
+
+
+    def run(self, hero, current_frame_add):
+        hit_it = super(EnemyPoisonShortAttacker, self).run(hero, current_frame_add)
+        # add additional poison damage
+        if hit_it and happen(self.poison_prob):
+            hero.debuff["poison"] = {"dps": self.poison_dps, "time_list": range(self.poison_time),
+                "time_left": self.poison_time}
+
+
+
 class EnemyLongAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
         attack_range = attacker_params["range"]
@@ -816,6 +833,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.LeonHardt.ID: LeonhardtAttacker,
     sfg.ArmouredShooter.ID: EnemyLongAttacker,
     sfg.SwordRobber.ID: EnemyShortAttacker,
+    sfg.SkeletonWarrior2.ID: EnemyPoisonShortAttacker,
 }
 
 

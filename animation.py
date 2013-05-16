@@ -91,6 +91,7 @@ class SpriteAnimator(object):
         self.shadow_image = get_shadow_image(sprite.setting.SHADOW_INDEX)
         self.shadow_rect = self.shadow_image.get_rect()
         self.words_renderer = WordsRenderer()
+        self.blink = Blink()
 
 
     def get_current_frame_add(self, action):
@@ -153,6 +154,11 @@ class SpriteAnimator(object):
 
 
     def update(self, passed_seconds):
+        if self.sprite.debuff.get("poison") is not None:
+            image_mix = self.blink.make(self.image, passed_seconds)
+            image_mix.fill(sfg.Sprite.DEBUFF_POISON_MIX_COLOR, special_flags=BLEND_ADD)
+            self.image = image_mix
+
         if self.sprite.status["hp"] != cfg.SpriteStatus.DIE \
             and self.sprite.status["under_attack_effect_time"] > 0:
             self.sprite.status["under_attack_effect_time"] = max(0,
