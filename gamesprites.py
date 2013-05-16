@@ -74,12 +74,6 @@ class GameSprite(pygame.sprite.DirtySprite):
         return False
 
 
-    def is_collide_static_objects(self):
-        for v in self.static_objects:
-            if v.setting.IS_BLOCK and self.area.colliderect(v.area):
-                return True
-
-
     def get_collide_static_object(self):
         for v in self.static_objects:
             if self.area.colliderect(v.area):
@@ -413,6 +407,7 @@ class Enemy(GameSprite):
 
 
     def reachable(self):
+        # use waypoints to check whether the current self.pos is reachable
         wps = self.brain.waypoints
         step = sfg.WayPoint.STEP_WIDTH
         x0 = self.pos.x - self.pos.x % step

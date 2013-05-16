@@ -68,11 +68,12 @@ class UserKey(object):
     ATTACK_DESTROY_BOMB = K_i
     ATTACK_DESTROY_AEROLITE = K_o
     REST = K_k
-    RUN = K_l
     WIN = K_h
 
     DIRECTION_KEYS = (UP, DOWN, LEFT, RIGHT)
+    # double press some direction key to run, this is the threshold between 2 presses
     RUN_THRESHOLD = 0.2
+
 
 
 class Screen(object):
