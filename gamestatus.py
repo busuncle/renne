@@ -333,8 +333,16 @@ def end_game(screen):
 class GameStatus(object):
     def __init__(self, chapter, hero, enemy_list):
         self.chapter = chapter
+        self.win_cond = sfg.Chapter.WIN_CONDITION[self.chapter]
         self.hero = hero
         self.enemy_list = enemy_list
+        if self.win_cond == sfg.Chapter.WIN_CONDITION_BOSS_DIE:
+            self.boss = None
+            for em in self.enemy_list:
+                if hasattr(em.setting, "IS_BOSS"):
+                    self.boss = em
+                    break
+
         self.status = cfg.GameStatus.INIT
         self.win_panel = gen_panel(battle_images, 
             sfg.GameStatus.HERO_WIN_PANEL_IMAGE_KEY, sfg.GameStatus.HERO_WIN_PANEL_RECT)
@@ -371,15 +379,19 @@ class GameStatus(object):
             if len(self.enemy_list) == 0:
                 # all enemies are gone, hero win
                 self.status = cfg.GameStatus.HERO_WIN
-                # only call incr_next_value one for chapter score
-                score = self.achievement.kill_score.next_value \
-                    + self.achievement.n_hit_score.next_value \
-                    + self.achievement.n_kill_score.next_value
-                self.achievement.chapter_score.incr_next_value(score)
+                self.achievement.cal_chapter_score()
                 return 
 
         elif self.status == cfg.GameStatus.HERO_WIN:
             self.achievement.chapter_score.update(passed_seconds)
+
+        if self.win_cond == sfg.Chapter.WIN_CONDITION_BOSS_DIE \
+            and self.boss.status["hp"] == cfg.SpriteStatus.DIE:
+            # in an chapter that boss die you win, kill all enemy when boss die
+            for em in self.enemy_list:
+                if em.hp > 0:
+                    em.hp = 0
+                    em.status["hp"] = cfg.SpriteStatus.DIE
 
         for em in self.enemy_list:
             if em.status["hp"] == cfg.SpriteStatus.DIE:
@@ -603,6 +615,12 @@ class Achievement(object):
         self.score_panel = gen_panel(battle_images, 
             sfg.Achievement.SCORE_PANEL_IMAGE_KEY, sfg.Achievement.SCORE_PANEL_RECT,
             sfg.Achievement.SCORE_PANEL_SCALE_SIZE)
+
+
+    def cal_chapter_score(self):
+        # only call incr_next_value one for chapter score
+        score = self.kill_score.next_value + self.n_hit_score.next_value + self.n_kill_score.next_value
+        self.chapter_score.incr_next_value(score)
 
 
     def update(self, passed_seconds):

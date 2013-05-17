@@ -266,6 +266,7 @@ class LeonHardt(Enemy):
     VIEW_RANGE = 520
     VIEW_ANGLE = 180
 
+    IS_BOSS = True
     NAME = "LeonHardt"
     HP = 1500
     MP = 1000
@@ -939,6 +940,17 @@ class Chapter(object):
     LOADING_PICTURE_FADE_IN_TIME = 1    # in second unit, show up the picture
     LOADING_WORD = Font.ARIAL_BLACK_28.render("now loading ...", True, pygame.Color("white"))
     LOADING_WORD_BLIT_POS = (760, 700)
+
+    WIN_CONDITION_ALL_ENEMY_DIE = 1
+    WIN_CONDITION_BOSS_DIE = 2
+
+    WIN_CONDITION = {
+        1: WIN_CONDITION_ALL_ENEMY_DIE,
+        2: WIN_CONDITION_ALL_ENEMY_DIE,
+        3: WIN_CONDITION_ALL_ENEMY_DIE,
+        4: WIN_CONDITION_ALL_ENEMY_DIE,
+        5: WIN_CONDITION_BOSS_DIE,
+    }
 
 
 
