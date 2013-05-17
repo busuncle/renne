@@ -687,6 +687,8 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
             hero.debuff["poison"] = {"dps": self.poison_dps, "time_list": range(self.poison_time),
                 "time_left": self.poison_time}
 
+        return hit_it
+
 
 
 class EnemyLongAttacker(AngleAttacker):
