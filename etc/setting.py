@@ -267,8 +267,8 @@ class LeonHardt(Enemy):
     VIEW_ANGLE = 180
 
     NAME = "LeonHardt"
-    HP = 600
-    MP = 480
+    HP = 1500
+    MP = 1000
     ATK = 60
     DFS = 5
     MP_RECOVERY_RATE = 10
