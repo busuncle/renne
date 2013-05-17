@@ -105,13 +105,13 @@ class Renne(object):
     NAME = "Renne"
     ROLE = cfg.SpriteRole.HERO
     HP = 300
-    MP = 180
+    MP = 200
     MP_RECOVERY_RATE = 10
-    SP = 150
+    SP = 200
     SP_COST_RATE = 15
     SP_RECOVERY_RATE = 20
     ATK = 30
-    DFS = 5
+    DFS = 2
 
     # sprite radius
     RADIUS = 18 
