@@ -234,6 +234,9 @@ class CastleWarrior(Enemy):
         "range": 90,
         "angle": 60,
         "key_frames": (3, 4),
+        "thump_prob": 0.9,
+        "thump_crick_time": 0.1,
+        "thump_out_speed": 400,
     }
 
     WALK_SPEED = 160

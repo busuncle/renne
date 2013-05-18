@@ -708,6 +708,35 @@ class EnemyWeakenShortAttacker(EnemyShortAttacker):
 
         return hit_it
 
+
+
+class EnemyThumpShortAttacker(EnemyShortAttacker):
+    # thump hero, make her back a distance
+    def __init__(self, sprite, attacker_params):
+        super(EnemyThumpShortAttacker, self).__init__(sprite, attacker_params)
+        self.thump_prob = attacker_params["thump_prob"]
+        self.thump_crick_time = attacker_params["thump_crick_time"]
+        self.thump_out_speed = attacker_params["thump_out_speed"]
+
+
+    def run(self, hero, current_frame_add):
+        if self.hit(hero, current_frame_add):
+            atk = self.sprite.atk
+            if happen(self.thump_prob):
+                # thump results in a double attack and hero-fallback
+                atk *= 2
+                if hero.status.get("under_thump") is None:
+                    hero.status["under_thump"] = {"crick_time": self.thump_crick_time, 
+                        "out_speed": self.thump_out_speed, 
+                        "key_vec": Vector2(cfg.Direction.DIRECT_TO_VEC[self.sprite.direction])}
+
+            damage = atk - hero.dfs
+            hero.attacker.handle_under_attack(self.sprite, damage)
+            return True
+        return False
+
+
+
 class EnemyLongAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
         attack_range = attacker_params["range"]
@@ -847,7 +876,7 @@ class ViewSensor(object):
 
 ENEMY_ATTACKER_MAPPING = {
     sfg.SkeletonWarrior.ID: EnemyShortAttacker,
-    sfg.CastleWarrior.ID: EnemyShortAttacker,
+    sfg.CastleWarrior.ID: EnemyThumpShortAttacker,
     sfg.SkeletonArcher.ID: EnemyLongAttacker,
     sfg.LeonHardt.ID: LeonhardtAttacker,
     sfg.ArmouredShooter.ID: EnemyLongAttacker,

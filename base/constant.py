@@ -68,6 +68,7 @@ class SpriteRole(object):
 
 
 class SpriteAction(object):
+    UNCONTROLLED = -1
     STAND = 1
     WALK = 2
     RUN = 3

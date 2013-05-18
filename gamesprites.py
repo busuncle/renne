@@ -45,8 +45,7 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.dfs = dfs
         # a chaos dict that holding many kinds of status, i don't want many attributes, so i use it
         self.status = {"hp": cfg.SpriteStatus.HEALTHY, 
-            "recover_hp_effect_time": 0, "under_attack_effect_time": 0, "stun_time": 0,
-            "dizzy_time": 0}
+            "recover_hp_effect_time": 0, "under_attack_effect_time": 0}
         self.buff = {}
         self.debuff = {}
         self.pos = Vector2(pos)
@@ -82,12 +81,24 @@ class GameSprite(pygame.sprite.DirtySprite):
                 return v
 
 
+    def reset_action(self):
+        self.action = cfg.HeroAction.STAND
+
+
     def update_status(self, passed_seconds):
         # update the status attribute
         self.status["under_attack_effect_time"] = max(0,
             self.status["under_attack_effect_time"] - passed_seconds)
         self.status["recover_hp_effect_time"] = max(0,
             self.status["recover_hp_effect_time"] - passed_seconds)
+        if self.status.get("under_thump") is not None:
+            self.action = cfg.HeroAction.UNCONTROLLED
+            self.move(self.status["under_thump"]["out_speed"], passed_seconds, 
+                self.status["under_thump"]["key_vec"])
+            self.status["under_thump"]["crick_time"] -= passed_seconds
+            if self.status["under_thump"]["crick_time"] <= 0:
+                self.reset_action()
+                self.status.pop("under_thump")
 
 
     def update(self, passed_seconds):
@@ -143,7 +154,6 @@ class Renne(GameSprite):
         self.status["hp"] = cfg.SpriteStatus.HEALTHY 
         self.status["under_attack_effect_time"] = 0
         self.status["recover_hp_effect_time"] = 0
-        self.status["stun_time"] = 0
         self.buff = {}
         self.debuff = {}
 
@@ -158,11 +168,12 @@ class Renne(GameSprite):
         self.animation.draw(camera)
 
 
-    def move(self, speed, passed_seconds):
+    def move(self, speed, passed_seconds, key_vec=None):
         # try x and y direction move, go back to the old position when collided with something unwalkable
-        self.key_vec.normalize()
+        k_vec = key_vec or self.key_vec
+        k_vec.normalize()
         for coord in ("x", "y"):
-            key_vec_coord = getattr(self.key_vec, coord)
+            key_vec_coord = getattr(k_vec, coord)
             if key_vec_coord != 0:
                 old_coord = getattr(self.pos, coord)
                 setattr(self.pos, coord, old_coord + key_vec_coord * speed * passed_seconds)
@@ -514,7 +525,7 @@ class Enemy(GameSprite):
         if self.status["hp"] == cfg.SpriteStatus.DIE:
             return
 
-        if self.status["stun_time"] > 0 or self.status["dizzy_time"] > 0:
+        if self.status.get("stun_time", 0) > 0 or self.status.get("dizzy_time", 0) > 0:
             self.reset_action(force=True)
             return
 
@@ -542,12 +553,12 @@ class Enemy(GameSprite):
 
     def update_status(self, passed_seconds):
         super(Enemy, self).update_status(passed_seconds)
-        if self.status["stun_time"] > 0:
+        if self.status.get("stun_time", 0) > 0:
             self.animation.set_init_frame(cfg.EnemyAction.STAND)
             self.status["stun_time"] = max(0, self.status["stun_time"] - passed_seconds)
             if self.status["stun_time"] == 0:
                 self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
-        if self.status["dizzy_time"] > 0:
+        if self.status.get("dizzy_time", 0) > 0:
             self.animation.set_init_frame(cfg.EnemyAction.STAND)
             self.status["dizzy_time"] = max(0, self.status["dizzy_time"] - passed_seconds)
             if self.status["dizzy_time"] == 0:
@@ -564,7 +575,7 @@ class Enemy(GameSprite):
         self.update_status(passed_seconds)
 
         if self.status["hp"] != cfg.SpriteStatus.DIE \
-            and self.status["stun_time"] == 0 and self.status["dizzy_time"] == 0:
+            and self.status.get("stun_time", 0) == 0 and self.status.get("dizzy_time", 0) == 0:
 
             if self.action == cfg.EnemyAction.ATTACK:
                 self.attack(passed_seconds)
@@ -639,7 +650,7 @@ class Leonhardt(Enemy):
         if self.status["hp"] == cfg.SpriteStatus.DIE:
             return
 
-        if self.status["stun_time"] > 0 or self.status["dizzy_time"] > 0:
+        if self.status.get("stun_time", 0) > 0 or self.status.get("dizzy_time", 0) > 0:
             self.reset_action(force=True)
             return
 
