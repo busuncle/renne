@@ -726,7 +726,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
             if happen(self.thump_prob):
                 # thump results in a double attack and hero-fallback
                 atk *= 2
-                words = sfg.Font.ARIAL_BLACK_28.render("THUMP!", True, pygame.Color("red"))
+                words = sfg.Font.ARIAL_BLACK_28.render("THUMP!", True, pygame.Color("orange"))
                 sp.animation.show_words(words, 0.3, 
                     (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
                 if hero.status.get("under_thump") is None:
