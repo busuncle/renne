@@ -483,6 +483,8 @@ class HeroStatus(object):
         self.dizzy_icon = gen_panel(effect_image_controller,
             sfg.SpriteStatus.DIZZY_ICON_IMAGE_KEY,
             sfg.SpriteStatus.DIZZY_ICON_RECT)
+        self.skill_icon_frame = gen_panel(battle_images, sfg.SpriteStatus.SKILL_ICON_FRAME_IMAGE_KEY,
+            sfg.SpriteStatus.SKILL_ICON_FRAME_RECT, sfg.SpriteStatus.SKILL_ICON_SIZE)
 
 
     def gen_head_images_list(self):
@@ -572,6 +574,13 @@ class HeroStatus(object):
         camera.screen.blit(self.destroy_aerolite_icon, 
             sfg.SpriteStatus.DESTROY_AEROLITE_ICON_BLIT_POS)
         camera.screen.blit(self.dizzy_icon, sfg.SpriteStatus.DIZZY_ICON_BLIT_POS)
+
+        # draw the frame of skill icons
+        for blit_pos in (sfg.SpriteStatus.DESTROY_FIRE_ICON_BLIT_POS,
+            sfg.SpriteStatus.DESTROY_BOMB_ICON_BLIT_POS, 
+            sfg.SpriteStatus.DESTROY_AEROLITE_ICON_BLIT_POS,
+            sfg.SpriteStatus.DIZZY_ICON_BLIT_POS):
+            camera.screen.blit(self.skill_icon_frame, blit_pos)
 
         # draw skill icon masks, if it is in cd status
         cds = self.hero.attacker.magic_cds

@@ -836,6 +836,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.ArmouredShooter.ID: EnemyLongAttacker,
     sfg.SwordRobber.ID: EnemyShortAttacker,
     sfg.SkeletonWarrior2.ID: EnemyPoisonShortAttacker,
+    sfg.Ghost.ID: EnemyShortAttacker,
 }
 
 

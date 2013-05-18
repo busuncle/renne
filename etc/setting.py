@@ -367,7 +367,7 @@ class SkeletonWarrior2(Enemy):
     DFS = 2
 
     RADIUS = 24
-    HEIGHT = 80
+    HEIGHT = 75
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
@@ -382,6 +382,29 @@ class SkeletonWarrior2(Enemy):
     }
 
     WALK_SPEED = 160
+
+
+
+class Ghost(Enemy):
+    NAME = "Ghost"
+    HP = 400
+    ATK = 40
+    DFS = 3
+
+    RADIUS = 24
+    HEIGHT = 90
+    POS_RECT_DELTA_Y = 40
+    SHADOW_RECT_DELTA_Y = 60
+    SHADOW_INDEX = 3
+
+    ATTACKER_PARAMS = {
+        "range": 60,
+        "angle": 90,
+        "key_frames": (4, 5),
+    }
+
+    WALK_SPEED = 120
+
 
 
 class GameMap(object):
@@ -793,11 +816,15 @@ class SpriteStatus(object):
     DESTROY_BOMB_ICON_IMAGE_KEY = "e4"
     DESTROY_AEROLITE_ICON_IMAGE_KEY = "e4"
     DIZZY_ICON_IMAGE_KEY = "e4"
+    SKILL_ICON_FRAME_IMAGE_KEY = "status3"
+
     DESTROY_FIRE_ICON_RECT = (64, 64, 32, 32)
     DESTROY_BOMB_ICON_RECT = (128, 64, 32, 32)
     DESTROY_AEROLITE_ICON_RECT = (192, 64, 32, 32)
     DIZZY_ICON_RECT = (96, 64, 32, 32)
     SKILL_CD_MASK_COLOR = pygame.Color(128, 128, 128, 128)
+    SKILL_ICON_FRAME_RECT = (36, 228, 24, 24)
+    SKILL_ICON_SIZE = (32, 32)
 
     DESTROY_FIRE_ICON_BLIT_POS = (8, 100)
     DESTROY_BOMB_ICON_BLIT_POS = (58, 100)
@@ -1037,6 +1064,7 @@ SPRITE_SETTING_LIST = [
     ArmouredShooter,
     SwordRobber,
     SkeletonWarrior2,
+    Ghost,
 ]
 
 STATIC_OBJECT_SETTING_LIST = [
@@ -1132,6 +1160,11 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.ATTACK: ("attack_7.png", 7, 8),
     }),
     SkeletonWarrior2.ID: ("skeleton_warrior2", {
+        cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
+        cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
+        cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
+    }),
+    Ghost.ID: ("ghost", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
