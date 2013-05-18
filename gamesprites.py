@@ -736,4 +736,5 @@ ENEMY_CLASS_MAPPING = {
     sfg.SwordRobber.ID: Enemy,
     sfg.SkeletonWarrior2.ID: Enemy,
     sfg.Ghost.ID: Enemy,
+    sfg.TwoHeadSkeleton.ID: Enemy,
 }

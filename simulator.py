@@ -732,7 +732,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
                 if hero.status.get("under_thump") is None:
                     hero.status["under_thump"] = {"crick_time": self.thump_crick_time, 
                         "out_speed": self.thump_out_speed, 
-                        "key_vec": Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])}
+                        "key_vec": Vector2.from_points(sp.pos, hero.pos)}
 
             damage = atk - hero.dfs
             hero.attacker.handle_under_attack(sp, damage)
@@ -887,6 +887,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.SwordRobber.ID: EnemyShortAttacker,
     sfg.SkeletonWarrior2.ID: EnemyPoisonShortAttacker,
     sfg.Ghost.ID: EnemyWeakenShortAttacker,
+    sfg.TwoHeadSkeleton.ID: EnemyShortAttacker,
 }
 
 

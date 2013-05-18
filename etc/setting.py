@@ -234,7 +234,7 @@ class CastleWarrior(Enemy):
         "range": 90,
         "angle": 60,
         "key_frames": (3, 4),
-        "thump_prob": 0.9,
+        "thump_prob": 0.3,
         "thump_crick_time": 0.1,
         "thump_out_speed": 400,
     }
@@ -411,6 +411,28 @@ class Ghost(Enemy):
     }
 
     WALK_SPEED = 120
+
+
+
+class TwoHeadSkeleton(Enemy):
+    NAME = "TwoHeadSkeleton"
+    HP = 500
+    ATK = 45
+    DFS = 4
+
+    RADIUS = 24
+    HEIGHT = 120
+    POS_RECT_DELTA_Y = 40
+    SHADOW_RECT_DELTA_Y = 60
+    SHADOW_INDEX = 3
+
+    ATTACKER_PARAMS = {
+        "range": 80,
+        "angle": 60,
+        "key_frames": (6, 7),
+    }
+
+    WALK_SPEED = 140
 
 
 
@@ -1080,6 +1102,7 @@ SPRITE_SETTING_LIST = [
     SwordRobber,
     SkeletonWarrior2,
     Ghost,
+    TwoHeadSkeleton,
 ]
 
 STATIC_OBJECT_SETTING_LIST = [
@@ -1180,6 +1203,11 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
     }),
     Ghost.ID: ("ghost", {
+        cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
+        cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
+        cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
+    }),
+    TwoHeadSkeleton.ID: ("two_head_skeleton", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),

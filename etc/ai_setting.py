@@ -136,4 +136,5 @@ AI_MAPPING = {
     sfg.SwordRobber.ID: SwordRobberAI,
     sfg.SkeletonWarrior2.ID: ShortNormalAI,
     sfg.Ghost.ID: ShortNormalAI,
+    sfg.TwoHeadSkeleton.ID: ShortNormalAI,
 }
