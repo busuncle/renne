@@ -726,7 +726,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
             if happen(self.thump_prob):
                 # thump results in a double attack and hero-fallback
                 atk *= 2
-                words = sfg.Font.ARIAL_BLACK_28.render("DIE!", True, pygame.Color("red"))
+                words = sfg.Font.ARIAL_BLACK_28.render("THUMP!", True, pygame.Color("red"))
                 sp.animation.show_words(words, 0.3, 
                     (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
                 if hero.status.get("under_thump") is None:
@@ -738,6 +738,27 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
             hero.attacker.handle_under_attack(sp, damage)
             return True
         return False
+
+
+
+class EnemyBloodShortAttacker(EnemyShortAttacker):
+    # suck blood in attack
+    def __init__(self, sprite, attacker_params):
+        super(EnemyBloodShortAttacker, self).__init__(sprite, attacker_params)
+        self.suck_blood_ratio = attacker_params["suck_blood_ratio"]
+
+
+    def run(self, hero, current_frame_add):
+        hit_it = super(EnemyBloodShortAttacker, self).run(hero, current_frame_add)
+        if hit_it:
+            sp = self.sprite
+            sp.hp = min(sp.hp + self.suck_blood_ratio * sp.setting.ATK, sp.setting.HP)
+            sp.status["hp"] = sp.cal_sprite_status(sp.hp, sp.setting.HP)
+            words = sfg.Font.ARIAL_BLACK_28.render("BLOOD!", True, pygame.Color("red"))
+            sp.animation.show_words(words, 0.3,
+                (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
+
+        return hit_it
 
 
 
@@ -887,7 +908,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.SwordRobber.ID: EnemyShortAttacker,
     sfg.SkeletonWarrior2.ID: EnemyPoisonShortAttacker,
     sfg.Ghost.ID: EnemyWeakenShortAttacker,
-    sfg.TwoHeadSkeleton.ID: EnemyShortAttacker,
+    sfg.TwoHeadSkeleton.ID: EnemyBloodShortAttacker,
 }
 
 

@@ -430,6 +430,7 @@ class TwoHeadSkeleton(Enemy):
         "range": 80,
         "angle": 60,
         "key_frames": (6, 7),
+        "suck_blood_ratio": 0.5,
     }
 
     WALK_SPEED = 140
