@@ -23,6 +23,7 @@ class Font(object):
     ARIAL_BOLD_16 = pygame.font.Font(ARIAL_BOLD_FILEPATH, 16)
     ARIAL_BOLD_32 = pygame.font.Font(ARIAL_BOLD_FILEPATH, 32)
 
+    ARIAL_BLACK_16 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 16)
     ARIAL_BLACK_28 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 28)
     ARIAL_BLACK_32 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 32)
     ARIAL_BLACK_48 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 48)
@@ -401,6 +402,9 @@ class Ghost(Enemy):
         "range": 60,
         "angle": 90,
         "key_frames": (4, 5),
+        "weaken_prob": 0.9,
+        "weaken_mp": 60,
+        "weaken_sp": 60,
     }
 
     WALK_SPEED = 120
@@ -846,6 +850,15 @@ class SpriteStatus(object):
     RECOVER_HP_WORDS_BLIT_X_SIGMA = 20
     RECOVER_HP_WORDS_BLIT_Y_SIGMA = 10
     RECOVER_HP_WORDS_POS_MOVE_RATE = (0, -60)
+
+    # weaken status
+    MP_SP_DOWN_WORDS_COLOR = pygame.Color("black")
+    MP_SP_DOWN_WORDS_FONT = Font.ARIAL_BLACK_16
+    MP_SP_DOWN_WORDS_SHOW_TIME = 0.5
+    MP_SP_DOWN_WORDS_BLIT_HEIGHT_OFFSET = 35
+    MP_SP_DOWN_WORDS_BLIT_X_SIGMA = 20
+    MP_SP_DOWN_WORDS_BLIT_Y_SIGMA = 10
+    MP_SP_DOWN_WORDS_POS_MOVE_RATE = (0, 20)
 
 
 

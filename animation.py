@@ -46,15 +46,20 @@ class WordsRenderer(object):
         self.blit_list = []
 
 
-    def add_blit_words(self, words, rel_pos, time_len, pos_move_rate=None):
-        self.blit_list.append({"words": words, "words_mix": None, "rel_pos": rel_pos, 
-            "timer": Timer(time_len), "pos_move_rate": pos_move_rate, 
-            "blink": Blink(sfg.Effect.BLINK_RATE3, sfg.Effect.BLINK_DEPTH_SECTION3)})
+    def add_blit_words(self, words, rel_pos, time_len, pos_move_rate=None, make_blink=False):
+        w = {"words": words, "rel_pos": rel_pos, 
+            "timer": Timer(time_len), "pos_move_rate": pos_move_rate}
+        if make_blink:
+            w["words_mix"] = None
+            w["blink"] = Blink(sfg.Effect.BLINK_RATE3, sfg.Effect.BLINK_DEPTH_SECTION3)
+        self.blit_list.append(w)
 
 
     def update(self, passed_seconds):
         for i, bw in enumerate(self.blit_list):
-            bw["words_mix"] = bw["blink"].make(bw["words"], passed_seconds)
+            if bw.get("blink") is not None:
+                bw["words_mix"] = bw["blink"].make(bw["words"], passed_seconds)
+
             if not bw["timer"].is_begin():
                 bw["timer"].begin()
             elif bw["timer"].exceed():
@@ -70,8 +75,11 @@ class WordsRenderer(object):
 
     def draw(self, camera):
         for bw in self.blit_list:
-            if bw["words_mix"] is not None:
+            if bw.get("words_mix") is not None:
                 camera.screen.blit(bw["words_mix"], (bw["rel_pos"][0] - camera.rect.left, 
+                    bw["rel_pos"][1] - camera.rect.top))
+            else:
+                camera.screen.blit(bw["words"], (bw["rel_pos"][0] - camera.rect.left, 
                     bw["rel_pos"][1] - camera.rect.top))
 
 
@@ -110,7 +118,7 @@ class SpriteAnimator(object):
         rel_pos = (randint(int(x - dx), int(x + dx)), randint(int(y - dy), int(y + dy)))
         self.words_renderer.add_blit_words(words, rel_pos, 
             sfg.SpriteStatus.COST_HP_WORDS_SHOW_TIME,
-            sfg.SpriteStatus.COST_HP_WORDS_POS_MOVE_RATE)
+            sfg.SpriteStatus.COST_HP_WORDS_POS_MOVE_RATE, True)
 
 
     def show_recover_hp(self, hp):
@@ -125,7 +133,21 @@ class SpriteAnimator(object):
         rel_pos = (randint(int(x - dx), int(x + dx)), randint(int(y - dy), int(y + dy)))
         self.words_renderer.add_blit_words(words, rel_pos,
             sfg.SpriteStatus.RECOVER_HP_WORDS_SHOW_TIME,
-            sfg.SpriteStatus.RECOVER_HP_WORDS_POS_MOVE_RATE)
+            sfg.SpriteStatus.RECOVER_HP_WORDS_POS_MOVE_RATE, True)
+
+
+    def show_cost_mp_sp(self):
+        sp = self.sprite
+        words = sfg.SpriteStatus.MP_SP_DOWN_WORDS_FONT.render("-MP -SP", True,
+            sfg.SpriteStatus.MP_SP_DOWN_WORDS_COLOR)
+        dx = sfg.SpriteStatus.MP_SP_DOWN_WORDS_BLIT_X_SIGMA
+        dy = sfg.SpriteStatus.MP_SP_DOWN_WORDS_BLIT_Y_SIGMA
+        x = sp.pos.x
+        y = sp.pos.y * 0.5 - sp.setting.HEIGHT - sfg.SpriteStatus.MP_SP_DOWN_WORDS_BLIT_HEIGHT_OFFSET
+        rel_pos = (randint(int(x - dx), int(x + dx)), randint(int(y - dy), int(y + dy)))
+        self.words_renderer.add_blit_words(words, rel_pos,
+            sfg.SpriteStatus.MP_SP_DOWN_WORDS_SHOW_TIME,
+            sfg.SpriteStatus.MP_SP_DOWN_WORDS_POS_MOVE_RATE)
 
 
     def set_init_frame(self, action):
@@ -161,15 +183,11 @@ class SpriteAnimator(object):
 
         if self.sprite.status["hp"] != cfg.SpriteStatus.DIE \
             and self.sprite.status["under_attack_effect_time"] > 0:
-            self.sprite.status["under_attack_effect_time"] = max(0,
-                self.sprite.status["under_attack_effect_time"] - passed_seconds)
             image_mix = self.image.copy()
             image_mix.fill(sfg.Sprite.UNDER_ATTACK_MIX_COLOR, special_flags=BLEND_ADD)
             self.image = image_mix
 
         if self.sprite.status["recover_hp_effect_time"] > 0:
-            self.sprite.status["recover_hp_effect_time"] = max(0,
-                self.sprite.status["recover_hp_effect_time"] - passed_seconds)
             image_mix = self.image.copy()
             image_mix.fill(sfg.Sprite.RECOVER_HP_MIX_COLOR, special_flags=BLEND_ADD)
             self.image = image_mix

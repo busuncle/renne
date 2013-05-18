@@ -691,6 +691,23 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
 
 
 
+class EnemyWeakenShortAttacker(EnemyShortAttacker):
+    def __init__(self, sprite, attacker_params):
+        super(EnemyWeakenShortAttacker, self).__init__(sprite, attacker_params)
+        self.weaken_prob = attacker_params["weaken_prob"]
+        self.weaken_mp = attacker_params["weaken_mp"]
+        self.weaken_sp = attacker_params["weaken_sp"]
+
+
+    def run(self, hero, current_frame_add):
+        hit_it = super(EnemyWeakenShortAttacker, self).run(hero, current_frame_add)
+        if hit_it and happen(self.weaken_prob):
+            hero.mp = max(0, hero.mp - self.weaken_mp)
+            hero.sp = max(0, hero.sp - self.weaken_sp)
+            hero.animation.show_cost_mp_sp()
+
+        return hit_it
+
 class EnemyLongAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
         attack_range = attacker_params["range"]
@@ -836,7 +853,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.ArmouredShooter.ID: EnemyLongAttacker,
     sfg.SwordRobber.ID: EnemyShortAttacker,
     sfg.SkeletonWarrior2.ID: EnemyPoisonShortAttacker,
-    sfg.Ghost.ID: EnemyShortAttacker,
+    sfg.Ghost.ID: EnemyWeakenShortAttacker,
 }
 
 

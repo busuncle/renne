@@ -82,7 +82,15 @@ class GameSprite(pygame.sprite.DirtySprite):
                 return v
 
 
-    def update(self):
+    def update_status(self, passed_seconds):
+        # update the status attribute
+        self.status["under_attack_effect_time"] = max(0,
+            self.status["under_attack_effect_time"] - passed_seconds)
+        self.status["recover_hp_effect_time"] = max(0,
+            self.status["recover_hp_effect_time"] - passed_seconds)
+
+
+    def update(self, passed_seconds):
         pass
 
 
@@ -330,6 +338,8 @@ class Renne(GameSprite):
                 # user pause the game, don't update animation
                 return
 
+        self.update_status(passed_seconds)
+
         if self.action == cfg.HeroAction.ATTACK:
             self.attack(passed_seconds)
 
@@ -530,15 +540,13 @@ class Enemy(GameSprite):
                 self.key_vec.x, self.key_vec.y = cfg.Direction.DIRECT_TO_VEC[self.direction] 
 
 
-    def update_stun(self, passed_seconds):
+    def update_status(self, passed_seconds):
+        super(Enemy, self).update_status(passed_seconds)
         if self.status["stun_time"] > 0:
             self.animation.set_init_frame(cfg.EnemyAction.STAND)
             self.status["stun_time"] = max(0, self.status["stun_time"] - passed_seconds)
             if self.status["stun_time"] == 0:
                 self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
-
-
-    def update_dizzy(self, passed_seconds):
         if self.status["dizzy_time"] > 0:
             self.animation.set_init_frame(cfg.EnemyAction.STAND)
             self.status["dizzy_time"] = max(0, self.status["dizzy_time"] - passed_seconds)
@@ -553,8 +561,7 @@ class Enemy(GameSprite):
                 # user pause the game, don't update animation
                 return
 
-        self.update_stun(passed_seconds)
-        self.update_dizzy(passed_seconds)
+        self.update_status(passed_seconds)
 
         if self.status["hp"] != cfg.SpriteStatus.DIE \
             and self.status["stun_time"] == 0 and self.status["dizzy_time"] == 0:
@@ -659,8 +666,7 @@ class Leonhardt(Enemy):
                 # user pause the game, don't update animation
                 return
 
-        self.update_stun(passed_seconds)
-        self.update_dizzy(passed_seconds)
+        self.update_status(passed_seconds)
 
         if self.status["hp"] != cfg.SpriteStatus.DIE:
 
