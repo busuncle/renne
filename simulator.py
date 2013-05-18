@@ -909,6 +909,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.SkeletonWarrior2.ID: EnemyPoisonShortAttacker,
     sfg.Ghost.ID: EnemyWeakenShortAttacker,
     sfg.TwoHeadSkeleton.ID: EnemyBloodShortAttacker,
+    sfg.Werwolf.ID: EnemyShortAttacker,
 }
 
 

@@ -437,6 +437,28 @@ class TwoHeadSkeleton(Enemy):
 
 
 
+class Werwolf(Enemy):
+    NAME = "Werwolf"
+    HP = 600
+    ATK = 48
+    DFS = 4
+
+    RADIUS = 24
+    HEIGHT = 85 
+    POS_RECT_DELTA_Y = 40
+    SHADOW_RECT_DELTA_Y = 60
+    SHADOW_INDEX = 3
+
+    ATTACKER_PARAMS = {
+        "range": 60,
+        "angle": 60,
+        "key_frames": (4, 5),
+    }
+
+    WALK_SPEED = 180
+
+
+
 class GameMap(object):
     TILE_SIZE = 256
     ONE_SCREEN_DISTANCE_WIDTH = TILE_SIZE * 4
@@ -1104,6 +1126,7 @@ SPRITE_SETTING_LIST = [
     SkeletonWarrior2,
     Ghost,
     TwoHeadSkeleton,
+    Werwolf,
 ]
 
 STATIC_OBJECT_SETTING_LIST = [
@@ -1209,6 +1232,11 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
     }),
     TwoHeadSkeleton.ID: ("two_head_skeleton", {
+        cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
+        cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
+        cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
+    }),
+    Werwolf.ID: ("werwolf", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
