@@ -106,6 +106,10 @@ class SpriteAnimator(object):
         return self.frame_adds[action]
 
 
+    def show_words(self, words, show_time, rel_pos, move_rate=None, make_blink=False):
+        self.words_renderer.add_blit_words(words, rel_pos, show_time, move_rate, make_blink)
+        
+
     def show_cost_hp(self, hp):
         sp = self.sprite
         words = sfg.SpriteStatus.COST_HP_WORDS_FONT.render("-%s" % hp, True, 

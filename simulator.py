@@ -720,18 +720,22 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
 
 
     def run(self, hero, current_frame_add):
+        sp = self.sprite
         if self.hit(hero, current_frame_add):
-            atk = self.sprite.atk
+            atk = sp.atk
             if happen(self.thump_prob):
                 # thump results in a double attack and hero-fallback
                 atk *= 2
+                words = sfg.Font.ARIAL_BLACK_28.render("DIE!", True, pygame.Color("red"))
+                sp.animation.show_words(words, 0.3, 
+                    (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
                 if hero.status.get("under_thump") is None:
                     hero.status["under_thump"] = {"crick_time": self.thump_crick_time, 
                         "out_speed": self.thump_out_speed, 
-                        "key_vec": Vector2(cfg.Direction.DIRECT_TO_VEC[self.sprite.direction])}
+                        "key_vec": Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])}
 
             damage = atk - hero.dfs
-            hero.attacker.handle_under_attack(self.sprite, damage)
+            hero.attacker.handle_under_attack(sp, damage)
             return True
         return False
 

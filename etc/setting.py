@@ -864,7 +864,6 @@ class SpriteStatus(object):
     MP_SP_DOWN_WORDS_POS_MOVE_RATE = (0, 20)
 
 
-
 class Achievement(object):
     KILL_ICON_IMAGE_KEY = "status5"
     N_HIT_ICON_IMAGE_KEY = "status5"
