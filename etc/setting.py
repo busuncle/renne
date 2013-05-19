@@ -107,7 +107,7 @@ class Renne(object):
     HP = 300
     MP = 200
     MP_RECOVERY_RATE = 10
-    SP = 200
+    SP = 180
     SP_COST_RATE = 15
     SP_RECOVERY_RATE = 20
     ATK = 30
@@ -197,8 +197,8 @@ class Enemy(object):
 
 class SkeletonWarrior(Enemy):
     NAME = "SkeletonWarrior"
-    HP = 200
-    ATK = 40
+    HP = 300
+    ATK = 35
     DFS = 2
 
     RADIUS = 24
@@ -219,9 +219,9 @@ class SkeletonWarrior(Enemy):
 
 class CastleWarrior(Enemy):
     NAME = "CastleWarrior" 
-    HP = 250
+    HP = 550
     ATK = 45
-    DFS = 3
+    DFS = 4
 
     RADIUS = 24
     HEIGHT = 82
@@ -244,7 +244,7 @@ class CastleWarrior(Enemy):
 
 class SkeletonArcher(Enemy):
     NAME = "SkeletonArcher"
-    HP = 180
+    HP = 300
     ATK = 35
     DFS = 2
 
@@ -317,9 +317,9 @@ class LeonHardt(Enemy):
 
 class ArmouredShooter(Enemy):
     NAME = "ArmouredShooter"
-    HP = 220
+    HP = 400
     ATK = 38
-    DFS = 3
+    DFS = 4
 
     # overwrite
     VIEW_RANGE = 500
@@ -343,9 +343,9 @@ class ArmouredShooter(Enemy):
 
 class SwordRobber(Enemy):
     NAME = "SwordRobber"
-    HP = 300
-    ATK = 50
-    DFS = 5
+    HP = 500
+    ATK = 45
+    DFS = 4
 
     RADIUS = 24
     HEIGHT = 75
@@ -357,8 +357,8 @@ class SwordRobber(Enemy):
         "range": 90,
         "angle": 60,
         "key_frames": (3, 4),
-        "weak_prob": 0.5,
-        "weak_time": 5,
+        "weak_prob": 0.6,
+        "weak_time": 6,
         "weak_atk": 15,
         "weak_dfs": 5,
     }
@@ -369,7 +369,7 @@ class SwordRobber(Enemy):
 
 class SkeletonWarrior2(Enemy):
     NAME = "SkeletonWarrior2"
-    HP = 250
+    HP = 350
     ATK = 30
     DFS = 2
 
@@ -385,7 +385,7 @@ class SkeletonWarrior2(Enemy):
         "key_frames": (4, 5),
         "poison_damage_per_second": 5,
         "poison_persist_time": 5,
-        "poison_prob": 0.4,
+        "poison_prob": 0.6,
     }
 
     WALK_SPEED = 160
@@ -394,8 +394,8 @@ class SkeletonWarrior2(Enemy):
 
 class Ghost(Enemy):
     NAME = "Ghost"
-    HP = 400
-    ATK = 40
+    HP = 600
+    ATK = 45
     DFS = 3
 
     RADIUS = 24
@@ -413,15 +413,15 @@ class Ghost(Enemy):
         "leak_sp": 60,
     }
 
-    WALK_SPEED = 120
+    WALK_SPEED = 130
 
 
 
 class TwoHeadSkeleton(Enemy):
     NAME = "TwoHeadSkeleton"
-    HP = 500
-    ATK = 45
-    DFS = 4
+    HP = 800
+    ATK = 50
+    DFS = 5
 
     RADIUS = 24
     HEIGHT = 120
@@ -442,7 +442,7 @@ class TwoHeadSkeleton(Enemy):
 
 class Werwolf(Enemy):
     NAME = "Werwolf"
-    HP = 600
+    HP = 700
     ATK = 48
     DFS = 4
 
@@ -456,7 +456,7 @@ class Werwolf(Enemy):
         "range": 60,
         "angle": 60,
         "key_frames": (4, 5),
-        "frozen_prob": 0.5,
+        "frozen_prob": 0.6,
         "frozen_time": 5,
         "action_rate_scale": 0.5,
     }
