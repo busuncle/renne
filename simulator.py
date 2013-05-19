@@ -694,20 +694,20 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
 
 
 
-class EnemyWeakenShortAttacker(EnemyShortAttacker):
+class EnemyLeakShortAttacker(EnemyShortAttacker):
     def __init__(self, sprite, attacker_params):
-        super(EnemyWeakenShortAttacker, self).__init__(sprite, attacker_params)
-        self.weaken_prob = attacker_params["weaken_prob"]
-        self.weaken_mp = attacker_params["weaken_mp"]
-        self.weaken_sp = attacker_params["weaken_sp"]
+        super(EnemyLeakShortAttacker, self).__init__(sprite, attacker_params)
+        self.leak_prob = attacker_params["leak_prob"]
+        self.leak_mp = attacker_params["leak_mp"]
+        self.leak_sp = attacker_params["leak_sp"]
 
 
     def run(self, hero, current_frame_add):
-        hit_it = super(EnemyWeakenShortAttacker, self).run(hero, current_frame_add)
-        if hit_it and happen(self.weaken_prob):
-            hero.mp = max(0, hero.mp - self.weaken_mp)
-            hero.sp = max(0, hero.sp - self.weaken_sp)
-            words = sfg.Font.ARIAL_BLACK_24.render("Weak!", True, pygame.Color("black"))
+        hit_it = super(EnemyLeakShortAttacker, self).run(hero, current_frame_add)
+        if hit_it and happen(self.leak_prob):
+            hero.mp = max(0, hero.mp - self.leak_mp)
+            hero.sp = max(0, hero.sp - self.leak_sp)
+            words = sfg.Font.ARIAL_BLACK_24.render("Leak!", True, pygame.Color("black"))
             sp = self.sprite
             sp.animation.show_words(words, 0.3, 
                 (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
@@ -939,7 +939,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.ArmouredShooter.ID: EnemyLongAttacker,
     sfg.SwordRobber.ID: EnemyShortAttacker,
     sfg.SkeletonWarrior2.ID: EnemyPoisonShortAttacker,
-    sfg.Ghost.ID: EnemyWeakenShortAttacker,
+    sfg.Ghost.ID: EnemyLeakShortAttacker,
     sfg.TwoHeadSkeleton.ID: EnemyBloodShortAttacker,
     sfg.Werwolf.ID: EnemyFrozenShortAttacker,
 }

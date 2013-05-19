@@ -407,9 +407,9 @@ class Ghost(Enemy):
         "range": 60,
         "angle": 90,
         "key_frames": (4, 5),
-        "weaken_prob": 0.7,
-        "weaken_mp": 60,
-        "weaken_sp": 60,
+        "leak_prob": 0.7,
+        "leak_mp": 60,
+        "leak_sp": 60,
     }
 
     WALK_SPEED = 120
