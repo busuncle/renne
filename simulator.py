@@ -817,6 +817,7 @@ class EnemyWeakShortAttacker(EnemyShortAttacker):
         return hit_it
 
 
+
 class EnemyLongAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
         attack_range = attacker_params["range"]

@@ -242,7 +242,8 @@ class SpriteAnimator(object):
             sp = self.sprite
             dy = self.sprite.debuff["weak"]["y"]
             camera.screen.blit(weak_icon, (sp.pos.x - camera.rect.x - weak_icon.get_width() * 0.5, 
-                sp.pos.y * 0.5 - sp.setting.HEIGHT - sfg.SpriteStatus.DEBUFF_WEAK_BLIT_HEIGHT_DELTA + dy))
+                sp.pos.y * 0.5 - camera.rect.y - sp.setting.HEIGHT - \
+                    sfg.SpriteStatus.DEBUFF_WEAK_BLIT_HEIGHT_DELTA + dy))
 
         if self.sprite.status["hp"] != cfg.SpriteStatus.VANISH:
             self.words_renderer.draw(camera)
