@@ -157,10 +157,10 @@ class Renne(object):
         },
         "destroy_aerolite": {
             "fall_range": 128,
-            "damage": 60,
+            "damage": 70,
             "acceleration": 400,
             "mana": 80,
-            "cd": 6,
+            "cd": 10,
             #"mana": 6,
             "dx": 32,
             "dy": 240,
@@ -169,8 +169,8 @@ class Renne(object):
             "aerolite_radius": 18,
             "aerolite_damage_cal_time": 0.4,
             "aerolite_life": 1.5,
-            "aerolite_shake_on_x": 90,
-            "aerolite_shake_on_y": 90,
+            "aerolite_shake_on_x": 150,
+            "aerolite_shake_on_y": 150,
             "stun_time": 5,
         },
         "dizzy": {
@@ -305,8 +305,8 @@ class LeonHardt(Enemy):
             "trigger_times": (0.2, 0.4, 0.6, 0.8, 1, 1.2),
             "claw_damage_cal_time": 0.3,
             "claw_life": 0.6,
-            "claw_shake_on_x": 40,
-            "claw_shake_on_y": 40,
+            "claw_shake_on_x": 50,
+            "claw_shake_on_y": 50,
             "mana": 120,
         }
     }

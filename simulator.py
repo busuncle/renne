@@ -256,8 +256,8 @@ class DestroyAerolite(MagicSprite):
     def __init__(self, pos, radius, dx, dy, damage, image, fall_range, acceleration, damage_cal_time,
             life, shake_on_x, shake_on_y):
         super(DestroyAerolite, self).__init__(pos, radius, dx, dy, damage, image, self.shadow)
-        self.pos.x = gauss(self.pos.x, shake_on_x)
-        self.pos.y = gauss(self.pos.y, shake_on_y)
+        self.pos.x = randint(int(self.pos.x - shake_on_x), int(self.pos.x + shake_on_x))
+        self.pos.y = randint(int(self.pos.y - shake_on_y), int(self.pos.y + shake_on_y))
         self.area.center = self.pos
         self.fall_range = fall_range
         self.acceleration = acceleration
@@ -406,8 +406,8 @@ class HellClaw(MagicSprite):
     def __init__(self, pos, radius, dx, dy, damage, image, life, damage_cal_time,
             shake_on_x, shake_on_y):
         super(HellClaw, self).__init__(pos, radius, dx, dy, damage, image, self.shadow)
-        self.pos.x = gauss(self.pos.x, shake_on_x)
-        self.pos.y = gauss(self.pos.y, shake_on_y)
+        self.pos.x = randint(int(self.pos.x - shake_on_x), int(self.pos.x + shake_on_x))
+        self.pos.y = randint(int(self.pos.y - shake_on_y), int(self.pos.y + shake_on_y))
         self.area.center = self.pos
         self.damage = damage
         self.life = life
