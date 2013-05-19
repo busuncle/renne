@@ -160,7 +160,11 @@ class SpriteAnimator(object):
 
     def run_circle_frame(self, action, passed_seconds):
         # animation will be running in a circle way
-        self.frame_adds[action] += passed_seconds * self.frame_rates[action]
+        if self.sprite.status.get("action_rate_scale") is not None:
+            self.frame_adds[action] += passed_seconds * self.frame_rates[action] \
+                * self.sprite.status["action_rate_scale"]
+        else:
+            self.frame_adds[action] += passed_seconds * self.frame_rates[action]
         self.frame_adds[action] %= self.frame_nums[action]
         self.image = self.sprite_image_contoller.get_surface(action)[
             self.sprite.direction + cfg.Direction.TOTAL * int(self.frame_adds[action])]
@@ -169,7 +173,11 @@ class SpriteAnimator(object):
     def run_sequence_frame(self, action, passed_seconds):
         # animation will be running only once util the next event occurs
         # return True is a sequence frames is finish else False
-        self.frame_adds[action] += passed_seconds * self.frame_rates[action]
+        if self.sprite.status.get("action_rate_scale") is not None:
+            self.frame_adds[action] += passed_seconds * self.frame_rates[action] \
+                * self.sprite.status["action_rate_scale"]
+        else:
+            self.frame_adds[action] += passed_seconds * self.frame_rates[action]
         if self.frame_adds[action] >= self.frame_nums[action]:
             self.frame_adds[action] = 0
             return True
@@ -183,6 +191,11 @@ class SpriteAnimator(object):
         if self.sprite.debuff.get("poison") is not None:
             image_mix = self.blink.make(self.image, passed_seconds)
             image_mix.fill(sfg.Sprite.DEBUFF_POISON_MIX_COLOR, special_flags=BLEND_ADD)
+            self.image = image_mix
+
+        if self.sprite.debuff.get("frozen") is not None:
+            image_mix = self.blink.make(self.image, passed_seconds)
+            image_mix.fill(sfg.Sprite.DEBUFF_FROZON_MIX_COLOR, special_flags=BLEND_ADD)
             self.image = image_mix
 
         if self.sprite.status["hp"] != cfg.SpriteStatus.DIE \

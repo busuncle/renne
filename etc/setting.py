@@ -24,6 +24,7 @@ class Font(object):
     ARIAL_BOLD_32 = pygame.font.Font(ARIAL_BOLD_FILEPATH, 32)
 
     ARIAL_BLACK_16 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 16)
+    ARIAL_BLACK_24 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 24)
     ARIAL_BLACK_28 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 28)
     ARIAL_BLACK_32 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 32)
     ARIAL_BLACK_48 = pygame.font.Font(ARIAL_BLACK_FILEPATH, 48)
@@ -99,6 +100,7 @@ class Sprite(object):
     RECOVER_HP_EFFECT_TIME = 0.08
 
     DEBUFF_POISON_MIX_COLOR = pygame.Color("green")
+    DEBUFF_FROZON_MIX_COLOR = pygame.Color("blue")
 
 
 
@@ -405,7 +407,7 @@ class Ghost(Enemy):
         "range": 60,
         "angle": 90,
         "key_frames": (4, 5),
-        "weaken_prob": 0.9,
+        "weaken_prob": 0.7,
         "weaken_mp": 60,
         "weaken_sp": 60,
     }
@@ -453,9 +455,12 @@ class Werwolf(Enemy):
         "range": 60,
         "angle": 60,
         "key_frames": (4, 5),
+        "frozen_prob": 0.5,
+        "frozen_time": 5,
+        "action_rate_scale": 0.5,
     }
 
-    WALK_SPEED = 180
+    WALK_SPEED = 170
 
 
 

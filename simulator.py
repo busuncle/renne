@@ -686,7 +686,10 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
         if hit_it and happen(self.poison_prob):
             hero.debuff["poison"] = {"dps": self.poison_dps, "time_list": range(self.poison_time),
                 "time_left": self.poison_time}
-
+            words = sfg.Font.ARIAL_BLACK_24.render("Poison!", True, pygame.Color("green"))
+            sp = self.sprite
+            sp.animation.show_words(words, 0.3, 
+                (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
         return hit_it
 
 
@@ -726,7 +729,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
             if happen(self.thump_prob):
                 # thump results in a double attack and hero-fallback
                 atk *= 2
-                words = sfg.Font.ARIAL_BLACK_28.render("THUMP!", True, pygame.Color("orange"))
+                words = sfg.Font.ARIAL_BLACK_24.render("Thump!", True, pygame.Color("gold"))
                 sp.animation.show_words(words, 0.3, 
                     (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
                 if hero.status.get("under_thump") is None:
@@ -754,10 +757,36 @@ class EnemyBloodShortAttacker(EnemyShortAttacker):
             sp = self.sprite
             sp.hp = min(sp.hp + self.suck_blood_ratio * sp.setting.ATK, sp.setting.HP)
             sp.status["hp"] = sp.cal_sprite_status(sp.hp, sp.setting.HP)
-            words = sfg.Font.ARIAL_BLACK_28.render("BLOOD!", True, pygame.Color("red"))
+            words = sfg.Font.ARIAL_BLACK_24.render("Blood!", True, pygame.Color("red"))
             sp.animation.show_words(words, 0.3,
                 (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
 
+        return hit_it
+
+
+
+class EnemyFrozenShortAttacker(EnemyShortAttacker):
+    # frozen effect attacker
+    def __init__(self, sprite, attacker_params):
+        super(EnemyFrozenShortAttacker, self).__init__(sprite, attacker_params)
+        self.frozen_prob = attacker_params["frozen_prob"]
+        self.frozen_time = attacker_params["frozen_time"]
+        self.action_rate_scale = attacker_params["action_rate_scale"]
+
+
+    def run(self, hero, current_frame_add):
+        hit_it = super(EnemyFrozenShortAttacker, self).run(hero, current_frame_add)
+        if hit_it and happen(self.frozen_prob):
+            # if there is action_rate_scale already and shorter than this, overwrite it
+            hero.status["action_rate_scale"] = max(
+                hero.status.get("action_rate_scale", 0), self.action_rate_scale)
+            hero.status["action_rate_scale_time"] = max(
+                hero.status.get("action_rate_scale_time", 0), self.frozen_time)
+            hero.debuff["frozen"] = {"time_left": self.frozen_time}
+            words = sfg.Font.ARIAL_BLACK_24.render("Frozen!", True, pygame.Color("cyan"))
+            sp = self.sprite
+            sp.animation.show_words(words, 0.3, 
+                (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
         return hit_it
 
 
@@ -909,7 +938,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.SkeletonWarrior2.ID: EnemyPoisonShortAttacker,
     sfg.Ghost.ID: EnemyWeakenShortAttacker,
     sfg.TwoHeadSkeleton.ID: EnemyBloodShortAttacker,
-    sfg.Werwolf.ID: EnemyShortAttacker,
+    sfg.Werwolf.ID: EnemyFrozenShortAttacker,
 }
 
 

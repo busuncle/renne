@@ -213,7 +213,10 @@ class Renne(GameSprite):
 
     def walk(self, passed_seconds):
         self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
-        self.move(self.setting.WALK_SPEED, passed_seconds)
+        if self.status.get("action_rate_scale") is not None:
+            self.move(self.setting.WALK_SPEED * self.status["action_rate_scale"], passed_seconds)
+        else:
+            self.move(self.setting.WALK_SPEED, passed_seconds)
         self.animation.run_circle_frame(cfg.HeroAction.WALK, passed_seconds)
 
 
@@ -221,7 +224,10 @@ class Renne(GameSprite):
         # cost some stamina when running
         self.sp = max(0, self.sp - self.setting.SP_COST_RATE * passed_seconds)
         self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
-        self.move(self.setting.RUN_SPEED, passed_seconds)
+        if self.status.get("action_rate_scale") is not None:
+            self.move(self.setting.RUN_SPEED * self.status["action_rate_scale"], passed_seconds)
+        else:
+            self.move(self.setting.RUN_SPEED, passed_seconds)
         self.animation.run_circle_frame(cfg.HeroAction.RUN, passed_seconds)
 
 
@@ -381,6 +387,17 @@ class Renne(GameSprite):
                     self.hp -= poison["dps"]
                     self.status["hp"] = self.cal_sprite_status(self.hp, self.setting.HP)
                     self.animation.show_cost_hp(poison["dps"])
+
+        if self.debuff.get("frozen") is not None:
+            self.debuff["frozen"]["time_left"] -= passed_seconds
+            if self.debuff["frozen"]["time_left"] < 0:
+                self.debuff.pop("frozen")
+
+        if self.status.get("action_rate_scale") is not None:
+            self.status["action_rate_scale_time"] -= passed_seconds
+            if self.status["action_rate_scale_time"] < 0:
+                self.status.pop("action_rate_scale")
+                self.status.pop("action_rate_scale_time")
 
         self.animation.update(passed_seconds)
 

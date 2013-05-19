@@ -32,7 +32,7 @@ def run(args):
 
         screen.fill(pygame.Color(background_color))
         mask = img.copy()
-        mask.fill(pygame.Color(32, 32, 32), special_flags=BLEND_ADD)
+        #mask.fill(pygame.Color(32, 32, 32), special_flags=BLEND_ADD)
         #img.set_alpha(128)
         #screen.blit(img, (0, 0))
         screen.blit(mask, (0, 0))
