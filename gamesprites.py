@@ -392,6 +392,14 @@ class Renne(GameSprite):
             if self.debuff["frozen"]["time_left"] < 0:
                 self.debuff.pop("frozen")
 
+        if self.debuff.get("weak") is not None:
+            self.debuff["weak"]["time_left"] -= passed_seconds
+            if self.debuff["weak"]["time_left"] < 0:
+                self.debuff.pop("weak")
+                # return normal atk and dfs
+                self.atk = self.setting.ATK
+                self.dfs = self.setting.DFS
+
         if self.status.get("action_rate_scale") is not None:
             self.status["action_rate_scale_time"] -= passed_seconds
             if self.status["action_rate_scale_time"] < 0:

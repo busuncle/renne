@@ -22,6 +22,8 @@ for sprite_id, (image_folder, res_mapping) in sfg.SPRITE_FRAMES.iteritems():
         sprite_frame_nums[sprite_id][action] = frame_num
         sprite_frame_rates[sprite_id][action] = frame_rate
 
+battle_images = ImageController(sfg.BATTLE_IMAGES[0])
+battle_images.add_from_list(sfg.BATTLE_IMAGES[1])
 
 basic_image_controller = ImageController(sfg.BASIC_IMAGES[0])
 basic_image_controller.add_from_list(sfg.BASIC_IMAGES[1])
@@ -198,6 +200,10 @@ class SpriteAnimator(object):
             image_mix.fill(sfg.SpriteStatus.DEBUFF_FROZON_MIX_COLOR, special_flags=BLEND_ADD)
             self.image = image_mix
 
+        if self.sprite.debuff.get("weak") is not None:
+            self.sprite.debuff["weak"]["y"] += sfg.SpriteStatus.DEBUFF_WEAK_Y_MOVE_RATE * passed_seconds
+            self.sprite.debuff["weak"]["y"] %= sfg.SpriteStatus.DEBUFF_WEAK_Y_MAX
+
         if self.sprite.status["hp"] != cfg.SpriteStatus.DIE \
             and self.sprite.status["under_attack_effect_time"] > 0:
             image_mix = self.image.copy()
@@ -229,6 +235,14 @@ class SpriteAnimator(object):
             # don't modify rect itself, but pass the relative topleft point to the blit function
             image_blit_pos = (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top)
             camera.screen.blit(self.image, image_blit_pos)
+
+        if self.sprite.debuff.get("weak") is not None:
+            weak_icon = battle_images.get(sfg.SpriteStatus.DEBUFF_WEAK_IMAGE_KEY).subsurface(
+                sfg.SpriteStatus.DEBUFF_WEAK_RECT).convert_alpha()
+            sp = self.sprite
+            dy = self.sprite.debuff["weak"]["y"]
+            camera.screen.blit(weak_icon, (sp.pos.x - camera.rect.x - weak_icon.get_width() * 0.5, 
+                sp.pos.y * 0.5 - sp.setting.HEIGHT - sfg.SpriteStatus.DEBUFF_WEAK_BLIT_HEIGHT_DELTA + dy))
 
         if self.sprite.status["hp"] != cfg.SpriteStatus.VANISH:
             self.words_renderer.draw(camera)

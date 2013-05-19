@@ -357,6 +357,10 @@ class SwordRobber(Enemy):
         "range": 90,
         "angle": 60,
         "key_frames": (3, 4),
+        "weak_prob": 0.9,
+        "weak_time": 5,
+        "weak_atk": 15,
+        "weak_dfs": 5,
     }
 
     WALK_SPEED = 170
@@ -828,6 +832,11 @@ class SpriteStatus(object):
 
     DEBUFF_POISON_MIX_COLOR = pygame.Color("green")
     DEBUFF_FROZON_MIX_COLOR = pygame.Color("blue")
+    DEBUFF_WEAK_IMAGE_KEY = "status"
+    DEBUFF_WEAK_RECT = (16, 240, 16, 16)
+    DEBUFF_WEAK_BLIT_HEIGHT_DELTA = 15
+    DEBUFF_WEAK_Y_MOVE_RATE = 15
+    DEBUFF_WEAK_Y_MAX = 10
 
     # all words
     WORDS = {

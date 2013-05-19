@@ -2,7 +2,7 @@ from time import time
 import pygame
 from pygame.locals import *
 from pygame.transform import smoothscale, scale2x
-from animation import cg_image_controller, basic_image_controller, effect_image_controller
+from animation import cg_image_controller, basic_image_controller, effect_image_controller, battle_images
 from musicbox import BackgroundBox
 from base.util import ImageController
 from base.util import Timer, load_chapter_win_screen_image
@@ -13,9 +13,6 @@ from etc import setting as sfg
 
 
 bg_box = BackgroundBox()
-
-battle_images = ImageController(sfg.BATTLE_IMAGES[0])
-battle_images.add_from_list(sfg.BATTLE_IMAGES[1])
 
 
 

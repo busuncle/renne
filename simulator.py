@@ -584,7 +584,7 @@ class RenneAttacker(AngleAttacker):
 
     def run(self, enemy, current_frame_add):
         if self.hit(enemy, current_frame_add):
-            damage = self.sprite.atk - enemy.dfs
+            damage = max(0, self.sprite.atk - enemy.dfs)
             enemy.attacker.handle_under_attack(self.sprite, damage)
             return True
         return False
@@ -661,7 +661,7 @@ class EnemyShortAttacker(AngleAttacker):
 
     def run(self, hero, current_frame_add):
         if self.hit(hero, current_frame_add):
-            damage = self.sprite.atk - hero.dfs
+            damage = max(0, self.sprite.atk - hero.dfs)
             hero.attacker.handle_under_attack(self.sprite, damage)
             return True
         return False
@@ -689,7 +689,7 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
             words = sfg.Font.ARIAL_BLACK_24.render("Poison!", True, pygame.Color("green"))
             sp = self.sprite
             sp.animation.show_words(words, 0.3, 
-                (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
+                (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
         return hit_it
 
 
@@ -710,7 +710,7 @@ class EnemyLeakShortAttacker(EnemyShortAttacker):
             words = sfg.Font.ARIAL_BLACK_24.render("Leak!", True, pygame.Color("black"))
             sp = self.sprite
             sp.animation.show_words(words, 0.3, 
-                (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
+                (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
 
         return hit_it
 
@@ -734,13 +734,13 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
                 atk *= 2
                 words = sfg.Font.ARIAL_BLACK_24.render("Thump!", True, pygame.Color("gold"))
                 sp.animation.show_words(words, 0.3, 
-                    (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
+                    (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
                 if hero.status.get("under_thump") is None:
                     hero.status["under_thump"] = {"crick_time": self.thump_crick_time, 
                         "out_speed": self.thump_out_speed, 
                         "key_vec": Vector2.from_points(sp.pos, hero.pos)}
 
-            damage = atk - hero.dfs
+            damage = max(0, atk - hero.dfs)
             hero.attacker.handle_under_attack(sp, damage)
             return True
         return False
@@ -762,7 +762,7 @@ class EnemyBloodShortAttacker(EnemyShortAttacker):
             sp.status["hp"] = sp.cal_sprite_status(sp.hp, sp.setting.HP)
             words = sfg.Font.ARIAL_BLACK_24.render("Blood!", True, pygame.Color("darkred"))
             sp.animation.show_words(words, 0.3,
-                (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
+                (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
 
         return hit_it
 
@@ -789,9 +789,32 @@ class EnemyFrozenShortAttacker(EnemyShortAttacker):
             words = sfg.Font.ARIAL_BLACK_24.render("Frozen!", True, pygame.Color("cyan"))
             sp = self.sprite
             sp.animation.show_words(words, 0.3, 
-                (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
+                (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
         return hit_it
 
+
+
+class EnemyWeakShortAttacker(EnemyShortAttacker):
+    # give hero weak debuff
+    def __init__(self, sprite, attacker_params):
+        super(EnemyWeakShortAttacker, self).__init__(sprite, attacker_params)
+        self.weak_prob = attacker_params["weak_prob"]
+        self.weak_time = attacker_params["weak_time"]
+        self.weak_atk = attacker_params["weak_atk"]
+        self.weak_dfs = attacker_params["weak_dfs"]
+    
+
+    def run(self, hero, current_frame_add):
+        hit_it = super(EnemyWeakShortAttacker, self).run(hero, current_frame_add)
+        if hit_it and happen(self.weak_prob):
+            hero.debuff["weak"] = {"time_left": self.weak_time, "y": 0}
+            hero.atk = max(0, hero.atk - self.weak_atk)
+            hero.dfs = max(0, hero.dfs - self.weak_dfs)
+            words = sfg.Font.ARIAL_BLACK_24.render("Weak!", True, pygame.Color("gray"))
+            sp = self.sprite
+            sp.animation.show_words(words, 0.3, 
+                (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
+        return hit_it
 
 
 class EnemyLongAttacker(AngleAttacker):
@@ -817,7 +840,7 @@ class EnemyLongAttacker(AngleAttacker):
 
     def run(self, hero, current_frame_add):
         if self.hit(hero, current_frame_add):
-            damage = self.sprite.atk - hero.dfs
+            damage = max(0, self.sprite.atk - hero.dfs)
             hero.attacker.handle_under_attack(self.sprite, damage)
             return True
         return False
@@ -881,7 +904,7 @@ class LeonhardtAttacker(AngleAttacker):
 
     def run(self, hero, current_frame_add):
         if self.hit(hero, current_frame_add):
-            damage = self.sprite.atk - hero.dfs
+            damage = max(0, self.sprite.atk - hero.dfs)
             hero.attacker.handle_under_attack(self.sprite, damage)
             return True
         return False
@@ -937,7 +960,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.SkeletonArcher.ID: EnemyLongAttacker,
     sfg.LeonHardt.ID: LeonhardtAttacker,
     sfg.ArmouredShooter.ID: EnemyLongAttacker,
-    sfg.SwordRobber.ID: EnemyShortAttacker,
+    sfg.SwordRobber.ID: EnemyWeakShortAttacker,
     sfg.SkeletonWarrior2.ID: EnemyPoisonShortAttacker,
     sfg.Ghost.ID: EnemyLeakShortAttacker,
     sfg.TwoHeadSkeleton.ID: EnemyBloodShortAttacker,
