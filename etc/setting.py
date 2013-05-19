@@ -357,7 +357,7 @@ class SwordRobber(Enemy):
         "range": 90,
         "angle": 60,
         "key_frames": (3, 4),
-        "weak_prob": 0.9,
+        "weak_prob": 0.5,
         "weak_time": 5,
         "weak_atk": 15,
         "weak_dfs": 5,
