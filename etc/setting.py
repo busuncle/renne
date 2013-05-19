@@ -99,9 +99,6 @@ class Sprite(object):
     RECOVER_HP_MIX_COLOR = pygame.Color("gray")
     RECOVER_HP_EFFECT_TIME = 0.08
 
-    DEBUFF_POISON_MIX_COLOR = pygame.Color("green")
-    DEBUFF_FROZON_MIX_COLOR = pygame.Color("blue")
-
 
 
 class Renne(object):
@@ -828,6 +825,9 @@ class SpriteStatus(object):
     HEALTHY_RATIO_FLOOR = 2.0 / 3
     WOUNDED_RATIO_FLOOR = 1.0 / 3
     DANGER_RATIO_FLOOR = 0
+
+    DEBUFF_POISON_MIX_COLOR = pygame.Color("green")
+    DEBUFF_FROZON_MIX_COLOR = pygame.Color("blue")
 
     # all words
     WORDS = {

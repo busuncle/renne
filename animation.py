@@ -190,12 +190,12 @@ class SpriteAnimator(object):
     def update(self, passed_seconds):
         if self.sprite.debuff.get("poison") is not None:
             image_mix = self.blink.make(self.image, passed_seconds)
-            image_mix.fill(sfg.Sprite.DEBUFF_POISON_MIX_COLOR, special_flags=BLEND_ADD)
+            image_mix.fill(sfg.SpriteStatus.DEBUFF_POISON_MIX_COLOR, special_flags=BLEND_ADD)
             self.image = image_mix
 
         if self.sprite.debuff.get("frozen") is not None:
             image_mix = self.blink.make(self.image, passed_seconds)
-            image_mix.fill(sfg.Sprite.DEBUFF_FROZON_MIX_COLOR, special_flags=BLEND_ADD)
+            image_mix.fill(sfg.SpriteStatus.DEBUFF_FROZON_MIX_COLOR, special_flags=BLEND_ADD)
             self.image = image_mix
 
         if self.sprite.status["hp"] != cfg.SpriteStatus.DIE \
