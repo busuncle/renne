@@ -707,7 +707,10 @@ class EnemyWeakenShortAttacker(EnemyShortAttacker):
         if hit_it and happen(self.weaken_prob):
             hero.mp = max(0, hero.mp - self.weaken_mp)
             hero.sp = max(0, hero.sp - self.weaken_sp)
-            hero.animation.show_cost_mp_sp()
+            words = sfg.Font.ARIAL_BLACK_24.render("Weak!", True, pygame.Color("black"))
+            sp = self.sprite
+            sp.animation.show_words(words, 0.3, 
+                (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
 
         return hit_it
 
@@ -757,7 +760,7 @@ class EnemyBloodShortAttacker(EnemyShortAttacker):
             sp = self.sprite
             sp.hp = min(sp.hp + self.suck_blood_ratio * sp.setting.ATK, sp.setting.HP)
             sp.status["hp"] = sp.cal_sprite_status(sp.hp, sp.setting.HP)
-            words = sfg.Font.ARIAL_BLACK_24.render("Blood!", True, pygame.Color("red"))
+            words = sfg.Font.ARIAL_BLACK_24.render("Blood!", True, pygame.Color("darkred"))
             sp.animation.show_words(words, 0.3,
                 (sp.pos.x - words.get_width() / 2, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
 
