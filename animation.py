@@ -97,6 +97,7 @@ class SpriteAnimator(object):
         self.frame_adds = dict((k, 0) for k in self.frame_rates.keys()) 
 
         self.image = self.sprite_image_contoller.get_surface(sprite.action)[sprite.direction]
+        self.image_mix = None
         self.rect = self.image.get_rect()
         self.shadow_image = get_shadow_image(sprite.setting.SHADOW_INDEX)
         self.shadow_rect = self.shadow_image.get_rect()
@@ -195,15 +196,16 @@ class SpriteAnimator(object):
 
 
     def update(self, passed_seconds):
+        self.image_mix = None
         if self.sprite.debuff.get("poison") is not None:
-            image_mix = self.blink.make(self.image, passed_seconds)
-            image_mix.fill(sfg.SpriteStatus.DEBUFF_POISON_MIX_COLOR, special_flags=BLEND_ADD)
-            self.image = image_mix
+            self.image_mix = self.blink.make(self.image, passed_seconds)
+            self.image_mix.fill(sfg.SpriteStatus.DEBUFF_POISON_MIX_COLOR, special_flags=BLEND_ADD)
+            #self.image = image_mix
 
         if self.sprite.debuff.get("frozen") is not None:
-            image_mix = self.blink.make(self.image, passed_seconds)
-            image_mix.fill(sfg.SpriteStatus.DEBUFF_FROZON_MIX_COLOR, special_flags=BLEND_ADD)
-            self.image = image_mix
+            self.image_mix = self.blink.make(self.image, passed_seconds)
+            self.image_mix.fill(sfg.SpriteStatus.DEBUFF_FROZON_MIX_COLOR, special_flags=BLEND_ADD)
+            #self.image = image_mix
 
         if self.sprite.debuff.get("weak") is not None:
             self.sprite.debuff["weak"]["y"] += sfg.SpriteStatus.DEBUFF_WEAK_Y_MOVE_RATE * passed_seconds
@@ -211,14 +213,14 @@ class SpriteAnimator(object):
 
         if self.sprite.status["hp"] != cfg.SpriteStatus.DIE \
             and self.sprite.status["under_attack_effect_time"] > 0:
-            image_mix = self.image.copy()
-            image_mix.fill(sfg.Sprite.UNDER_ATTACK_MIX_COLOR, special_flags=BLEND_ADD)
-            self.image = image_mix
+            self.image_mix = self.image.copy()
+            self.image_mix.fill(sfg.Sprite.UNDER_ATTACK_MIX_COLOR, special_flags=BLEND_ADD)
+            #self.image = image_mix
 
         if self.sprite.status["recover_hp_effect_time"] > 0:
-            image_mix = self.image.copy()
-            image_mix.fill(sfg.Sprite.RECOVER_HP_MIX_COLOR, special_flags=BLEND_ADD)
-            self.image = image_mix
+            self.image_mix = self.image.copy()
+            self.image_mix.fill(sfg.Sprite.RECOVER_HP_MIX_COLOR, special_flags=BLEND_ADD)
+            #self.image = image_mix
 
         self.words_renderer.update(passed_seconds)
 
@@ -236,7 +238,11 @@ class SpriteAnimator(object):
         if not self.rect.colliderect(camera.rect):
             return 
 
-        if self.image is not None:
+        if self.image_mix is not None:
+            # image_mix will overwrite image if it is not none
+            image_blit_pos = (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top)
+            camera.screen.blit(self.image_mix, image_blit_pos)
+        elif self.image is not None:
             # don't modify rect itself, but pass the relative topleft point to the blit function
             image_blit_pos = (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top)
             camera.screen.blit(self.image, image_blit_pos)

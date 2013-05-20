@@ -266,6 +266,7 @@ class Renne(GameSprite):
                     em.status["under_thump"] = {
                         "crick_time": self.setting.ATTACKER_PARAMS["run_attack"]["crick_time"],
                         "out_speed": self.setting.ATTACKER_PARAMS["run_attack"]["out_speed"], 
+                        "acceleration": self.setting.ATTACKER_PARAMS["run_attack"]["acceleration"],
                         "key_vec": Vector2.from_points(self.pos, em.pos)}
                     hit_count += 1
 
@@ -628,6 +629,8 @@ class Enemy(GameSprite):
             self.action = cfg.EnemyAction.UNCONTROLLED
             self.move(self.status["under_thump"]["out_speed"], passed_seconds,
                 check_reachable=True, key_vec=self.status["under_thump"]["key_vec"])
+            self.status["under_thump"]["out_speed"] = max(0, self.status["under_thump"]["out_speed"] \
+                + self.status["under_thump"]["acceleration"] * passed_seconds)
             self.status["under_thump"]["crick_time"] -= passed_seconds
             if self.status["under_thump"]["crick_time"] <= 0:
                 self.reset_action(force=True)
