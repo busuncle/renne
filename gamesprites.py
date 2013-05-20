@@ -375,6 +375,8 @@ class Renne(GameSprite):
             self.action = cfg.HeroAction.UNCONTROLLED
             self.move(self.status["under_thump"]["out_speed"], passed_seconds, 
                 self.status["under_thump"]["key_vec"])
+            self.status["under_thump"]["out_speed"] = max(0, self.status["under_thump"]["out_speed"] \
+                + self.status["under_thump"]["acceleration"] * passed_seconds)
             self.status["under_thump"]["crick_time"] -= passed_seconds
             if self.status["under_thump"]["crick_time"] <= 0:
                 self.reset_action()

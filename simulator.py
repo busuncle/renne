@@ -723,6 +723,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
         self.thump_prob = attacker_params["thump_prob"]
         self.thump_crick_time = attacker_params["thump_crick_time"]
         self.thump_out_speed = attacker_params["thump_out_speed"]
+        self.thump_acceleration = attacker_params["thump_acceleration"]
 
 
     def run(self, hero, current_frame_add):
@@ -738,6 +739,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
                 if hero.status.get("under_thump") is None:
                     hero.status["under_thump"] = {"crick_time": self.thump_crick_time, 
                         "out_speed": self.thump_out_speed, 
+                        "acceleration": self.thump_acceleration,
                         "key_vec": Vector2.from_points(sp.pos, hero.pos)}
 
             damage = max(0, atk - hero.dfs)
