@@ -160,6 +160,11 @@ class SpriteAnimator(object):
         self.image = self.sprite_image_contoller.get_surface(action)[self.sprite.direction]
 
 
+    def reset_frame_adds(self):
+        for action in self.frame_adds.iterkeys():
+            self.frame_adds[action] = 0
+
+
     def run_circle_frame(self, action, passed_seconds):
         # animation will be running in a circle way
         if self.sprite.status.get("action_rate_scale") is not None:

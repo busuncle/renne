@@ -83,6 +83,7 @@ class GameSprite(pygame.sprite.DirtySprite):
 
     def reset_action(self):
         self.action = cfg.HeroAction.STAND
+        self.animation.reset_frame_adds()
 
 
     def update_status(self, passed_seconds):
@@ -505,6 +506,7 @@ class Enemy(GameSprite):
         if force:
             self.brain.persistent = False
             self.action = cfg.EnemyAction.STAND
+            self.animation.reset_frame_adds()
 
         if not self.brain.persistent:
             self.action = cfg.EnemyAction.STAND
