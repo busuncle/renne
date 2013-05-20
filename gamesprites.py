@@ -258,7 +258,7 @@ class Renne(GameSprite):
             self.attacker.finish()
             self.action = cfg.HeroAction.STAND
         else:
-            self.move(self.setting.RUN_SPEED, passed_seconds)
+            self.move(self.setting.RUN_SPEED * 0.6, passed_seconds)
             hit_count = 0
             for em in self.enemies:
                 hit_it = self.attacker.run(em, self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
