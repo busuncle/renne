@@ -92,14 +92,6 @@ class GameSprite(pygame.sprite.DirtySprite):
             self.status["under_attack_effect_time"] - passed_seconds)
         self.status["recover_hp_effect_time"] = max(0,
             self.status["recover_hp_effect_time"] - passed_seconds)
-        if self.status.get("under_thump") is not None:
-            self.action = cfg.HeroAction.UNCONTROLLED
-            self.move(self.status["under_thump"]["out_speed"], passed_seconds, 
-                self.status["under_thump"]["key_vec"])
-            self.status["under_thump"]["crick_time"] -= passed_seconds
-            if self.status["under_thump"]["crick_time"] <= 0:
-                self.reset_action()
-                self.status.pop("under_thump")
 
 
     def update(self, passed_seconds):
@@ -349,6 +341,18 @@ class Renne(GameSprite):
             self.action = cfg.HeroAction.STAND
 
 
+    def update_status(self, passed_seconds):
+        super(Renne, self).update_status(passed_seconds)
+        if self.status.get("under_thump") is not None:
+            self.action = cfg.HeroAction.UNCONTROLLED
+            self.move(self.status["under_thump"]["out_speed"], passed_seconds, 
+                self.status["under_thump"]["key_vec"])
+            self.status["under_thump"]["crick_time"] -= passed_seconds
+            if self.status["under_thump"]["crick_time"] <= 0:
+                self.reset_action()
+                self.status.pop("under_thump")
+
+
     def update(self, passed_seconds, external_event=None):
         if external_event is not None:
             if external_event == cfg.GameStatus.PAUSE:
@@ -458,10 +462,11 @@ class Enemy(GameSprite):
         self.emotion_animation.draw(camera)
 
 
-    def move(self, speed, passed_seconds, check_reachable=False):
-        self.key_vec.normalize()
+    def move(self, speed, passed_seconds, check_reachable=False, key_vec=None):
+        k_vec = key_vec or self.key_vec
+        k_vec.normalize()
         old_pos = self.pos.copy()
-        self.pos += self.key_vec * speed * passed_seconds
+        self.pos += k_vec * speed * passed_seconds
         self.area.center = self.pos("xy")
         if check_reachable and not self.reachable():
             self.pos = old_pos
@@ -589,6 +594,14 @@ class Enemy(GameSprite):
             self.status["dizzy_time"] = max(0, self.status["dizzy_time"] - passed_seconds)
             if self.status["dizzy_time"] == 0:
                 self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
+        if self.status.get("under_thump") is not None:
+            self.action = cfg.EnemyAction.UNCONTROLLED
+            self.move(self.status["under_thump"]["out_speed"], passed_seconds,
+                check_reachable=True, key_vec=self.status["under_thump"]["key_vec"])
+            self.status["under_thump"]["crick_time"] -= passed_seconds
+            if self.status["under_thump"]["crick_time"] <= 0:
+                self.reset_action(force=True)
+                self.status.pop("under_thump")
     
 
     def update(self, passed_seconds, external_event=None):
