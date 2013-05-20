@@ -130,6 +130,10 @@ class Renne(object):
         "range": 100,
         "angle": 120,
         "key_frames": (4, 5),
+        "run_attack": {
+            "crick_time": 0.2,
+            "out_speed": 500,
+        },
         "destroy_fire": {
             "range": 300,
             "damage": 40,

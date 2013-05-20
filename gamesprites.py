@@ -249,6 +249,30 @@ class Renne(GameSprite):
                 self.attacker.destroy_aerolite(self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
 
 
+    def run_attack(self, passed_seconds):
+        # a special attack type, when hero is running and press attack
+        self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds)
+        if self.animation.get_current_frame_add(cfg.HeroAction.ATTACK) > 8:
+            # don't full-run the attack frame for better effect
+            self.animation.reset_frame_adds()
+            self.attacker.finish()
+            self.action = cfg.HeroAction.STAND
+        else:
+            self.move(self.setting.RUN_SPEED, passed_seconds)
+            hit_count = 0
+            for em in self.enemies:
+                hit_it = self.attacker.run(em, self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
+                if hit_it:
+                    em.status["under_thump"] = {
+                        "crick_time": self.setting.ATTACKER_PARAMS["run_attack"]["crick_time"],
+                        "out_speed": self.setting.ATTACKER_PARAMS["run_attack"]["out_speed"], 
+                        "key_vec": Vector2.from_points(self.pos, em.pos)}
+                    hit_count += 1
+
+            if hit_count > 0:
+                self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
+
+
     def win(self, passed_seconds):
         is_finish = self.animation._run_renne_win_frame(passed_seconds)
         if is_finish:
@@ -271,7 +295,7 @@ class Renne(GameSprite):
                 # do nothing
                 return
 
-        if self.action == cfg.HeroAction.ATTACK:
+        if self.action in (cfg.HeroAction.ATTACK, cfg.HeroAction.RUN_ATTACK):
             # attacking, return directly
             return
 
@@ -292,8 +316,11 @@ class Renne(GameSprite):
         self.direction = cfg.Direction.VEC_TO_DIRECT.get(self.key_vec.as_tuple(), self.direction)
 
         if pressed_keys[sfg.UserKey.ATTACK]:
-            self.action = cfg.HeroAction.ATTACK
-            self.attacker.method = "regular"
+            if self.action == cfg.HeroAction.RUN and self.sp > 0:
+                self.action = cfg.HeroAction.RUN_ATTACK
+            else:
+                self.action = cfg.HeroAction.ATTACK
+                self.attacker.method = "regular"
             atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3", 
                 "renne_attack0", "renne_attack0", "renne_attack0"))
             self.sound_box.play(atk_snd)
@@ -363,6 +390,9 @@ class Renne(GameSprite):
 
         if self.action == cfg.HeroAction.ATTACK:
             self.attack(passed_seconds)
+
+        elif self.action == cfg.HeroAction.RUN_ATTACK:
+            self.run_attack(passed_seconds)
 
         elif self.action == cfg.HeroAction.RUN:
             self.run(passed_seconds)
