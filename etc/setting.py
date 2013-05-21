@@ -131,7 +131,7 @@ class Renne(object):
         "angle": 120,
         "key_frames": (4, 5),
         "run_attack": {
-            "crick_time": 0.3,
+            "crick_time": 0.4,
             "out_speed": 1000,
             "acceleration": -4500,
         },
@@ -239,7 +239,7 @@ class CastleWarrior(Enemy):
         "angle": 60,
         "key_frames": (3, 4),
         "thump_prob": 0.4,
-        "thump_crick_time": 0.2,
+        "thump_crick_time": 0.3,
         "thump_out_speed": 1000,
         "thump_acceleration": -4500,
     }

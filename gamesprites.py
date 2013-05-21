@@ -593,6 +593,9 @@ class Enemy(GameSprite):
             self.reset_action(force=True)
             return
 
+        if self.action == cfg.EnemyAction.UNCONTROLLED:
+            return
+
         self.brain.think()
         for action in self.brain.actions:
 
@@ -726,6 +729,9 @@ class Leonhardt(Enemy):
 
         if self.status.get("stun_time", 0) > 0 or self.status.get("dizzy_time", 0) > 0:
             self.reset_action(force=True)
+            return
+
+        if self.action == cfg.EnemyAction.UNCONTROLLED:
             return
 
         self.brain.think()
