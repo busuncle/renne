@@ -73,6 +73,7 @@ class SpriteAction(object):
     WALK = 2
     RUN = 3
     ATTACK = 4
+    UNDER_THUMP = 5
 
 
 

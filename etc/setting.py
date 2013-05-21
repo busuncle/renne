@@ -1213,16 +1213,19 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
+        cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
     CastleWarrior.ID: ("castle_warrior", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
+        cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
     SkeletonArcher.ID: ("skeleton_archer", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 12),
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 8),
+        cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
     LeonHardt.ID: ("leonhardt", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
@@ -1230,36 +1233,43 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 12),
         cfg.EnemyAction.ATTACK2: ("attack2_8.png", 8, 12),
         cfg.EnemyAction.ATTACK3: ("attack3_8.png", 8, 12),
+        cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
     ArmouredShooter.ID: ("armoured_shooter", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 12),
         cfg.EnemyAction.ATTACK: ("attack_10.png", 10, 10),
+        cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
     SwordRobber.ID: ("sword_robber", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
         cfg.EnemyAction.ATTACK: ("attack_7.png", 7, 8),
+        cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
     SkeletonWarrior2.ID: ("skeleton_warrior2", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
+        cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
     Ghost.ID: ("ghost", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
+        cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
     TwoHeadSkeleton.ID: ("two_head_skeleton", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
+        cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
     Werwolf.ID: ("werwolf", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
+        cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
 }
 

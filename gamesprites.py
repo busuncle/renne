@@ -540,6 +540,12 @@ class Enemy(GameSprite):
                 self.sound_box.play(random.choice(("attack_hit", "attack_hit2", "attack_hit3")))
 
 
+    def under_thump(self, passed_seconds):
+        self.move(self.status["under_thump"]["out_speed"], passed_seconds,
+            check_reachable=True, key_vec=self.status["under_thump"]["key_vec"])
+        self.animation.run_circle_frame(cfg.EnemyAction.UNDER_THUMP, passed_seconds) 
+
+
     def reset_action(self, force=False):
         if force:
             self.brain.persistent = False
@@ -593,7 +599,7 @@ class Enemy(GameSprite):
             self.reset_action(force=True)
             return
 
-        if self.action == cfg.EnemyAction.UNCONTROLLED:
+        if self.action == cfg.EnemyAction.UNDER_THUMP:
             return
 
         self.brain.think()
@@ -631,9 +637,7 @@ class Enemy(GameSprite):
             if self.status["dizzy_time"] == 0:
                 self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
         if self.status.get("under_thump") is not None:
-            self.action = cfg.EnemyAction.UNCONTROLLED
-            self.move(self.status["under_thump"]["out_speed"], passed_seconds,
-                check_reachable=True, key_vec=self.status["under_thump"]["key_vec"])
+            self.action = cfg.EnemyAction.UNDER_THUMP
             self.status["under_thump"]["out_speed"] = max(0, self.status["under_thump"]["out_speed"] \
                 + self.status["under_thump"]["acceleration"] * passed_seconds)
             self.status["under_thump"]["crick_time"] -= passed_seconds
@@ -665,6 +669,9 @@ class Enemy(GameSprite):
 
             elif self.action == cfg.EnemyAction.WALK:
                 self.walk(passed_seconds, True)
+
+            elif self.action == cfg.EnemyAction.UNDER_THUMP:
+                self.under_thump(passed_seconds)
 
         self.animation.update(passed_seconds)
         self.emotion_animation.update(passed_seconds)
@@ -731,7 +738,7 @@ class Leonhardt(Enemy):
             self.reset_action(force=True)
             return
 
-        if self.action == cfg.EnemyAction.UNCONTROLLED:
+        if self.action == cfg.EnemyAction.UNDER_THUMP:
             return
 
         self.brain.think()
@@ -769,6 +776,9 @@ class Leonhardt(Enemy):
 
             elif self.action == cfg.EnemyAction.STAND:
                 self.stand(passed_seconds)
+
+            elif self.action == cfg.EnemyAction.UNDER_THUMP:
+                self.under_thump(passed_seconds)
 
         self.animation.update(passed_seconds)
         self.emotion_animation.update(passed_seconds)
