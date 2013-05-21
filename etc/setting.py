@@ -161,6 +161,7 @@ class Renne(object):
             "bomb_ranges": range(50, 360, 25),
         },
         "destroy_aerolite": {
+            "key_frames": (1, ),
             "fall_range": 128,
             "damage": 70,
             "acceleration": 400,

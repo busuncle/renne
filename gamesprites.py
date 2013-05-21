@@ -224,7 +224,14 @@ class Renne(GameSprite):
 
 
     def attack(self, passed_seconds):
-        is_finish = self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds)
+        if self.attacker.method == "destroy_aerolite":
+            # use another action frame for this skill
+            frame_action = cfg.HeroAction.SKILL
+        else:
+            frame_action = cfg.HeroAction.ATTACK
+
+        is_finish = self.animation.run_sequence_frame(frame_action, passed_seconds)
+
         if is_finish:
             self.attacker.finish()
             self.action = cfg.HeroAction.STAND
@@ -232,7 +239,7 @@ class Renne(GameSprite):
             if self.attacker.method == "regular":
                 hit_count = 0
                 for em in self.enemies:
-                    hit_it = self.attacker.run(em, self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
+                    hit_it = self.attacker.run(em, self.animation.get_current_frame_add(frame_action))
                     if hit_it:
                         hit_count += 1
 
@@ -240,13 +247,13 @@ class Renne(GameSprite):
                     self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
 
             elif self.attacker.method == "destroy_fire":
-                self.attacker.destroy_fire(self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
+                self.attacker.destroy_fire(self.animation.get_current_frame_add(frame_action))
 
             elif self.attacker.method == "destroy_bomb":
-                self.attacker.destroy_bomb(self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
+                self.attacker.destroy_bomb(self.animation.get_current_frame_add(frame_action))
 
             elif self.attacker.method == "destroy_aerolite":
-                self.attacker.destroy_aerolite(self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
+                self.attacker.destroy_aerolite(self.animation.get_current_frame_add(frame_action))
 
 
     def run_attack(self, passed_seconds):

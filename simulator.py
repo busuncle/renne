@@ -613,7 +613,7 @@ class RenneAttacker(AngleAttacker):
 
     def destroy_aerolite(self, current_frame_add):
         sp = self.sprite
-        if self.current_magic is None and int(current_frame_add) in self.key_frames:
+        if self.current_magic is None and int(current_frame_add) in self.destroy_aerolite_params["key_frames"]:
             sp.mp -= self.destroy_aerolite_params["mana"]
             self.magic_cds["destroy_aerolite"] = self.destroy_aerolite_params["cd"]
             self.current_magic = DestroyAeroliteSet(sp, sp.enemies, 
