@@ -1208,6 +1208,7 @@ SPRITE_FRAMES = {
         cfg.HeroAction.ATTACK: ("attack_14.png", 14, 18),
         cfg.HeroAction.WIN: ("win_31.png", 31, 14),
         cfg.HeroAction.REST: ("rest_4.png", 4, 8),
+        cfg.HeroAction.SKILL: ("skill_2.png", 2, 2),
     }),
     SkeletonWarrior.ID: ("skeleton_warrior", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
