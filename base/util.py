@@ -313,9 +313,11 @@ def line_segment_intersect_with_rect(line_seg, rect):
 def cos_for_vec(v1, v2):
     # return the cosine value of the 2 vector using cosine law
     # the 2 params should be objects of Vector2
-    if v1.get_length() == 0 or v2.get_length() == 0:
+    len_v1 = v1.get_length()
+    len_v2 = v2.get_length()
+    if len_v1 == 0 or len_v2 == 0:
         return 0
-    return dot_mul(v1, v2) / (v1.get_length() * v2.get_length())
+    return dot_mul(v1, v2) / (len_v1 * len_v2)
 
 
 def manhattan_distance(p1, p2):

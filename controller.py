@@ -36,7 +36,6 @@ class Steerer(object):
         # coord_list will be a list containing the path goes *backwards*, that means:
         # [last_coord, last_coord_but_one, ..., second_coord, first_coord]
         new_coord_list = []
-        direct_list = []
 
         # so looping backwards using list.pop, that will produce a new sequence-order coord-list
         new_coord_list.append(coord_list.pop())
@@ -53,15 +52,13 @@ class Steerer(object):
             if next_direct != old_direct:
                 old_direct = next_direct
                 new_coord_list.append(next_coord)
-                direct_list.append(next_direct)    
             else:
                 new_coord_list[-1] = next_coord
 
         # because list only has pop method, 
         # so reverse the 2 lists will make it convinient for steer
         new_coord_list.reverse()
-        direct_list.reverse()
-        return new_coord_list, direct_list
+        return new_coord_list
 
 
     def init(self, coord_list):
@@ -71,9 +68,9 @@ class Steerer(object):
             return
 
         self.is_ok = True
-        self.coord_list, self.direct_list = self.path_smoothing(coord_list)
+        self.coord_list = self.path_smoothing(coord_list)
         self.next_coord = self.coord_list.pop()
-        self.cur_direct = None
+        self.cur_direct = cal_face_direct(self.sprite.pos.as_tuple(), self.next_coord)
         self.delta = 2
         self.is_end = False
 
@@ -90,14 +87,10 @@ class Steerer(object):
                 self.is_end = True
             else:
                 self.next_coord = self.coord_list.pop()
-                self.cur_direct = self.direct_list.pop()
+                self.cur_direct = cal_face_direct(sp.pos.as_tuple(), self.next_coord)
         
-        if self.cur_direct:
-            sp.direction = self.cur_direct
-            sp.key_vec.x, sp.key_vec.y = cfg.Direction.DIRECT_TO_VEC[sp.direction]
-        else:
-            sp.key_vec.x = dx
-            sp.key_vec.y = dy
+        sp.key_vec.x, sp.key_vec.y = dx, dy
+        sp.direction = self.cur_direct
 
 
 
@@ -444,11 +437,4 @@ class SpriteDefence(State):
 
 
 if __name__ == "__main__":
-    st = Steerer(None)
-    coord_list = [(4, 2), (3, 2), (2, 1), (1, 0), (0, 0)]
-    #coord_list = [(1, 1), (0, 0)]
-    #coord_list = [(0, 0)]
-    st.steer_init(coord_list)
-    print st.next_coord
-    print list(reversed(st.coord_list))
-    print map(lambda x: cfg.Direction.DIRECT_TO_MARK[x], reversed(st.direct_list))
+    pass
