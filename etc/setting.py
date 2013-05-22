@@ -1098,6 +1098,19 @@ class Music(object):
 
 
 
+class Sound(object):
+    RENNE_ATTACKS = ("renne_attack", "renne_attack2", "renne_attack3", 
+        "attack0", "attack0", "attack0")
+    RENNE_ATTACKS2 = ("renne_attack", "renne_attack2", "renne_attack3")
+    RENNE_ATTACK_HITS = ("attack_hit", "attack_hit2")
+    RENNE_WIN = "renne_win"
+
+    ENEMY_ATTACK_HITS = ("attack_hit", "attack_hit2", "attack_hit3")
+
+    LEONHARDT_ATTACKS = ("leonhardt_attack", "leonhardt_attack2", "leonhardt_attack3")
+
+
+
 class Effect(object):
     DESTROY_FIRE_IMAGE_KEY = "e2"
     DESTROY_FIRE_RECT = (64, 0, 64, 64)
@@ -1342,7 +1355,7 @@ BACKGROUND_MUSICS = ("background", {
 })
 
 SOUND_EFFECT = ("sound", {
-    "renne_attack0": "renne_attack0.wav",
+    "attack0": "attack0.wav",
     "renne_attack": "renne_attack.wav",
     "renne_attack2": "renne_attack2.wav",
     "renne_attack3": "renne_attack3.wav",

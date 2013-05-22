@@ -244,7 +244,7 @@ class Renne(GameSprite):
                         hit_count += 1
 
                 if hit_count > 0:
-                    self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
+                    self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
 
             elif self.attacker.method == "destroy_fire":
                 self.attacker.destroy_fire(self.animation.get_current_frame_add(frame_action))
@@ -278,7 +278,7 @@ class Renne(GameSprite):
                     hit_count += 1
 
             if hit_count > 0:
-                self.sound_box.play(random.choice(("attack_hit", "attack_hit2")))
+                self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
 
 
     def win(self, passed_seconds):
@@ -329,14 +329,13 @@ class Renne(GameSprite):
             else:
                 self.action = cfg.HeroAction.ATTACK
                 self.attacker.method = "regular"
-            atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3", 
-                "renne_attack0", "renne_attack0", "renne_attack0"))
+            atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS)
             self.sound_box.play(atk_snd)
 
         elif pressed_keys[sfg.UserKey.ATTACK_DESTROY_FIRE]:
             if self.mp > self.attacker.destroy_fire_params["mana"] \
                 and self.attacker.magic_cds["destroy_fire"] == 0:
-                atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3"))
+                atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
                 self.sound_box.play(atk_snd)
                 self.action = cfg.HeroAction.ATTACK
                 self.attacker.method = "destroy_fire"
@@ -344,7 +343,7 @@ class Renne(GameSprite):
         elif pressed_keys[sfg.UserKey.ATTACK_DESTROY_BOMB]:
             if self.mp > self.attacker.destroy_bomb_params["mana"] \
                 and self.attacker.magic_cds["destroy_bomb"] == 0:
-                atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3"))
+                atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
                 self.sound_box.play(atk_snd)
                 self.action = cfg.HeroAction.ATTACK
                 self.attacker.method = "destroy_bomb"
@@ -352,7 +351,7 @@ class Renne(GameSprite):
         elif pressed_keys[sfg.UserKey.ATTACK_DESTROY_AEROLITE]:
             if self.mp > self.attacker.destroy_aerolite_params["mana"] \
                 and self.attacker.magic_cds["destroy_aerolite"] == 0:
-                atk_snd = random.choice(("renne_attack", "renne_attack2", "renne_attack3"))
+                atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
                 self.sound_box.play(atk_snd)
                 self.action = cfg.HeroAction.ATTACK
                 self.attacker.method = "destroy_aerolite"
@@ -363,7 +362,7 @@ class Renne(GameSprite):
         elif pressed_keys[sfg.UserKey.WIN]:
             if self.attacker.magic_cds["dizzy"] == 0:
                 self.action = cfg.HeroAction.WIN
-                self.sound_box.play("renne_win")
+                self.sound_box.play(sfg.Sound.RENNE_WIN)
 
         elif self.key_vec:
             if self.action == cfg.HeroAction.RUN and self.sp > 0:
@@ -544,7 +543,7 @@ class Enemy(GameSprite):
             hit_it = self.attacker.run(self.brain.target, 
                 self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
             if hit_it:
-                self.sound_box.play(random.choice(("attack_hit", "attack_hit2", "attack_hit3")))
+                self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
 
 
     def under_thump(self, passed_seconds):
@@ -709,7 +708,7 @@ class Leonhardt(Enemy):
             else:
                 # random attack frame for others
                 self.running_attack_frame_type = random.choice(self.attack_frame_types[:2])
-            self.sound_box.play(random.choice(("leonhardt_attack", "leonhardt_attack2", "leonhardt_attack3")))
+            self.sound_box.play(random.choice(sfg.Sound.LEONHARDT_ATTACKS))
 
         is_finish = self.animation.run_sequence_frame(self.running_attack_frame_type, passed_seconds)
         if is_finish:
@@ -721,7 +720,7 @@ class Leonhardt(Enemy):
                 hit_it = self.attacker.run(self.brain.target, 
                     self.animation.get_current_frame_add(self.running_attack_frame_type))
                 if hit_it:
-                    self.sound_box.play(random.choice(("attack_hit", "attack_hit2", "attack_hit3")))
+                    self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
 
             elif self.attacker.method == "death_coil":
                 self.attacker.death_coil(self.brain.target, 
