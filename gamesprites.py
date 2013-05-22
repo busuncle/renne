@@ -583,20 +583,14 @@ class Enemy(GameSprite):
         self.status["emotion"] = emotion
 
 
-    def external_event_handle(self, external_event):
-        if external_event == cfg.GameStatus.INIT:
-            self.action = cfg.EnemyAction.STAND
-        elif external_event == cfg.GameStatus.HERO_LOSE:
-            self.reset_action()
-        elif external_event == cfg.GameStatus.PAUSE:
-            # do nothing
-            pass
-
-
     def event_handle(self, pressed_keys=None, external_event=None):
         # perception and belief control level
         if external_event is not None and external_event != cfg.GameStatus.IN_PROGRESS:
-            self.external_event_handle(external_event)
+            if external_event == cfg.GameStatus.INIT:
+                self.action = cfg.EnemyAction.STAND
+            elif external_event == cfg.GameStatus.HERO_LOSE:
+                self.reset_action()
+
             return
 
         if self.status["hp"] == cfg.SpriteStatus.DIE:
@@ -702,6 +696,11 @@ class Leonhardt(Enemy):
         self.animation.run_circle_frame(cfg.EnemyAction.RUN, passed_seconds)
 
 
+    def walk(self, passed_seconds):
+        # Leon doesn't walk, he always runs
+        self.run(passed_seconds)
+
+
     def attack(self, passed_seconds):
         if self.running_attack_frame_type is None:
             if self.attacker.method == "hell_claw":
@@ -733,63 +732,8 @@ class Leonhardt(Enemy):
                     self.animation.get_current_frame_add(self.running_attack_frame_type))
 
 
-    def event_handle(self, pressed_keys=None, external_event=None):
-        if external_event is not None and external_event != cfg.GameStatus.IN_PROGRESS:
-            self.external_event_handle(external_event)
-            return
-
-        if self.status["hp"] == cfg.SpriteStatus.DIE:
-            return
-
-        if self.status.get("stun_time", 0) > 0 or self.status.get("dizzy_time", 0) > 0:
-            self.reset_action(force=True)
-            return
-
-        if self.action == cfg.EnemyAction.UNDER_THUMP:
-            return
-
-        self.brain.think()
-        for action in self.brain.actions:
-            if action == cfg.EnemyAction.ATTACK:
-                self.action = cfg.EnemyAction.ATTACK
-            
-            elif action == cfg.EnemyAction.STEER:
-                self.action = cfg.EnemyAction.STEER
-
-            elif action == cfg.EnemyAction.LOOKOUT:
-                # tell its brain the current target found(or None if no target in view scope)
-                self.brain.target = self.brain.target or self.view_sensor.detect(self.hero)
-
-            elif action == cfg.EnemyAction.STAND:
-                self.action = cfg.EnemyAction.STAND
-
-
     def update(self, passed_seconds, external_event=None):
-        # physics level
-        if external_event is not None:
-            if external_event == cfg.GameStatus.PAUSE:
-                # user pause the game, don't update animation
-                return
-
-        self.update_status(passed_seconds)
-
-        if self.status["hp"] != cfg.SpriteStatus.DIE:
-
-            if self.action == cfg.EnemyAction.ATTACK:
-                self.attack(passed_seconds)
-
-            elif self.action == cfg.EnemyAction.STEER:
-                self.run(passed_seconds)
-
-            elif self.action == cfg.EnemyAction.STAND:
-                self.stand(passed_seconds)
-
-            elif self.action == cfg.EnemyAction.UNDER_THUMP:
-                self.under_thump(passed_seconds)
-
-        self.animation.update(passed_seconds)
-        self.emotion_animation.update(passed_seconds)
-
+        super(Leonhardt, self).update(passed_seconds, external_event)
         # some attack effects
         for i, magic in enumerate(self.attacker.magic_list):
             if magic.status == cfg.Magic.STATUS_VANISH:
@@ -798,7 +742,6 @@ class Leonhardt(Enemy):
                 magic.update(passed_seconds)
 
         self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
-
 
 
 
