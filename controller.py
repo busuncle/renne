@@ -56,7 +56,7 @@ class Steerer(object):
                 new_coord_list[-1] = next_coord
 
         # because list only has pop method, 
-        # so reverse the 2 lists will make it convinient for steer
+        # so reverse the list will make it convinient for steer
         new_coord_list.reverse()
         return new_coord_list
 
