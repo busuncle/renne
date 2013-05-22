@@ -153,7 +153,8 @@ def enter_chapter(screen, chapter, renne):
                 if event.key in sfg.UserKey.DIRECTION_KEYS:
                     if last_direct_key_up is not None:
                         if event.key == last_direct_key_up[0] \
-                            and time() - last_direct_key_up[1] < sfg.UserKey.RUN_THRESHOLD:
+                            and time() - last_direct_key_up[1] < sfg.UserKey.RUN_THRESHOLD \
+                            and not renne.locked():
                             # adhoc for special key event
                             renne.action = cfg.HeroAction.RUN
 

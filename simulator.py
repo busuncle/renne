@@ -889,7 +889,7 @@ class LeonhardtAttacker(AngleAttacker):
 
     def death_coil(self, target, current_frame_add):
         sp = self.sprite
-        if self.current_magic is None and int(current_frame_add) in self.key_frames:
+        if self.current_magic is None and int(current_frame_add) in self.death_coil_params["key_frames"]:
             sp.mp -= self.death_coil_params["mana"]
             self.current_magic = DeathCoil(sp, target,
                 sp.static_objects, self.death_coil_params, sp.pos, target.pos)

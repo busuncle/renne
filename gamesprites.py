@@ -288,6 +288,19 @@ class Renne(GameSprite):
             self.action = cfg.HeroAction.STAND
         else:
             self.attacker.dizzy(self.animation.get_current_frame_add(cfg.HeroAction.WIN))
+
+
+    def locked(self):
+        # check whether renne is locked, if so, and lock her without handling any event from user input
+        if self.action in (cfg.HeroAction.ATTACK, cfg.HeroAction.RUN_ATTACK):
+            # attacking, return directly
+            return True
+
+        if self.action == cfg.HeroAction.WIN:
+            # painted egg, return directly
+            return True
+
+        return False
         
 
     def event_handle(self, pressed_keys, external_event=None):
@@ -303,12 +316,7 @@ class Renne(GameSprite):
                 # do nothing
                 return
 
-        if self.action in (cfg.HeroAction.ATTACK, cfg.HeroAction.RUN_ATTACK):
-            # attacking, return directly
-            return
-
-        if self.action == cfg.HeroAction.WIN:
-            # painted egg, return directly
+        if self.locked():
             return
 
         # calculate direction
@@ -682,7 +690,6 @@ class Leonhardt(Enemy):
     def __init__(self, setting, pos, direction):
         super(Leonhardt, self).__init__(setting, pos, direction)
         self.mp = self.setting.MP
-        self.attack_frame_types = (cfg.EnemyAction.ATTACK, cfg.EnemyAction.ATTACK2, cfg.EnemyAction.ATTACK3)
         self.running_attack_frame_type = None
 
 
@@ -692,7 +699,7 @@ class Leonhardt(Enemy):
 
     def run(self, passed_seconds):
         self.move(self.setting.RUN_SPEED, passed_seconds, check_reachable=False)
-        self.animation.run_circle_frame(cfg.EnemyAction.RUN, passed_seconds)
+        self.animation.run_circle_frame(cfg.LeonHardtAction.RUN, passed_seconds)
 
 
     def walk(self, passed_seconds):
@@ -702,12 +709,16 @@ class Leonhardt(Enemy):
 
     def attack(self, passed_seconds):
         if self.running_attack_frame_type is None:
-            if self.attacker.method == "hell_claw":
+            if self.attacker.method == "death_coil":
+                # death coil use this attack frame
+                self.running_attack_frame_type = cfg.LeonHardtAction.SKILL1
+            elif self.attacker.method == "hell_claw":
                 # hell claw use this attack frame
-                self.running_attack_frame_type = self.attack_frame_types[2]
+                self.running_attack_frame_type = cfg.LeonHardtAction.SKILL2
             else:
                 # random attack frame for others
-                self.running_attack_frame_type = random.choice(self.attack_frame_types[:2])
+                self.running_attack_frame_type = random.choice(
+                    (cfg.LeonHardtAction.ATTACK, cfg.LeonHardtAction.ATTACK2))
             self.sound_box.play(random.choice(sfg.Sound.LEONHARDT_ATTACKS))
 
         is_finish = self.animation.run_sequence_frame(self.running_attack_frame_type, passed_seconds)

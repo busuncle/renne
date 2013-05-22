@@ -295,6 +295,7 @@ class LeonHardt(Enemy):
         "angle": 60,
         "key_frames": (4, 5),
         "death_coil": {
+            "key_frames": (1, ),
             "range": 300,
             "damage": 50,
             "speed": 250,
@@ -1243,12 +1244,13 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
     LeonHardt.ID: ("leonhardt", {
-        cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
-        cfg.EnemyAction.RUN: ("run_8.png", 8, 14),
-        cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 12),
-        cfg.EnemyAction.ATTACK2: ("attack2_8.png", 8, 12),
-        cfg.EnemyAction.ATTACK3: ("attack3_8.png", 8, 12),
-        cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
+        cfg.LeonHardtAction.STAND: ("stand_8.png", 8, 12),
+        cfg.LeonHardtAction.RUN: ("run_8.png", 8, 14),
+        cfg.LeonHardtAction.ATTACK: ("attack_8.png", 8, 12),
+        cfg.LeonHardtAction.ATTACK2: ("attack2_8.png", 8, 12),
+        cfg.LeonHardtAction.SKILL1: ("skill1_2.png", 2, 2),
+        cfg.LeonHardtAction.SKILL2: ("skill2_8.png", 8, 10),
+        cfg.LeonHardtAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
     ArmouredShooter.ID: ("armoured_shooter", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
