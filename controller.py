@@ -299,7 +299,7 @@ class SpriteChase(State):
         self.steerer = Steerer(sprite)
         self.enter_timer = Timer()
         self.target_move_threshold = sfg.WayPoint.STEP_WIDTH * 3
-        
+
 
     def enter(self, last_state):
         sp = self.sprite
