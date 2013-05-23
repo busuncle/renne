@@ -460,13 +460,6 @@ class Renne(GameSprite):
 
         self.animation.update(passed_seconds)
 
-        # update magic status
-        for i, magic in enumerate(self.attacker.magic_list):
-            if magic.status == cfg.Magic.STATUS_VANISH:
-                self.attacker.magic_list.pop(i)
-            else:
-                magic.update(passed_seconds)
-
         # update magic cd
         for magic_name in self.attacker.magic_cds:
             self.attacker.magic_cds[magic_name] = max(0, 
@@ -693,13 +686,15 @@ class Leonhardt(Enemy):
         self.running_attack_frame_type = None
 
 
-    def draw(self, camera):
-        super(Leonhardt, self).draw(camera)
+    def stand(self, passed_seconds):
+        super(Leonhardt, self).stand(passed_seconds)
+        self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
 
 
     def run(self, passed_seconds):
         self.move(self.setting.RUN_SPEED, passed_seconds, check_reachable=False)
         self.animation.run_circle_frame(cfg.LeonHardtAction.RUN, passed_seconds)
+        self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
 
 
     def walk(self, passed_seconds):
@@ -740,18 +735,6 @@ class Leonhardt(Enemy):
             elif self.attacker.method == "hell_claw":
                 self.attacker.hell_claw(self.brain.target,
                     self.animation.get_current_frame_add(self.running_attack_frame_type))
-
-
-    def update(self, passed_seconds, external_event=None):
-        super(Leonhardt, self).update(passed_seconds, external_event)
-        # some attack effects
-        for i, magic in enumerate(self.attacker.magic_list):
-            if magic.status == cfg.Magic.STATUS_VANISH:
-                self.attacker.magic_list.pop(i)
-            else:
-                magic.update(passed_seconds)
-
-        self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
 
 
 

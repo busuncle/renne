@@ -158,6 +158,12 @@ class GameWorld(pygame.sprite.LayeredDirty):
         for i, sp in enumerate(self.dynamic_objects):
             if sp.status["hp"] == cfg.SpriteStatus.VANISH:
                 self.dynamic_objects.pop(i)
+            if sp.setting.ID in sfg.SPRITES_WITH_MAGIC_SKILL:
+                for i, magic in enumerate(sp.attacker.magic_list):
+                    if magic.status == cfg.Magic.STATUS_VANISH:
+                        sp.attacker.magic_list.pop(i)
+                    else:
+                        magic.update(passed_seconds)
 
 
     def draw(self, camera):
