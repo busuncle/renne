@@ -178,3 +178,9 @@ class StaticObject(object):
 class Magic(object):
     STATUS_ALIVE = 0 
     STATUS_VANISH = 1
+
+
+
+class Ammo(object):
+    STATUS_ALIVE = 0
+    STATUS_VANISH = 1

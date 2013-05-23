@@ -14,6 +14,9 @@ from etc import setting as sfg
 
 
 class MagicSprite(pygame.sprite.DirtySprite):
+    """
+    represent some magic unit
+    """
     def __init__(self, pos, radius, dx, dy, damage, image, shadow):
         super(MagicSprite, self).__init__()
         self.pos = Vector2(pos)
@@ -565,6 +568,114 @@ class AngleAttacker(Attacker):
 
 
 
+class Ammo(pygame.sprite.DirtySprite):
+    """
+    just like a magic sprite
+    """
+    def __init__(self, pos, radius, speed, key_vec, dx, dy, damage, image, shadow):
+        super(MagicSprite, self).__init__()
+        self.pos = Vector2(pos)
+        self.origin_pos = self.pos.copy()
+        self.area = pygame.Rect(0, 0, radius * 2, radius * 2)
+        self.area.center = self.pos
+        self.speed = speed
+        self.key_vec = Vector2(key_vec).normalize()
+        self.damage = damage
+        self.dx = dx
+        self.dy = dy
+        self.image = image
+        self.shadow = shadow
+
+
+    def update(self, passed_seconds):
+        self.pos += self.key_vec * self.speed * passed_seconds
+        self.area.center = self.pos("xy")
+
+
+    def draw_shadow(self, camera):
+        shd_rect = self.shadow["image"].get_rect()
+        shd_rect.center = self.pos
+        camera.screen.blit(self.shadow["image"],
+            (shd_rect.x - camera.rect.x, shd_rect.y * 0.5 - camera.rect.y - self.shadow["dy"]))
+
+
+    def draw(self, camera):
+        if self.status == cfg.Magic.STATUS_ALIVE and self.image is not None:
+            camera.screen.blit(self.image,
+                (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy))
+
+        r = pygame.Rect(0, 0, self.area.width, self.area.height * 0.5)
+        r.center = (self.pos.x, self.pos.y * 0.5)
+        r.top -= camera.rect.top
+        r.left -= camera.rect.left
+        pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
+
+
+
+class ArrowAttacker(Attacker):
+    """
+    attacker that has ammo sprite to calculate hit and draw
+    """
+    image = None
+    shadow = {"image": animation.get_shadow_image(sfg.Ammo.ARROW_SHADOW_INDEX),
+        "dy": sfg.Ammo.ARROW_SHADOW_DY}
+    def __init__(self, sprite, attacker_params):
+        super(AmmoAttacker, self).__init__(sprite, attacker_params)
+        self.attack_range = attacker_params["range"]
+        self.damage = attacker_params["damage"]
+        # here use cosine rule for chance judgement
+        self.cos_min = cos(radians(attacker_params["angle"] * 0.5))
+        self.hero = sprite.hero # you see it's an attacker only for enemy...
+        self.static_objects = sprite.static_objects
+        self.current_ammo = None
+        self.ammo_list = []
+        self.key_frames = attacker_params["key_frames"]
+
+
+    def chance(self, target):
+        sp = self.sprite
+        distance_to_target = sp.pos.get_distance_to(target.pos)
+        if distance_to_target <= self.attack_range:
+            direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
+            vec_to_target = Vector2.from_points(sp.area.center, target.area.center)
+            cos_val = cos_for_vec(direct_vec, vec_to_target)
+            if cos_val >= self.cos_min:
+                return True
+
+        return False
+
+
+    def run(self, hero, current_frame_add):
+        sp = self.sprite
+        if self.current_ammo is None and int(current_frame_add) in self.key_frames:
+            # generate arrow
+            self.current_ammo = Ammo(sp.pos, 18, 50, sp.key_vec, 20, 20, self.damage, 
+                self.image, self.shadow)
+            self.ammo_list.append(self.current_ammo)
+
+
+    def update_ammo(self, passed_seconds):
+        for i, am in enumerate(self.ammo_list):
+            am.update(passed_seconds)
+            if am.area.colliderect(self.hero.area):
+                hero.attacker.handle_under_attack(self.sprite, self.damage)
+                self.ammo_list.pop(i)
+
+            elif am.pos.get_distance_to(am.origin_pos) > self.attack_range:
+                self.ammo_list.pop(i)
+
+            else:
+                for obj in self.static_objects:
+                    if not obj.setting.IS_ELIMINABLE and am.area.colliderect(obj.area):
+                        self.ammo_list.pop(i)
+                        break
+
+
+    def finish(self):
+        self.current_ammo = None
+
+
+
 class RenneAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
         super(RenneAttacker, self).__init__(sprite, 
@@ -576,6 +687,8 @@ class RenneAttacker(AngleAttacker):
         self.destroy_aerolite_params = attacker_params["destroy_aerolite"]
         self.dizzy_params = attacker_params["dizzy"]
         self.magic_cds = {"destroy_fire": 0, "destroy_bomb": 0, "destroy_aerolite": 0, "dizzy": 0}
+        # magic_list has kinds of magics, eg. DestroyBombSet and DestroyAeroliteSet, 
+        # every magic has one or more magic sprite(s), eg. DestroyBombSet has many "bombs"
         self.magic_list = []
         # a lock, only one magic is running in an attack
         self.current_magic = None

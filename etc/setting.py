@@ -1149,6 +1149,12 @@ class Effect(object):
 
 
 
+class Ammo(object):
+    ARROW_SHADOW_INDEX = 60
+    ARROW_SHADOW_DY = 2
+
+
+
 ######### mapping for factory ########
 # control all objects in list, their order will detemine the attribute "ID" of their own
 SPRITE_SETTING_LIST = [

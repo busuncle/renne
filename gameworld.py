@@ -163,6 +163,8 @@ class GameWorld(pygame.sprite.LayeredDirty):
                     if magic.status == cfg.Magic.STATUS_VANISH:
                         sp.attacker.magic_list.pop(i)
                     else:
+                        # for every magic, do some status update 
+                        # and damage calculation among all the sprites 
                         magic.update(passed_seconds)
 
 
