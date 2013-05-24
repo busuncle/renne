@@ -995,12 +995,11 @@ class LeonhardtAttacker(AngleAttacker):
         self.hell_claw_params = attacker_params["hell_claw"]
         # hell claw has a ellipse for telling the player that this skill is coming!
         self.hell_claw_ellipse_surface = pygame.Surface((
-            self.hell_claw_params["shake_on_x"], 
-            self.hell_claw_params["shake_on_x"] * 0.5)).convert_alpha()
+            self.hell_claw_params["claw_shake_on_x"] * 2 + 20, 
+            self.hell_claw_params["claw_shake_on_x"] + 10)).convert_alpha()
         self.hell_claw_ellipse_surface.fill(pygame.Color(0, 0, 0, 0))
         pygame.draw.ellipse(self.hell_claw_ellipse_surface, pygame.Color(255, 0, 0, 128),
-            self.hell_claw_ellipse_surface.get_rect(), 5)
-        self.target_pos = None
+            self.hell_claw_ellipse_surface.get_rect(), 3)
         self.magic_list = []
         self.current_magic = None
         self.method = None
@@ -1008,9 +1007,10 @@ class LeonhardtAttacker(AngleAttacker):
 
     def draw_hell_claw_tips(self, camera):
         r = self.hell_claw_ellipse_surface.get_rect()
-        r.center = self.target_pos("xy")
+        r.center = self.current_magic.target_pos("xy")
+        r.centery *= 0.5
         camera.screen.blit(self.hell_claw_ellipse_surface,
-            (r.x - camera.rect.x, r.y * 0.5 - camera.rect.y))
+            (r.x - camera.rect.x, r.y - camera.rect.y))
 
 
     def chance(self, target):
@@ -1031,7 +1031,6 @@ class LeonhardtAttacker(AngleAttacker):
             and sp.mp > self.hell_claw_params["mana"] \
             and distance_to_target <= self.hell_claw_params["range"]:
             self.method = "hell_claw"
-            self.target_pos = target.pos.copy()
             return True
         return False
 
@@ -1047,7 +1046,7 @@ class LeonhardtAttacker(AngleAttacker):
 
     def hell_claw(self, target, current_frame_add):
         sp = self.sprite
-        if self.current_magic is None and int(current_frame_add) in self.key_frames:
+        if self.current_magic is None:
             sp.mp -= self.hell_claw_params["mana"]
             self.current_magic = HellClawSet(sp, target, 
                 sp.static_objects, self.hell_claw_params)
@@ -1066,7 +1065,6 @@ class LeonhardtAttacker(AngleAttacker):
         len(self.has_hits) > 0 and self.has_hits.clear()
         self.method = None
         self.current_magic = None
-        self.target_pos = None
 
 
 

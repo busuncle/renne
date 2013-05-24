@@ -185,7 +185,8 @@ class GameWorld(pygame.sprite.LayeredDirty):
                         msp.draw_shadow(camera)
 
             # adhoc code for leon's hell claw tips
-            if sp.setting.ID == sfg.LeonHardt.ID and sp.attacker.method == "hell_claw":
+            if sp.setting.ID == sfg.LeonHardt.ID and sp.attacker.method == "hell_claw" \
+                and sp.attacker.current_magic is not None:
                 sp.attacker.draw_hell_claw_tips(camera)
                 
 

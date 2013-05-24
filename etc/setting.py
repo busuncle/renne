@@ -310,11 +310,11 @@ class LeonHardt(Enemy):
             "claw_radius": 18,
             "dx": 32, 
             "dy": 64,
-            "trigger_times": (0.2, 0.4, 0.6, 0.8, 1, 1.2),
-            "claw_damage_cal_time": 0.3,
+            "trigger_times": (0.6, 0.8, 1, 1.1, 1.2, 1.3, 1.4, 1.6, 1.8),
+            "claw_damage_cal_time": 0.2,
             "claw_life": 0.6,
-            "claw_shake_on_x": 50,
-            "claw_shake_on_y": 50,
+            "claw_shake_on_x": 100,
+            "claw_shake_on_y": 100,
             "mana": 120,
         }
     }
