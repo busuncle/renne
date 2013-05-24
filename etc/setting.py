@@ -1150,8 +1150,8 @@ class Effect(object):
 
 
 class Ammo(object):
-    ARROW_SHADOW_INDEX = 60
-    ARROW_SHADOW_DY = 2
+    ARROW_SHADOW_INDEX = 2
+    ARROW_SHADOW_DY = 60
 
 
 

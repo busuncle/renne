@@ -54,6 +54,22 @@ class MagicSprite(pygame.sprite.DirtySprite):
 
 
 
+class MagicSkill(object):
+    # represent a magic skill, it may contain one or more magic sprite(s)
+    # it's a member in magic_list
+    def __init__(self):
+        pass
+
+
+    def update(self, passed_seconds):
+        pass
+
+
+    def draw(self, camera):
+        pass
+
+
+
 class EnergyBall(MagicSprite):
     def __init__(self, pos, radius, dx, dy, damage, image, shadow, target_pos, range, speed):
         super(EnergyBall, self).__init__(pos, radius, dx, dy, damage, image, shadow)
@@ -87,7 +103,7 @@ class EnergyBall(MagicSprite):
 
 
 
-class EnergyBallSet(object):
+class EnergyBallSet(MagicSkill):
     def __init__(self, image, shadow, sprite, target_list, static_objects, params, pos, target_pos):
         self.sprite = sprite
         self.target_list = target_list
@@ -158,7 +174,7 @@ class DestroyBomb(MagicSprite):
         
 
 
-class DestroyBombSet(object):
+class DestroyBombSet(MagicSkill):
     # Renne skill
     destroy_bombs_image = animation.effect_image_controller.get(
         sfg.Effect.DESTROY_BOMB_IMAGE_KEY).convert_alpha().subsurface(
@@ -301,7 +317,7 @@ class DestroyAerolite(MagicSprite):
         
 
 
-class DestroyAeroliteSet(object):
+class DestroyAeroliteSet(MagicSkill):
     # Renne skill
     destroy_aerolite_image = animation.effect_image_controller.get(
         sfg.Effect.DESTROY_AEROLITE_IMAGE_KEY).convert_alpha().subsurface(
@@ -358,7 +374,7 @@ class DestroyAeroliteSet(object):
 
 
 
-class RenneDizzy(object):
+class RenneDizzy(MagicSkill):
     # Renne skill
     def __init__(self, sprite, target_list, dizzy_range, dizzy_time, effective_time, prob):
         self.sprite = sprite
@@ -409,8 +425,12 @@ class HellClaw(MagicSprite):
     def __init__(self, pos, radius, dx, dy, damage, image, life, damage_cal_time,
             shake_on_x, shake_on_y):
         super(HellClaw, self).__init__(pos, radius, dx, dy, damage, image, self.shadow)
-        self.pos.x = randint(int(self.pos.x - shake_on_x), int(self.pos.x + shake_on_x))
-        self.pos.y = randint(int(self.pos.y - shake_on_y), int(self.pos.y + shake_on_y))
+        # make it in a circle
+        real_shake_x = randint(-shake_on_x, shake_on_x)
+        shake_on_y = int(sqrt(pow(shake_on_x, 2) - pow(real_shake_x, 2)))
+        real_shake_y = randint(-shake_on_y, shake_on_y)
+        self.pos.x += real_shake_x
+        self.pos.y += real_shake_y
         self.area.center = self.pos
         self.damage = damage
         self.life = life
@@ -438,7 +458,7 @@ class HellClaw(MagicSprite):
 
 
 
-class HellClawSet(object):
+class HellClawSet(MagicSkill):
     # Leon Hardt skill
     hell_claw_image = animation.effect_image_controller.get(
         sfg.Effect.HELL_CLAW_IMAGE_KEY).convert_alpha().subsurface(
