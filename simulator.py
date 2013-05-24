@@ -993,9 +993,24 @@ class LeonhardtAttacker(AngleAttacker):
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
         self.death_coil_params = attacker_params["death_coil"]
         self.hell_claw_params = attacker_params["hell_claw"]
+        # hell claw has a ellipse for telling the player that this skill is coming!
+        self.hell_claw_ellipse_surface = pygame.Surface((
+            self.hell_claw_params["shake_on_x"], 
+            self.hell_claw_params["shake_on_x"] * 0.5)).convert_alpha()
+        self.hell_claw_ellipse_surface.fill(pygame.Color(0, 0, 0, 0))
+        pygame.draw.ellipse(self.hell_claw_ellipse_surface, pygame.Color(255, 0, 0, 128),
+            self.hell_claw_ellipse_surface.get_rect(), 5)
+        self.target_pos = None
         self.magic_list = []
         self.current_magic = None
         self.method = None
+
+
+    def draw_hell_claw_tips(self, camera):
+        r = self.hell_claw_ellipse_surface.get_rect()
+        r.center = self.target_pos("xy")
+        camera.screen.blit(self.hell_claw_ellipse_surface,
+            (r.x - camera.rect.x, r.y * 0.5 - camera.rect.y))
 
 
     def chance(self, target):
@@ -1016,6 +1031,7 @@ class LeonhardtAttacker(AngleAttacker):
             and sp.mp > self.hell_claw_params["mana"] \
             and distance_to_target <= self.hell_claw_params["range"]:
             self.method = "hell_claw"
+            self.target_pos = target.pos.copy()
             return True
         return False
 
@@ -1050,6 +1066,7 @@ class LeonhardtAttacker(AngleAttacker):
         len(self.has_hits) > 0 and self.has_hits.clear()
         self.method = None
         self.current_magic = None
+        self.target_pos = None
 
 
 
