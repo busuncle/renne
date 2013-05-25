@@ -593,7 +593,7 @@ class Ammo(pygame.sprite.DirtySprite):
     just like a magic sprite
     """
     def __init__(self, pos, radius, speed, key_vec, dx, dy, damage, image, shadow):
-        super(MagicSprite, self).__init__()
+        super(Ammo, self).__init__()
         self.pos = Vector2(pos)
         self.origin_pos = self.pos.copy()
         self.area = pygame.Rect(0, 0, radius * 2, radius * 2)
@@ -620,7 +620,7 @@ class Ammo(pygame.sprite.DirtySprite):
 
 
     def draw(self, camera):
-        if self.status == cfg.Magic.STATUS_ALIVE and self.image is not None:
+        if self.image is not None:
             camera.screen.blit(self.image,
                 (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy))
 
@@ -640,9 +640,8 @@ class ArrowAttacker(Attacker):
     shadow = {"image": animation.get_shadow_image(sfg.Ammo.ARROW_SHADOW_INDEX),
         "dy": sfg.Ammo.ARROW_SHADOW_DY}
     def __init__(self, sprite, attacker_params):
-        super(AmmoAttacker, self).__init__(sprite, attacker_params)
+        super(ArrowAttacker, self).__init__(sprite)
         self.attack_range = attacker_params["range"]
-        self.damage = attacker_params["damage"]
         # here use cosine rule for chance judgement
         self.cos_min = cos(radians(attacker_params["angle"] * 0.5))
         self.hero = sprite.hero # you see it's an attacker only for enemy...
@@ -650,6 +649,11 @@ class ArrowAttacker(Attacker):
         self.current_ammo = None
         self.ammo_list = []
         self.key_frames = attacker_params["key_frames"]
+        self.arrow_radius = attacker_params["arrow_radius"]
+        self.arrow_speed = attacker_params["arrow_speed"]
+        self.arrow_dx = attacker_params["arrow_dx"]
+        self.arrow_dy = attacker_params["arrow_dy"]
+        self.arrow_damage = attacker_params["arrow_damage"]
 
 
     def chance(self, target):
@@ -669,7 +673,8 @@ class ArrowAttacker(Attacker):
         sp = self.sprite
         if self.current_ammo is None and int(current_frame_add) in self.key_frames:
             # generate arrow
-            self.current_ammo = Ammo(sp.pos, 18, 50, sp.key_vec, 20, 20, self.damage, 
+            self.current_ammo = Ammo(sp.pos, self.arrow_radius, self.arrow_speed, 
+                cfg.Direction.DIRECT_TO_VEC[sp.direction], self.arrow_dx, self.arrow_dy, self.arrow_damage, 
                 self.image, self.shadow)
             self.ammo_list.append(self.current_ammo)
 
@@ -678,7 +683,7 @@ class ArrowAttacker(Attacker):
         for i, am in enumerate(self.ammo_list):
             am.update(passed_seconds)
             if am.area.colliderect(self.hero.area):
-                hero.attacker.handle_under_attack(self.sprite, self.damage)
+                self.hero.attacker.handle_under_attack(self.sprite, self.arrow_damage)
                 self.ammo_list.pop(i)
 
             elif am.pos.get_distance_to(am.origin_pos) > self.attack_range:
@@ -1108,7 +1113,7 @@ class ViewSensor(object):
 ENEMY_ATTACKER_MAPPING = {
     sfg.SkeletonWarrior.ID: EnemyShortAttacker,
     sfg.CastleWarrior.ID: EnemyThumpShortAttacker,
-    sfg.SkeletonArcher.ID: EnemyLongAttacker,
+    sfg.SkeletonArcher.ID: ArrowAttacker,
     sfg.LeonHardt.ID: LeonhardtAttacker,
     sfg.ArmouredShooter.ID: EnemyLongAttacker,
     sfg.SwordRobber.ID: EnemyWeakShortAttacker,

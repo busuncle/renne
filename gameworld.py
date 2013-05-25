@@ -158,6 +158,7 @@ class GameWorld(pygame.sprite.LayeredDirty):
         for i, sp in enumerate(self.dynamic_objects):
             if sp.status["hp"] == cfg.SpriteStatus.VANISH:
                 self.dynamic_objects.pop(i)
+
             if sp.setting.ID in sfg.SPRITES_WITH_MAGIC_SKILL:
                 for i, magic in enumerate(sp.attacker.magic_list):
                     if magic.status == cfg.Magic.STATUS_VANISH:
@@ -166,6 +167,9 @@ class GameWorld(pygame.sprite.LayeredDirty):
                         # for every magic, do some status update 
                         # and damage calculation among all the sprites 
                         magic.update(passed_seconds)
+
+            if sp.setting.ID in sfg.SPRITES_WITH_AMMO:
+                sp.attacker.update_ammo(passed_seconds)
 
 
     def draw(self, camera):
@@ -183,6 +187,11 @@ class GameWorld(pygame.sprite.LayeredDirty):
                     movings.extend(magic.magic_sprites)
                     for msp in magic.magic_sprites:
                         msp.draw_shadow(camera)
+
+            if sp.setting.ID in sfg.SPRITES_WITH_AMMO:
+                movings.extend(sp.attacker.ammo_list)
+                for ammo in sp.attacker.ammo_list:
+                    ammo.draw_shadow(camera)
 
             # adhoc code for leon's hell claw tips
             if sp.setting.ID == sfg.LeonHardt.ID and sp.attacker.method == "hell_claw" \

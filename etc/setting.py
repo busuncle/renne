@@ -265,6 +265,11 @@ class SkeletonArcher(Enemy):
         "range": 400,
         "angle": 12,
         "key_frames": (4, 5),
+        "arrow_radius": 18, 
+        "arrow_speed": 100, 
+        "arrow_dx": 32,
+        "arrow_dy": 50,
+        "arrow_damage": 35,
     }
 
     WALK_SPEED = 140
@@ -1151,7 +1156,9 @@ class Effect(object):
 
 class Ammo(object):
     ARROW_SHADOW_INDEX = 2
-    ARROW_SHADOW_DY = 60
+    ARROW_SHADOW_DY = 15
+
+    ARROW_IMAGE_KEY = "arrow"
 
 
 
@@ -1215,6 +1222,7 @@ STATIC_OBJECT_SETTING_MAPPING = dict((cls.ID, cls) for cls in STATIC_OBJECT_SETT
 
 
 SPRITES_WITH_MAGIC_SKILL = (Renne.ID, LeonHardt.ID)
+SPRITES_WITH_AMMO = (SkeletonArcher.ID, )
 
 
 ########### resource mapping ###########
@@ -1340,6 +1348,7 @@ BATTLE_IMAGES = ("battle", {
     "status5": "status5.png",
     "status6": "status6.png",
     "icon1": "icon1.png",
+    "arrow": "arrow.png",
 })
 
 CG_IMAGES = ("cg", {
