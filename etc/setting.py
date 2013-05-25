@@ -266,7 +266,7 @@ class SkeletonArcher(Enemy):
         "angle": 12,
         "key_frames": (4, 5),
         "arrow_radius": 18, 
-        "arrow_speed": 350, 
+        "arrow_speed": 300, 
         "arrow_dx": 32,
         "arrow_dy": 50,
         "arrow_damage": 35,
