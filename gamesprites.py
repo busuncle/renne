@@ -555,12 +555,13 @@ class Enemy(GameSprite):
 
     def reset_action(self, force=False):
         if force:
+            # reset all related things for enemy by force!
             self.brain.persistent = False
             self.action = cfg.EnemyAction.STAND
             self.animation.reset_frame_adds()
-
-        if not self.brain.persistent:
-            self.action = cfg.EnemyAction.STAND
+        else:
+            if not self.brain.persistent:
+                self.action = cfg.EnemyAction.STAND
 
 
     def cal_angry(self, damage):
