@@ -266,7 +266,7 @@ class SkeletonArcher(Enemy):
         "angle": 12,
         "key_frames": (4, 5),
         "arrow_radius": 18, 
-        "arrow_speed": 100, 
+        "arrow_speed": 350, 
         "arrow_dx": 32,
         "arrow_dy": 50,
         "arrow_damage": 35,
@@ -1159,6 +1159,8 @@ class Ammo(object):
     ARROW_SHADOW_DY = 15
 
     ARROW_IMAGE_KEY = "arrow"
+    ARROW_WIDTH = 64
+    ARROW_HEIGHT = 32
 
 
 

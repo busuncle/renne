@@ -624,11 +624,11 @@ class Ammo(pygame.sprite.DirtySprite):
             camera.screen.blit(self.image,
                 (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy))
 
-        r = pygame.Rect(0, 0, self.area.width, self.area.height * 0.5)
-        r.center = (self.pos.x, self.pos.y * 0.5)
-        r.top -= camera.rect.top
-        r.left -= camera.rect.left
-        pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
+        #r = pygame.Rect(0, 0, self.area.width, self.area.height * 0.5)
+        #r.center = (self.pos.x, self.pos.y * 0.5)
+        #r.top -= camera.rect.top
+        #r.left -= camera.rect.left
+        #pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
 
 
 
@@ -636,7 +636,10 @@ class ArrowAttacker(Attacker):
     """
     attacker that has ammo sprite to calculate hit and draw
     """
-    image = None
+    arrow_images = animation.battle_images.get(sfg.Ammo.ARROW_IMAGE_KEY)
+    arrow_image_list = [arrow_images.subsurface(
+        pygame.Rect((0, i * sfg.Ammo.ARROW_HEIGHT), (sfg.Ammo.ARROW_WIDTH, sfg.Ammo.ARROW_HEIGHT))) \
+        for i in xrange(cfg.Direction.TOTAL)]
     shadow = {"image": animation.get_shadow_image(sfg.Ammo.ARROW_SHADOW_INDEX),
         "dy": sfg.Ammo.ARROW_SHADOW_DY}
     def __init__(self, sprite, attacker_params):
@@ -675,7 +678,7 @@ class ArrowAttacker(Attacker):
             # generate arrow
             self.current_ammo = Ammo(sp.pos, self.arrow_radius, self.arrow_speed, 
                 cfg.Direction.DIRECT_TO_VEC[sp.direction], self.arrow_dx, self.arrow_dy, self.arrow_damage, 
-                self.image, self.shadow)
+                self.arrow_image_list[sp.direction], self.shadow)
             self.ammo_list.append(self.current_ammo)
 
 
