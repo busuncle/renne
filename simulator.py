@@ -694,7 +694,9 @@ class ArrowAttacker(Attacker):
 
             else:
                 for obj in self.static_objects:
-                    if not obj.setting.IS_ELIMINABLE and am.area.colliderect(obj.area):
+                    if not obj.setting.IS_ELIMINABLE and \
+                        obj.setting.IS_VIEW_BLOCK and \
+                        am.area.colliderect(obj.area):
                         self.ammo_list.pop(i)
                         break
 
