@@ -557,6 +557,7 @@ class Enemy(GameSprite):
         if force:
             # reset all related things for enemy by force!
             self.brain.persistent = False
+            self.attacker.finish()
             self.action = cfg.EnemyAction.STAND
             self.animation.reset_frame_adds()
         else:
