@@ -10,6 +10,7 @@ from gamestatus import GameStatus, Menu, bg_box, start_game, loading_chapter_pic
 from renderer import Camera
 import debug_tools
 from base import util
+import sys
 
 
 
@@ -116,7 +117,7 @@ def enter_chapter(screen, chapter, renne):
     while running:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 
-                exit(0)
+                sys.exit(0)
 
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:

@@ -9,6 +9,7 @@ from base.util import Timer, load_chapter_win_screen_image
 from base import util
 from base import constant as cfg
 from etc import setting as sfg
+import sys
 
 
 
@@ -226,7 +227,7 @@ def show_the_end(screen):
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit(0)
+                sys.exit(0)
 
         screen.fill(pygame.Color("black"))
         screen.blit(the_end_image, the_end_image_rect)
@@ -277,7 +278,7 @@ def show_chapter_win_screen_images(screen):
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: 
-                    return exit(0)
+                    sys.exit(0)
 
             pygame.display.flip()
 
@@ -308,10 +309,10 @@ def end_game(screen):
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit(0)
+                sys.exit(0)
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    exit(0)
+                    sys.exit(0)
 
         screen.fill(pygame.Color("black"))
         screen.blit(renne_image, renne_image_rect)
