@@ -1003,23 +1003,33 @@ class LeonhardtAttacker(AngleAttacker):
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
         self.death_coil_params = attacker_params["death_coil"]
         self.hell_claw_params = attacker_params["hell_claw"]
+
         # hell claw has a ellipse for telling the player that this skill is coming!
         self.hell_claw_ellipse_surface = pygame.Surface((
             self.hell_claw_params["claw_shake_on_x"] * 2 + 20, 
             self.hell_claw_params["claw_shake_on_x"] + 10)).convert_alpha()
         self.hell_claw_ellipse_surface.fill(pygame.Color(0, 0, 0, 0))
         pygame.draw.ellipse(self.hell_claw_ellipse_surface, pygame.Color(255, 0, 0, 128),
-            self.hell_claw_ellipse_surface.get_rect(), 3)
+            self.hell_claw_ellipse_surface.get_rect())
+        self.blink = Blink()
+        self.hell_claw_ellipse_surface_mix = self.hell_claw_ellipse_surface.copy()
+
         self.magic_list = []
         self.current_magic = None
         self.method = None
 
 
+    def update_hell_claw_tips(self, passed_seconds):
+        # update as a blink mix
+        self.hell_claw_ellipse_surface_mix = self.blink.make(self.hell_claw_ellipse_surface,
+            passed_seconds)
+
+
     def draw_hell_claw_tips(self, camera):
-        r = self.hell_claw_ellipse_surface.get_rect()
+        r = self.hell_claw_ellipse_surface_mix.get_rect()
         r.center = self.current_magic.target_pos("xy")
         r.centery *= 0.5
-        camera.screen.blit(self.hell_claw_ellipse_surface,
+        camera.screen.blit(self.hell_claw_ellipse_surface_mix,
             (r.x - camera.rect.x, r.y - camera.rect.y))
 
 
