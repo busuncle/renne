@@ -376,7 +376,7 @@ class SwordRobber(Enemy):
         "weak_dfs": 5,
     }
 
-    WALK_SPEED = 170
+    WALK_SPEED = 165
 
 
 
@@ -433,7 +433,7 @@ class Ghost(Enemy):
 class TwoHeadSkeleton(Enemy):
     NAME = "TwoHeadSkeleton"
     HP = 800
-    ATK = 50
+    ATK = 52
     DFS = 5
 
     RADIUS = 24
@@ -456,7 +456,7 @@ class TwoHeadSkeleton(Enemy):
 class Werwolf(Enemy):
     NAME = "Werwolf"
     HP = 700
-    ATK = 48
+    ATK = 50
     DFS = 4
 
     RADIUS = 24
@@ -466,8 +466,8 @@ class Werwolf(Enemy):
     SHADOW_INDEX = 3
 
     ATTACKER_PARAMS = {
-        "range": 60,
-        "angle": 60,
+        "range": 70,
+        "angle": 80,
         "key_frames": (4, 5),
         "frozen_prob": 0.6,
         "frozen_time": 5,

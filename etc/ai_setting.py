@@ -127,6 +127,18 @@ class ArmouredShooterAI(LongNormalAI):
 
 
 
+class WerwolfAI(ShortNormalAI):
+    STAY_CHANGE_DIRECTION_PROB = 0.001
+    STAY_TO_PATROL_PROB = 0
+
+
+
+class TwoHeadSkeletonAI(ShortNormalAI):
+    STAY_CHANGE_DIRECTION_PROB = 0.001
+    STAY_TO_PATROL_PROB = 0
+
+
+
 AI_MAPPING = {
     sfg.SkeletonWarrior.ID: ShortNormalAI,
     sfg.CastleWarrior.ID: ShortNormalAI,
@@ -136,6 +148,6 @@ AI_MAPPING = {
     sfg.SwordRobber.ID: SwordRobberAI,
     sfg.SkeletonWarrior2.ID: ShortNormalAI,
     sfg.Ghost.ID: ShortNormalAI,
-    sfg.TwoHeadSkeleton.ID: ShortNormalAI,
-    sfg.Werwolf.ID: ShortNormalAI,
+    sfg.TwoHeadSkeleton.ID: TwoHeadSkeletonAI,
+    sfg.Werwolf.ID: WerwolfAI,
 }
