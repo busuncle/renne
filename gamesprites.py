@@ -171,14 +171,12 @@ class Renne(GameSprite):
                 setattr(self.pos, coord, old_coord + key_vec_coord * speed * passed_seconds)
                 self.area.center = self.pos("xy")
                 collided_obj = self.get_collide_static_object()
-                if collided_obj is None:
-                    continue
-
-                if collided_obj.setting.IS_BLOCK or self.is_collide_map_boundry():
+                if (collided_obj is not None and collided_obj.setting.IS_BLOCK) \
+                    or self.is_collide_map_boundry():
                     setattr(self.pos, coord, old_coord)
                     self.area.center = self.pos("xy")
 
-                elif collided_obj.setting.IS_ELIMINABLE \
+                elif collided_obj is not None and collided_obj.setting.IS_ELIMINABLE \
                     and collided_obj.setting.ELIMINATION_TYPE == cfg.StaticObject.ELIMINATION_TYPE_FOOD:
                     real_recover_hp = min(self.setting.HP - self.hp, 
                         collided_obj.setting.RECOVER_HP)
