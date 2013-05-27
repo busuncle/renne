@@ -200,8 +200,8 @@ class GameWorld(pygame.sprite.LayeredDirty):
 
             if sp.setting.ID in sfg.SPRITES_WITH_AMMO:
                 movings.extend(sp.attacker.ammo_list)
-                for ammo in sp.attacker.ammo_list:
-                    ammo.draw_shadow(camera)
+                #for ammo in sp.attacker.ammo_list:
+                #    ammo.draw_shadow(camera)
                 
 
         for obj in self.static_objects:
