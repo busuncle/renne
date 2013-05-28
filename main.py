@@ -23,6 +23,9 @@ COMMAND_DEBUG_MODE = False
 COMMAND_DEBUG_OPTIONS = {}
 
 
+util.prepare_data_related_folder()
+
+
 
 def main(args):
     # a Renne singleton goes through the whole game

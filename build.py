@@ -38,8 +38,7 @@ class BuildExe:
         self.copyright = "Copyright (c) 2013 Busuncle."
         self.project_description = "Renne, a fan-works ARPG"
         self.icon_file = "renne.ico"
-        self.extra_datas = ["res", "renne.png", "README.md", "etc\maps", 
-            "etc\waypoints", "data"]
+        self.extra_datas = ["res", "renne.png", "README.md", "etc\maps", "etc\waypoints"]
         self.extra_modules = ["pygame", "gameobjects", "etc.setting", 
             "etc.ai_setting", "base"]
         self.exclude_modules = []

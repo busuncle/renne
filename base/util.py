@@ -53,6 +53,15 @@ def get_project_root():
     return os.path.split(dirname)[0]
 
 
+def prepare_data_related_folder():
+    # create data related folder if not exists
+    os.path.exists("data") or os.mkdir("data")
+    save_folder = os.path.join("data", "save")
+    os.path.exists(save_folder) or os.mkdir(save_folder)
+    snapshot_folder = os.path.join("data", "snapshot")
+    os.path.exists(snapshot_folder) or os.mkdir(snapshot_folder)
+
+
 def load_map_setting(chapter):
     name = "chapter_%s" % chapter
     m = imp.load_source(name, os.path.join("etc", "maps", name+".py"))
