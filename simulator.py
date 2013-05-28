@@ -1067,6 +1067,8 @@ class LeonhardtAttacker(AngleAttacker):
     def hell_claw(self, target, current_frame_add):
         sp = self.sprite
         if self.current_magic is None:
+            # this magic trigger at once for showing the tips, 
+            # but damage claws will trigger at a certain delay
             sp.mp -= self.hell_claw_params["mana"]
             self.current_magic = HellClawSet(sp, target, 
                 sp.static_objects, self.hell_claw_params)
