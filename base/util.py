@@ -24,18 +24,19 @@ class Blink(object):
         self.rate = rate
         self.depth_section = depth_section
         self.depth = self.depth_section[0]
-        self.direct = 1
 
 
     def make(self, image, passed_seconds):
         image_mix = image.copy()
-        self.depth += self.rate * self.direct * passed_seconds
+        self.depth += self.rate * passed_seconds
         if self.depth < self.depth_section[0]:
             self.depth = self.depth_section[0]
-            self.direct = 1
+            # change direct
+            self.rate = abs(self.rate)
         elif self.depth > self.depth_section[1]:
             self.depth = self.depth_section[1]
-            self.direct = -1
+            # change direct
+            self.rate = -abs(self.rate)
 
         self.depth = int(self.depth)
 
