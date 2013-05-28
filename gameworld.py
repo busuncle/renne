@@ -30,6 +30,7 @@ class GameMap(object):
 
         return res
 
+
     def init_map_titles(self, map_tile_setting):
         tile_cache = {}
         for y, tile_row in enumerate(map_tile_setting): 
@@ -122,8 +123,12 @@ class GameWorld(pygame.sprite.LayeredDirty):
         self.dynamic_objects = []
 
 
-    def all_objects(self):
-        return self.static_objects + self.dynamic_objects
+    def yield_all_objects(self):
+        # use a generator instead of list operator +
+        for obj in self.static_objects:
+            yield obj
+        for obj in self.dynamic_objects:
+            yield obj
 
 
     def add_object(self, game_object):

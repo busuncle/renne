@@ -55,8 +55,8 @@ def run_debug_by_option_list(option_list, camera, game_world, game_map, clock):
     if option_list["fps"]:
         draw_fps(camera, clock)
     if option_list["area"]:
-        for sp in game_world.all_objects():
+        for sp in game_world.yield_all_objects():
             draw_area(camera, sp)
     if option_list["pos"]:
-        for sp in game_world.all_objects():
+        for sp in game_world.yield_all_objects():
             draw_pos(camera, sp)

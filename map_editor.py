@@ -63,7 +63,7 @@ def get_map_pos_for_mouse(camera_rect, mouse_pos):
 
 def select_unit(map_pos_for_mouse, game_world):
     # change mouse pos to map pos first
-    for sp in game_world.all_objects():
+    for sp in game_world.yield_all_objects():
         if sp.area.collidepoint(map_pos_for_mouse):
             return sp
     return None
@@ -72,7 +72,7 @@ def select_unit(map_pos_for_mouse, game_world):
 def put_selected_object(selected_object, game_world):
     if selected_object is None:
         return True
-    for sp in game_world.all_objects():
+    for sp in game_world.yield_all_objects():
         if sp is selected_object:
             continue
         if selected_object.area.colliderect(sp.area):
@@ -270,7 +270,7 @@ def run(chapter):
 
         game_map.draw(camera)
 
-        for sp in sorted(game_world.all_objects(), key=lambda sp: sp.pos.y):
+        for sp in sorted(game_world.yield_all_objects(), key=lambda sp: sp.pos.y):
             if sp.setting.GAME_OBJECT_TYPE == cfg.GameObject.TYPE_DYNAMIC:
                 # select current image for corresponding direction
                 sp.adjust_rect()
@@ -294,7 +294,7 @@ def run(chapter):
             camera.screen.blit(selected_object_name, (5, 5))
 
         # debug drawings
-        for sp in game_world.all_objects():
+        for sp in game_world.yield_all_objects():
             if DEBUG_DRAW["pos"]:
                 debug_tools.draw_pos(camera, sp)
             if DEBUG_DRAW["area"]:

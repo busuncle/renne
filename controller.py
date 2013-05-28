@@ -112,6 +112,7 @@ class State(object):
         pass
 
 
+
 class StateMachine(object):
     def __init__(self, sprite, tick):
         self.sprite = sprite
