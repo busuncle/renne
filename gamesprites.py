@@ -646,7 +646,14 @@ class Enemy(GameSprite):
             if self.status["under_thump"]["crick_time"] <= 0:
                 self.reset_action(force=True)
                 self.status.pop("under_thump")
-    
+        if self.status.get("crick") is not None:
+            self.action = cfg.EnemyAction.UNCONTROLLED
+            self.status["crick"]["time"] -= passed_seconds
+            if self.status["crick"]["time"] <= 0:
+                # reset to old action
+                self.action = self.status["crick"]["old_action"]
+                self.status.pop("crick")
+                 
 
     def update(self, passed_seconds, external_event=None):
         # physics level

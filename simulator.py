@@ -152,6 +152,18 @@ class DestroyFire(EnergyBallSet):
     def __init__(self, sprite, target_list, static_objects, params, pos, target_pos):
         super(DestroyFire, self).__init__(self.destroy_fire_image, self.shadow,
             sprite, target_list, static_objects, params, pos, target_pos)
+        self.crick_time = params["crick_time"]
+        self.tag_cricks = set()
+
+
+    def update(self, passed_seconds):
+        super(DestroyFire, self).update(passed_seconds)
+        for sp in self.has_hits:
+            if sp in self.tag_cricks:
+                continue
+
+            self.tag_cricks.add(sp)
+            sp.status["crick"] = {"time": self.crick_time, "old_action": sp.action}
 
 
 
@@ -204,7 +216,7 @@ class DestroyBombSet(MagicSkill):
         vec_left = Vector2(cfg.Direction.DIRECT_TO_VEC[(direction - 1) % cfg.Direction.TOTAL])
         vec_right = Vector2(cfg.Direction.DIRECT_TO_VEC[(direction + 1) % cfg.Direction.TOTAL])
         self.key_vec_list = [vec, vec_left, vec_right, 
-            (vec, vec_left).normalize(), (vec, vec_right).normalize()]
+            (vec + vec_left).normalize(), (vec + vec_right).normalize()]
 
         self.magic_sprites = []
         self.has_hits = set()

@@ -140,6 +140,7 @@ class Renne(object):
             "damage": 40,
             "speed": 250,
             "radius": 18,
+            "crick_time": 0.3,
             "dx": 32,
             "dy": 48,
             "mana": 30,
