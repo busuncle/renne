@@ -641,7 +641,7 @@ class Achievement(object):
             for record in self.hero.attacker.hit_record:
                 score = sfg.Achievement.SCORE["per_hit"] * sum(range(1, record["n_hit"] + 1))
                 self.n_hit_score.incr_next_value(score)
-                print "%s hit!" % record["n_hit"]
+                #print "%s hit!" % record["n_hit"]
 
             self.hero.attacker.hit_record = []
 
@@ -656,7 +656,7 @@ class Achievement(object):
                     if self.kill_time_list[-1] - self.kill_time_list[-2] <= sfg.Achievement.N_KILL_TIMEDELTA:
                         n_kill = self.n_kill_list[-1] + 1
                         self.n_kill_list.append(n_kill)
-                        print "%s kill!" % self.n_kill_list[-1]
+                        #print "%s kill!" % self.n_kill_list[-1]
                         score = sfg.Achievement.SCORE["per_n_kill"] * pow(2, n_kill)
                         self.n_kill_score.incr_next_value(score)
                     else:
