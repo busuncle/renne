@@ -171,4 +171,4 @@ data/save/*.dat
 .*.png
 .*.ogg
 .*.wav
-_test.py
+_test*
