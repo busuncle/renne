@@ -364,6 +364,7 @@ class SpriteOffence(State):
         self.ai = ai
         self.enter_timer = Timer()
 
+
     def enter(self, last_state):
         sp = self.sprite
         sp.brain.persistent = True

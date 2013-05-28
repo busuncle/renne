@@ -33,6 +33,7 @@ def gen_panel(images, image_key, rect, scale=None):
     return panel
 
 
+
 def gen_numbers(images, filekey, number_rect, number_size):
     res = {}
     number_panel = gen_panel(images, filekey, number_rect)
@@ -41,6 +42,7 @@ def gen_numbers(images, filekey, number_rect, number_size):
         res[i] = number_panel.subsurface(pygame.Rect((i * w, 0), (w, h)))
 
     return res
+
 
 
 class Menu(object):
@@ -209,6 +211,7 @@ def loading_chapter_picture(screen):
         pygame.display.flip()
 
 
+
 def show_the_end(screen):
     the_end_image = cg_image_controller.get(sfg.EndGame.THE_END_IMAGE_KEY).subsurface(
         sfg.EndGame.THE_END_IMAGE_RECT).convert()
@@ -246,6 +249,7 @@ def show_the_end(screen):
                 return
 
 
+
 def show_chapter_win_screen_images(screen):
     # the chapter 0 is actually start menu
     chapters = sfg.GameMap.CHAPTERS[1:]
@@ -281,6 +285,7 @@ def show_chapter_win_screen_images(screen):
                     sys.exit(0)
 
             pygame.display.flip()
+
 
 
 def end_game(screen):
