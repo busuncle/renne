@@ -204,16 +204,10 @@ class DestroyBombSet(MagicSkill):
         vec_left = Vector2(cfg.Direction.DIRECT_TO_VEC[(direction - 1) % cfg.Direction.TOTAL])
         vec_right = Vector2(cfg.Direction.DIRECT_TO_VEC[(direction + 1) % cfg.Direction.TOTAL])
         self.key_vec_list = [vec, vec_left, vec_right, 
-            self.normalized_vec_between_two(vec, vec_left), self.normalized_vec_between_two(vec, vec_right)]
+            (vec, vec_left).normalize(), (vec, vec_right).normalize()]
 
         self.magic_sprites = []
         self.has_hits = set()
-
-
-    def normalized_vec_between_two(self, vec1, vec2):
-        v = vec1 + vec2
-        v.normalize()
-        return v
 
 
     def update(self, passed_seconds):
