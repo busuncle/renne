@@ -284,7 +284,7 @@ class LeonHardt(Enemy):
 
     IS_BOSS = True
     NAME = "LeonHardt"
-    HP = 1500
+    HP = 2000
     MP = 1000
     ATK = 60
     DFS = 5
