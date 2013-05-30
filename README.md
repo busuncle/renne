@@ -10,7 +10,7 @@ Renne
 * ESC is the exit button. ENTER usually is confirm.
   
 enjoy your geek life    
-Copyright 2013 busuncle    
+2013 busuncle    
 https://github.com/busuncle/renne 
 
 
