@@ -793,5 +793,5 @@ ENEMY_CLASS_MAPPING = {
     sfg.Ghost.ID: Enemy,
     sfg.TwoHeadSkeleton.ID: Enemy,
     sfg.Werwolf.ID: Enemy,
-    sfg.SilverImpale.ID: Enemy,
+    sfg.SilverTentacle.ID: Enemy,
 }

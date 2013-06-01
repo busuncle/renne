@@ -479,9 +479,9 @@ class Werwolf(Enemy):
 
 
 
-class SilverImpale(Enemy):
-    NAME = "SilverImpale"
-    HP = 300
+class SilverTentacle(Enemy):
+    NAME = "SilverTentacle"
+    HP = 400
     ATK = 40
     DFS = 4
 
@@ -1205,7 +1205,7 @@ SPRITE_SETTING_LIST = [
     Ghost,
     TwoHeadSkeleton,
     Werwolf,
-    SilverImpale,
+    SilverTentacle,
 ]
 
 STATIC_OBJECT_SETTING_LIST = [
@@ -1333,7 +1333,7 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
         cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
-    SilverImpale.ID: ("silver_impale", {
+    SilverTentacle.ID: ("silver_tentacle", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
         cfg.EnemyAction.ATTACK: ("attack_5.png", 5, 6),

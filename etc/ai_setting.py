@@ -139,7 +139,7 @@ class TwoHeadSkeletonAI(ShortNormalAI):
 
 
 
-class SilverImpaleAI(ShortNormalAI):
+class SilverTentacleAI(ShortNormalAI):
     EMOTION_SILENT_PROB = 0.001
     STAY_CHANGE_DIRECTION_PROB = 0.1
 
@@ -164,5 +164,5 @@ AI_MAPPING = {
     sfg.Ghost.ID: ShortNormalAI,
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeletonAI,
     sfg.Werwolf.ID: WerwolfAI,
-    sfg.SilverImpale.ID: SilverImpaleAI,
+    sfg.SilverTentacle.ID: SilverTentacleAI,
 }
