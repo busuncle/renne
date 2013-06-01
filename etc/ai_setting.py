@@ -139,6 +139,20 @@ class TwoHeadSkeletonAI(ShortNormalAI):
 
 
 
+class SilverImpaleAI(ShortNormalAI):
+    EMOTION_SILENT_PROB = 0.001
+    STAY_CHANGE_DIRECTION_PROB = 0.1
+
+    STAY_TO_OFFENCE_PROB = 0.3
+    STAY_TO_CHASE_PROB = 0.3
+
+    CHASE_TO_OFFENCE_PROB = 0.3
+    CHASE_TO_DEFENCE_PROB = 0.8
+
+    OFFENCE_TO_CHASE_PROB = 0.3
+
+
+
 AI_MAPPING = {
     sfg.SkeletonWarrior.ID: ShortNormalAI,
     sfg.CastleWarrior.ID: ShortNormalAI,
@@ -150,4 +164,5 @@ AI_MAPPING = {
     sfg.Ghost.ID: ShortNormalAI,
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeletonAI,
     sfg.Werwolf.ID: WerwolfAI,
+    sfg.SilverImpale.ID: SilverImpaleAI,
 }

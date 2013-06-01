@@ -479,6 +479,31 @@ class Werwolf(Enemy):
 
 
 
+class SilverImpale(Enemy):
+    NAME = "SilverImpale"
+    HP = 400
+    ATK = 40
+    DFS = 4
+
+    RADIUS = 24
+    HEIGHT = 75
+    POS_RECT_DELTA_Y = 40
+    SHADOW_RECT_DELTA_Y = 60
+    SHADOW_INDEX = 3
+
+    ATTACKER_PARAMS = {
+        "range": 80,
+        "angle": 90,
+        "key_frames": (4,),
+    }
+
+    WALK_SPEED = 150
+    # special attribute
+    DAMAGE_REBOUNCE = True
+    ANTI_THUMP = True
+
+
+
 class GameMap(object):
     TILE_SIZE = 256
     ONE_SCREEN_DISTANCE_WIDTH = TILE_SIZE * 4
@@ -1065,6 +1090,7 @@ class Chapter(object):
         3: WIN_CONDITION_ALL_ENEMY_DIE,
         4: WIN_CONDITION_ALL_ENEMY_DIE,
         5: WIN_CONDITION_BOSS_DIE,
+        999: WIN_CONDITION_ALL_ENEMY_DIE,
     }
 
 
@@ -1178,6 +1204,7 @@ SPRITE_SETTING_LIST = [
     Ghost,
     TwoHeadSkeleton,
     Werwolf,
+    SilverImpale,
 ]
 
 STATIC_OBJECT_SETTING_LIST = [
@@ -1305,6 +1332,12 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
         cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
+    SilverImpale.ID: ("silver_impale", {
+        cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
+        cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
+        cfg.EnemyAction.ATTACK: ("attack_5.png", 5, 6),
+        cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
+    }),
 }
 
 # (folder, {image_key: image_filename, ...})
@@ -1370,6 +1403,7 @@ BACKGROUND_MUSICS = ("background", {
     "chapter_3": "chapter_3.ogg",
     "chapter_4": "chapter_4.ogg",
     "chapter_5": "chapter_5.ogg",
+    "chapter_999": "chapter_5.ogg",
     "hero_win": "hero_win.wav",
     "hero_lose": "hero_lose.wav",
 })

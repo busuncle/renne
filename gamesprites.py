@@ -269,7 +269,7 @@ class Renne(GameSprite):
             hit_count = 0
             for em in self.enemies:
                 hit_it = self.attacker.run(em, self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
-                if hit_it:
+                if hit_it and not hasattr(em.setting, "ANTI_THUMP"):
                     em.status["under_thump"] = {
                         "crick_time": self.setting.ATTACKER_PARAMS["run_attack"]["crick_time"],
                         "out_speed": self.setting.ATTACKER_PARAMS["run_attack"]["out_speed"], 
@@ -781,4 +781,5 @@ ENEMY_CLASS_MAPPING = {
     sfg.Ghost.ID: Enemy,
     sfg.TwoHeadSkeleton.ID: Enemy,
     sfg.Werwolf.ID: Enemy,
+    sfg.SilverImpale.ID: Enemy,
 }

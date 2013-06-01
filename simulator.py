@@ -735,6 +735,8 @@ class RenneAttacker(AngleAttacker):
         if self.hit(enemy, current_frame_add):
             damage = max(0, self.sprite.atk - enemy.dfs)
             enemy.attacker.handle_under_attack(self.sprite, damage)
+            if hasattr(enemy.setting, "DAMAGE_REBOUNCE"):
+                self.sprite.attacker.handle_under_attack(enemy, damage)
             return True
         return False
 
@@ -969,6 +971,17 @@ class EnemyWeakShortAttacker(EnemyShortAttacker):
 
 
 
+class EnemyImpaleShortAttacker(EnemyShortAttacker):
+    def run(self, hero, current_frame_add):
+        if self.hit(hero, current_frame_add):
+            # regardless of hero's dfs
+            damage = self.sprite.atk
+            hero.attacker.handle_under_attack(self.sprite, damage)
+            return True
+        return False
+
+
+
 class EnemyLongAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
         attack_range = attacker_params["range"]
@@ -1144,6 +1157,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.Ghost.ID: EnemyLeakShortAttacker,
     sfg.TwoHeadSkeleton.ID: EnemyBloodShortAttacker,
     sfg.Werwolf.ID: EnemyFrozenShortAttacker,
+    sfg.SilverImpale.ID: EnemyImpaleShortAttacker,
 }
 
 
