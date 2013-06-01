@@ -269,13 +269,25 @@ class Renne(GameSprite):
             hit_count = 0
             for em in self.enemies:
                 hit_it = self.attacker.run(em, self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
-                if hit_it and not hasattr(em.setting, "ANTI_THUMP"):
-                    em.status["under_thump"] = {
-                        "crick_time": self.setting.ATTACKER_PARAMS["run_attack"]["crick_time"],
-                        "out_speed": self.setting.ATTACKER_PARAMS["run_attack"]["out_speed"], 
-                        "acceleration": self.setting.ATTACKER_PARAMS["run_attack"]["acceleration"],
-                        "key_vec": Vector2.from_points(self.pos, em.pos)}
-                    hit_count += 1
+                if hit_it: 
+                    if hasattr(em.setting, "ANTI_THUMP"):
+                        # under thump status, can clean attacker
+                        self.attacker.finish()
+                        self.animation.set_init_frame(cfg.HeroAction.STAND)
+                        self.status["under_thump"] = {
+                            "crick_time": self.setting.ATTACKER_PARAMS["run_attack"]["crick_time"],
+                            "out_speed": self.setting.ATTACKER_PARAMS["run_attack"]["out_speed"], 
+                            "acceleration": self.setting.ATTACKER_PARAMS["run_attack"]["acceleration"],
+                            "key_vec": Vector2.from_points(em.pos, self.pos)}
+                        hit_count += 1
+                        break
+                    else:
+                        em.status["under_thump"] = {
+                            "crick_time": self.setting.ATTACKER_PARAMS["run_attack"]["crick_time"],
+                            "out_speed": self.setting.ATTACKER_PARAMS["run_attack"]["out_speed"], 
+                            "acceleration": self.setting.ATTACKER_PARAMS["run_attack"]["acceleration"],
+                            "key_vec": Vector2.from_points(self.pos, em.pos)}
+                        hit_count += 1
 
             if hit_count > 0:
                 self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
