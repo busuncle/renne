@@ -64,6 +64,8 @@ def run(args):
         else:
             screen.blit(blit_image, (0, 0))
 
+        frame_add_info = sfg.Font.ARIAL_32.render("frame add: %s" % int(frame_add), True, pygame.Color("white"))
+        screen.blit(frame_add_info, (0, 256))
 
         pygame.display.update()
 
