@@ -144,6 +144,8 @@ class Renne(GameSprite):
         self.hp = self.setting.HP
         self.mp = self.setting.MP
         self.sp = self.setting.SP
+        self.atk = self.setting.ATK
+        self.dfs = self.setting.DFS
         self.status = {"hp": cfg.SpriteStatus.HEALTHY, 
             "recover_hp_effect_time": 0, "under_attack_effect_time": 0}
         self.buff = {}
