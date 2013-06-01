@@ -130,7 +130,10 @@ class EnergyBallSet(MagicSkill):
                     continue
 
                 if sp.area.colliderect(msp.area):
-                    sp.attacker.handle_under_attack(self.sprite, msp.damage)
+                    damage = msp.damage
+                    if hasattr(sp.setting, "MAGIC_RESISTANCE_SCALE"):
+                        damage = int(damage / sp.setting.MAGIC_RESISTANCE_SCALE)
+                    sp.attacker.handle_under_attack(self.sprite, damage)
                     self.has_hits.add(sp)
 
             for obj in self.static_objects:
@@ -258,7 +261,10 @@ class DestroyBombSet(MagicSkill):
 
             for bomb in self.magic_sprites:
                 if sp.area.colliderect(bomb.area):
-                    sp.attacker.handle_under_attack(self.sprite, bomb.damage)
+                    damage = bomb.damage
+                    if hasattr(sp.setting, "MAGIC_RESISTANCE_SCALE"):
+                        damage = int(damage / sp.setting.MAGIC_RESISTANCE_SCALE)
+                    sp.attacker.handle_under_attack(self.sprite, damage)
                     self.has_hits.add(sp)
                     break
 
@@ -371,7 +377,10 @@ class DestroyAeroliteSet(MagicSkill):
                     and aerolite.alive_time > aerolite.damage_cal_time \
                     and sp.area.colliderect(aerolite.area):
                     self.has_hits.add(sp)
-                    sp.attacker.handle_under_attack(self.sprite, aerolite.damage)
+                    damage = aerolite.damage
+                    if hasattr(sp.setting, "MAGIC_RESISTANCE_SCALE"):
+                        damage = int(damage / sp.setting.MAGIC_RESISTANCE_SCALE)
+                    sp.attacker.handle_under_attack(self.sprite, damage)
                     sp.status["stun_time"] = self.params["stun_time"]
                     sp.set_emotion(cfg.SpriteEmotion.STUN)
 
@@ -735,7 +744,7 @@ class RenneAttacker(AngleAttacker):
         if self.hit(enemy, current_frame_add):
             damage = max(0, self.sprite.atk - enemy.dfs)
             enemy.attacker.handle_under_attack(self.sprite, damage)
-            if hasattr(enemy.setting, "DAMAGE_REBOUNCE"):
+            if hasattr(enemy.setting, "ATK_REBOUNCE"):
                 self.sprite.attacker.handle_under_attack(enemy, damage)
             return True
         return False

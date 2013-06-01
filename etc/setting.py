@@ -481,7 +481,7 @@ class Werwolf(Enemy):
 
 class SilverImpale(Enemy):
     NAME = "SilverImpale"
-    HP = 400
+    HP = 300
     ATK = 40
     DFS = 4
 
@@ -499,8 +499,9 @@ class SilverImpale(Enemy):
 
     WALK_SPEED = 150
     # special attribute
-    DAMAGE_REBOUNCE = True
+    ATK_REBOUNCE = True
     ANTI_THUMP = True
+    MAGIC_RESISTANCE_SCALE = 0.5
 
 
 
@@ -1351,7 +1352,7 @@ STATIC_OBJECT_IMAGES = ("static_object", {
     "s7": "s7.png", 
     "s8": "s8.png",
     "s9": "s9.png",
-    #"s10": "s10.png",
+    "s10": "s10.png",
     "s11": "s11.png",
     "food": "food.png",
 })
