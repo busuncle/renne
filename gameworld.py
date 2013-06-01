@@ -23,10 +23,13 @@ class GameMap(object):
 
     def load_waypoints(self, chapter):
         res = set()
-        fp = open(os.path.join(sfg.WayPoint.DIR, "%s.txt" % chapter))
-        for line in fp:
-            x, y = line.strip().split("\t")
-            res.add((float(x), float(y)))
+        waypoints_file = os.path.join(sfg.WayPoint.DIR, "%s.txt" % chapter)
+        if os.path.exists(waypoints_file):
+            fp = open(waypoints_file)
+            for line in fp:
+                x, y = line.strip().split("\t")
+                res.add((float(x), float(y)))
+            fp.close()
 
         return res
 
