@@ -395,12 +395,16 @@ class Renne(GameSprite):
             self.action = cfg.HeroAction.STAND
 
 
+    def under_thump(self, passed_seconds):
+        self.move(self.status["under_thump"]["out_speed"], passed_seconds, 
+            self.status["under_thump"]["key_vec"])
+        self.animation.run_circle_frame(cfg.HeroAction.UNDER_THUMP, passed_seconds)
+
+
     def update_status(self, passed_seconds):
         super(Renne, self).update_status(passed_seconds)
         if self.status.get("under_thump") is not None:
-            self.action = cfg.HeroAction.UNCONTROLLED
-            self.move(self.status["under_thump"]["out_speed"], passed_seconds, 
-                self.status["under_thump"]["key_vec"])
+            self.action = cfg.HeroAction.UNDER_THUMP
             self.status["under_thump"]["out_speed"] = max(0, self.status["under_thump"]["out_speed"] \
                 + self.status["under_thump"]["acceleration"] * passed_seconds)
             self.status["under_thump"]["crick_time"] -= passed_seconds
@@ -437,6 +441,9 @@ class Renne(GameSprite):
 
         elif self.action == cfg.HeroAction.STAND:
             self.stand(passed_seconds)
+
+        elif self.action == cfg.HeroAction.UNDER_THUMP:
+            self.under_thump(passed_seconds)
 
         # update some debuff
         if self.debuff.get("poison") is not None:
