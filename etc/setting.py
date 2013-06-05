@@ -264,7 +264,7 @@ class SkeletonArcher(Enemy):
 
     ATTACKER_PARAMS = {
         "range": 400,
-        "angle": 12,
+        "angle": 6,
         "key_frames": (4, 5),
         "arrow_radius": 18, 
         "arrow_speed": 300, 

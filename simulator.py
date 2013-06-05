@@ -647,80 +647,6 @@ class Ammo(pygame.sprite.DirtySprite):
 
 
 
-class ArrowAttacker(Attacker):
-    """
-    attacker that has ammo sprite to calculate hit and draw
-    """
-    arrow_images = animation.battle_images.get(sfg.Ammo.ARROW_IMAGE_KEY)
-    arrow_image_list = [arrow_images.subsurface(
-        pygame.Rect((0, i * sfg.Ammo.ARROW_HEIGHT), (sfg.Ammo.ARROW_WIDTH, sfg.Ammo.ARROW_HEIGHT))) \
-        for i in xrange(cfg.Direction.TOTAL)]
-    shadow = {"image": animation.get_shadow_image(sfg.Ammo.ARROW_SHADOW_INDEX),
-        "dy": sfg.Ammo.ARROW_SHADOW_DY}
-    def __init__(self, sprite, attacker_params):
-        super(ArrowAttacker, self).__init__(sprite)
-        self.attack_range = attacker_params["range"]
-        # here use cosine rule for chance judgement
-        self.cos_min = cos(radians(attacker_params["angle"] * 0.5))
-        self.hero = sprite.hero # you see it's an attacker only for enemy...
-        self.static_objects = sprite.static_objects
-        self.current_ammo = None
-        self.ammo_list = []
-        self.key_frames = attacker_params["key_frames"]
-        self.arrow_radius = attacker_params["arrow_radius"]
-        self.arrow_speed = attacker_params["arrow_speed"]
-        self.arrow_dx = attacker_params["arrow_dx"]
-        self.arrow_dy = attacker_params["arrow_dy"]
-        self.arrow_damage = attacker_params["arrow_damage"]
-
-
-    def chance(self, target):
-        sp = self.sprite
-        distance_to_target = sp.pos.get_distance_to(target.pos)
-        if distance_to_target <= self.attack_range:
-            direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
-            vec_to_target = Vector2.from_points(sp.area.center, target.area.center)
-            cos_val = cos_for_vec(direct_vec, vec_to_target)
-            if cos_val >= self.cos_min:
-                return True
-
-        return False
-
-
-    def run(self, hero, current_frame_add):
-        sp = self.sprite
-        if self.current_ammo is None and int(current_frame_add) in self.key_frames:
-            # generate arrow
-            self.current_ammo = Ammo(sp.pos, self.arrow_radius, self.arrow_speed, 
-                cfg.Direction.DIRECT_TO_VEC[sp.direction], self.arrow_dx, self.arrow_dy, self.arrow_damage, 
-                self.arrow_image_list[sp.direction], self.shadow)
-            self.ammo_list.append(self.current_ammo)
-
-
-    def update_ammo(self, passed_seconds):
-        for i, am in enumerate(self.ammo_list):
-            am.update(passed_seconds)
-            if am.area.colliderect(self.hero.area):
-                self.hero.attacker.handle_under_attack(self.sprite, self.arrow_damage)
-                self.ammo_list.pop(i)
-
-            elif am.pos.get_distance_to(am.origin_pos) > self.attack_range:
-                self.ammo_list.pop(i)
-
-            else:
-                for obj in self.static_objects:
-                    if not obj.setting.IS_ELIMINABLE and \
-                        obj.setting.IS_VIEW_BLOCK and \
-                        am.area.colliderect(obj.area):
-                        self.ammo_list.pop(i)
-                        break
-
-
-    def finish(self):
-        self.current_ammo = None
-
-
-
 class RenneAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
         super(RenneAttacker, self).__init__(sprite, 
@@ -1022,6 +948,74 @@ class EnemyLongAttacker(AngleAttacker):
 
     def finish(self):
         len(self.has_hits) > 0 and self.has_hits.clear()
+
+
+
+class ArrowAttacker(EnemyLongAttacker):
+    """
+    attacker that has ammo sprite to calculate hit and draw
+    """
+    arrow_images = animation.battle_images.get(sfg.Ammo.ARROW_IMAGE_KEY)
+    arrow_image_list = [arrow_images.subsurface(
+        pygame.Rect((0, i * sfg.Ammo.ARROW_HEIGHT), (sfg.Ammo.ARROW_WIDTH, sfg.Ammo.ARROW_HEIGHT))) \
+        for i in xrange(cfg.Direction.TOTAL)]
+    shadow = {"image": animation.get_shadow_image(sfg.Ammo.ARROW_SHADOW_INDEX),
+        "dy": sfg.Ammo.ARROW_SHADOW_DY}
+    def __init__(self, sprite, attacker_params):
+        super(ArrowAttacker, self).__init__(sprite, attacker_params)
+        self.hero = sprite.hero # you see it's an attacker only for enemy...
+        self.static_objects = sprite.static_objects
+        self.current_ammo = None
+        self.ammo_list = []
+        self.arrow_radius = attacker_params["arrow_radius"]
+        self.arrow_speed = attacker_params["arrow_speed"]
+        self.arrow_dx = attacker_params["arrow_dx"]
+        self.arrow_dy = attacker_params["arrow_dy"]
+        self.arrow_damage = attacker_params["arrow_damage"]
+
+
+    def chance(self, target):
+        is_chance = super(ArrowAttacker, self).chance(target)
+        if is_chance:
+            # check for view block static objects additionally
+            if self.sprite.view_sensor.detect(target) is None:
+                # change the is_chance to false if something block it's view
+                is_chance = False
+            
+        return is_chance
+
+
+    def run(self, hero, current_frame_add):
+        sp = self.sprite
+        if self.current_ammo is None and int(current_frame_add) in self.key_frames:
+            # generate arrow
+            self.current_ammo = Ammo(sp.pos, self.arrow_radius, self.arrow_speed, 
+                cfg.Direction.DIRECT_TO_VEC[sp.direction], self.arrow_dx, self.arrow_dy, self.arrow_damage, 
+                self.arrow_image_list[sp.direction], self.shadow)
+            self.ammo_list.append(self.current_ammo)
+
+
+    def update_ammo(self, passed_seconds):
+        for i, am in enumerate(self.ammo_list):
+            am.update(passed_seconds)
+            if am.area.colliderect(self.hero.area):
+                self.hero.attacker.handle_under_attack(self.sprite, self.arrow_damage)
+                self.ammo_list.pop(i)
+
+            elif am.pos.get_distance_to(am.origin_pos) > self.attack_range:
+                self.ammo_list.pop(i)
+
+            else:
+                for obj in self.static_objects:
+                    if not obj.setting.IS_ELIMINABLE and \
+                        obj.setting.IS_VIEW_BLOCK and \
+                        am.area.colliderect(obj.area):
+                        self.ammo_list.pop(i)
+                        break
+
+
+    def finish(self):
+        self.current_ammo = None
 
 
 
