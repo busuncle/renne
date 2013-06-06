@@ -220,7 +220,7 @@ class SkeletonWarrior(Enemy):
         "key_frames": (3, 4),
     }
 
-    WALK_SPEED = 160
+    WALK_SPEED = 110
 
 
 
@@ -273,7 +273,7 @@ class SkeletonArcher(Enemy):
         "arrow_damage": 35,
     }
 
-    WALK_SPEED = 140
+    WALK_SPEED = 105
 
 
 
@@ -1273,7 +1273,7 @@ SPRITE_FRAMES = {
     }),
     SkeletonWarrior.ID: ("skeleton_warrior", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
-        cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
+        cfg.EnemyAction.WALK: ("walk_8.png", 8, 10),
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
         cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
@@ -1285,7 +1285,7 @@ SPRITE_FRAMES = {
     }),
     SkeletonArcher.ID: ("skeleton_archer", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
-        cfg.EnemyAction.WALK: ("walk_8.png", 8, 12),
+        cfg.EnemyAction.WALK: ("walk_8.png", 8, 10),
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 8),
         cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
