@@ -246,7 +246,7 @@ class CastleWarrior(Enemy):
         "thump_acceleration": -4500,
     }
 
-    WALK_SPEED = 160
+    WALK_SPEED = 100
 
 
 
@@ -1279,7 +1279,7 @@ SPRITE_FRAMES = {
     }),
     CastleWarrior.ID: ("castle_warrior", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
-        cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
+        cfg.EnemyAction.WALK: ("walk_8.png", 8, 10),
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
         cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
