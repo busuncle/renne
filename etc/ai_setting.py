@@ -61,7 +61,7 @@ class LongNormalAI(AIBase):
     OFFENCE_GO_DELAY_TIME_MU = 1.2
     OFFENCE_GO_DELAY_TIME_SIGMA = 0.1
 
-    STAY_CHANGE_DIRECTION_PROB = 0.5
+    STAY_CHANGE_DIRECTION_PROB = 0.2
 
     # all states transition probability
     STAY_TO_PATROL_PROB = 0.01
