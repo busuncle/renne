@@ -174,8 +174,9 @@ class SpriteAnimator(object):
         else:
             self.frame_adds[action] += passed_seconds * self.frame_rates[action]
         self.frame_adds[action] %= self.frame_nums[action]
-        self.image = self.sprite_image_contoller.get_surface(action)[
-            self.sprite.direction + cfg.Direction.TOTAL * int(self.frame_adds[action])]
+        self.image = self.sprite_image_contoller.get_subsurface(action,
+            self.sprite.direction, self.frame_adds[action])
+
 
 
     def run_sequence_frame(self, action, passed_seconds):
@@ -190,8 +191,8 @@ class SpriteAnimator(object):
             self.frame_adds[action] = 0
             return True
         else:
-            self.image = self.sprite_image_contoller.get_surface(action)[
-                self.sprite.direction + cfg.Direction.TOTAL * int(self.frame_adds[action])]
+            self.image = self.sprite_image_contoller.get_subsurface(action,
+                self.sprite.direction, self.frame_adds[action])
             return False
 
 

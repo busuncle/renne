@@ -9,6 +9,7 @@ from time import time
 import pprint
 import imp
 from etc import setting as sfg
+from base import constant as cfg
 
 
 
@@ -183,6 +184,7 @@ class ImageController(ResourceController):
     def __init__(self, image_folder=""):
         super(ImageController, self).__init__(pygame.image.load)
         self.cache = weakref.WeakValueDictionary()
+        #self.cache = {}
         self.path = os.path.join(self.path, "image", image_folder)
 
 
@@ -209,6 +211,11 @@ class SpriteImageController(ImageController):
         if not self:
             self.add_from_list(frame_files)
             self.make_frames()
+
+
+    def get_subsurface(self, action, direction, frame_add):
+        i = direction + cfg.Direction.TOTAL * int(frame_add)
+        return self.surfaces_mapping[action][i]
 
 
     def get_surface(self, name):
