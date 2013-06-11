@@ -145,13 +145,16 @@ class ResourceController(object):
         self.loader = loader
         self.path = "res"
 
+
     def add(self, key, file):
         self.res_mapping[key] = os.path.join(self.path, file)
+
 
     def add_from_list(self, files_mapping):
         # files_mapping should be a dict likes "{name1: file1, name2: file2, ...}"
         for k, v in files_mapping.iteritems():
             self.add(k, v)
+
 
     def get(self, name):
         try:
@@ -160,6 +163,7 @@ class ResourceController(object):
             res = self.loader(self.res_mapping[name])
             self.cache[name] = res
         return res
+
 
     def __nonzero__(self):
         return len(self.res_mapping) > 0
