@@ -35,7 +35,8 @@ def gen_chapter_waypoints(chapter, map_setting):
     blocks = []
     waypoints = set()
 
-    for t, p in map_setting["static_objects"]:
+    for static_obj_init in map_setting["static_objects"]:
+        t, p = static_obj_init["id"], static_obj_init["pos"]
         static_obj_setting = sfg.STATIC_OBJECT_SETTING_MAPPING[t]
         if not static_obj_setting.IS_BLOCK:
             continue
@@ -84,14 +85,14 @@ def change_map_setting(map_setting, game_world):
     res = {"hero": None, "monsters": [], "static_objects": []}
     for sp in game_world.static_objects:
         x, y = map(int, sp.pos)
-        res["static_objects"].append([sp.setting.ID, [x, y]])
+        res["static_objects"].append({"id": sp.setting.ID, "pos": (x, y)})
 
     for sp in game_world.dynamic_objects:
         x, y = map(int, sp.pos)
         if isinstance(sp, Renne):
-            res["hero"] = [[x, y], sp.direction]
+            res["hero"] = {"pos": (x, y), "direction": sp.direction}
         else:
-            res["monsters"].append([sp.setting.ID, [x, y], sp.direction])
+            res["monsters"].append({"id": sp.setting.ID, "pos": (x, y), "direction": sp.direction})
 
     map_setting.update(res)
 
@@ -170,18 +171,20 @@ def run(chapter):
     game_map = GameMap(chapter, map_setting["size"], map_setting["tiles"])
 
     # load hero
-    renne = Renne(sfg.Renne, *map_setting["hero"])
+    renne = Renne(sfg.Renne, map_setting["hero"]["pos"], map_setting["hero"]["direction"])
     game_world.add_object(renne)
 
     # load monsters
-    monster_init = map_setting.get("monsters", [])
-    for monster_id, pos, direct in monster_init:
+    monster_init_list = map_setting.get("monsters", [])
+    for monster_init in monster_init_list:
+        monster_id, pos, direct = monster_init["id"], monster_init["pos"], monster_init["direction"]
         monster = Enemy(sfg.SPRITE_SETTING_MAPPING[monster_id], pos, direct)
         game_world.add_object(monster)
 
     # load static objects
     chapter_static_objects = map_setting.get("static_objects", [])
-    for t, p in chapter_static_objects:
+    for static_obj_init in chapter_static_objects:
+        t, p = static_obj_init["id"], static_obj_init["pos"]
         static_obj = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[t], p)
         game_world.add_object(static_obj)
 

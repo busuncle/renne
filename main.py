@@ -81,12 +81,13 @@ def enter_chapter(screen, chapter, renne):
     game_map = GameMap(chapter, map_setting["size"], map_setting["tiles"])
 
     # load hero
-    renne.place(*map_setting["hero"])
+    renne.place(map_setting["hero"]["pos"], map_setting["hero"]["direction"])
     renne.activate(allsprites, enemies, static_objects, game_map)
 
     # load monsters
-    monster_init = map_setting["monsters"]
-    for monster_id, pos, direct in monster_init:
+    monster_init_list = map_setting["monsters"]
+    for monster_init in monster_init_list:
+        monster_id, pos, direct = monster_init["id"], monster_init["pos"], monster_init["direction"]
         monster_setting = sfg.SPRITE_SETTING_MAPPING[monster_id]
         EnemyClass = ENEMY_CLASS_MAPPING[monster_id]
         monster = EnemyClass(monster_setting, pos, direct)
@@ -97,7 +98,8 @@ def enter_chapter(screen, chapter, renne):
 
     # load static objects
     chapter_static_objects = map_setting["static_objects"]
-    for t, p in chapter_static_objects:
+    for static_obj_init in chapter_static_objects:
+        t, p = static_obj_init["id"], static_obj_init["pos"]
         static_obj = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[t], p)
         static_objects.add(static_obj)
 
