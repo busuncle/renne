@@ -140,7 +140,7 @@ class ResourceController(object):
         self.res_mapping = {}
         # TODO: disable weakref for trouble shooting
         #self.cache = weakref.WeakValueDictionary()
-        self.cache = {}
+        #self.cache = {}
         self.loader = loader
         self.path = "res"
 
@@ -168,6 +168,7 @@ class ResourceController(object):
 class MusicController(ResourceController):
     def __init__(self, music_folder="", default_loader=pygame.mixer.Sound):
         super(MusicController, self).__init__(default_loader)
+        self.cache = {}
         self.path = os.path.join(self.path, "music", music_folder)
 
     def load(self, key):
@@ -181,6 +182,7 @@ class MusicController(ResourceController):
 class ImageController(ResourceController):
     def __init__(self, image_folder=""):
         super(ImageController, self).__init__(pygame.image.load)
+        self.cache = weakref.WeakValueDictionary()
         self.path = os.path.join(self.path, "image", image_folder)
 
 
@@ -190,6 +192,8 @@ class SpriteImageController(ImageController):
     def __init__(self, image_folder=""):
         super(SpriteImageController, self).__init__(image_folder)
         self.surfaces_mapping = {}
+        #self.surfaces_mapping = weakref.WeakValueDictionary()
+
 
     def make_frames(self):
         # make surface into subsurfaces
@@ -200,10 +204,12 @@ class SpriteImageController(ImageController):
             self.surfaces_mapping[k] = [surface.subsurface(
                 Rect((0, i * width), (width, width))) for i in xrange(num)]
 
+
     def init_frames(self, frame_files):
         if not self:
             self.add_from_list(frame_files)
             self.make_frames()
+
 
     def get_surface(self, name):
         return self.surfaces_mapping[name]

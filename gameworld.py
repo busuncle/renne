@@ -1,4 +1,5 @@
 import os
+import weakref
 import pygame
 from pygame.locals import *
 from gameobjects.vector2 import Vector2
@@ -16,9 +17,10 @@ class GameMap(object):
     def __init__(self, chapter, size, tiles_setting):
         self.chapter = chapter
         self.size = size
-        self.map_tiles = []
-        self.init_map_titles(tiles_setting)
+        #self.map_tiles = weakref.WeakValueDictionary()
+        self.map_tiles = {}
         self.waypoints = self.load_waypoints(chapter)
+        self.init_map_titles(tiles_setting)
 
 
     def load_waypoints(self, chapter):
@@ -35,7 +37,7 @@ class GameMap(object):
 
 
     def init_map_titles(self, map_tile_setting):
-        tile_cache = {}
+        tile_cache = weakref.WeakValueDictionary()
         for y, tile_row in enumerate(map_tile_setting): 
             for x, tile_id in enumerate(tile_row):
                 tile = tile_cache.get(tile_id)
@@ -44,14 +46,16 @@ class GameMap(object):
                     tile = smoothscale(tile, (tile.get_width(), tile.get_height() / 2))
                     tile_cache[tile_id] = tile
                 w, h = tile.get_width(), tile.get_height()
-                self.map_tiles.append((tile, pygame.Rect(w * x, h * y, w, h)))
+                self.map_tiles[(w * x, h * y)] = tile
 
 
     def draw(self, camera):
-        for tile, tile_rect in self.map_tiles:
-            if tile_rect.colliderect(camera.rect):
-                camera.screen.blit(tile, 
-                    (tile_rect.left - camera.rect.left, tile_rect.top - camera.rect.top))
+        for (x, y), tile in self.map_tiles.iteritems():
+            if x + sfg.GameMap.TILE_SIZE < camera.rect.x or x > camera.rect.x + camera.rect.width \
+                or y + sfg.GameMap.TILE_SIZE < camera.rect.y or y > camera.rect.y + camera.rect.height:
+                    continue
+
+            camera.screen.blit(tile, (x - camera.rect.x, y - camera.rect.y))
 
 
 
