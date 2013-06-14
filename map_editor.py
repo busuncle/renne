@@ -24,10 +24,8 @@ def save_waypoints(chapter, waypoints):
     fp = open(os.path.join(sfg.WayPoint.DIR, filename), "w")
     for wp in waypoints:
         fp.write("%s\t%s\n" % wp)
-
-    print "generate waypoints %s success" % filename
-
     fp.close()
+
 
 
 def gen_chapter_waypoints(chapter, map_setting):
@@ -104,25 +102,24 @@ def set_selected_object_follow_mouse(map_pos_for_mouse, selected_object):
         
 
 
-def mouse_object_toggle(selected_object, game_world):
-    # None -> Enemy -> StaticObject -> None ... change in this circle
-    new_selected = None
+def mouse_object_toggle(selected_object, game_world, object_type):
     if isinstance(selected_object, Renne):
         # Renne is not under this loop, do nothing and return it immediately
         return selected_object
 
-    if selected_object is None:
-        new_selected = Enemy(sfg.SPRITE_SETTING_MAPPING[1], (-1000, -1000), 0)
-        game_world.add_object(new_selected)
-    elif isinstance(selected_object, Enemy):
+    if selected_object is not None:
         game_world.remove_object(selected_object)
+
+    new_selected = None
+    if object_type == cfg.GameObject.TYPE_STATIC:
         new_selected = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[1], (-1000, -1000))
         game_world.add_object(new_selected)
-    elif isinstance(selected_object, StaticObject):
-        game_world.remove_object(selected_object)
-        new_selected = None
+    elif object_type == cfg.GameObject.TYPE_DYNAMIC:
+        new_selected = Enemy(sfg.SPRITE_SETTING_MAPPING[1], (-1000, -1000), 0)
+        game_world.add_object(new_selected)
 
     return new_selected
+
 
 
 def selected_object_toggle(selected_object, game_world):
@@ -205,9 +202,6 @@ def run(chapter):
                     if put_selected_object(selected_object, game_world):
                         selected_object = None
 
-                if event.key == K_q:
-                    selected_object = mouse_object_toggle(selected_object, game_world)
-
                 if event.key == K_w:
                     selected_object = selected_object_toggle(selected_object, game_world)
 
@@ -228,8 +222,17 @@ def run(chapter):
                     # a good chance for generating waypoints when saving the map setting
                     game_map.waypoints = gen_chapter_waypoints(chapter, map_setting)
                     save_waypoints(chapter, game_map.waypoints)
+                    print "generate waypoints %s success" % filename
 
                 if key_mods & KMOD_ALT:
+                    if event.key == K_1:
+                        # alt+1 toggle static object
+                        selected_object = mouse_object_toggle(selected_object, game_world, 
+                            cfg.GameObject.TYPE_STATIC)
+                    if event.key == K_2:
+                        # alt+2 toggle enemy
+                        selected_object = mouse_object_toggle(selected_object, game_world,
+                            cfg.GameObject.TYPE_DYNAMIC)
                     if event.key == K_p:
                         DEBUG_DRAW["pos"] = not DEBUG_DRAW["pos"]
                     if event.key == K_a:
