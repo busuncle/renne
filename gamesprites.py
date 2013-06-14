@@ -48,6 +48,7 @@ class GameSprite(pygame.sprite.DirtySprite):
             "recover_hp_effect_time": 0, "under_attack_effect_time": 0}
         self.buff = {}
         self.debuff = {}
+        self.sound_box = SoundBox()
         self.pos = Vector2(pos)
         self.direction = direction
 
@@ -124,7 +125,6 @@ class Renne(GameSprite):
         self.exp = 0
 
         self.animation = RenneAnimator(self)
-        self.sound_box = SoundBox()
 
         # represent the sprite area, used for deciding frame layer and collide, attack computing or so
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
@@ -494,7 +494,6 @@ class Enemy(GameSprite):
         self.emotion_animation = SpriteEmotionAnimator(self)
 
         self.animation = EnemyAnimator(self)
-        self.sound_box = SoundBox()
 
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
         self.area.center = self.pos('xy')
