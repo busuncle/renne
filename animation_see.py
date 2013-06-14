@@ -42,7 +42,7 @@ def run(args):
                 elif event.key == K_UP:
                     frame_speed += 1
                 elif event.key == K_DOWN:
-                    frame_speed -= 1
+                    frame_speed = max(0, frame_speed - 1)
 
         screen.fill(pygame.Color(background_color))
 
