@@ -324,7 +324,7 @@ class Renne(GameSprite):
                 if self.action != cfg.HeroAction.ATTACK:
                     self.action = cfg.HeroAction.STAND
                 return 
-            elif external_event == cfg.GameStatus.PAUSE:
+            elif external_event == cfg.GameStatus.PAUSE or external_event == cfg.GameStatus.IN_EPISODE:
                 # do nothing
                 return
 
@@ -512,6 +512,18 @@ class Enemy(GameSprite):
 
 
     def draw(self, camera):
+        if self.status.get("ambush") is not None:
+            # this enemy is in ambush status, draw it according the corresponding status stage
+            if self.status["ambush"]["status"] == cfg.Ambush.STATUS_INIT:
+                # don't draw it because hero doesn't enter this ambush
+                return
+
+            elif self.status["ambush"]["status"] == cfg.Ambush.STATUS_ENTER:
+                # hero enter the ambush, draw corresponding episode
+                if self.status["ambush"]["type"] == cfg.Ambush.APPEAR_TYPE_TOP_DOWN:
+                    self.animation.draw_with_height(camera, self.status["ambush"]["height"])
+                return
+
         self.animation.draw(camera)
 
         if self.status["hp"] == cfg.SpriteStatus.DIE:
@@ -611,8 +623,9 @@ class Enemy(GameSprite):
                 self.action = cfg.EnemyAction.STAND
             elif external_event == cfg.GameStatus.HERO_LOSE:
                 self.reset_action()
-
-            return
+            elif external_event == cfg.GameStatus.PAUSE or external_event == cfg.GameStatus.IN_EPISODE:
+                # do nothing
+                return
 
         if self.status["hp"] == cfg.SpriteStatus.DIE:
             return
@@ -673,6 +686,18 @@ class Enemy(GameSprite):
                 # reset to old action
                 self.action = self.status["crick"]["old_action"]
                 self.status.pop("crick")
+
+        if self.status.get("ambush") is not None \
+            and self.status["ambush"]["status"] == cfg.Ambush.STATUS_ENTER:
+            self.status["ambush"]["height"] = max(0, 
+                self.status["ambush"]["height"] - self.status["ambush"]["speed"] * passed_seconds)
+            if self.status["ambush"]["height"] == 0:
+                self.status["ambush"]["status"] = cfg.Ambush.STATUS_FINISH
+                self.status = cfg.EnemyAction.STAND
+            else:
+                self.action = cfg.EnemyAction.UNCONTROLLED
+
+
                  
 
     def update(self, passed_seconds, external_event=None):
@@ -785,6 +810,49 @@ class GameSpritesGroup(pygame.sprite.LayeredDirty):
                 continue
 
             other.brain.target = target
+
+
+
+class Ambush(pygame.sprite.LayeredDirty):
+    # containing a group of "pending" enemies, that will appear when hero enter some area it belongs to
+    def __init__(self, pos, surround_area_width, enter_area_width, appear_type):
+        super(Ambush, self).__init__()
+        self.surround_area = pygame.Rect((0, 0, surround_area_width, surround_area_width))
+        self.enter_area = pygame.Rect((0,  0, enter_area_width, enter_area_width))
+        self.surround_area.center = pos
+        self.enter_area.center = pos
+        self.appear_type = appear_type
+        self.delay_time = 0
+        self.status = cfg.Ambush.STATUS_INIT
+
+
+    def init_sprite_status(self):
+        for sp in self.sprites():
+            if self.appear_type == cfg.Ambush.APPEAR_TYPE_TOP_DOWN:
+                sp.status["ambush"] = {"type": appear_type, 
+                    "height": sfg.Ambush.APPEAR_TYPE_TOP_DOWN_INIT_HEIGHT + random.randint(-30, 30),
+                    "speed": sfg.Ambush.APPEAR_TYPE_TOP_DOWN_SPEED + random.randint(-10, 10),
+                    "status": cfg.Ambush.STATUS_INIT}
+
+
+    def enter(self, hero):
+        if self.status == cfg.Ambush.STATUS_INIT and hero.area.colliderect(self.enter_area):
+            self.status = cfg.Ambush.STATUS_ENTER
+            for sp in self.sprites():
+                sp.status["ambush"]["status"] = cfg.Ambush.STATUS_ENTER
+
+
+    def update(self, passed_seconds):
+        finish_num = 0
+        for sp in self.sprites():
+            if sp.status["ambush"]["status"] == cfg.Ambush.STATUS_FINISH:
+                finish_num += 1
+
+        if finish_num == len(self.sprites()):
+            if self.delay_time < sfg.Ambush.APPEAR_TYPE_TOP_DOWN_FINISH_DELAY:
+                self.delay_time += passed_seconds
+            else:
+                self.status = cfg.Ambush.STATUS_FINISH
 
 
 

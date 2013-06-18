@@ -143,6 +143,7 @@ class GameStatus(object):
     HERO_WIN = 2
     HERO_LOSE = 3
     PAUSE = 4
+    IN_EPISODE = 5
 
 
 class GameControl(object):
@@ -184,3 +185,12 @@ class Magic(object):
 class Ammo(object):
     STATUS_ALIVE = 0
     STATUS_VANISH = 1
+
+
+
+class Ambush(object):
+    STATUS_INIT = 0
+    STATUS_ENTER = 1
+    STATUS_FINISH = 2
+
+    APPEAR_TYPE_TOP_DOWN = 1

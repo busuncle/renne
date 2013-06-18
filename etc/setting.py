@@ -1192,6 +1192,18 @@ class Ammo(object):
 
 
 
+class Ambush(object):
+    SURROUND_AREA_WIDTH_MIN = 100
+    SURROUND_AREA_WIDTH_MAX = 500
+    ENTER_AREA_WIDTH_MIN = 50
+    ENTER_AREA_WIDTH_MAX = 400
+
+    APPEAR_TYPE_TOP_DOWN_SPEED = 100
+    APPEAR_TYPE_TOP_DOWN_INIT_HEIGHT = 200
+    APPEAR_TYPE_TOP_DOWN_FINISH_DELAY = 1
+
+
+
 ######### mapping for factory ########
 # control all objects in list, their order will detemine the attribute "ID" of their own
 SPRITE_SETTING_LIST = [

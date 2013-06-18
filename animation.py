@@ -331,6 +331,11 @@ class EnemyAnimator(SpriteAnimator):
         camera.screen.blit(self.hp_bar, r)
 
 
+    def draw_with_height(self, camera, height):
+        image_blit_pos = (self.rect.x - camera.rect.x, self.rect.y - camera.rect.y - height)
+        camera.screen.blit(self.image, image_blit_pos)
+
+
     def draw(self, camera):
         super(EnemyAnimator, self).draw(camera)
         if self.sprite.status["hp"] in cfg.SpriteStatus.ALIVE:
