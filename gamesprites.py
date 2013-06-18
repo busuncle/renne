@@ -817,6 +817,7 @@ class Ambush(pygame.sprite.LayeredDirty):
     # containing a group of "pending" enemies, that will appear when hero enter some area it belongs to
     def __init__(self, pos, surround_area_width, enter_area_width, appear_type):
         super(Ambush, self).__init__()
+        self.pos = pos
         self.surround_area = pygame.Rect((0, 0, surround_area_width, surround_area_width))
         self.enter_area = pygame.Rect((0,  0, enter_area_width, enter_area_width))
         self.surround_area.center = pos

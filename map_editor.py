@@ -95,6 +95,7 @@ def change_map_setting(map_setting, game_world):
     map_setting.update(res)
 
 
+
 def set_selected_object_follow_mouse(map_pos_for_mouse, selected_object):
     selected_object.area.center = map_pos_for_mouse
     selected_object.pos.x, selected_object.pos.y = map_pos_for_mouse
@@ -185,6 +186,9 @@ def run(chapter):
         static_obj = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[t], p)
         game_world.add_object(static_obj)
 
+    # hack an attrbute ambush into game_world for easy saving
+    game_world.ambush_list = []
+
 
     running = True
     key_vec = Vector2()
@@ -229,15 +233,18 @@ def run(chapter):
                         # alt+1 toggle static object
                         selected_object = mouse_object_toggle(selected_object, game_world, 
                             cfg.GameObject.TYPE_STATIC)
-                    if event.key == K_2:
+                    elif event.key == K_2:
                         # alt+2 toggle enemy
                         selected_object = mouse_object_toggle(selected_object, game_world,
                             cfg.GameObject.TYPE_DYNAMIC)
-                    if event.key == K_p:
+                    elif event.key == K_3:
+                        # alt+3 toggle ambush
+                        print "ambush!"
+                    elif event.key == K_p:
                         DEBUG_DRAW["pos"] = not DEBUG_DRAW["pos"]
-                    if event.key == K_a:
+                    elif event.key == K_a:
                         DEBUG_DRAW["area"] = not DEBUG_DRAW["area"]
-                    if event.key == K_z:
+                    elif event.key == K_z:
                         DEBUG_DRAW["waypoints"] = not DEBUG_DRAW["waypoints"]
 
             elif event.type == MOUSEBUTTONDOWN:
