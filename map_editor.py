@@ -135,6 +135,12 @@ def set_selected_object_follow_mouse(map_pos_for_mouse, selected_object):
     selected_object.area.center = map_pos_for_mouse
     selected_object.pos.x, selected_object.pos.y = map_pos_for_mouse
     selected_object.adjust_rect()
+
+
+
+def set_ambush_follow_mouse(map_pos_for_mouse, ambush):
+    ambush.pos = map_pos_for_mouse
+    ambush.adjust_model()
         
 
 
@@ -331,7 +337,7 @@ def run(chapter):
                 or isinstance(selected_object, StaticObject):
                 set_selected_object_follow_mouse(map_pos_for_mouse, selected_object)
             elif isinstance(selected_object, Ambush):
-                pass
+                set_ambush_follow_mouse(selected_object)
 
         game_map.draw(camera)
 

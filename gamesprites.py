@@ -820,11 +820,15 @@ class Ambush(pygame.sprite.LayeredDirty):
         self.pos = pos
         self.surround_area = pygame.Rect((0, 0, surround_area_width, surround_area_width))
         self.enter_area = pygame.Rect((0,  0, enter_area_width, enter_area_width))
-        self.surround_area.center = pos
-        self.enter_area.center = pos
         self.appear_type = appear_type
         self.delay_time = 0
         self.status = cfg.Ambush.STATUS_INIT
+        self.adjust_model()
+
+
+    def adjust_model(self):
+        self.surround_area.center = self.pos
+        self.enter_area.center = self.pos
 
 
     def init_sprite_status(self):
@@ -860,6 +864,7 @@ class Ambush(pygame.sprite.LayeredDirty):
         # ambush usually is invisible, here this function is only for map_editor
         for area in (self.surround_area, self.enter_area):
             r = pygame.Rect(area)
+            r.y *= 0.5
             r.x -= camera.rect.x
             r.y -= camera.rect.y
             pygame.draw.rect(camera.screen, pygame.Color("red"), r, 1)
