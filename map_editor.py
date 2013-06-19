@@ -99,13 +99,27 @@ def put_down_ambush(ambush, game_world):
     if ambush is None:
         return True
 
+    for other_ambush in game_world.ambush_list:
+        # ambush can not overlap each other, for simpleness
+        if ambush.surround_area.colliderect(other_ambush.surround_area):
+            return False
+
     # at least one sprite collide with it, return True
     for sp in game_world.dynamic_objects:
         if isinstance(sp, Renne):
             continue
 
         if ambush.surround_area.colliderect(sp.area):
-            ambush.add(sp)
+            # check whether this sprite is already in other ambush,
+            # we don't let one sprite in two or more ambush in the same time
+            can_add_to_ambush = True
+            for other_ambush in game_world.ambush_list:
+                if sp in other_ambush:
+                    can_add_to_ambush = False
+                    break
+
+            if can_add_to_ambush:
+                ambush.add(sp)
 
     if len(ambush.sprites()) == 0:
         return False
@@ -114,13 +128,28 @@ def put_down_ambush(ambush, game_world):
     return True
 
 
+
 def change_map_setting(map_setting, game_world):
-    res = {"hero": None, "monsters": [], "static_objects": []}
+    res = {"hero": None, "monsters": [], "static_objects": [], "ambush_list": []}
     for sp in game_world.static_objects:
         x, y = map(int, sp.pos)
         res["static_objects"].append({"id": sp.setting.ID, "pos": (x, y)})
 
+    # sprite in ambush will not be set into monster list
+    monster_ignore_list = set()
+    for ambush in game_world.ambush_list:
+        am_sp_list = []
+        for sp in ambush:
+            x, y = map(int, sp.pos)
+            am_sp_list.append({"id": sp.setting.ID, "pos": (x, y), "direction": sp.direction})
+            monster_ignore_list.add(sp)
+
+        res["ambush_list"].append(am_sp_list)
+
     for sp in game_world.dynamic_objects:
+        if sp in monster_ignore_list:
+            continue
+
         x, y = map(int, sp.pos)
         if isinstance(sp, Renne):
             res["hero"] = {"pos": (x, y), "direction": sp.direction}
