@@ -866,7 +866,12 @@ class Ambush(pygame.sprite.LayeredDirty):
             r.x -= camera.rect.x
             r.y -= camera.rect.y
             pygame.draw.rect(camera.screen, pygame.Color("red"), r, 1)
-        
+
+        name = sfg.Font.ARIAL_32.render("Ambush with %s sprites" % len(self.sprites()),
+            True, pygame.Color("red"))
+        camera.screen.blit(name, 
+            (self.surround_area.x - camera.rect.x, self.surround_area.y * 0.5 - camera.rect.y))
+
 
 
 ENEMY_CLASS_MAPPING = {
