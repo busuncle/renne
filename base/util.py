@@ -46,19 +46,26 @@ class Blink(object):
 
 
 
-def FileLock(object):
-    def __init__(self):
+class DirLock(object):
+    def __init__(self, dirname):
         self.is_locked = False
-        self.filepath = os.path.join("data", "renne_running.lock")
+        # for platform-indepency, fcntl is unavailable in win32, use a dir instead
+        self.dirpath = os.path.join("data", dirname)
 
 
     def lock(self):
-        # for platform-indepency, fcntl is unavailable in win32
-        pass
+        try:
+            os.mkdir(self.dirpath)
+            return True
+        except:
+            return False
 
 
     def __del__(self):
-        pass
+        try:
+            os.rmdir(self.dirpath)
+        except:
+            pass
         
 
 
