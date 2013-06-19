@@ -46,6 +46,22 @@ class Blink(object):
 
 
 
+def FileLock(object):
+    def __init__(self):
+        self.is_locked = False
+        self.filepath = os.path.join("data", "renne_running.lock")
+
+
+    def lock(self):
+        # for platform-indepency, fcntl is unavailable in win32
+        pass
+
+
+    def __del__(self):
+        pass
+        
+
+
 def get_project_root():
     filepath = os.path.abspath(__file__)
     dirname = os.path.split(filepath)[0]
