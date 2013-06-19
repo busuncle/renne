@@ -128,7 +128,7 @@ def enter_chapter(screen, chapter, renne):
     while running:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 
-                sys.exit(0)
+                pygame.quit()
 
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
@@ -231,4 +231,5 @@ if __name__ == "__main__":
         sfg.Music.SOUND_VOLUME = 0
 
     main(args)
+    pygame.quit()
 
