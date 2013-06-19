@@ -70,6 +70,8 @@ def select_unit(map_pos_for_mouse, game_world):
     # than check whether select a ambush
     for ambush in game_world.ambush_list:
         if ambush.surround_area.collidepoint(map_pos_for_mouse):
+            # remove all references to sprites
+            ambush.empty()
             game_world.ambush_list.remove(ambush)
             return ambush
 
@@ -93,8 +95,23 @@ def put_down_selected_object(selected_object, game_world):
     return True
 
 
-def put_ambush(selected_object, game_world):
-    pass
+def put_down_ambush(ambush, game_world):
+    if ambush is None:
+        return True
+
+    # at least one sprite collide with it, return True
+    for sp in game_world.dynamic_objects:
+        if isinstance(sp, Renne):
+            continue
+
+        if ambush.surround_area.colliderect(sp.area):
+            ambush.add(sp)
+
+    if len(ambush.sprites()) == 0:
+        return False
+
+    game_world.ambush_list.append(ambush)
+    return True
 
 
 def change_map_setting(map_setting, game_world):
@@ -226,6 +243,9 @@ def run(chapter):
                         isinstance(selected_object, StaticObject)) \
                         and put_down_selected_object(selected_object, game_world):
                         selected_object = None
+                    elif isinstance(selected_object, Ambush) \
+                        and put_down_ambush(selected_object, game_world):
+                        selected_object = None
 
                 if event.key == K_w:
                     if isinstance(selected_object, GameSprite):
@@ -285,6 +305,10 @@ def run(chapter):
                                 selected_object = create_new_instance(selected_object)
                             else:
                                 selected_object = None
+
+                        elif isinstance(selected_object, Ambush) \
+                            and put_down_ambush(selected_object, game_world):
+                            selected_object = None
 
 
         pressed_keys = pygame.key.get_pressed()
