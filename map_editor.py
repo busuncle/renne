@@ -341,6 +341,10 @@ def run(chapter):
 
         game_map.draw(camera)
 
+        # draw ambush before all objects, because they are "close" to the floor
+        for ambush in game_world.ambush_list:
+            ambush.draw(camera)
+
         for sp in sorted(game_world.yield_all_objects(), key=lambda sp: sp.pos.y):
             if sp.setting.GAME_OBJECT_TYPE == cfg.GameObject.TYPE_DYNAMIC:
                 sp.adjust_rect()
@@ -359,7 +363,10 @@ def run(chapter):
                     selected_object.setting.NAME, True, pygame.Color("black"))
                 camera.screen.blit(selected_object_name, (5, 5))
                 selected_object.draw(camera)
-
+            
+            elif isinstance(selected_object, Ambush):
+                camera.screen.blit("Ambush", (5, 5))
+                selected_object.draw(camera)
 
         # debug drawings
         for sp in game_world.yield_all_objects():
@@ -372,6 +379,7 @@ def run(chapter):
             debug_tools.draw_waypoins(camera, game_map.waypoints)
 
         pygame.display.flip()
+
 
 
 if __name__ == "__main__":
