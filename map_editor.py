@@ -144,7 +144,8 @@ def change_map_setting(map_setting, game_world):
             am_sp_list.append({"id": sp.setting.ID, "pos": (x, y), "direction": sp.direction})
             monster_ignore_list.add(sp)
 
-        res["ambush_list"].append(am_sp_list)
+        res["ambush_list"].append({"ambush": {"pos": ambush.pos, "type": ambush.appear_type},
+            "monsters": am_sp_list})
 
     for sp in game_world.dynamic_objects:
         if sp in monster_ignore_list:
@@ -259,7 +260,17 @@ def run(chapter):
 
     # hack an attrbute ambush into game_world for easy saving
     game_world.ambush_list = []
-
+    # some monsters is in ambush list
+    ambush_init_list = map_setting.get("ambush_list", [])
+    for ambush_init in ambush_init_list:
+        ambush = Ambush(ambush_init["ambush"]["pos"], sfg.Ambush.SURROUND_AREA_WIDTH,
+            sfg.Ambush.ENTER_AREA_WIDTH, ambush_init["ambush"]["type"])
+        for monster_init in ambush_init["monsters"]:
+            monster_id, pos, direct = monster_init["id"], monster_init["pos"], monster_init["direction"]
+            monster = Enemy(sfg.SPRITE_SETTING_MAPPING[monster_id], pos, direct)
+            game_world.add_object(monster)
+            ambush.add(monster)
+        game_world.ambush_list.append(ambush)
 
     running = True
     key_vec = Vector2()
