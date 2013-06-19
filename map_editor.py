@@ -1,7 +1,7 @@
 import os
 import pygame
 from pygame.locals import *
-from gamesprites import Renne, Enemy, GameSpritesGroup
+from gamesprites import Renne, Enemy, GameSprite, GameSpritesGroup, Ambush
 from gameobjects.vector2 import Vector2
 from gameworld import GameWorld, GameMap, StaticObjectGroup, StaticObject
 from renderer import Camera
@@ -61,22 +61,40 @@ def get_map_pos_for_mouse(camera_rect, mouse_pos):
 
 
 def select_unit(map_pos_for_mouse, game_world):
-    # change mouse pos to map pos first
+    # objects in game_world first
     for sp in game_world.yield_all_objects():
         if sp.area.collidepoint(map_pos_for_mouse):
+            game_world.remove_object(sp)
             return sp
+
+    # than check whether select a ambush
+    for ambush in game_world.ambush_list:
+        if ambush.surround_area.collidepoint(map_pos_for_mouse):
+            game_world.ambush_list.remove(ambush)
+            return ambush
+
     return None
 
 
-def put_selected_object(selected_object, game_world):
+def put_down_selected_object(selected_object, game_world):
     if selected_object is None:
         return True
+
     for sp in game_world.yield_all_objects():
-        if sp is selected_object:
-            continue
         if selected_object.area.colliderect(sp.area):
             return False
+
+    for ambush in game_world.ambush_list:
+        if selected_object.area.colliderect(ambush.surround_area):
+            # we don't let object be put in a existed ambush, for simpleness
+            return False
+
+    game_world.add_object(selected_object)
     return True
+
+
+def put_ambush(selected_object, game_world):
+    pass
 
 
 def change_map_setting(map_setting, game_world):
@@ -103,39 +121,42 @@ def set_selected_object_follow_mouse(map_pos_for_mouse, selected_object):
         
 
 
-def mouse_object_toggle(selected_object, game_world, object_type):
+def mouse_object_toggle(selected_object, object_type):
     if isinstance(selected_object, Renne):
         # Renne is not under this loop, do nothing and return it immediately
         return selected_object
 
-    if selected_object is not None:
-        game_world.remove_object(selected_object)
-
     new_selected = None
     if object_type == cfg.GameObject.TYPE_STATIC:
         new_selected = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[1], (-1000, -1000))
-        game_world.add_object(new_selected)
     elif object_type == cfg.GameObject.TYPE_DYNAMIC:
         new_selected = Enemy(sfg.SPRITE_SETTING_MAPPING[1], (-1000, -1000), 0)
-        game_world.add_object(new_selected)
 
     return new_selected
 
 
+def mouse_ambush_toggle(selected_object):
+    if isinstance(selected_object, Renne):
+        # Renne is not under this loop, do nothing and return it immediately
+        return selected_object
 
-def selected_object_toggle(selected_object, game_world):
+    ambush = Ambush((-1000, -1000), sfg.Ambush.SURROUND_AREA_WIDTH,
+        sfg.Ambush.ENTER_AREA_WIDTH, cfg.Ambush.APPEAR_TYPE_TOP_DOWN)
+    return ambush
+
+
+
+def selected_object_toggle(selected_object):
     if selected_object is None or isinstance(selected_object, Renne):
         # Renne and None are not in toggle loop
         return selected_object
 
-    game_world.remove_object(selected_object)
     if isinstance(selected_object, Enemy):
         new_object_id = (selected_object.setting.ID + 1) % (len(sfg.SPRITE_SETTING_LIST) + 1) or 1
         new_object = Enemy(sfg.SPRITE_SETTING_MAPPING[new_object_id], (-1000, -1000), 0)
     elif isinstance(selected_object, StaticObject):
         new_object_id = (selected_object.setting.ID + 1) % (len(sfg.STATIC_OBJECT_SETTING_LIST) + 1) or 1
         new_object = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[new_object_id], (-1000, -1000))
-    game_world.add_object(new_object)
         
     return new_object
 
@@ -151,9 +172,7 @@ def create_new_instance(selected_object):
 
 
 def turn_sprite_direction(selected_object):
-    if isinstance(selected_object, Renne) or isinstance(selected_object, Enemy):
-        selected_object.direction = (selected_object.direction + 1) % len(cfg.Direction.ALL)
-
+    selected_object.direction = (selected_object.direction + 1) % len(cfg.Direction.ALL)
     return selected_object
 
 
@@ -203,19 +222,21 @@ def run(chapter):
 
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    if put_selected_object(selected_object, game_world):
+                    if (isinstance(selected_object, GameSprite) or \
+                        isinstance(selected_object, StaticObject)) \
+                        and put_down_selected_object(selected_object, game_world):
                         selected_object = None
 
                 if event.key == K_w:
-                    selected_object = selected_object_toggle(selected_object, game_world)
+                    if isinstance(selected_object, GameSprite):
+                        selected_object = selected_object_toggle(selected_object)
 
                 if event.key == K_e:
-                    if selected_object is not None:
-                        game_world.remove_object(selected_object)
-                        selected_object = None
+                    selected_object = None
 
                 if event.key == K_t:
-                    selected_object = turn_sprite_direction(selected_object)
+                    if isinstance(selected_object, GameSprite):
+                        selected_object = turn_sprite_direction(selected_object)
 
                 key_mods = pygame.key.get_mods()
                 if key_mods & KMOD_CTRL and event.key == K_s:
@@ -226,20 +247,22 @@ def run(chapter):
                     # a good chance for generating waypoints when saving the map setting
                     game_map.waypoints = gen_chapter_waypoints(chapter, map_setting)
                     save_waypoints(chapter, game_map.waypoints)
-                    print "generate waypoints %s success" % filename
+                    print "generate chapter %s waypoints success" % chapter
 
                 if key_mods & KMOD_ALT:
                     if event.key == K_1:
                         # alt+1 toggle static object
-                        selected_object = mouse_object_toggle(selected_object, game_world, 
+                        selected_object = mouse_object_toggle(selected_object, 
                             cfg.GameObject.TYPE_STATIC)
                     elif event.key == K_2:
                         # alt+2 toggle enemy
-                        selected_object = mouse_object_toggle(selected_object, game_world,
+                        selected_object = mouse_object_toggle(selected_object,
                             cfg.GameObject.TYPE_DYNAMIC)
                     elif event.key == K_3:
                         # alt+3 toggle ambush
-                        print "ambush!"
+                        selected_object = mouse_ambush_toggle(selected_object)
+
+                    # debug draw switch
                     elif event.key == K_p:
                         DEBUG_DRAW["pos"] = not DEBUG_DRAW["pos"]
                     elif event.key == K_a:
@@ -255,10 +278,11 @@ def run(chapter):
                         selected_object = select_unit(map_pos_for_mouse, game_world)
                     else:
                         # put down the current selected unit if no "collision" happen
-                        if put_selected_object(selected_object, game_world):
+                        if (isinstance(selected_object, GameSprite) or \
+                            isinstance(selected_object, StaticObject)) \
+                            and put_down_selected_object(selected_object, game_world):
                             if pygame.key.get_mods() & KMOD_CTRL:
                                 selected_object = create_new_instance(selected_object)
-                                game_world.add_object(selected_object)
                             else:
                                 selected_object = None
 
@@ -279,32 +303,33 @@ def run(chapter):
 
         camera.screen_move(key_vec, sfg.MapEditor.SCREEN_MOVE_SPEED, passed_seconds)
         if selected_object is not None:
-            set_selected_object_follow_mouse(map_pos_for_mouse, selected_object)
+            if isinstance(selected_object, GameSprite) \
+                or isinstance(selected_object, StaticObject):
+                set_selected_object_follow_mouse(map_pos_for_mouse, selected_object)
+            elif isinstance(selected_object, Ambush):
+                pass
 
         game_map.draw(camera)
 
         for sp in sorted(game_world.yield_all_objects(), key=lambda sp: sp.pos.y):
             if sp.setting.GAME_OBJECT_TYPE == cfg.GameObject.TYPE_DYNAMIC:
-                # select current image for corresponding direction
                 sp.adjust_rect()
-                image = sp.animation.sprite_image_contoller.get_surface(cfg.SpriteAction.STAND)[sp.direction]
-                rect = sp.animation.rect
-                shd_image = sp.animation.shadow_image
-                shd_rect = sp.animation.shadow_rect 
-                camera.screen.blit(shd_image, (shd_rect.x - camera.rect.x, shd_rect.y - camera.rect.y))
-                camera.screen.blit(image, (rect.x - camera.rect.x, rect.y - camera.rect.y))
-                if sp.setting.ROLE == cfg.SpriteRole.ENEMY:
-                    sp.animation.draw_hp_bar(camera)
-            else:
-                image = sp.image
-                rect = sp.rect
-                camera.screen.blit(image, (rect.x - camera.rect.x, rect.y - camera.rect.y))
+                # select current image for corresponding direction
+                sp.animation.image = sp.animation.sprite_image_contoller.get_surface(
+                    cfg.SpriteAction.STAND)[sp.direction]
+                sp.animation.draw_shadow(camera)
 
+            sp.draw(camera)
 
         if selected_object is not None:
-            selected_object_name = sfg.Font.ARIAL_32.render(
-                selected_object.setting.NAME, True, pygame.Color("black"))
-            camera.screen.blit(selected_object_name, (5, 5))
+            if isinstance(selected_object, GameSprite) \
+                or isinstance(selected_object, StaticObject):
+                # render selected_object
+                selected_object_name = sfg.Font.ARIAL_32.render(
+                    selected_object.setting.NAME, True, pygame.Color("black"))
+                camera.screen.blit(selected_object_name, (5, 5))
+                selected_object.draw(camera)
+
 
         # debug drawings
         for sp in game_world.yield_all_objects():

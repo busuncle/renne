@@ -856,6 +856,15 @@ class Ambush(pygame.sprite.LayeredDirty):
                 self.status = cfg.Ambush.STATUS_FINISH
 
 
+    def draw(self, camera):
+        # ambush usually is invisible, here this function is only for map_editor
+        for area in (self.surround_area, self.enter_area):
+            r = pygame.Rect(area)
+            r.x -= camera.rect.x
+            r.y -= camera.rect.y
+            pygame.draw.rect(camera.screen, pygame.Color("red"), r, 1)
+        
+
 
 ENEMY_CLASS_MAPPING = {
     sfg.SkeletonWarrior.ID: Enemy,

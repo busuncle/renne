@@ -103,7 +103,7 @@ class StaticObject(pygame.sprite.DirtySprite):
         if not self.rect.colliderect(camera.rect):
             return
 
-        if self.setting.IS_ELIMINABLE:
+        if self.setting.IS_ELIMINABLE and self.image_mix is not None:
             camera.screen.blit(self.image_mix,
                 (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top))
         else:
