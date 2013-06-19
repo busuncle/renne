@@ -59,5 +59,7 @@ if __name__ == "__main__":
     ])
     if args.filepath is None:
         print "please specify the param filepath, using -f or --file-path option"
-        exit(-1)
+        pygame.quit()
+
     run(args)
+    pygame.quit()

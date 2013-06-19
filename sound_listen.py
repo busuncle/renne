@@ -39,9 +39,14 @@ if __name__ == "__main__":
         (["-b", "--background"], {"dest": "background", "action": "store"}),
         (["-e", "--effect"], {"dest": "effect", "action": "store"}),
     ])
+
     if args.background is None:
         print "please specify the param background, using -b or --background option"
-        exit(-1)
+        pygame.quit()
+
     if args.effect is None:
         print "please specify the param effect, using -e or --effect option"
+        pygame.quit()
+
     run(args)
+    pygame.quit()
