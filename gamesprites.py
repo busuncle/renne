@@ -861,13 +861,13 @@ class Ambush(pygame.sprite.LayeredDirty):
     def draw(self, camera):
         # ambush usually is invisible, here this function is only for map_editor
         for area in (self.surround_area, self.enter_area):
-            r = pygame.Rect(area)
-            r.y *= 0.5
+            r = pygame.Rect(0, 0, area.width, area.height * 0.5)
+            r.center = (self.pos[0], self.pos[1] * 0.5)
             r.x -= camera.rect.x
             r.y -= camera.rect.y
             pygame.draw.rect(camera.screen, pygame.Color("red"), r, 1)
 
-        name = sfg.Font.ARIAL_32.render("Ambush with %s sprites" % len(self.sprites()),
+        name = sfg.Font.ARIAL_16.render("Ambush with %s sprites" % len(self.sprites()),
             True, pygame.Color("red"))
         camera.screen.blit(name, 
             (self.surround_area.x - camera.rect.x, self.surround_area.y * 0.5 - camera.rect.y))

@@ -366,7 +366,7 @@ def run(chapter):
                 or isinstance(selected_object, StaticObject):
                 set_selected_object_follow_mouse(map_pos_for_mouse, selected_object)
             elif isinstance(selected_object, Ambush):
-                set_ambush_follow_mouse(selected_object)
+                set_ambush_follow_mouse(map_pos_for_mouse, selected_object)
 
         game_map.draw(camera)
 
@@ -394,7 +394,7 @@ def run(chapter):
                 selected_object.draw(camera)
             
             elif isinstance(selected_object, Ambush):
-                camera.screen.blit("Ambush", (5, 5))
+                camera.screen.blit(sfg.Font.ARIAL_32.render("Ambush", True, pygame.Color("black")), (5, 5))
                 selected_object.draw(camera)
 
         # debug drawings
