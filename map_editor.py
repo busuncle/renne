@@ -402,6 +402,10 @@ def run(chapter):
                 selected_object_name = sfg.Font.ARIAL_32.render(
                     selected_object.setting.NAME, True, pygame.Color("black"))
                 camera.screen.blit(selected_object_name, (5, 5))
+                if isinstance(selected_object, GameSprite):
+                    selected_object.animation.draw_shadow(camera)
+                    selected_object.animation.image = selected_object.animation.sprite_image_contoller.get_surface(
+                        cfg.SpriteAction.STAND)[selected_object.direction]
                 selected_object.draw(camera)
             
             elif isinstance(selected_object, Ambush):
