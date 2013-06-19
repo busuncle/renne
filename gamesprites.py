@@ -324,7 +324,7 @@ class Renne(GameSprite):
                 if self.action != cfg.HeroAction.ATTACK:
                     self.action = cfg.HeroAction.STAND
                 return 
-            elif external_event == cfg.GameStatus.PAUSE or external_event == cfg.GameStatus.IN_EPISODE:
+            elif external_event == cfg.GameStatus.PAUSE or external_event == cfg.GameStatus.ENTER_AMBUSH:
                 # do nothing
                 return
 
@@ -623,7 +623,7 @@ class Enemy(GameSprite):
                 self.action = cfg.EnemyAction.STAND
             elif external_event == cfg.GameStatus.HERO_LOSE:
                 self.reset_action()
-            elif external_event == cfg.GameStatus.PAUSE or external_event == cfg.GameStatus.IN_EPISODE:
+            elif external_event == cfg.GameStatus.PAUSE or external_event == cfg.GameStatus.ENTER_AMBUSH:
                 # do nothing
                 return
 
@@ -696,8 +696,6 @@ class Enemy(GameSprite):
                 self.status = cfg.EnemyAction.STAND
             else:
                 self.action = cfg.EnemyAction.UNCONTROLLED
-
-
                  
 
     def update(self, passed_seconds, external_event=None):

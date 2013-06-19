@@ -143,7 +143,7 @@ class GameStatus(object):
     HERO_WIN = 2
     HERO_LOSE = 3
     PAUSE = 4
-    IN_EPISODE = 5
+    ENTER_AMBUSH = 5
 
 
 class GameControl(object):
