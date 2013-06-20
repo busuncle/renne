@@ -146,7 +146,7 @@ def enter_chapter(screen, chapter, renne):
     while running:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 
-                pygame.quit()
+                return {"status": cfg.GameControl.QUIT}
 
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:

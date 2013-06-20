@@ -230,7 +230,7 @@ def show_the_end(screen):
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
+                return True
 
         screen.fill(pygame.Color("black"))
         screen.blit(the_end_image, the_end_image_rect)
@@ -282,7 +282,7 @@ def show_chapter_win_screen_images(screen):
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: 
-                    pygame.quit()
+                    return True
 
             pygame.display.flip()
 
@@ -291,8 +291,13 @@ def show_chapter_win_screen_images(screen):
 def end_game(screen):
     bg_box.play(sfg.Music.END_GAME_KEY, loops=0)
 
-    show_the_end(screen)
-    show_chapter_win_screen_images(screen)
+    quit_game = show_the_end(screen)
+    if quit_game:
+        return
+
+    quit_game = show_chapter_win_screen_images(screen)
+    if quit_game:
+        return
 
     screen_centerx = sfg.Screen.SIZE[0] * 0.5
 
@@ -314,10 +319,10 @@ def end_game(screen):
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
+                return
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    pygame.quit()
+                    return
 
         screen.fill(pygame.Color("black"))
         screen.blit(renne_image, renne_image_rect)
