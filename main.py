@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from time import time
-from gamesprites import Renne, GameSpritesGroup, enemy_in_one_screen, ENEMY_CLASS_MAPPING
+from gamesprites import Renne, GameSpritesGroup, enemy_in_one_screen, ENEMY_CLASS_MAPPING, Ambush
 from base import constant as cfg
 from etc import setting as sfg
 from etc import ai_setting as ai
@@ -101,6 +101,21 @@ def enter_chapter(screen, chapter, renne):
         monster.activate(monster_ai_setting, allsprites, renne, static_objects, game_map)
 
         enemies.add(monster)
+
+    # load ambush
+    game_world.ambush_list = []
+    ambush_init_list = map_setting.get("ambush_list", [])
+    for ambush_init in ambush_init_list:
+        # only add monsters to ambush, when hero enter ambush, add it to enemy group
+        ambush = Ambush(ambush_init["ambush"]["pos"], sfg.Ambush.SURROUND_AREA_WIDTH,
+            sfg.Ambush.ENTER_AREA_WIDTH, ambush_init["ambush"]["type"])
+
+        for monster_init in ambush_init["monsters"]:
+            monster_id, pos, direct = monster_init["id"], monster_init["pos"], monster_init["direction"]
+            monster = Enemy(sfg.SPRITE_SETTING_MAPPING[monster_id], pos, direct)
+            ambush.add(monster)
+
+        game_world.ambush_list.append(ambush)
 
     # load static objects
     chapter_static_objects = map_setting["static_objects"]
