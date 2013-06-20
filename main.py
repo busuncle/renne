@@ -112,9 +112,12 @@ def enter_chapter(screen, chapter, renne):
 
         for monster_init in ambush_init["monsters"]:
             monster_id, pos, direct = monster_init["id"], monster_init["pos"], monster_init["direction"]
-            monster = Enemy(sfg.SPRITE_SETTING_MAPPING[monster_id], pos, direct)
+            monster_setting = sfg.SPRITE_SETTING_MAPPING[monster_id]
+            EnemyClass = ENEMY_CLASS_MAPPING[monster_id]
+            monster = EnemyClass(monster_setting, pos, direct)
             ambush.add(monster)
 
+        ambush.init_sprite_status()
         game_world.ambush_list.append(ambush)
 
     # load static objects
@@ -210,6 +213,31 @@ def enter_chapter(screen, chapter, renne):
 
         if game_status.status != cfg.GameStatus.PAUSE:
             game_world.update(passed_seconds)
+
+        # check ambush status, only one ambush can be enter in one time
+        if game_status.status == cfg.GameStatus.ENTER_AMBUSH:
+            game_world.active_ambush.update(passed_seconds)
+            if game_world.active_ambush.status == cfg.Ambush.STATUS_FINISH:
+                game_status.status = cfg.GameStatus.IN_PROGRESS
+                game_world.ambush_list.remove(game_world.active_ambush)
+                game_world.active_ambush = None
+        else:
+            for ambush in game_world.ambush_list:
+                if ambush.enter(renne):
+                    # only one ambush is active
+                    game_status.status = cfg.GameStatus.ENTER_AMBUSH
+                    game_world.active_ambush = ambush
+                    for monster in ambush:
+                        monster_ai_setting = ai.AI_MAPPING[monster.setting.ID]
+                        monster.activate(monster_ai_setting, allsprites, 
+                            renne, static_objects, game_map)
+                        # monster in ambush will be in offence state, target at hero right now!
+                        monster.set_target(renne)
+                        monster.set_active_state(cfg.SpriteState.OFFENCE)
+                        enemies.add(enemy)
+
+                    game_world.batch_add(ambush)
+                    break
 
         game_status.update(passed_seconds)
 

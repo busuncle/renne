@@ -184,6 +184,15 @@ class SpriteBrain(object):
     def active_state_id(self):
         return self.state_machine.active_state.id
 
+
+    def set_active_state(self, active_state):
+        self.state_machine.set_state(active_state)
+
+
+    def set_target(self, target):
+        self.target = target
+
+
     def think(self):
         # call state_machine's kernel method for choosing the action
         self.state_machine.run()
