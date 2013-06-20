@@ -65,6 +65,11 @@ def select_unit(map_pos_for_mouse, game_world):
     for sp in game_world.yield_all_objects():
         if sp.area.collidepoint(map_pos_for_mouse):
             game_world.remove_object(sp)
+            # remove it from ambush if it's in one of it
+            for ambush in game_world.ambush_list:
+                if sp in ambush:
+                    ambush.remove(sp)
+                    break
             return sp
 
     # than check whether select a ambush
