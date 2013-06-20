@@ -145,6 +145,8 @@ class GameStatus(object):
     PAUSE = 4
     ENTER_AMBUSH = 5
 
+    STATUS_WITH_MASK = (HERO_WIN, HERO_LOSE, PAUSE)
+
 
 class GameControl(object):
     NEXT = 0

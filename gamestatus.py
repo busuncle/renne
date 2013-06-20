@@ -428,7 +428,7 @@ class GameStatus(object):
                 number_to_draw = self.numbers1[int(left_time)+1]
                 camera.screen.blit(number_to_draw, sfg.GameStatus.BEGIN_NUMBER_BLIT_POS)
 
-        elif self.status != cfg.GameStatus.IN_PROGRESS:
+        elif self.status in cfg.GameStatus.STATUS_WITH_MASK:
             self.mask.fill(sfg.Stuff.MASK_ALPHA_128)
             camera.screen.blit(self.mask, (0, 0))
 

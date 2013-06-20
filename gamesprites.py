@@ -324,6 +324,10 @@ class Renne(GameSprite):
                 if self.action != cfg.HeroAction.ATTACK:
                     self.action = cfg.HeroAction.STAND
                 return 
+            elif external_event == cfg.GameStatus.ENTER_AMBUSH:
+                if self.action != cfg.HeroAction.ATTACK:
+                    self.action = cfg.HeroAction.STAND
+                return 
             elif external_event == cfg.GameStatus.PAUSE or external_event == cfg.GameStatus.ENTER_AMBUSH:
                 # do nothing
                 return
@@ -697,7 +701,7 @@ class Enemy(GameSprite):
                 self.status["ambush"]["height"] - self.status["ambush"]["speed"] * passed_seconds)
             if self.status["ambush"]["height"] == 0:
                 self.status["ambush"]["status"] = cfg.Ambush.STATUS_FINISH
-                self.status = cfg.EnemyAction.STAND
+                self.action = cfg.EnemyAction.STAND
             else:
                 self.action = cfg.EnemyAction.UNCONTROLLED
                  
@@ -836,7 +840,7 @@ class Ambush(pygame.sprite.LayeredDirty):
     def init_sprite_status(self):
         for sp in self.sprites():
             if self.appear_type == cfg.Ambush.APPEAR_TYPE_TOP_DOWN:
-                sp.status["ambush"] = {"type": appear_type, 
+                sp.status["ambush"] = {"type": self.appear_type, 
                     "height": sfg.Ambush.APPEAR_TYPE_TOP_DOWN_INIT_HEIGHT + random.randint(-30, 30),
                     "speed": sfg.Ambush.APPEAR_TYPE_TOP_DOWN_SPEED + random.randint(-10, 10),
                     "status": cfg.Ambush.STATUS_INIT}
@@ -847,6 +851,9 @@ class Ambush(pygame.sprite.LayeredDirty):
             self.status = cfg.Ambush.STATUS_ENTER
             for sp in self.sprites():
                 sp.status["ambush"]["status"] = cfg.Ambush.STATUS_ENTER
+
+            return True
+        return False
 
 
     def update(self, passed_seconds):
