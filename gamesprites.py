@@ -623,7 +623,10 @@ class Enemy(GameSprite):
                 self.action = cfg.EnemyAction.STAND
             elif external_event == cfg.GameStatus.HERO_LOSE:
                 self.reset_action()
-            elif external_event == cfg.GameStatus.PAUSE or external_event == cfg.GameStatus.ENTER_AMBUSH:
+            elif external_event == cfg.GameStatus.ENTER_AMBUSH:
+                self.reset_action()
+                return
+            elif external_event == cfg.GameStatus.PAUSE:
                 # do nothing
                 return
 

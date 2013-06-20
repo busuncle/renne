@@ -210,6 +210,7 @@ def enter_chapter(screen, chapter, renne):
 
         if game_status.status != cfg.GameStatus.PAUSE:
             game_world.update(passed_seconds)
+
         game_status.update(passed_seconds)
 
         camera.screen_follow(renne.pos)
