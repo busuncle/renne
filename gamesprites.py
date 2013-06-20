@@ -605,7 +605,7 @@ class Enemy(GameSprite):
 
     def get_target(self, target):
         if self.brain.target is None:
-            self.brain.target = target
+            self.brain.set_target(target)
 
 
     def set_emotion(self, emotion, force=False):
@@ -652,7 +652,8 @@ class Enemy(GameSprite):
 
             elif action == cfg.EnemyAction.LOOKOUT:
                 # tell its brain the current target found(or None if no target in view scope)
-                self.brain.target = self.brain.target or self.view_sensor.detect(self.hero)
+                target = self.brain.target or self.view_sensor.detect(self.hero)
+                self.brain.set_target(target)
 
             elif action == cfg.EnemyAction.STAND:
                 self.action = cfg.EnemyAction.STAND
@@ -810,7 +811,7 @@ class GameSpritesGroup(pygame.sprite.LayeredDirty):
                 other.brain.target is not None:
                 continue
 
-            other.brain.target = target
+            other.brain.set_target(target)
 
 
 
