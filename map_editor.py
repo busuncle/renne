@@ -91,10 +91,19 @@ def put_down_selected_object(selected_object, game_world):
         if selected_object.area.colliderect(sp.area):
             return False
 
-    for ambush in game_world.ambush_list:
-        if selected_object.area.colliderect(ambush.surround_area):
-            # we don't let object be put in a existed ambush, for simpleness
-            return False
+    if isinstance(selected_object, GameSprite):
+        # put sprite into ambush if it's *only* in one ambush
+        first_collide_ambush_index = None
+        for i, ambush in enumerate(game_world.ambush_list):
+            if selected_object.area.colliderect(ambush.surround_area):
+                if first_collide_ambush_index is not None:
+                    # already in one ambush, we don't let it be in two or more ambush
+                    return False
+                else:
+                    first_collide_ambush_index = i
+
+        if first_collide_ambush_index is not None:
+            game_world.ambush_list[first_collide_ambush_index].add(selected_object)
 
     game_world.add_object(selected_object)
     return True
@@ -109,7 +118,6 @@ def put_down_ambush(ambush, game_world):
         if ambush.surround_area.colliderect(other_ambush.surround_area):
             return False
 
-    # at least one sprite collide with it, return True
     for sp in game_world.dynamic_objects:
         if isinstance(sp, Renne):
             continue
@@ -125,9 +133,6 @@ def put_down_ambush(ambush, game_world):
 
             if can_add_to_ambush:
                 ambush.add(sp)
-
-    if len(ambush.sprites()) == 0:
-        return False
 
     game_world.ambush_list.append(ambush)
     return True
@@ -437,5 +442,7 @@ if __name__ == "__main__":
     ])
     if args.chapter is None:
         print "please specify the param chapter, using -c or --chapter option"
-        exit(-1)
+        pygame.quit()
+
     run(args.chapter)
+    pygame.quit()
