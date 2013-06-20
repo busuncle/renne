@@ -233,7 +233,7 @@ def enter_chapter(screen, chapter, renne):
                             renne, static_objects, game_map)
                         # monster in ambush will be in offence state, target at hero right now!
                         monster.brain.set_target(renne)
-                        monster.set_active_state(cfg.SpriteState.OFFENCE)
+                        monster.brain.set_active_state(cfg.SpriteState.OFFENCE)
                         enemies.add(enemy)
 
                     game_world.batch_add(ambush)
