@@ -670,16 +670,19 @@ class Enemy(GameSprite):
 
     def update_status(self, passed_seconds):
         super(Enemy, self).update_status(passed_seconds)
+
         if self.status.get("stun_time", 0) > 0:
             self.animation.set_init_frame(cfg.EnemyAction.STAND)
             self.status["stun_time"] = max(0, self.status["stun_time"] - passed_seconds)
             if self.status["stun_time"] == 0:
                 self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
+
         if self.status.get("dizzy_time", 0) > 0:
             self.animation.set_init_frame(cfg.EnemyAction.STAND)
             self.status["dizzy_time"] = max(0, self.status["dizzy_time"] - passed_seconds)
             if self.status["dizzy_time"] == 0:
                 self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
+
         if self.status.get("under_thump") is not None:
             self.action = cfg.EnemyAction.UNDER_THUMP
             self.status["under_thump"]["out_speed"] = max(0, self.status["under_thump"]["out_speed"] \
@@ -688,6 +691,7 @@ class Enemy(GameSprite):
             if self.status["under_thump"]["crick_time"] <= 0:
                 self.reset_action(force=True)
                 self.status.pop("under_thump")
+
         if self.status.get("crick") is not None:
             self.action = cfg.EnemyAction.UNCONTROLLED
             self.status["crick"]["time"] -= passed_seconds
@@ -696,15 +700,20 @@ class Enemy(GameSprite):
                 self.action = self.status["crick"]["old_action"]
                 self.status.pop("crick")
 
-        if self.status.get("ambush") is not None \
-            and self.status["ambush"]["status"] == cfg.Ambush.STATUS_ENTER:
-            self.status["ambush"]["height"] = max(0, 
-                self.status["ambush"]["height"] - self.status["ambush"]["speed"] * passed_seconds)
-            if self.status["ambush"]["height"] == 0:
-                self.status["ambush"]["status"] = cfg.Ambush.STATUS_FINISH
-                self.action = cfg.EnemyAction.STAND
-            else:
-                self.action = cfg.EnemyAction.UNCONTROLLED
+        if self.status.get("ambush") is not None:
+            if self.status["ambush"]["status"] == cfg.Ambush.STATUS_INIT:
+                self.status["ambush"]["init_delay"] -= passed_seconds
+                if self.status["ambush"]["init_delay"] < 0:
+                    # delay time is over, turn to *STATUS_ENTER*
+                    self.status["ambush"]["status"] = cfg.Ambush.STATUS_ENTER
+            elif self.status["ambush"]["status"] == cfg.Ambush.STATUS_ENTER:
+                self.status["ambush"]["height"] = max(0, 
+                    self.status["ambush"]["height"] - self.status["ambush"]["speed"] * passed_seconds)
+                if self.status["ambush"]["height"] == 0:
+                    self.status["ambush"]["status"] = cfg.Ambush.STATUS_FINISH
+                    self.action = cfg.EnemyAction.STAND
+                else:
+                    self.action = cfg.EnemyAction.UNCONTROLLED
                  
 
     def update(self, passed_seconds, external_event=None):
@@ -844,15 +853,13 @@ class Ambush(pygame.sprite.LayeredDirty):
                 sp.status["ambush"] = {"type": self.appear_type, 
                     "height": sfg.Ambush.APPEAR_TYPE_TOP_DOWN_INIT_HEIGHT + random.randint(-30, 30),
                     "speed": sfg.Ambush.APPEAR_TYPE_TOP_DOWN_SPEED + random.randint(-10, 10),
+                    "init_delay": random.uniform(0.4, 0.8),
                     "status": cfg.Ambush.STATUS_INIT}
 
 
     def enter(self, hero):
         if self.status == cfg.Ambush.STATUS_INIT and hero.area.colliderect(self.enter_area):
             self.status = cfg.Ambush.STATUS_ENTER
-            for sp in self.sprites():
-                sp.status["ambush"]["status"] = cfg.Ambush.STATUS_ENTER
-
             return True
         return False
 
