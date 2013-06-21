@@ -196,3 +196,8 @@ class Ambush(object):
     STATUS_FINISH = 2
 
     APPEAR_TYPE_TOP_DOWN = 1
+    APPEAR_TYPE_FADE_IN = 2
+    APPEAR_TYPES = {
+        APPEAR_TYPE_TOP_DOWN: "top_down",
+        APPEAR_TYPE_FADE_IN: "fade_in",
+    }

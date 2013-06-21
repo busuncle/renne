@@ -900,8 +900,9 @@ class Ambush(pygame.sprite.LayeredDirty):
             r.y -= camera.rect.y
             pygame.draw.rect(camera.screen, pygame.Color("red"), r, 1)
 
-        name = sfg.Font.ARIAL_16.render("Ambush with %s sprites" % len(self.sprites()),
-            True, pygame.Color("red"))
+        render_str = "Ambush '%s' with %s sprites" \
+            % (cfg.Ambush.APPEAR_TYPES[self.appear_type], len(self.sprites()))
+        name = sfg.Font.ARIAL_16.render(render_str, True, pygame.Color("red"))
         camera.screen.blit(name, 
             (self.surround_area.x - camera.rect.x, self.surround_area.y * 0.5 - camera.rect.y))
 
