@@ -224,6 +224,7 @@ def enter_chapter(screen, chapter, renne):
         else:
             for ambush in game_world.ambush_list:
                 if ambush.enter(renne):
+                    renne.set_emotion(cfg.SpriteEmotion.ALERT)
                     # only one ambush is active
                     game_status.status = cfg.GameStatus.ENTER_AMBUSH
                     game_world.active_ambush = ambush

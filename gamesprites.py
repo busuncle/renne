@@ -45,7 +45,8 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.dfs = dfs
         # a chaos dict that holding many kinds of status, i don't want many attributes, so i use it
         self.status = {"hp": cfg.SpriteStatus.HEALTHY, 
-            "recover_hp_effect_time": 0, "under_attack_effect_time": 0}
+            "recover_hp_effect_time": 0, "under_attack_effect_time": 0,
+            "emotion": cfg.SpriteEmotion.NORMAL}
         self.buff = {}
         self.debuff = {}
         self.sound_box = SoundBox()
@@ -125,6 +126,7 @@ class Renne(GameSprite):
         self.exp = 0
 
         self.animation = RenneAnimator(self)
+        self.emotion_animation = SpriteEmotionAnimator(self)
 
         # represent the sprite area, used for deciding frame layer and collide, attack computing or so
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
@@ -147,7 +149,8 @@ class Renne(GameSprite):
         self.atk = self.setting.ATK
         self.dfs = self.setting.DFS
         self.status = {"hp": cfg.SpriteStatus.HEALTHY, 
-            "recover_hp_effect_time": 0, "under_attack_effect_time": 0}
+            "recover_hp_effect_time": 0, "under_attack_effect_time": 0,
+            "emotion": cfg.SpriteEmotion.NORMAL}
         self.buff = {}
         self.debuff = {}
 
@@ -158,8 +161,14 @@ class Renne(GameSprite):
         self.direction = direction
 
 
+    def set_emotion(self, emotion):
+        self.emotion_animation.reset_frame(self.status["emotion"])
+        self.status["emotion"] = emotion
+
+
     def draw(self, camera):
         self.animation.draw(camera)
+        self.emotion_animation.draw(camera)
 
 
     def move(self, speed, passed_seconds, key_vec=None):
@@ -482,6 +491,7 @@ class Renne(GameSprite):
                 self.status.pop("action_rate_scale_time")
 
         self.animation.update(passed_seconds)
+        self.emotion_animation.update(passed_seconds)
 
         # update magic cd
         for magic_name in self.attacker.magic_cds:
@@ -494,7 +504,6 @@ class Enemy(GameSprite):
     def __init__(self, setting, pos, direction):
         super(Enemy, self).__init__(setting.NAME, setting.HP, setting.ATK, setting.DFS, pos, direction)
         self.setting = setting
-        self.status["emotion"] = cfg.SpriteEmotion.NORMAL
         self.emotion_animation = SpriteEmotionAnimator(self)
 
         self.animation = EnemyAnimator(self)

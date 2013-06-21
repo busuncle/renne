@@ -344,7 +344,7 @@ class EnemyAnimator(SpriteAnimator):
 
 
 class SpriteEmotionAnimator(object):
-    image_src = basic_image_controller.get("emotion")
+    image_src = basic_image_controller.get("emotion").convert_alpha()
     frame_mapping = {}
     frame_nums = {}
     frame_rates = {}
@@ -360,7 +360,6 @@ class SpriteEmotionAnimator(object):
         if set(self.frame_mapping.keys()) == set(sfg.EmotionImage.FRAMES.keys()):
             return
 
-        self.image_src = self.image_src.convert_alpha()
         all_images = []
         w, h = sfg.EmotionImage.SIZE
         for i in xrange(sfg.EmotionImage.ROW):
