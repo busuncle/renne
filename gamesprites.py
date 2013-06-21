@@ -328,7 +328,7 @@ class Renne(GameSprite):
                 if self.action != cfg.HeroAction.ATTACK:
                     self.action = cfg.HeroAction.STAND
                 return 
-            elif external_event == cfg.GameStatus.PAUSE or external_event == cfg.GameStatus.ENTER_AMBUSH:
+            elif external_event == cfg.GameStatus.PAUSE:
                 # do nothing
                 return
 
@@ -629,7 +629,7 @@ class Enemy(GameSprite):
                 self.reset_action()
                 return
             elif external_event == cfg.GameStatus.ENTER_AMBUSH:
-                self.action = cfg.EnemyAction.STAND
+                self.reset_action()
                 return
             elif external_event == cfg.GameStatus.PAUSE:
                 # do nothing
