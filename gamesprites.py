@@ -865,9 +865,9 @@ class Ambush(pygame.sprite.LayeredDirty):
         for sp in self.sprites():
             if self.appear_type == cfg.Ambush.APPEAR_TYPE_TOP_DOWN:
                 sp.status["ambush"] = {"type": self.appear_type, 
-                    "height": sfg.Ambush.APPEAR_TYPE_TOP_DOWN_INIT_HEIGHT + random.randint(-30, 30),
-                    "speed": sfg.Ambush.APPEAR_TYPE_TOP_DOWN_SPEED + random.randint(-10, 10),
-                    "init_delay": random.uniform(0.4, 0.8),
+                    "height": random.randint(*sfg.Ambush.APPEAR_TYPE_TOP_DOWN_HEIGHT_RAND_RANGE),
+                    "speed": sfg.Ambush.APPEAR_TYPE_TOP_DOWN_SPEED,
+                    "init_delay": random.uniform(*sfg.Ambush.APPEAR_TYPE_TOP_DOWN_INIT_DELAY_RAND_RANGE),
                     "status": cfg.Ambush.STATUS_INIT}
 
 

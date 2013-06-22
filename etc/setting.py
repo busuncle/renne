@@ -115,7 +115,7 @@ class Renne(object):
 
     # sprite radius
     RADIUS = 18 
-    HEIGHT = 60
+    HEIGHT = 70
     # distance from coord to sprite foot
     POS_RECT_DELTA_Y = 40
 
@@ -1197,7 +1197,8 @@ class Ambush(object):
     ENTER_AREA_WIDTH = 100
 
     APPEAR_TYPE_TOP_DOWN_SPEED = 120
-    APPEAR_TYPE_TOP_DOWN_INIT_HEIGHT = 60
+    APPEAR_TYPE_TOP_DOWN_HEIGHT_RAND_RANGE = (40, 90)
+    APPEAR_TYPE_TOP_DOWN_INIT_DELAY_RAND_RANGE = (0.5, 1)
     APPEAR_TYPE_TOP_DOWN_FINISH_DELAY = 1
 
 
