@@ -621,7 +621,7 @@ class Enemy(GameSprite):
             self.set_emotion(cfg.SpriteEmotion.ANGRY)
 
 
-    def get_target(self, target):
+    def set_target(self, target):
         if self.brain.target is None:
             self.brain.set_target(target)
 

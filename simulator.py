@@ -557,7 +557,7 @@ class Attacker(object):
         sp.animation.show_cost_hp(cost_hp)
         if sp.setting.ROLE == cfg.SpriteRole.ENEMY:
             sp.cal_angry(cost_hp)
-            sp.get_target(from_who)
+            sp.set_target(from_who)
 
 
     def finish(self):
