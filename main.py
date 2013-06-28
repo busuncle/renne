@@ -84,7 +84,7 @@ def enter_chapter(screen, chapter, renne):
     allsprites = GameSpritesGroup()
     enemies = GameSpritesGroup()
     static_objects = StaticObjectGroup()
-    game_map = GameMap(chapter, map_setting["size"], map_setting["tiles"])
+    game_map = GameMap(chapter, map_setting)
 
     # load hero
     renne.place(map_setting["hero"]["pos"], map_setting["hero"]["direction"])

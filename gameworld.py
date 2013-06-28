@@ -14,13 +14,13 @@ from etc import setting as sfg
 class GameMap(object):
     tile_images = ImageController(sfg.TILE_IMAGES[0])
     tile_images.add_from_list(sfg.TILE_IMAGES[1])
-    def __init__(self, chapter, size, tiles_setting):
+    def __init__(self, chapter, map_setting):
         self.chapter = chapter
-        self.size = size
+        self.size = map_setting["size"]
         #self.map_tiles = weakref.WeakValueDictionary()
         self.map_tiles = {}
         self.waypoints = self.load_waypoints(chapter)
-        self.init_map_titles(tiles_setting)
+        self.init_map_titles(map_setting["tiles"])
 
 
     def load_waypoints(self, chapter):

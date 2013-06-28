@@ -248,7 +248,7 @@ def run(chapter):
     pygame.display.set_caption("Renne Map Editor")
     camera = Camera(screen, map_size=map_setting["size"])
     game_world = GameWorld()
-    game_map = GameMap(chapter, map_setting["size"], map_setting["tiles"])
+    game_map = GameMap(chapter, map_setting)
 
     # load hero
     renne = Renne(sfg.Renne, map_setting["hero"]["pos"], map_setting["hero"]["direction"])
