@@ -19,16 +19,8 @@ DEBUG_DRAW = {
 }
 
 
-def save_waypoints(chapter, waypoints):
-    filename = "%s.txt" % chapter
-    fp = open(os.path.join(sfg.WayPoint.DIR, filename), "w")
-    for wp in waypoints:
-        fp.write("%s\t%s\n" % wp)
-    fp.close()
 
-
-
-def gen_chapter_waypoints(chapter, map_setting):
+def gen_chapter_waypoints(map_setting):
     bounding_box = pygame.Rect(sfg.WayPoint.BOUNDING_BOX_RECT)
     blocks = []
     waypoints = set()
@@ -139,8 +131,8 @@ def put_down_ambush(ambush, game_world):
 
 
 
-def change_map_setting(map_setting, game_world):
-    res = {"hero": None, "monsters": [], "static_objects": [], "ambush_list": []}
+def change_map_setting(map_setting, game_world, game_map):
+    res = {"hero": None, "monsters": [], "static_objects": [], "ambush_list": [], "waypoints": []}
     for sp in game_world.static_objects:
         x, y = map(int, sp.pos)
         res["static_objects"].append({"id": sp.setting.ID, "pos": (x, y)})
@@ -166,6 +158,11 @@ def change_map_setting(map_setting, game_world):
             res["hero"] = {"pos": (x, y), "direction": sp.direction}
         else:
             res["monsters"].append({"id": sp.setting.ID, "pos": (x, y), "direction": sp.direction})
+
+    # a good chance for generating waypoints when saving the map setting
+    game_map.waypoints = gen_chapter_waypoints(map_setting)
+    for wp in game_map.waypoints:
+        res["waypoints"].append(wp)
 
     map_setting.update(res)
 
@@ -317,13 +314,9 @@ def run(chapter):
                 key_mods = pygame.key.get_mods()
                 if key_mods & KMOD_CTRL and event.key == K_s:
                     # ctrl+s to save map setting
-                    change_map_setting(map_setting, game_world)
+                    change_map_setting(map_setting, game_world, game_map)
                     util.save_map_setting(chapter, map_setting)
                     print "save chapter %s map setting" % chapter
-                    # a good chance for generating waypoints when saving the map setting
-                    game_map.waypoints = gen_chapter_waypoints(chapter, map_setting)
-                    save_waypoints(chapter, game_map.waypoints)
-                    print "generate chapter %s waypoints success" % chapter
 
                 if key_mods & KMOD_ALT:
                     if event.key == K_1:

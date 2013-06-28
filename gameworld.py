@@ -19,20 +19,14 @@ class GameMap(object):
         self.size = map_setting["size"]
         #self.map_tiles = weakref.WeakValueDictionary()
         self.map_tiles = {}
-        self.waypoints = self.load_waypoints(chapter)
+        self.waypoints = self.init_waypoints(map_setting["waypoints"])
         self.init_map_titles(map_setting["tiles"])
 
 
-    def load_waypoints(self, chapter):
+    def init_waypoints(self, waypoint_list):
         res = set()
-        waypoints_file = os.path.join(sfg.WayPoint.DIR, "%s.txt" % chapter)
-        if os.path.exists(waypoints_file):
-            fp = open(waypoints_file)
-            for line in fp:
-                x, y = line.strip().split("\t")
-                res.add((float(x), float(y)))
-            fp.close()
-
+        for wp in waypoint_list:
+            res.add(wp)
         return res
 
 
