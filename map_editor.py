@@ -75,6 +75,12 @@ def select_unit(map_pos_for_mouse, game_world):
     return None
 
 
+
+def object_can_be_shift(selected_object):
+    return isinstance(selected_object, GameSprite) or isinstance(selected_object, StaticObject)
+
+
+
 def put_down_selected_object(selected_object, game_world):
     if selected_object is None:
         return True
@@ -206,7 +212,7 @@ def mouse_ambush_toggle(selected_object):
 
 
 
-def selected_object_toggle(selected_object):
+def selected_object_shift(selected_object):
     if selected_object is None or isinstance(selected_object, Renne):
         # Renne and None are not in toggle loop
         return selected_object
@@ -292,17 +298,16 @@ def run(chapter):
 
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    if (isinstance(selected_object, GameSprite) or \
-                        isinstance(selected_object, StaticObject)) \
+                    if object_can_be_shift(selected_object) \
                         and put_down_selected_object(selected_object, game_world):
                         selected_object = None
                     elif isinstance(selected_object, Ambush) \
                         and put_down_ambush(selected_object, game_world):
                         selected_object = None
 
-                if event.key == K_w:
-                    if isinstance(selected_object, GameSprite):
-                        selected_object = selected_object_toggle(selected_object)
+                if event.key == K_q:
+                    if object_can_be_shift(selected_object):
+                        selected_object = selected_object_shift(selected_object)
 
                 if event.key == K_e:
                     selected_object = None
