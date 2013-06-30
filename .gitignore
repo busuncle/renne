@@ -173,3 +173,4 @@ data/save/*.dat
 .*.ogg
 .*.wav
 _test*
+__*
