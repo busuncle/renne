@@ -19,6 +19,12 @@ DEBUG_DRAW = {
 }
 
 
+current_selected_object_ids = {
+    cfg.GameObject.TYPE_STATIC: None,
+    cfg.GameObject.TYPE_DYNAMIC: None,
+}
+
+
 
 def gen_chapter_waypoints(map_setting):
     bounding_box = pygame.Rect(sfg.WayPoint.BOUNDING_BOX_RECT)
@@ -187,20 +193,6 @@ def set_ambush_follow_mouse(map_pos_for_mouse, ambush):
         
 
 
-def mouse_object_toggle(selected_object, object_type):
-    if isinstance(selected_object, Renne):
-        # Renne is not under this loop, do nothing and return it immediately
-        return selected_object
-
-    new_selected = None
-    if object_type == cfg.GameObject.TYPE_STATIC:
-        new_selected = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[1], (-1000, -1000))
-    elif object_type == cfg.GameObject.TYPE_DYNAMIC:
-        new_selected = Enemy(sfg.SPRITE_SETTING_MAPPING[1], (-1000, -1000), 0)
-
-    return new_selected
-
-
 def mouse_ambush_toggle(selected_object):
     if isinstance(selected_object, Renne):
         # Renne is not under this loop, do nothing and return it immediately
@@ -212,19 +204,36 @@ def mouse_ambush_toggle(selected_object):
 
 
 
-def selected_object_shift(selected_object):
-    if selected_object is None or isinstance(selected_object, Renne):
-        # Renne and None are not in toggle loop
+def selected_object_shift(selected_object, object_type=None):
+    if isinstance(selected_object, Renne):
+        # Renne is not under this loop, do nothing and return it immediately
         return selected_object
+    
+    if object_type == cfg.GameObject.TYPE_STATIC:
+        current_id = current_selected_object_ids[cfg.GameObject.TYPE_STATIC]
+        if current_id is None:
+            current_id = 1
+            new_object = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[current_id], 
+                (-1000, -1000))
+        else:
+            if isinstance(selected_object, StaticObject):
+                current_id = (current_id + 1) % (len(sfg.STATIC_OBJECT_SETTING_LIST) + 1) or 1
+            new_object = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[current_id], (-1000, -1000))
+        current_selected_object_ids[cfg.GameObject.TYPE_STATIC] = current_id
 
-    if isinstance(selected_object, Enemy):
-        new_object_id = (selected_object.setting.ID + 1) % (len(sfg.SPRITE_SETTING_LIST) + 1) or 1
-        new_object = Enemy(sfg.SPRITE_SETTING_MAPPING[new_object_id], (-1000, -1000), 0)
-    elif isinstance(selected_object, StaticObject):
-        new_object_id = (selected_object.setting.ID + 1) % (len(sfg.STATIC_OBJECT_SETTING_LIST) + 1) or 1
-        new_object = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[new_object_id], (-1000, -1000))
-        
+    elif object_type == cfg.GameObject.TYPE_DYNAMIC:
+        current_id = current_selected_object_ids[cfg.GameObject.TYPE_DYNAMIC]
+        if current_id is None:
+            current_id = 1
+            new_object = Enemy(sfg.SPRITE_SETTING_MAPPING[current_id], (-1000, -1000), 0)
+        else:
+            if isinstance(selected_object, GameSprite):
+                current_id = (current_id + 1) % (len(sfg.SPRITE_SETTING_LIST) + 1) or 1
+            new_object = Enemy(sfg.SPRITE_SETTING_MAPPING[current_id], (-1000, -1000), 0)
+        current_selected_object_ids[cfg.GameObject.TYPE_DYNAMIC] = current_id
+
     return new_object
+
 
 
 def create_new_instance(selected_object):
@@ -305,9 +314,15 @@ def run(chapter):
                         and put_down_ambush(selected_object, game_world):
                         selected_object = None
 
-                if event.key == K_q:
-                    if object_can_be_shift(selected_object):
-                        selected_object = selected_object_shift(selected_object)
+                if event.key == K_1:
+                    # static object
+                    selected_object = selected_object_shift(selected_object, cfg.GameObject.TYPE_STATIC)
+                elif event.key == K_2:
+                    # enemy
+                    selected_object = selected_object_shift(selected_object, cfg.GameObject.TYPE_DYNAMIC)
+                elif event.key == K_3:
+                    # ambush
+                    selected_object = mouse_ambush_toggle(selected_object)
 
                 if event.key == K_e:
                     selected_object = None
@@ -324,20 +339,9 @@ def run(chapter):
                     print "save chapter %s map setting" % chapter
 
                 if key_mods & KMOD_ALT:
-                    if event.key == K_1:
-                        # alt+1 toggle static object
-                        selected_object = mouse_object_toggle(selected_object, 
-                            cfg.GameObject.TYPE_STATIC)
-                    elif event.key == K_2:
-                        # alt+2 toggle enemy
-                        selected_object = mouse_object_toggle(selected_object,
-                            cfg.GameObject.TYPE_DYNAMIC)
-                    elif event.key == K_3:
-                        # alt+3 toggle ambush
-                        selected_object = mouse_ambush_toggle(selected_object)
 
                     # debug draw switch
-                    elif event.key == K_p:
+                    if event.key == K_p:
                         DEBUG_DRAW["pos"] = not DEBUG_DRAW["pos"]
                     elif event.key == K_a:
                         DEBUG_DRAW["area"] = not DEBUG_DRAW["area"]
