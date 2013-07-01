@@ -23,16 +23,6 @@ def enemy_in_one_screen(hero, enemy):
 
 
 
-def gen_sprite_init_status():
-    # a common value set a sprite,
-    # a chaos dict that holding many kinds of status, i don't want many attributes, so i use it
-    return {"hp": cfg.SpriteStatus.HEALTHY, 
-        "recover_hp_effect_time": 0, "under_attack_effect_time": 0,
-        "emotion": cfg.SpriteEmotion.NORMAL}
-
-
-
-
 ############## sprite module ###########################
 
 class GameSprite(pygame.sprite.DirtySprite):
@@ -53,7 +43,7 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.hp = hp
         self.atk = atk
         self.dfs = dfs
-        self.status = gen_sprite_init_status()
+        self.status = self.gen_sprite_init_status()
         self.buff = {}
         self.debuff = {}
         self.sound_box = SoundBox()
@@ -62,6 +52,14 @@ class GameSprite(pygame.sprite.DirtySprite):
 
         self.action = cfg.SpriteAction.STAND
         self.key_vec = Vector2() # a normal vector represents the direction
+
+
+    def gen_sprite_init_status():
+        # a common value set a sprite,
+        # a chaos dict that holding many kinds of status, i don't want many attributes, so i use it
+        return {"hp": cfg.SpriteStatus.HEALTHY, 
+            "recover_hp_effect_time": 0, "under_attack_effect_time": 0,
+            "emotion": cfg.SpriteEmotion.NORMAL}
         
 
     def cal_sprite_status(self, current_hp, full_hp):
@@ -155,7 +153,7 @@ class Renne(GameSprite):
         self.sp = self.setting.SP
         self.atk = self.setting.ATK
         self.dfs = self.setting.DFS
-        self.status = gen_sprite_init_status()
+        self.status = self.gen_sprite_init_status()
         self.buff = {}
         self.debuff = {}
 
