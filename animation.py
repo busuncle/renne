@@ -161,6 +161,10 @@ class SpriteAnimator(object):
         self.image = self.sprite_image_contoller.get_surface(action)[self.sprite.direction]
 
 
+    def set_frame_add(self, action, frame_add):
+        self.frame_adds[action] = frame_add
+
+
     def reset_frame_adds(self):
         for action in self.frame_adds.iterkeys():
             self.frame_adds[action] = 0
