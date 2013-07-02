@@ -198,8 +198,9 @@ class SpriteAnimator(object):
     def update(self, passed_seconds):
         # update image related
         sp = self.sprite
-        self.image = self.sprite_image_contoller.get_subsurface(sp.action,
-            sp.direction, self.frame_adds[action])
+        if sp.action in self.frame_adds:
+            self.image = self.sprite_image_contoller.get_subsurface(sp.action,
+                sp.direction, self.frame_adds[sp.action])
 
         self.image_mix = None
         if sp.debuff.get("poison") is not None:

@@ -513,6 +513,7 @@ class Enemy(GameSprite):
 
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
         self.area.center = self.pos('xy')
+        self.check_reachable = False
 
 
     def activate(self, ai, allsprites, hero, static_objects, game_map):
@@ -664,7 +665,8 @@ class Enemy(GameSprite):
                 self.action = cfg.EnemyAction.ATTACK
             
             elif action == cfg.EnemyAction.STEER:
-                self.action = cfg.EnemyAction.STEER
+                self.action = cfg.EnemyAction.WALK
+                self.check_reachable = False
                 self.allsprites.notify_nearby_alliance_for_target(self, self.brain.target)
 
             elif action == cfg.EnemyAction.LOOKOUT:
@@ -677,6 +679,7 @@ class Enemy(GameSprite):
 
             elif action == cfg.EnemyAction.WALK:
                 self.action = cfg.EnemyAction.WALK
+                self.check_reachable = False
                 self.key_vec.x, self.key_vec.y = cfg.Direction.DIRECT_TO_VEC[self.direction] 
 
 
@@ -743,14 +746,11 @@ class Enemy(GameSprite):
             if self.action == cfg.EnemyAction.ATTACK:
                 self.attack(passed_seconds)
 
-            elif self.action == cfg.EnemyAction.STEER:
-                self.walk(passed_seconds)
-
             elif self.action == cfg.EnemyAction.STAND:
                 self.stand(passed_seconds)
 
             elif self.action == cfg.EnemyAction.WALK:
-                self.walk(passed_seconds, True)
+                self.walk(passed_seconds, self.check_reachable)
 
             elif self.action == cfg.EnemyAction.UNDER_THUMP:
                 self.under_thump(passed_seconds)
@@ -831,12 +831,12 @@ class CastleWarrior(Enemy):
                 not in self.attacker.thump_pre_frames:
                 # pre -> pre_freeze
                 self.animation.set_frame_add(cfg.EnemyAction, self.attacker.thump_pre_frames[-1]) 
-                self.thump_pre_freeze_time_add += passed_seconds
+                self.attacker.thump_pre_freeze_time_add += passed_seconds
 
         elif self.attacker.thump_pre_freeze_time_add < self.attacker.thump_pre_freeze_time:
             self.animation.set_frame_add(cfg.EnemyAction.ATTACK, 
                 self.attacker.thump_pre_frames[-1]) 
-            self.thump_pre_freeze_time_add += passed_seconds
+            self.attacker.thump_pre_freeze_time_add += passed_seconds
                 
         elif self.attacker.thump_slide_time_add < self.attacker.thump_slide_time:
             self.attacker.thump_slide_time_add += passed_seconds
