@@ -810,6 +810,43 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
         self.thump_crick_time = attacker_params["thump_crick_time"]
         self.thump_out_speed = attacker_params["thump_out_speed"]
         self.thump_acceleration = attacker_params["thump_acceleration"]
+        self.thump_pre_freeze_time = attacker_params["thump_pre_freeze_time"]
+        self.thump_pre_frames = attacker_params["thump_pre_frames"]
+        self.thump_frame = attacker_params["thump_frame"]
+        self.thump_slide_time = attacker_params["thump_slide_time"]
+        self.thump_slide_speed = attacker_params["thump_slide_speed"]
+        self.thump_slide_range = self.thump_slide_speed * self.thump_slide_time
+        self.thump_cos_min = attacker_params["thump_cos_min"]
+        self.thump_slide_time_add = 0
+        self.thump_pre_freeze_time_add = 0
+        self.method = None
+
+
+    def thump_chance(self, target):
+        sp = self.sprite
+        distance_to_target = sp.pos.get_distance_to(target.pos)
+        if distance_to_target <= self.attack_range + self.thump_slide_range:
+            direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
+            vec_to_target = Vector2.from_points(sp.area.center, target.area.center)
+            cos_val = cos_for_vec(direct_vec, vec_to_target)
+            if cos_val >= self.thump_cos_min and \
+                self.sprite.view_sensor.detect(target) is not None:
+                return True
+
+        return False
+
+
+    def chance(self, target):
+        sp = self.sprite
+        if happen(sp.brain.ai.ATTACK_THUMP_PROB) and thump_chance(target):
+            self.method = "thump"
+            return True
+
+        if super(EnemyThumpShortAttacker, self).chance(target):
+            self.method = "regular"
+            return True
+
+        return False
 
 
     def run(self, hero, current_frame_add):
@@ -831,7 +868,15 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
             damage = max(0, atk - hero.dfs)
             hero.attacker.handle_under_attack(sp, damage)
             return True
+
         return False
+
+
+    def finish(self):
+        super(EnemyThumpShortAttacker, self).finish()
+        self.method = None
+        self.thump_slide_time_add = 0
+        self.thump_pre_freeze_time_add = 0
 
 
 
@@ -932,7 +977,7 @@ class EnemyLongAttacker(AngleAttacker):
             direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
             vec_to_target = Vector2.from_points(sp.area.center, target.area.center)
             cos_val = cos_for_vec(direct_vec, vec_to_target)
-            if cos_val >= self.cos_min:
+            if cos_val >= self.cos_min and self.sprite.view_sensor.detect(target) is not None:
                 return True
 
         return False
@@ -972,17 +1017,6 @@ class ArrowAttacker(EnemyLongAttacker):
         self.arrow_dx = attacker_params["arrow_dx"]
         self.arrow_dy = attacker_params["arrow_dy"]
         self.arrow_damage = attacker_params["arrow_damage"]
-
-
-    def chance(self, target):
-        is_chance = super(ArrowAttacker, self).chance(target)
-        if is_chance:
-            # check for view block static objects additionally
-            if self.sprite.view_sensor.detect(target) is None:
-                # change the is_chance to false if something block it's view
-                is_chance = False
-            
-        return is_chance
 
 
     def run(self, hero, current_frame_add):

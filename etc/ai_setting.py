@@ -115,6 +115,12 @@ class LeonHardtAI(AIBase):
 
 
 
+class CastleWarriorAI(ShortNormalAI):
+    # attack method
+    ATTACK_THUMP_PROB = 0.9
+
+
+
 class SwordRobberAI(ShortNormalAI):
     STAY_CHANGE_DIRECTION_PROB = 0.1
     STAY_TO_PATROL_PROB = 0.05
@@ -155,7 +161,8 @@ class SilverTentacleAI(ShortNormalAI):
 
 AI_MAPPING = {
     sfg.SkeletonWarrior.ID: ShortNormalAI,
-    sfg.CastleWarrior.ID: ShortNormalAI,
+    #sfg.CastleWarrior.ID: ShortNormalAI,
+    sfg.CastleWarrior.ID: CastleWarriorAI,
     sfg.SkeletonArcher.ID: LongNormalAI,
     sfg.LeonHardt.ID: LeonHardtAI,
     sfg.ArmouredShooter.ID: ArmouredShooterAI,

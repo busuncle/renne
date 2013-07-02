@@ -244,6 +244,12 @@ class CastleWarrior(Enemy):
         "thump_crick_time": 0.3,
         "thump_out_speed": 1000,
         "thump_acceleration": -4500,
+        "thump_pre_freeze_time": 1,
+        "thump_pre_frames": (0, 1),
+        "thump_frame": 4,
+        "thump_slide_time": 0.5,
+        "thump_slide_speed": 150,
+        "thump_cos_min": 0.9,
     }
 
     WALK_SPEED = 100
@@ -264,7 +270,7 @@ class SkeletonArcher(Enemy):
 
     ATTACKER_PARAMS = {
         "range": 400,
-        "angle": 6,
+        "angle": 12,
         "key_frames": (4, 5),
         "arrow_radius": 18, 
         "arrow_speed": 300, 

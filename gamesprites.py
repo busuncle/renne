@@ -819,6 +819,46 @@ class Leonhardt(Enemy):
 
 
 
+class CastleWarrior(Enemy):
+    def __init__(self, setting, pos, direction):
+        super(CastleWarrior, self).__init__(setting, pos, direction)
+
+
+    def thump(self, passed_seconds):
+        if self.attacker.thump_pre_freeze_time_add == 0:
+            self.animation.run_sequence_frame(cfg.EnemyAction.ATTACK, passed_seconds)
+            if self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK) \
+                not in self.attacker.thump_pre_frames:
+                # pre -> pre_freeze
+                self.animation.set_frame_add(cfg.EnemyAction, self.attacker.thump_pre_frames[-1]) 
+                self.thump_pre_freeze_time_add += passed_seconds
+
+        elif self.attacker.thump_pre_freeze_time_add < self.attacker.thump_pre_freeze_time:
+            self.animation.set_frame_add(cfg.EnemyAction.ATTACK, 
+                self.attacker.thump_pre_frames[-1]) 
+            self.thump_pre_freeze_time_add += passed_seconds
+                
+        elif self.attacker.thump_slide_time_add < self.attacker.thump_slide_time:
+            self.attacker.thump_slide_time_add += passed_seconds
+            self.animation.set_frame_add(cfg.EnemyAction.ATTACK, self.attacker.thump_frame)
+            self.move(self.attacker.thump_slide_speed, passed_seconds, check_reachable=True)
+            hit_it = self.attacker.run(self.brain.target, self.attacker.thump_frame)
+            if hit_it:
+                self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
+
+        else:
+            self.attacker.finish()
+            self.brain.persistent = False
+
+
+    def attack(self, passed_seconds):
+        if self.attacker.method == "regular":
+            super(CastleWarrior, self).attack(passed_seconds)
+        elif self.attacker.method == "thump":
+            self.thump(passed_seconds)
+
+
+
 ######## sprite group subclass ########
 class GameSpritesGroup(pygame.sprite.LayeredDirty):
     def __init__(self):
@@ -908,7 +948,8 @@ class Ambush(pygame.sprite.LayeredDirty):
 
 ENEMY_CLASS_MAPPING = {
     sfg.SkeletonWarrior.ID: Enemy,
-    sfg.CastleWarrior.ID: Enemy,
+    #sfg.CastleWarrior.ID: Enemy,
+    sfg.CastleWarrior.ID: CastleWarrior,
     sfg.SkeletonArcher.ID: Enemy,
     sfg.LeonHardt.ID: Leonhardt,
     sfg.ArmouredShooter.ID: Enemy,
