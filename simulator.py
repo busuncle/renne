@@ -806,7 +806,6 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
     # thump hero, make her back a distance
     def __init__(self, sprite, attacker_params):
         super(EnemyThumpShortAttacker, self).__init__(sprite, attacker_params)
-        self.thump_prob = attacker_params["thump_prob"]
         self.thump_crick_time = attacker_params["thump_crick_time"]
         self.thump_out_speed = attacker_params["thump_out_speed"]
         self.thump_acceleration = attacker_params["thump_acceleration"]
@@ -853,7 +852,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
         sp = self.sprite
         if self.hit(hero, current_frame_add):
             atk = sp.atk
-            if happen(self.thump_prob):
+            if self.method == "thump":
                 # thump results in a double attack and hero-fallback
                 atk *= 2
                 words = sfg.Font.ARIAL_BLACK_24.render("Thump!", True, pygame.Color("gold"))

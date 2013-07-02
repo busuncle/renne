@@ -316,7 +316,7 @@ class Renne(GameSprite):
 
     def locked(self):
         # check whether renne is locked, if so, and lock her without handling any event from user input
-        if self.action in (cfg.HeroAction.ATTACK, cfg.HeroAction.RUN_ATTACK):
+        if self.action in (cfg.HeroAction.ATTACK, cfg.HeroAction.RUN_ATTACK, cfg.HeroAction.SKILL):
             # attacking, return directly
             return True
 
@@ -361,10 +361,10 @@ class Renne(GameSprite):
 
         if pressed_keys[sfg.UserKey.ATTACK]:
             if self.action == cfg.HeroAction.RUN and self.sp > 0:
-                self.action = cfg.HeroAction.RUN_ATTACK
+                self.attacker.method = "run_attack"
             else:
-                self.action = cfg.HeroAction.ATTACK
                 self.attacker.method = "regular"
+            self.action = cfg.HeroAction.ATTACK
             atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS)
             self.sound_box.play(atk_snd)
 
@@ -389,7 +389,7 @@ class Renne(GameSprite):
                 and self.attacker.magic_cds["destroy_aerolite"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
                 self.sound_box.play(atk_snd)
-                self.action = cfg.HeroAction.ATTACK
+                self.action = cfg.HeroAction.SKILL
                 self.attacker.method = "destroy_aerolite"
 
         elif pressed_keys[sfg.UserKey.REST]:
@@ -438,10 +438,13 @@ class Renne(GameSprite):
         self.update_status(passed_seconds)
 
         if self.action == cfg.HeroAction.ATTACK:
-            self.attack(passed_seconds)
+            if self.attacker.method == "run_attack":
+                self.run_attack(passed_seconds)
+            else:
+                self.attack(passed_seconds)
 
-        elif self.action == cfg.HeroAction.RUN_ATTACK:
-            self.run_attack(passed_seconds)
+        elif self.action == cfg.HeroAction.SKILL:
+            self.attack(passed_seconds)
 
         elif self.action == cfg.HeroAction.RUN:
             self.run(passed_seconds)
@@ -847,6 +850,7 @@ class CastleWarrior(Enemy):
                 self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
 
         else:
+            self.animation.set_frame_add(cfg.EnemyAction.ATTACK, 0)
             self.attacker.finish()
             self.brain.persistent = False
 

@@ -240,7 +240,6 @@ class CastleWarrior(Enemy):
         "range": 90,
         "angle": 60,
         "key_frames": (3, 4),
-        "thump_prob": 0.4,
         "thump_crick_time": 0.3,
         "thump_out_speed": 1000,
         "thump_acceleration": -4500,
@@ -248,7 +247,7 @@ class CastleWarrior(Enemy):
         "thump_pre_frames": (0, 1),
         "thump_frame": 4,
         "thump_slide_time": 0.5,
-        "thump_slide_speed": 150,
+        "thump_slide_speed": 120,
         "thump_cos_min": 0.9,
     }
 
