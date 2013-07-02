@@ -838,7 +838,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
 
     def chance(self, target):
         sp = self.sprite
-        if happen(sp.brain.ai.ATTACK_THUMP_PROB) and thump_chance(target):
+        if happen(sp.brain.ai.ATTACK_THUMP_PROB) and self.thump_chance(target):
             self.method = "thump"
             return True
 

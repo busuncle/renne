@@ -54,7 +54,7 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.key_vec = Vector2() # a normal vector represents the direction
 
 
-    def gen_sprite_init_status():
+    def gen_sprite_init_status(self):
         # a common value set a sprite,
         # a chaos dict that holding many kinds of status, i don't want many attributes, so i use it
         return {"hp": cfg.SpriteStatus.HEALTHY, 
