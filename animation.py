@@ -174,54 +174,50 @@ class SpriteAnimator(object):
         else:
             self.frame_adds[action] += passed_seconds * self.frame_rates[action]
         self.frame_adds[action] %= self.frame_nums[action]
-        self.image = self.sprite_image_contoller.get_subsurface(action,
-            self.sprite.direction, self.frame_adds[action])
 
 
-
-    def run_sequence_frame(self, action, passed_seconds):
+    def run_sequence_frame(self, action, passed_seconds, frame_rate=None):
         # animation will be running only once util the next event occurs
         # return True is a sequence frames is finish else False
+        rate = frame_rate or self.frame_rates[action]
         if self.sprite.status.get("action_rate_scale") is not None:
-            self.frame_adds[action] += passed_seconds * self.frame_rates[action] \
+            self.frame_adds[action] += passed_seconds * rate \
                 * self.sprite.status["action_rate_scale"]
         else:
-            self.frame_adds[action] += passed_seconds * self.frame_rates[action]
+            self.frame_adds[action] += passed_seconds * rate
         if self.frame_adds[action] >= self.frame_nums[action]:
             self.frame_adds[action] = 0
             return True
-        else:
-            self.image = self.sprite_image_contoller.get_subsurface(action,
-                self.sprite.direction, self.frame_adds[action])
-            return False
+        return False
 
 
     def update(self, passed_seconds):
+        # update image related
+        sp = self.sprite
+        self.image = self.sprite_image_contoller.get_subsurface(sp.action,
+            sp.direction, self.frame_adds[action])
+
         self.image_mix = None
-        if self.sprite.debuff.get("poison") is not None:
+        if sp.debuff.get("poison") is not None:
             self.image_mix = self.blink.make(self.image, passed_seconds)
             self.image_mix.fill(sfg.SpriteStatus.DEBUFF_POISON_MIX_COLOR, special_flags=BLEND_ADD)
-            #self.image = image_mix
 
-        if self.sprite.debuff.get("frozen") is not None:
+        if sp.debuff.get("frozen") is not None:
             self.image_mix = self.blink.make(self.image, passed_seconds)
             self.image_mix.fill(sfg.SpriteStatus.DEBUFF_FROZON_MIX_COLOR, special_flags=BLEND_ADD)
-            #self.image = image_mix
 
-        if self.sprite.debuff.get("weak") is not None:
-            self.sprite.debuff["weak"]["y"] += sfg.SpriteStatus.DEBUFF_WEAK_Y_MOVE_RATE * passed_seconds
-            self.sprite.debuff["weak"]["y"] %= sfg.SpriteStatus.DEBUFF_WEAK_Y_MAX
+        if sp.debuff.get("weak") is not None:
+            sp.debuff["weak"]["y"] += sfg.SpriteStatus.DEBUFF_WEAK_Y_MOVE_RATE * passed_seconds
+            sp.debuff["weak"]["y"] %= sfg.SpriteStatus.DEBUFF_WEAK_Y_MAX
 
-        if self.sprite.status["hp"] != cfg.SpriteStatus.DIE \
-            and self.sprite.status["under_attack_effect_time"] > 0:
+        if sp.status["hp"] != cfg.SpriteStatus.DIE \
+            and sp.status["under_attack_effect_time"] > 0:
             self.image_mix = self.image.copy()
             self.image_mix.fill(sfg.Sprite.UNDER_ATTACK_MIX_COLOR, special_flags=BLEND_ADD)
-            #self.image = image_mix
 
-        if self.sprite.status["recover_hp_effect_time"] > 0:
+        if sp.status["recover_hp_effect_time"] > 0:
             self.image_mix = self.image.copy()
             self.image_mix.fill(sfg.Sprite.RECOVER_HP_MIX_COLOR, special_flags=BLEND_ADD)
-            #self.image = image_mix
 
         self.words_renderer.update(passed_seconds)
 
