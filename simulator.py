@@ -811,6 +811,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
         self.thump_acceleration = attacker_params["thump_acceleration"]
         self.thump_pre_freeze_time = attacker_params["thump_pre_freeze_time"]
         self.thump_pre_frames = attacker_params["thump_pre_frames"]
+        self.thump_pre_rate = attacker_params["thump_pre_rate"]
         self.thump_frame = attacker_params["thump_frame"]
         self.thump_slide_time = attacker_params["thump_slide_time"]
         self.thump_slide_speed = attacker_params["thump_slide_speed"]

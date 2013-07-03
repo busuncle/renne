@@ -829,9 +829,10 @@ class CastleWarrior(Enemy):
 
     def thump(self, passed_seconds):
         if self.attacker.thump_pre_freeze_time_add == 0:
-            self.animation.run_sequence_frame(cfg.EnemyAction.ATTACK, passed_seconds)
+            self.animation.run_sequence_frame(cfg.EnemyAction.ATTACK, passed_seconds, 
+                self.attacker.thump_pre_rate)
             if self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK) \
-                not in self.attacker.thump_pre_frames:
+                > self.attacker.thump_pre_frames[-1]:
                 # pre -> pre_freeze
                 self.animation.set_frame_add(cfg.EnemyAction, self.attacker.thump_pre_frames[-1]) 
                 self.attacker.thump_pre_freeze_time_add += passed_seconds
