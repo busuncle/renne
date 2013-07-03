@@ -89,16 +89,39 @@ class GameSprite(pygame.sprite.DirtySprite):
 
 
     def reset_action(self):
-        self.action = cfg.HeroAction.STAND
+        self.action = cfg.SpriteAction.STAND
         self.animation.reset_frame_adds()
+
+
+    def set_emotion(self, emotion, force=False):
+        if not force and self.status["emotion"] in (cfg.SpriteEmotion.STUN, cfg.SpriteEmotion.DIZZY):
+            return
+
+        self.emotion_animation.reset_frame(self.status["emotion"])
+        self.status["emotion"] = emotion
 
 
     def update_status(self, passed_seconds):
         # update the status attribute
-        self.status["under_attack_effect_time"] = max(0,
-            self.status["under_attack_effect_time"] - passed_seconds)
-        self.status["recover_hp_effect_time"] = max(0,
-            self.status["recover_hp_effect_time"] - passed_seconds)
+        if self.status["under_attack_effect_time"] > 0:
+            self.status["under_attack_effect_time"] = max(0,
+                self.status["under_attack_effect_time"] - passed_seconds)
+
+        if self.status["recover_hp_effect_time"] > 0:
+            self.status["recover_hp_effect_time"] = max(0,
+                self.status["recover_hp_effect_time"] - passed_seconds)
+
+        if self.status.get("stun_time", 0) > 0:
+            self.animation.set_init_frame(cfg.SpriteAction.STAND)
+            self.status["stun_time"] = max(0, self.status["stun_time"] - passed_seconds)
+            if self.status["stun_time"] == 0:
+                self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
+
+        if self.status.get("dizzy_time", 0) > 0:
+            self.animation.set_init_frame(cfg.SpriteAction.STAND)
+            self.status["dizzy_time"] = max(0, self.status["dizzy_time"] - passed_seconds)
+            if self.status["dizzy_time"] == 0:
+                self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
 
 
     def update(self, passed_seconds):
@@ -162,11 +185,6 @@ class Renne(GameSprite):
         # place renne at some position, facing some direction
         self.pos = Vector2(pos)
         self.direction = direction
-
-
-    def set_emotion(self, emotion):
-        self.emotion_animation.reset_frame(self.status["emotion"])
-        self.status["emotion"] = emotion
 
 
     def draw(self, camera):
@@ -628,14 +646,6 @@ class Enemy(GameSprite):
             self.brain.set_target(target)
 
 
-    def set_emotion(self, emotion, force=False):
-        if not force and self.status["emotion"] in (cfg.SpriteEmotion.STUN, cfg.SpriteEmotion.DIZZY):
-            return
-
-        self.emotion_animation.reset_frame(self.status["emotion"])
-        self.status["emotion"] = emotion
-
-
     def event_handle(self, pressed_keys=None, external_event=None):
         # perception and belief control level
         if external_event is not None and external_event != cfg.GameStatus.IN_PROGRESS:
@@ -688,18 +698,6 @@ class Enemy(GameSprite):
 
     def update_status(self, passed_seconds):
         super(Enemy, self).update_status(passed_seconds)
-
-        if self.status.get("stun_time", 0) > 0:
-            self.animation.set_init_frame(cfg.EnemyAction.STAND)
-            self.status["stun_time"] = max(0, self.status["stun_time"] - passed_seconds)
-            if self.status["stun_time"] == 0:
-                self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
-
-        if self.status.get("dizzy_time", 0) > 0:
-            self.animation.set_init_frame(cfg.EnemyAction.STAND)
-            self.status["dizzy_time"] = max(0, self.status["dizzy_time"] - passed_seconds)
-            if self.status["dizzy_time"] == 0:
-                self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
 
         if self.status.get("under_thump") is not None:
             self.action = cfg.EnemyAction.UNDER_THUMP
