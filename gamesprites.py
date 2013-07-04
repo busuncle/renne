@@ -311,7 +311,11 @@ class Renne(GameSprite):
                             "key_vec": Vector2.from_points(em.pos, self.pos)}
                         hit_count += 1
                         break
+
                     else:
+                        if em.status.get("stun_time", 0) > 0 or em.status.get("dizzy_time", 0) > 0:
+                            continue
+
                         em.status["under_thump"] = {
                             "crick_time": self.setting.ATTACKER_PARAMS["run_attack"]["crick_time"],
                             "out_speed": self.setting.ATTACKER_PARAMS["run_attack"]["out_speed"], 
