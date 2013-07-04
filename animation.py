@@ -199,8 +199,12 @@ class SpriteAnimator(object):
         # update image related
         sp = self.sprite
         if sp.action in self.frame_adds:
-            self.image = self.sprite_image_contoller.get_subsurface(sp.action,
-                sp.direction, self.frame_adds[sp.action])
+            if sp.action == cfg.HeroAction.WIN:
+                self.image = self.sprite_image_contoller.get_surface(
+                    sp.action)[int(self.frame_adds[sp.action])]
+            else:
+                self.image = self.sprite_image_contoller.get_subsurface(sp.action,
+                    sp.direction, self.frame_adds[sp.action])
 
         self.image_mix = None
         if sp.debuff.get("poison") is not None:
@@ -266,23 +270,26 @@ class SpriteAnimator(object):
 class RenneAnimator(SpriteAnimator):
     def __init__(self, sprite):
         super(RenneAnimator, self).__init__(sprite)
+        self.win_frame_delay_add = 0
+        self.win_frame_delay = 1
 
     def _run_renne_win_frame(self, passed_seconds):
         # a fancy egg for Renne, ^o^
         action = cfg.HeroAction.WIN
         self.frame_adds[action] += passed_seconds * self.frame_rates[action]
-        if self.frame_adds[action] >= self.frame_nums[action]:
-            if self.frame_adds[action] < self.frame_nums[action] + 10:
+        if self.frame_adds[action] >= self.frame_nums[action] or self.win_frame_delay_add > 0:
+            self.frame_adds[action] = self.frame_nums[action] - 1
+            self.win_frame_delay_add += passed_seconds
+            if self.win_frame_delay_add < self.win_frame_delay:
                 # delay for better effect
-                self.image = self.sprite_image_contoller.get_surface(action)[self.frame_nums[action] - 1]
                 return False
             else:
+                self.win_frame_delay_add = 0
                 self.frame_adds[action] = 0
                 self.sprite.direction = cfg.Direction.SOUTH
                 return True
-        else:
-            self.image = self.sprite_image_contoller.get_surface(action)[int(self.frame_adds[action])]
-            return False
+
+        return False
 
 
 
