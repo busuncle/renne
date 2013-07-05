@@ -195,17 +195,12 @@ class SpriteAnimator(object):
         return False
 
 
-    def update(self, passed_seconds):
-        # update image related
-        sp = self.sprite
-        if sp.action in self.frame_adds:
-            if sp.action == cfg.HeroAction.WIN:
-                self.image = self.sprite_image_contoller.get_surface(
-                    sp.action)[int(self.frame_adds[sp.action])]
-            else:
-                self.image = self.sprite_image_contoller.get_subsurface(sp.action,
-                    sp.direction, self.frame_adds[sp.action])
+    def update_image(self):
+        # different sprite use its own update image method
+        pass
 
+
+    def update_image_mix(self, passed_seconds):
         self.image_mix = None
         if sp.debuff.get("poison") is not None:
             self.image_mix = self.blink.make(self.image, passed_seconds)
@@ -228,6 +223,11 @@ class SpriteAnimator(object):
             self.image_mix = self.image.copy()
             self.image_mix.fill(sfg.Sprite.RECOVER_HP_MIX_COLOR, special_flags=BLEND_ADD)
 
+
+    def update(self, passed_seconds):
+        # update image related
+        self.update_image()
+        self.update_image_mix()
         self.words_renderer.update(passed_seconds)
 
 
@@ -273,6 +273,18 @@ class RenneAnimator(SpriteAnimator):
         self.win_frame_delay_add = 0
         self.win_frame_delay = 1
 
+
+    def update_image(self):
+        sp = self.sprite
+        if sp.action in self.frame_adds:
+            if sp.action == cfg.HeroAction.WIN:
+                self.image = self.sprite_image_contoller.get_surface(
+                    sp.action)[int(self.frame_adds[sp.action])]
+            else:
+                self.image = self.sprite_image_contoller.get_subsurface(sp.action,
+                    sp.direction, self.frame_adds[sp.action])
+
+
     def _run_renne_win_frame(self, passed_seconds):
         # a fancy egg for Renne, ^o^
         action = cfg.HeroAction.WIN
@@ -299,6 +311,12 @@ class EnemyAnimator(SpriteAnimator):
         self.die_image = None
         self.dead_timer = Timer(sfg.Enemy.DEAD_TICK)
         self.hp_bar = pygame.Surface(sfg.SpriteStatus.ENEMY_HP_BAR_SIZE).convert_alpha()
+
+
+    def update_image(self):
+        if sp.action in self.frame_adds:
+            self.image = self.sprite_image_contoller.get_subsurface(sp.action,
+                sp.direction, self.frame_adds[sp.action])
 
 
     def dead_tick(self):
