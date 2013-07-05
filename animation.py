@@ -201,6 +201,7 @@ class SpriteAnimator(object):
 
 
     def update_image_mix(self, passed_seconds):
+        sp = self.sprite
         self.image_mix = None
         if sp.debuff.get("poison") is not None:
             self.image_mix = self.blink.make(self.image, passed_seconds)
@@ -227,7 +228,7 @@ class SpriteAnimator(object):
     def update(self, passed_seconds):
         # update image related
         self.update_image()
-        self.update_image_mix()
+        self.update_image_mix(passed_seconds)
         self.words_renderer.update(passed_seconds)
 
 
@@ -314,6 +315,7 @@ class EnemyAnimator(SpriteAnimator):
 
 
     def update_image(self):
+        sp = self.sprite
         if sp.action in self.frame_adds:
             self.image = self.sprite_image_contoller.get_subsurface(sp.action,
                 sp.direction, self.frame_adds[sp.action])
