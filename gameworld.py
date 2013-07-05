@@ -162,7 +162,7 @@ class GameWorld(pygame.sprite.LayeredDirty):
                 self.static_objects.pop(i)
 
         for i, sp in enumerate(self.dynamic_objects):
-            if sp.status["hp"] == cfg.SpriteStatus.VANISH:
+            if sp.status["hp"] == cfg.HpStatus.VANISH:
                 self.dynamic_objects.pop(i)
 
             if sp.setting.ID in sfg.SPRITES_WITH_MAGIC_SKILL:

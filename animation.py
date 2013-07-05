@@ -215,7 +215,7 @@ class SpriteAnimator(object):
             sp.debuff["weak"]["y"] += sfg.SpriteStatus.DEBUFF_WEAK_Y_MOVE_RATE * passed_seconds
             sp.debuff["weak"]["y"] %= sfg.SpriteStatus.DEBUFF_WEAK_Y_MAX
 
-        if sp.status["hp"] != cfg.SpriteStatus.DIE \
+        if sp.status["hp"] != cfg.HpStatus.DIE \
             and sp.status["under_attack_effect_time"] > 0:
             self.image_mix = self.image.copy()
             self.image_mix.fill(sfg.Sprite.UNDER_ATTACK_MIX_COLOR, special_flags=BLEND_ADD)
@@ -263,7 +263,7 @@ class SpriteAnimator(object):
                 sp.pos.y * 0.5 - camera.rect.y - sp.setting.HEIGHT - \
                     sfg.SpriteStatus.DEBUFF_WEAK_BLIT_HEIGHT_DELTA + dy))
 
-        if self.sprite.status["hp"] != cfg.SpriteStatus.VANISH:
+        if self.sprite.status["hp"] != cfg.HpStatus.VANISH:
             self.words_renderer.draw(camera)
 
 
@@ -366,7 +366,7 @@ class EnemyAnimator(SpriteAnimator):
 
     def draw(self, camera):
         super(EnemyAnimator, self).draw(camera)
-        if self.sprite.status["hp"] in cfg.SpriteStatus.ALIVE:
+        if self.sprite.status["hp"] in cfg.HpStatus.ALIVE:
             self.draw_hp_bar(camera)
 
 

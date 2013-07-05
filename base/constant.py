@@ -109,7 +109,19 @@ class SpriteState(object):
     DEFENCE = 5
 
 
+
 class SpriteStatus(object):
+    UNDER_ATTACK = 1
+    RECOVER_HP = 2
+    STUN = 3
+    DIZZY = 4
+    UNDER_THUMP = 5
+    CRICK = 6
+    AMBUSH = 7
+
+
+
+class HpStatus(object):
     HEALTHY = 0
     WOUNDED = 1
     DANGER = 2

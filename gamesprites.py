@@ -57,7 +57,7 @@ class GameSprite(pygame.sprite.DirtySprite):
     def gen_sprite_init_status(self):
         # a common value set a sprite,
         # a chaos dict that holding many kinds of status, i don't want many attributes, so i use it
-        return {"hp": cfg.SpriteStatus.HEALTHY, 
+        return {"hp": cfg.HpStatus.HEALTHY, 
             "recover_hp_effect_time": 0, "under_attack_effect_time": 0,
             "emotion": cfg.SpriteEmotion.NORMAL}
         
@@ -65,13 +65,13 @@ class GameSprite(pygame.sprite.DirtySprite):
     def cal_sprite_status(self, current_hp, full_hp):
         # calculate the sprite status according the current hp and full hp
         if current_hp > full_hp * sfg.SpriteStatus.HEALTHY_RATIO_FLOOR:
-            return cfg.SpriteStatus.HEALTHY
+            return cfg.HpStatus.HEALTHY
         elif current_hp > full_hp * sfg.SpriteStatus.WOUNDED_RATIO_FLOOR:
-            return cfg.SpriteStatus.WOUNDED
+            return cfg.HpStatus.WOUNDED
         elif current_hp > full_hp * sfg.SpriteStatus.DANGER_RATIO_FLOOR:
-            return cfg.SpriteStatus.DANGER
+            return cfg.HpStatus.DANGER
         else:
-            return cfg.SpriteStatus.DIE
+            return cfg.HpStatus.DIE
 
 
     def is_collide_map_boundry(self):
@@ -221,7 +221,7 @@ class Renne(GameSprite):
 
 
     def stand(self, passed_seconds):
-        if self.status["hp"] != cfg.SpriteStatus.DIE:
+        if self.status["hp"] != cfg.HpStatus.DIE:
             self.sp = min(self.setting.SP, self.sp + self.setting.SP_RECOVERY_RATE * passed_seconds)
             self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
         self.animation.run_circle_frame(cfg.HeroAction.STAND, passed_seconds)
@@ -568,7 +568,7 @@ class Enemy(GameSprite):
 
         self.animation.draw(camera)
 
-        if self.status["hp"] == cfg.SpriteStatus.DIE:
+        if self.status["hp"] == cfg.HpStatus.DIE:
             return
 
         self.emotion_animation.draw(camera)
@@ -665,7 +665,7 @@ class Enemy(GameSprite):
                 # do nothing
                 return
 
-        if self.status["hp"] == cfg.SpriteStatus.DIE:
+        if self.status["hp"] == cfg.HpStatus.DIE:
             return
 
         if self.status.get("stun_time", 0) > 0 or self.status.get("dizzy_time", 0) > 0:
@@ -745,7 +745,7 @@ class Enemy(GameSprite):
 
         self.update_status(passed_seconds)
 
-        if self.status["hp"] != cfg.SpriteStatus.DIE \
+        if self.status["hp"] != cfg.HpStatus.DIE \
             and self.status.get("stun_time", 0) == 0 and self.status.get("dizzy_time", 0) == 0:
 
             if self.action == cfg.EnemyAction.ATTACK:

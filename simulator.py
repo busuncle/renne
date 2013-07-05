@@ -595,7 +595,7 @@ class AngleAttacker(Attacker):
         vec_to_target = Vector2.from_points(sp.area.center, target.area.center)
         cos_val = cos_for_vec(direct_vec, vec_to_target)
         if self.attack_range + target.setting.RADIUS > vec_to_target.get_length() \
-            and cos_val >= self.cos_min and target.status["hp"] != cfg.SpriteStatus.DIE:
+            and cos_val >= self.cos_min and target.status["hp"] != cfg.HpStatus.DIE:
             self.has_hits.add(target)
             return True
 
@@ -721,7 +721,7 @@ class RenneAttacker(AngleAttacker):
         if len(self.has_hits) > 0:
             self.hit_record.append({"time": time(), "n_hit": len(self.has_hits)})
             for sp in self.has_hits:
-                if sp.status["hp"] == cfg.SpriteStatus.DIE:
+                if sp.status["hp"] == cfg.HpStatus.DIE:
                     self.kill_record.append({"time": time()})
             self.has_hits.clear()
 

@@ -379,7 +379,7 @@ class GameStatus(object):
 
     def update(self, passed_seconds):
         if self.status == cfg.GameStatus.IN_PROGRESS:
-            if self.hero.status["hp"] == cfg.SpriteStatus.DIE:
+            if self.hero.status["hp"] == cfg.HpStatus.DIE:
                 # hero is dead, game over
                 self.status = cfg.GameStatus.HERO_LOSE
                 return
@@ -394,18 +394,18 @@ class GameStatus(object):
             self.achievement.chapter_score.update(passed_seconds)
 
         if self.win_cond == sfg.Chapter.WIN_CONDITION_BOSS_DIE \
-            and self.boss.status["hp"] == cfg.SpriteStatus.DIE:
+            and self.boss.status["hp"] == cfg.HpStatus.DIE:
             # in an chapter that boss die you win, kill all enemy when boss die
             for em in self.enemy_list:
                 if em.hp > 0:
                     em.hp = 0
-                    em.status["hp"] = cfg.SpriteStatus.DIE
+                    em.status["hp"] = cfg.HpStatus.DIE
 
         for em in self.enemy_list:
-            if em.status["hp"] == cfg.SpriteStatus.DIE:
+            if em.status["hp"] == cfg.HpStatus.DIE:
                 can_be_removed = em.animation.dead_tick()
                 if can_be_removed:
-                    em.status["hp"] = cfg.SpriteStatus.VANISH
+                    em.status["hp"] = cfg.HpStatus.VANISH
                     # kill the sprite from sprite groups containing it, but not chaning its internal status
                     em.kill()
 

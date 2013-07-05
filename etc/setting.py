@@ -893,10 +893,10 @@ class SpriteStatus(object):
 
     # health point related
     SPRITE_HP_COLORS = {
-        cfg.SpriteStatus.HEALTHY: pygame.Color(0, 128, 0, 128),
-        cfg.SpriteStatus.WOUNDED: pygame.Color(128, 128, 0, 128),
-        cfg.SpriteStatus.DANGER: pygame.Color(128, 0, 0, 128),
-        cfg.SpriteStatus.DIE: pygame.Color(128, 128, 128, 128),
+        cfg.HpStatus.HEALTHY: pygame.Color(0, 128, 0, 128),
+        cfg.HpStatus.WOUNDED: pygame.Color(128, 128, 0, 128),
+        cfg.HpStatus.DANGER: pygame.Color(128, 0, 0, 128),
+        cfg.HpStatus.DIE: pygame.Color(128, 128, 128, 128),
     }
     SPRITE_BAR_BG_COLOR = pygame.Color(0, 0, 0, 128)
     HERO_ALL_BAR_SIZE = (100, 10)
