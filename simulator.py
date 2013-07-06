@@ -381,7 +381,7 @@ class DestroyAeroliteSet(MagicSkill):
                     if hasattr(sp.setting, "MAGIC_RESISTANCE_SCALE"):
                         damage = int(damage / sp.setting.MAGIC_RESISTANCE_SCALE)
                     sp.attacker.handle_under_attack(self.sprite, damage)
-                    sp.status["stun_time"] = self.params["stun_time"]
+                    sp.status[cfg.SpriteStatus.STUN] = {"time": self.params["stun_time"]}
                     sp.set_emotion(cfg.SpriteEmotion.STUN)
 
         if len(self.trigger_times) == 0 and len(self.magic_sprites) == 0:
@@ -411,7 +411,7 @@ class RenneDizzy(MagicSkill):
                 and target not in self.dizzy_targets:
                 self.dizzy_targets.add(target)
                 if happen(self.prob):
-                    target.status["dizzy_time"] = self.dizzy_time
+                    target.status[cfg.SpriteStatus.DIZZY] = {"time": self.dizzy_time}
                     target.set_emotion(cfg.SpriteEmotion.DIZZY)
 
         self.effective_time -= passed_seconds

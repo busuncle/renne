@@ -111,16 +111,18 @@ class GameSprite(pygame.sprite.DirtySprite):
             if self.status[cfg.SpriteStatus.RECOVER_HP]["time"] < 0:
                 self.status.pop(cfg.SpriteStatus.RECOVER_HP)
 
-        if self.status.get("stun_time", 0) > 0:
+        if self.status.get(cfg.SpriteStatus.STUN) is not None:
             self.animation.set_init_frame(cfg.SpriteAction.STAND)
-            self.status["stun_time"] = max(0, self.status["stun_time"] - passed_seconds)
-            if self.status["stun_time"] == 0:
+            self.status[cfg.SpriteStatus.STUN]["time"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.STUN]["time"] < 0:
+                self.status.pop(cfg.SpriteStatus.STUN)
                 self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
 
-        if self.status.get("dizzy_time", 0) > 0:
+        if self.status.get(cfg.SpriteStatus.DIZZY) is not None:
             self.animation.set_init_frame(cfg.SpriteAction.STAND)
-            self.status["dizzy_time"] = max(0, self.status["dizzy_time"] - passed_seconds)
-            if self.status["dizzy_time"] == 0:
+            self.status[cfg.SpriteStatus.DIZZY]["time"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.DIZZY]["time"] < 0:
+                self.status.pop(cfg.SpriteStatus.DIZZY)
                 self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
 
 
@@ -313,7 +315,8 @@ class Renne(GameSprite):
                         break
 
                     else:
-                        if em.status.get("stun_time", 0) > 0 or em.status.get("dizzy_time", 0) > 0:
+                        if em.status.get(cfg.SpriteStatus.STUN) is not None \
+                            or em.status.get(cfg.SpriteStatus.DIZZY) is not None:
                             continue
 
                         em.status["under_thump"] = {
@@ -668,7 +671,8 @@ class Enemy(GameSprite):
         if self.status["hp"] == cfg.HpStatus.DIE:
             return
 
-        if self.status.get("stun_time", 0) > 0 or self.status.get("dizzy_time", 0) > 0:
+        if self.status.get(cfg.SpriteStatus.STUN) is not None \
+            or self.status.get(cfg.SpriteStatus.DIZZY) is not None:
             self.reset_action(force=True)
             return
 
@@ -746,7 +750,8 @@ class Enemy(GameSprite):
         self.update_status(passed_seconds)
 
         if self.status["hp"] != cfg.HpStatus.DIE \
-            and self.status.get("stun_time", 0) == 0 and self.status.get("dizzy_time", 0) == 0:
+            and self.status.get(cfg.SpriteStatus.STUN) is None \
+            and self.status.get(cfg.SpriteStatus.DIZZY) is None:
 
             if self.action == cfg.EnemyAction.ATTACK:
                 self.attack(passed_seconds)
