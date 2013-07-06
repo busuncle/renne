@@ -490,10 +490,10 @@ class Renne(GameSprite):
             self.under_thump(passed_seconds)
 
         # update some debuff
-        if self.debuff.get("poison") is not None:
-            poison = self.debuff["poison"]
+        if self.status.get(cfg.SpriteStatus.POISON) is not None:
+            poison = self.status[cfg.SpriteStatus.POISON]
             if poison["time_left"] < 0:
-                self.debuff.pop("poison")
+                self.status.pop(cfg.SpriteStatus.POISON)
             else:
                 poison["time_left"] -= passed_seconds
                 if len(poison["time_list"]) > 0 and poison["time_left"] <= poison["time_list"][-1]:

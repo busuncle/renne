@@ -770,8 +770,8 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
         hit_it = super(EnemyPoisonShortAttacker, self).run(hero, current_frame_add)
         # add additional poison damage
         if hit_it and happen(self.poison_prob):
-            hero.debuff["poison"] = {"dps": self.poison_dps, "time_list": range(self.poison_time),
-                "time_left": self.poison_time}
+            hero.status[cfg.SpriteStatus.POISON] = {"dps": self.poison_dps, 
+                "time_list": range(self.poison_time), "time_left": self.poison_time}
             words = sfg.Font.ARIAL_BLACK_24.render("Poison!", True, pygame.Color("green"))
             sp = self.sprite
             sp.animation.show_words(words, 0.3, 

@@ -203,7 +203,7 @@ class SpriteAnimator(object):
     def update_image_mix(self, passed_seconds):
         sp = self.sprite
         self.image_mix = None
-        if sp.debuff.get("poison") is not None:
+        if sp.status.get(cfg.SpriteStatus.POISON) is not None:
             self.image_mix = self.blink.make(self.image, passed_seconds)
             self.image_mix.fill(sfg.SpriteStatus.DEBUFF_POISON_MIX_COLOR, special_flags=BLEND_ADD)
 
