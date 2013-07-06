@@ -306,24 +306,20 @@ class Renne(GameSprite):
                         # under thump status, can clean attacker
                         self.attacker.finish()
                         self.animation.set_init_frame(cfg.HeroAction.STAND)
-                        self.status[cfg.SpriteStatus.UNDER_THUMP] = {
-                            "crick_time": self.setting.ATTACKER_PARAMS["run_attack"]["crick_time"],
+                        self.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP, 
+                            {"crick_time": self.setting.ATTACKER_PARAMS["run_attack"]["crick_time"],
                             "out_speed": self.setting.ATTACKER_PARAMS["run_attack"]["out_speed"], 
                             "acceleration": self.setting.ATTACKER_PARAMS["run_attack"]["acceleration"],
-                            "key_vec": Vector2.from_points(em.pos, self.pos)}
+                            "key_vec": Vector2.from_points(em.pos, self.pos)})
                         hit_count += 1
                         break
 
                     else:
-                        if em.status.get(cfg.SpriteStatus.STUN) is not None \
-                            or em.status.get(cfg.SpriteStatus.DIZZY) is not None:
-                            continue
-
-                        em.status[cfg.SpriteStatus.UNDER_THUMP] = {
-                            "crick_time": self.setting.ATTACKER_PARAMS["run_attack"]["crick_time"],
+                        em.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP, 
+                            {"crick_time": self.setting.ATTACKER_PARAMS["run_attack"]["crick_time"],
                             "out_speed": self.setting.ATTACKER_PARAMS["run_attack"]["out_speed"], 
                             "acceleration": self.setting.ATTACKER_PARAMS["run_attack"]["acceleration"],
-                            "key_vec": Vector2.from_points(self.pos, em.pos)}
+                            "key_vec": Vector2.from_points(self.pos, em.pos)})
                         hit_count += 1
 
             if hit_count > 0:
@@ -867,6 +863,22 @@ class CastleWarrior(Enemy):
         elif self.attacker.method == "thump":
             self.thump(passed_seconds)
 
+
+
+class TwoHeadSkeleton(Enemy):
+    def __init__(self, setting, pos, direction):
+        super(TwoHeadSkeleton, self).__init__(setting, pos, direction)
+
+
+    def fall(self, passed_seconds):
+        pass
+
+
+    def attack(self, passed_seconds):
+        if self.attacker.method == "regular":
+            super(TwoHeadSkeleton, self).attack(passed_seconds)
+        elif self.attacker.method == "fall":
+            self.fall(passed_seconds)
 
 
 ######## sprite group subclass ########

@@ -142,6 +142,7 @@ class WerwolfAI(ShortNormalAI):
 class TwoHeadSkeletonAI(ShortNormalAI):
     STAY_CHANGE_DIRECTION_PROB = 0.001
     STAY_TO_PATROL_PROB = 0
+    ATTACK_FALL_PROB = 0.9
 
 
 

@@ -74,6 +74,7 @@ class SpriteAction(object):
     RUN = 3
     ATTACK = 4
     UNDER_THUMP = 5
+    KNEEL = 6
 
 
 
@@ -121,8 +122,10 @@ class SpriteStatus(object):
     POISON = 8
     FROZEN = 9
     WEAK = 10
+    IN_AIR = 11
 
     BAD_STATUS_LIST = (POISON, FROZEN, WEAK)
+    REJECT_THUMP_STATUS_LIST = (STUN, DIZZY, IN_AIR)
 
 
 

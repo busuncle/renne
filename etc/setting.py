@@ -454,9 +454,16 @@ class TwoHeadSkeleton(Enemy):
         "angle": 60,
         "key_frames": (6, 7),
         "suck_blood_ratio": 0.5,
+        "fall_range": (100, 600),
+        "fall_run_up_time": 0.8,
+        "fall_kneel_time": 0.5,
+        "fall_acceleration": -400,
+        "fall_v0_y": 200,
+        "fall_back_v0_y": 50,
+        "fall_damage": 80,
     }
 
-    WALK_SPEED = 140
+    WALK_SPEED = 90
 
 
 
@@ -1344,6 +1351,7 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),
         cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
+        cfg.EnemyAction.KNEEL: ("kneel.png", 1, 0),
     }),
     Werwolf.ID: ("werwolf", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
