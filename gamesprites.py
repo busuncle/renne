@@ -57,8 +57,7 @@ class GameSprite(pygame.sprite.DirtySprite):
     def gen_sprite_init_status(self):
         # a common value set a sprite,
         # a chaos dict that holding many kinds of status, i don't want many attributes, so i use it
-        return {"hp": cfg.HpStatus.HEALTHY, "recover_hp_effect_time": 0, 
-            "emotion": cfg.SpriteEmotion.NORMAL}
+        return {"hp": cfg.HpStatus.HEALTHY, "emotion": cfg.SpriteEmotion.NORMAL}
         
 
     def cal_sprite_status(self, current_hp, full_hp):
@@ -107,9 +106,10 @@ class GameSprite(pygame.sprite.DirtySprite):
             if self.status[cfg.SpriteStatus.UNDER_ATTACK]["time"] < 0:
                 self.status.pop(cfg.SpriteStatus.UNDER_ATTACK)
 
-        if self.status["recover_hp_effect_time"] > 0:
-            self.status["recover_hp_effect_time"] = max(0,
-                self.status["recover_hp_effect_time"] - passed_seconds)
+        if self.status.get(cfg.SpriteStatus.RECOVER_HP) is not None:
+            self.status[cfg.SpriteStatus.RECOVER_HP]["time"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.RECOVER_HP]["time"] < 0:
+                self.status.pop(cfg.SpriteStatus.RECOVER_HP)
 
         if self.status.get("stun_time", 0) > 0:
             self.animation.set_init_frame(cfg.SpriteAction.STAND)
@@ -214,7 +214,7 @@ class Renne(GameSprite):
                         collided_obj.setting.RECOVER_HP)
                     self.hp += real_recover_hp
                     self.status["hp"] = self.cal_sprite_status(self.hp, self.setting.HP)
-                    self.status["recover_hp_effect_time"] = sfg.Sprite.RECOVER_HP_EFFECT_TIME
+                    self.status[cfg.SpriteStatus.RECOVER_HP] = {"time": sfg.Sprite.RECOVER_HP_EFFECT_TIME}
                     self.animation.show_recover_hp(real_recover_hp)
                     collided_obj.status = cfg.StaticObject.STATUS_VANISH
                     collided_obj.kill()

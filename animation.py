@@ -220,7 +220,7 @@ class SpriteAnimator(object):
             self.image_mix = self.image.copy()
             self.image_mix.fill(sfg.Sprite.UNDER_ATTACK_MIX_COLOR, special_flags=BLEND_ADD)
 
-        if sp.status["recover_hp_effect_time"] > 0:
+        if sp.status.get(cfg.SpriteStatus.RECOVER_HP) is not None:
             self.image_mix = self.image.copy()
             self.image_mix.fill(sfg.Sprite.RECOVER_HP_MIX_COLOR, special_flags=BLEND_ADD)
 
