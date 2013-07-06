@@ -306,7 +306,7 @@ class Renne(GameSprite):
                         # under thump status, can clean attacker
                         self.attacker.finish()
                         self.animation.set_init_frame(cfg.HeroAction.STAND)
-                        self.status["under_thump"] = {
+                        self.status[cfg.SpriteStatus.UNDER_THUMP] = {
                             "crick_time": self.setting.ATTACKER_PARAMS["run_attack"]["crick_time"],
                             "out_speed": self.setting.ATTACKER_PARAMS["run_attack"]["out_speed"], 
                             "acceleration": self.setting.ATTACKER_PARAMS["run_attack"]["acceleration"],
@@ -319,7 +319,7 @@ class Renne(GameSprite):
                             or em.status.get(cfg.SpriteStatus.DIZZY) is not None:
                             continue
 
-                        em.status["under_thump"] = {
+                        em.status[cfg.SpriteStatus.UNDER_THUMP] = {
                             "crick_time": self.setting.ATTACKER_PARAMS["run_attack"]["crick_time"],
                             "out_speed": self.setting.ATTACKER_PARAMS["run_attack"]["out_speed"], 
                             "acceleration": self.setting.ATTACKER_PARAMS["run_attack"]["acceleration"],
@@ -437,21 +437,21 @@ class Renne(GameSprite):
 
 
     def under_thump(self, passed_seconds):
-        self.move(self.status["under_thump"]["out_speed"], passed_seconds, 
-            self.status["under_thump"]["key_vec"])
+        self.move(self.status[cfg.SpriteStatus.UNDER_THUMP]["out_speed"], passed_seconds, 
+            self.status[cfg.SpriteStatus.UNDER_THUMP]["key_vec"])
         self.animation.run_circle_frame(cfg.HeroAction.UNDER_THUMP, passed_seconds)
 
 
     def update_status(self, passed_seconds):
         super(Renne, self).update_status(passed_seconds)
-        if self.status.get("under_thump") is not None:
+        if self.status.get(cfg.SpriteStatus.UNDER_THUMP) is not None:
             self.action = cfg.HeroAction.UNDER_THUMP
-            self.status["under_thump"]["out_speed"] = max(0, self.status["under_thump"]["out_speed"] \
-                + self.status["under_thump"]["acceleration"] * passed_seconds)
-            self.status["under_thump"]["crick_time"] -= passed_seconds
-            if self.status["under_thump"]["crick_time"] <= 0:
+            self.status[cfg.SpriteStatus.UNDER_THUMP]["out_speed"] = max(0, self.status[cfg.SpriteStatus.UNDER_THUMP]["out_speed"] \
+                + self.status[cfg.SpriteStatus.UNDER_THUMP]["acceleration"] * passed_seconds)
+            self.status[cfg.SpriteStatus.UNDER_THUMP]["crick_time"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.UNDER_THUMP]["crick_time"] <= 0:
                 self.reset_action()
-                self.status.pop("under_thump")
+                self.status.pop(cfg.SpriteStatus.UNDER_THUMP)
 
 
     def update(self, passed_seconds, external_event=None):
@@ -623,8 +623,8 @@ class Enemy(GameSprite):
 
 
     def under_thump(self, passed_seconds):
-        self.move(self.status["under_thump"]["out_speed"], passed_seconds,
-            check_reachable=True, key_vec=self.status["under_thump"]["key_vec"])
+        self.move(self.status[cfg.SpriteStatus.UNDER_THUMP]["out_speed"], passed_seconds,
+            check_reachable=True, key_vec=self.status[cfg.SpriteStatus.UNDER_THUMP]["key_vec"])
         self.animation.run_circle_frame(cfg.EnemyAction.UNDER_THUMP, passed_seconds) 
 
 
@@ -707,14 +707,14 @@ class Enemy(GameSprite):
     def update_status(self, passed_seconds):
         super(Enemy, self).update_status(passed_seconds)
 
-        if self.status.get("under_thump") is not None:
+        if self.status.get(cfg.SpriteStatus.UNDER_THUMP) is not None:
             self.action = cfg.EnemyAction.UNDER_THUMP
-            self.status["under_thump"]["out_speed"] = max(0, self.status["under_thump"]["out_speed"] \
-                + self.status["under_thump"]["acceleration"] * passed_seconds)
-            self.status["under_thump"]["crick_time"] -= passed_seconds
-            if self.status["under_thump"]["crick_time"] <= 0:
+            self.status[cfg.SpriteStatus.UNDER_THUMP]["out_speed"] = max(0, self.status[cfg.SpriteStatus.UNDER_THUMP]["out_speed"] \
+                + self.status[cfg.SpriteStatus.UNDER_THUMP]["acceleration"] * passed_seconds)
+            self.status[cfg.SpriteStatus.UNDER_THUMP]["crick_time"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.UNDER_THUMP]["crick_time"] <= 0:
                 self.reset_action(force=True)
-                self.status.pop("under_thump")
+                self.status.pop(cfg.SpriteStatus.UNDER_THUMP)
 
         if self.status.get("crick") is not None:
             self.action = cfg.EnemyAction.UNCONTROLLED

@@ -859,8 +859,8 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
                 words = sfg.Font.ARIAL_BLACK_24.render("Thump!", True, pygame.Color("gold"))
                 sp.animation.show_words(words, 0.3, 
                     (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
-                if hero.status.get("under_thump") is None:
-                    hero.status["under_thump"] = {"crick_time": self.thump_crick_time, 
+                if hero.status.get(cfg.SpriteStatus.UNDER_THUMP) is None:
+                    hero.status[cfg.SpriteStatus.UNDER_THUMP] = {"crick_time": self.thump_crick_time, 
                         "out_speed": self.thump_out_speed, 
                         "acceleration": self.thump_acceleration,
                         "key_vec": Vector2.from_points(sp.pos, hero.pos)}
