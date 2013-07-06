@@ -207,13 +207,13 @@ class SpriteAnimator(object):
             self.image_mix = self.blink.make(self.image, passed_seconds)
             self.image_mix.fill(sfg.SpriteStatus.DEBUFF_POISON_MIX_COLOR, special_flags=BLEND_ADD)
 
-        if sp.debuff.get("frozen") is not None:
+        if sp.status.get(cfg.SpriteStatus.FROZEN) is not None:
             self.image_mix = self.blink.make(self.image, passed_seconds)
             self.image_mix.fill(sfg.SpriteStatus.DEBUFF_FROZON_MIX_COLOR, special_flags=BLEND_ADD)
 
-        if sp.debuff.get("weak") is not None:
-            sp.debuff["weak"]["y"] += sfg.SpriteStatus.DEBUFF_WEAK_Y_MOVE_RATE * passed_seconds
-            sp.debuff["weak"]["y"] %= sfg.SpriteStatus.DEBUFF_WEAK_Y_MAX
+        if sp.status.get(cfg.SpriteStatus.WEAK) is not None:
+            sp.status[cfg.SpriteStatus.WEAK]["y"] += sfg.SpriteStatus.DEBUFF_WEAK_Y_MOVE_RATE * passed_seconds
+            sp.status[cfg.SpriteStatus.WEAK]["y"] %= sfg.SpriteStatus.DEBUFF_WEAK_Y_MAX
 
         if sp.status["hp"] != cfg.HpStatus.DIE \
             and sp.status.get(cfg.SpriteStatus.UNDER_ATTACK) is not None:
@@ -254,11 +254,11 @@ class SpriteAnimator(object):
             image_blit_pos = (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top)
             camera.screen.blit(self.image, image_blit_pos)
 
-        if self.sprite.debuff.get("weak") is not None:
+        if self.sprite.status.get(cfg.SpriteStatus.WEAK) is not None:
             weak_icon = battle_images.get(sfg.SpriteStatus.DEBUFF_WEAK_IMAGE_KEY).subsurface(
                 sfg.SpriteStatus.DEBUFF_WEAK_RECT).convert_alpha()
             sp = self.sprite
-            dy = self.sprite.debuff["weak"]["y"]
+            dy = self.sprite.status[cfg.SpriteStatus.WEAK]["y"]
             camera.screen.blit(weak_icon, (sp.pos.x - camera.rect.x - weak_icon.get_width() * 0.5, 
                 sp.pos.y * 0.5 - camera.rect.y - sp.setting.HEIGHT - \
                     sfg.SpriteStatus.DEBUFF_WEAK_BLIT_HEIGHT_DELTA + dy))

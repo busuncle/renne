@@ -918,7 +918,7 @@ class EnemyFrozenShortAttacker(EnemyShortAttacker):
                 hero.status.get("action_rate_scale", 0), self.action_rate_scale)
             hero.status["action_rate_scale_time"] = max(
                 hero.status.get("action_rate_scale_time", 0), self.frozen_time)
-            hero.debuff["frozen"] = {"time_left": self.frozen_time}
+            hero.status[cfg.SpriteStatus.FROZEN] = {"time_left": self.frozen_time}
             words = sfg.Font.ARIAL_BLACK_24.render("Frozen!", True, pygame.Color("cyan"))
             sp = self.sprite
             sp.animation.show_words(words, 0.3, 
@@ -928,7 +928,7 @@ class EnemyFrozenShortAttacker(EnemyShortAttacker):
 
 
 class EnemyWeakShortAttacker(EnemyShortAttacker):
-    # give hero weak debuff
+    # give hero weak status
     def __init__(self, sprite, attacker_params):
         super(EnemyWeakShortAttacker, self).__init__(sprite, attacker_params)
         self.weak_prob = attacker_params["weak_prob"]
@@ -940,7 +940,7 @@ class EnemyWeakShortAttacker(EnemyShortAttacker):
     def run(self, hero, current_frame_add):
         hit_it = super(EnemyWeakShortAttacker, self).run(hero, current_frame_add)
         if hit_it and happen(self.weak_prob):
-            hero.debuff["weak"] = {"time_left": self.weak_time, "y": 0}
+            hero.status[cfg.SpriteStatus.WEAK] = {"time_left": self.weak_time, "y": 0}
             hero.atk = max(0, hero.atk - self.weak_atk)
             hero.dfs = max(0, hero.dfs - self.weak_dfs)
             words = sfg.Font.ARIAL_BLACK_24.render("Weak!", True, pygame.Color("gray"))

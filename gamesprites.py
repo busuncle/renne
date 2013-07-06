@@ -45,7 +45,6 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.dfs = dfs
         self.status = self.gen_sprite_init_status()
         self.buff = {}
-        self.debuff = {}
         self.sound_box = SoundBox()
         self.pos = Vector2(pos)
         self.direction = direction
@@ -180,7 +179,6 @@ class Renne(GameSprite):
         self.dfs = self.setting.DFS
         self.status = self.gen_sprite_init_status()
         self.buff = {}
-        self.debuff = {}
 
 
     def place(self, pos, direction):
@@ -489,7 +487,6 @@ class Renne(GameSprite):
         elif self.action == cfg.HeroAction.UNDER_THUMP:
             self.under_thump(passed_seconds)
 
-        # update some debuff
         if self.status.get(cfg.SpriteStatus.POISON) is not None:
             poison = self.status[cfg.SpriteStatus.POISON]
             if poison["time_left"] < 0:
@@ -502,15 +499,15 @@ class Renne(GameSprite):
                     self.status["hp"] = self.cal_sprite_status(self.hp, self.setting.HP)
                     self.animation.show_cost_hp(poison["dps"])
 
-        if self.debuff.get("frozen") is not None:
-            self.debuff["frozen"]["time_left"] -= passed_seconds
-            if self.debuff["frozen"]["time_left"] < 0:
-                self.debuff.pop("frozen")
+        if self.status.get(cfg.SpriteStatus.FROZEN) is not None:
+            self.status[cfg.SpriteStatus.FROZEN]["time_left"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.FROZEN]["time_left"] < 0:
+                self.status.pop(cfg.SpriteStatus.FROZEN)
 
-        if self.debuff.get("weak") is not None:
-            self.debuff["weak"]["time_left"] -= passed_seconds
-            if self.debuff["weak"]["time_left"] < 0:
-                self.debuff.pop("weak")
+        if self.status.get(cfg.SpriteStatus.WEAK) is not None:
+            self.status[cfg.SpriteStatus.WEAK]["time_left"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.WEAK]["time_left"] < 0:
+                self.status.pop(cfg.SpriteStatus.WEAK)
                 # return normal atk and dfs
                 self.atk = self.setting.ATK
                 self.dfs = self.setting.DFS
