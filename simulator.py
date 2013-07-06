@@ -166,7 +166,7 @@ class DestroyFire(EnergyBallSet):
                 continue
 
             self.tag_cricks.add(sp)
-            sp.status["crick"] = {"time": self.crick_time, "old_action": sp.action}
+            sp.status[cfg.SpriteStatus.CRICK] = {"time": self.crick_time, "old_action": sp.action}
 
 
 

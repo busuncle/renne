@@ -716,13 +716,13 @@ class Enemy(GameSprite):
                 self.reset_action(force=True)
                 self.status.pop(cfg.SpriteStatus.UNDER_THUMP)
 
-        if self.status.get("crick") is not None:
+        if self.status.get(cfg.SpriteStatus.CRICK) is not None:
             self.action = cfg.EnemyAction.UNCONTROLLED
-            self.status["crick"]["time"] -= passed_seconds
-            if self.status["crick"]["time"] <= 0:
+            self.status[cfg.SpriteStatus.CRICK]["time"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.CRICK]["time"] <= 0:
                 # reset to old action
-                self.action = self.status["crick"]["old_action"]
-                self.status.pop("crick")
+                self.action = self.status[cfg.SpriteStatus.CRICK]["old_action"]
+                self.status.pop(cfg.SpriteStatus.CRICK)
 
         if self.status.get("ambush") is not None:
             if self.status["ambush"]["status"] == cfg.Ambush.STATUS_INIT:
