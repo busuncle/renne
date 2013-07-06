@@ -557,16 +557,16 @@ class Enemy(GameSprite):
 
 
     def draw(self, camera):
-        if self.status.get("ambush") is not None:
+        if self.status.get(cfg.SpriteStatus.AMBUSH) is not None:
             # this enemy is in ambush status, draw it according the corresponding status stage
-            if self.status["ambush"]["status"] == cfg.Ambush.STATUS_INIT:
+            if self.status[cfg.SpriteStatus.AMBUSH]["status"] == cfg.Ambush.STATUS_INIT:
                 # don't draw it because hero doesn't enter this ambush
                 return
 
-            elif self.status["ambush"]["status"] == cfg.Ambush.STATUS_ENTER:
+            elif self.status[cfg.SpriteStatus.AMBUSH]["status"] == cfg.Ambush.STATUS_ENTER:
                 # hero enter the ambush, draw corresponding episode
-                if self.status["ambush"]["type"] == cfg.Ambush.APPEAR_TYPE_TOP_DOWN:
-                    self.animation.draw_with_height(camera, self.status["ambush"]["height"])
+                if self.status[cfg.SpriteStatus.AMBUSH]["type"] == cfg.Ambush.APPEAR_TYPE_TOP_DOWN:
+                    self.animation.draw_with_height(camera, self.status[cfg.SpriteStatus.AMBUSH]["height"])
                 return
 
         self.animation.draw(camera)
@@ -724,17 +724,17 @@ class Enemy(GameSprite):
                 self.action = self.status[cfg.SpriteStatus.CRICK]["old_action"]
                 self.status.pop(cfg.SpriteStatus.CRICK)
 
-        if self.status.get("ambush") is not None:
-            if self.status["ambush"]["status"] == cfg.Ambush.STATUS_INIT:
-                self.status["ambush"]["init_delay"] -= passed_seconds
-                if self.status["ambush"]["init_delay"] < 0:
+        if self.status.get(cfg.SpriteStatus.AMBUSH) is not None:
+            if self.status[cfg.SpriteStatus.AMBUSH]["status"] == cfg.Ambush.STATUS_INIT:
+                self.status[cfg.SpriteStatus.AMBUSH]["init_delay"] -= passed_seconds
+                if self.status[cfg.SpriteStatus.AMBUSH]["init_delay"] < 0:
                     # delay time is over, turn to *STATUS_ENTER*
-                    self.status["ambush"]["status"] = cfg.Ambush.STATUS_ENTER
-            elif self.status["ambush"]["status"] == cfg.Ambush.STATUS_ENTER:
-                self.status["ambush"]["height"] = max(0, 
-                    self.status["ambush"]["height"] - self.status["ambush"]["speed"] * passed_seconds)
-                if self.status["ambush"]["height"] == 0:
-                    self.status["ambush"]["status"] = cfg.Ambush.STATUS_FINISH
+                    self.status[cfg.SpriteStatus.AMBUSH]["status"] = cfg.Ambush.STATUS_ENTER
+            elif self.status[cfg.SpriteStatus.AMBUSH]["status"] == cfg.Ambush.STATUS_ENTER:
+                self.status[cfg.SpriteStatus.AMBUSH]["height"] = max(0, 
+                    self.status[cfg.SpriteStatus.AMBUSH]["height"] - self.status[cfg.SpriteStatus.AMBUSH]["speed"] * passed_seconds)
+                if self.status[cfg.SpriteStatus.AMBUSH]["height"] == 0:
+                    self.status[cfg.SpriteStatus.AMBUSH]["status"] = cfg.Ambush.STATUS_FINISH
                     self.action = cfg.EnemyAction.STAND
                 else:
                     self.action = cfg.EnemyAction.UNCONTROLLED
@@ -914,7 +914,7 @@ class Ambush(pygame.sprite.LayeredDirty):
     def init_sprite_status(self):
         for sp in self.sprites():
             if self.appear_type == cfg.Ambush.APPEAR_TYPE_TOP_DOWN:
-                sp.status["ambush"] = {"type": self.appear_type, 
+                sp.status[cfg.SpriteStatus.AMBUSH] = {"type": self.appear_type, 
                     "height": random.randint(*sfg.Ambush.APPEAR_TYPE_TOP_DOWN_HEIGHT_RAND_RANGE),
                     "speed": sfg.Ambush.APPEAR_TYPE_TOP_DOWN_SPEED,
                     "init_delay": random.uniform(*sfg.Ambush.APPEAR_TYPE_TOP_DOWN_INIT_DELAY_RAND_RANGE),
@@ -931,7 +931,7 @@ class Ambush(pygame.sprite.LayeredDirty):
     def update(self, passed_seconds):
         finish_num = 0
         for sp in self.sprites():
-            if sp.status["ambush"]["status"] == cfg.Ambush.STATUS_FINISH:
+            if sp.status[cfg.SpriteStatus.AMBUSH]["status"] == cfg.Ambush.STATUS_FINISH:
                 finish_num += 1
 
         if finish_num == len(self.sprites()):
