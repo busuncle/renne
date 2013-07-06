@@ -235,8 +235,9 @@ class Renne(GameSprite):
 
     def walk(self, passed_seconds):
         self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
-        if self.status.get("action_rate_scale") is not None:
-            self.move(self.setting.WALK_SPEED * self.status["action_rate_scale"], passed_seconds)
+        if self.status.get(cfg.SpriteStatus.FROZEN) is not None:
+            self.move(self.setting.WALK_SPEED * self.status[cfg.SpriteStatus.FROZEN]["action_rate_scale"], 
+                passed_seconds)
         else:
             self.move(self.setting.WALK_SPEED, passed_seconds)
         self.animation.run_circle_frame(cfg.HeroAction.WALK, passed_seconds)
@@ -246,8 +247,9 @@ class Renne(GameSprite):
         # cost some stamina when running
         self.sp = max(0, self.sp - self.setting.SP_COST_RATE * passed_seconds)
         self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
-        if self.status.get("action_rate_scale") is not None:
-            self.move(self.setting.RUN_SPEED * self.status["action_rate_scale"], passed_seconds)
+        if self.status.get(cfg.SpriteStatus.FROZEN) is not None:
+            self.move(self.setting.RUN_SPEED * self.status[cfg.SpriteStatus.FROZEN]["action_rate_scale"], 
+                passed_seconds)
         else:
             self.move(self.setting.RUN_SPEED, passed_seconds)
         self.animation.run_circle_frame(cfg.HeroAction.RUN, passed_seconds)
@@ -329,6 +331,11 @@ class Renne(GameSprite):
 
 
     def win(self, passed_seconds):
+        # win will dispel some bad status
+        for status in cfg.SpriteStatus.BAD_STATUS_LIST:
+            if self.status.get(status) is not None:
+                self.status.pop(status)
+
         is_finish = self.animation._run_renne_win_frame(passed_seconds)
         if is_finish:
             self.attacker.finish()
@@ -511,12 +518,6 @@ class Renne(GameSprite):
                 # return normal atk and dfs
                 self.atk = self.setting.ATK
                 self.dfs = self.setting.DFS
-
-        if self.status.get("action_rate_scale") is not None:
-            self.status["action_rate_scale_time"] -= passed_seconds
-            if self.status["action_rate_scale_time"] < 0:
-                self.status.pop("action_rate_scale")
-                self.status.pop("action_rate_scale_time")
 
         self.animation.update(passed_seconds)
         self.emotion_animation.update(passed_seconds)

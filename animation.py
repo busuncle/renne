@@ -172,9 +172,10 @@ class SpriteAnimator(object):
 
     def run_circle_frame(self, action, passed_seconds):
         # animation will be running in a circle way
-        if self.sprite.status.get("action_rate_scale") is not None:
+        sp = self.sprite
+        if sp.status.get(cfg.SpriteStatus.FROZEN) is not None:
             self.frame_adds[action] += passed_seconds * self.frame_rates[action] \
-                * self.sprite.status["action_rate_scale"]
+                * sp.status[cfg.SpriteStatus.FROZEN]["action_rate_scale"]
         else:
             self.frame_adds[action] += passed_seconds * self.frame_rates[action]
         self.frame_adds[action] %= self.frame_nums[action]
@@ -183,10 +184,11 @@ class SpriteAnimator(object):
     def run_sequence_frame(self, action, passed_seconds, frame_rate=None):
         # animation will be running only once util the next event occurs
         # return True is a sequence frames is finish else False
+        sp = self.sprite
         rate = frame_rate or self.frame_rates[action]
-        if self.sprite.status.get("action_rate_scale") is not None:
-            self.frame_adds[action] += passed_seconds * rate \
-                * self.sprite.status["action_rate_scale"]
+        if sp.status.get(cfg.SpriteStatus.FROZEN) is not None:
+            self.frame_adds[action] += passed_seconds * rate * \
+                sp.status[cfg.SpriteStatus.FROZEN]["action_rate_scale"]
         else:
             self.frame_adds[action] += passed_seconds * rate
         if self.frame_adds[action] >= self.frame_nums[action]:

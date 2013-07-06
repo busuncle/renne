@@ -122,6 +122,8 @@ class SpriteStatus(object):
     FROZEN = 9
     WEAK = 10
 
+    BAD_STATUS_LIST = (POISON, FROZEN, WEAK)
+
 
 
 class HpStatus(object):

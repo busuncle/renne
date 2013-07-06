@@ -913,12 +913,8 @@ class EnemyFrozenShortAttacker(EnemyShortAttacker):
     def run(self, hero, current_frame_add):
         hit_it = super(EnemyFrozenShortAttacker, self).run(hero, current_frame_add)
         if hit_it and happen(self.frozen_prob):
-            # if there is action_rate_scale already and shorter than this, overwrite it
-            hero.status["action_rate_scale"] = max(
-                hero.status.get("action_rate_scale", 0), self.action_rate_scale)
-            hero.status["action_rate_scale_time"] = max(
-                hero.status.get("action_rate_scale_time", 0), self.frozen_time)
-            hero.status[cfg.SpriteStatus.FROZEN] = {"time_left": self.frozen_time}
+            hero.status[cfg.SpriteStatus.FROZEN] = {"time_left": self.frozen_time,
+                "action_rate_scale": self.action_rate_scale}
             words = sfg.Font.ARIAL_BLACK_24.render("Frozen!", True, pygame.Color("cyan"))
             sp = self.sprite
             sp.animation.show_words(words, 0.3, 
