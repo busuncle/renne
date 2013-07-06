@@ -553,7 +553,7 @@ class Attacker(object):
         sp = self.sprite
         sp.hp = max(sp.hp - cost_hp, 0)
         sp.status["hp"] = sp.cal_sprite_status(sp.hp, sp.setting.HP)
-        sp.status["under_attack_effect_time"] = sfg.Sprite.UNDER_ATTACK_EFFECT_TIME
+        sp.status[cfg.SpriteStatus.UNDER_ATTACK] = {"time": sfg.Sprite.UNDER_ATTACK_EFFECT_TIME}
         sp.animation.show_cost_hp(cost_hp)
         if sp.setting.ROLE == cfg.SpriteRole.ENEMY:
             sp.cal_angry(cost_hp)

@@ -118,6 +118,9 @@ class SpriteStatus(object):
     UNDER_THUMP = 5
     CRICK = 6
     AMBUSH = 7
+    POISON = 8
+    FROZEN = 9
+    WEAK = 10
 
 
 

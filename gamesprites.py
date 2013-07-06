@@ -57,8 +57,7 @@ class GameSprite(pygame.sprite.DirtySprite):
     def gen_sprite_init_status(self):
         # a common value set a sprite,
         # a chaos dict that holding many kinds of status, i don't want many attributes, so i use it
-        return {"hp": cfg.HpStatus.HEALTHY, 
-            "recover_hp_effect_time": 0, "under_attack_effect_time": 0,
+        return {"hp": cfg.HpStatus.HEALTHY, "recover_hp_effect_time": 0, 
             "emotion": cfg.SpriteEmotion.NORMAL}
         
 
@@ -103,9 +102,10 @@ class GameSprite(pygame.sprite.DirtySprite):
 
     def update_status(self, passed_seconds):
         # update the status attribute
-        if self.status["under_attack_effect_time"] > 0:
-            self.status["under_attack_effect_time"] = max(0,
-                self.status["under_attack_effect_time"] - passed_seconds)
+        if self.status.get(cfg.SpriteStatus.UNDER_ATTACK) is not None:
+            self.status[cfg.SpriteStatus.UNDER_ATTACK]["time"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.UNDER_ATTACK]["time"] < 0:
+                self.status.pop(cfg.SpriteStatus.UNDER_ATTACK)
 
         if self.status["recover_hp_effect_time"] > 0:
             self.status["recover_hp_effect_time"] = max(0,

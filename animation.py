@@ -216,7 +216,7 @@ class SpriteAnimator(object):
             sp.debuff["weak"]["y"] %= sfg.SpriteStatus.DEBUFF_WEAK_Y_MAX
 
         if sp.status["hp"] != cfg.HpStatus.DIE \
-            and sp.status["under_attack_effect_time"] > 0:
+            and sp.status.get(cfg.SpriteStatus.UNDER_ATTACK) is not None:
             self.image_mix = self.image.copy()
             self.image_mix.fill(sfg.Sprite.UNDER_ATTACK_MIX_COLOR, special_flags=BLEND_ADD)
 
