@@ -872,15 +872,6 @@ class TwoHeadSkeleton(Enemy):
         super(TwoHeadSkeleton, self).__init__(setting, pos, direction)
 
 
-    def draw(self, camera):
-        if self.status.get(cfg.SpriteStatus.IN_AIR) is not None:
-            self.animation.draw_with_height(camera, self.attacker.fall_in_air_height)
-            #self.animation.draw_hp_bar(camera)
-            return
-
-        super(TwoHeadSkeleton, self).draw(camera)
-
-
     def fall(self, passed_seconds):
         ak = self.attacker
         if ak.fall_run_up_time_add < ak.fall_run_up_time:
