@@ -612,6 +612,11 @@ class AngleAttacker(Attacker):
         cos_val = cos_for_vec(direct_vec, vec_to_target)
         if self.attack_range + target.setting.RADIUS > vec_to_target.get_length() \
             and cos_val >= self.cos_min and target.status["hp"] != cfg.HpStatus.DIE:
+            if target.status.get(cfg.SpriteStatus.IN_AIR) is not None:
+                # check whether target is in air status, then compare in-air height with its own height
+                if sp.setting.HEIGHT * 0.5 < target.status[cfg.SpriteStatus.IN_AIR]["height"]:
+                    return False
+
             self.has_hits.add(target)
             return True
 
