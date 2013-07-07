@@ -50,6 +50,7 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.direction = direction
 
         self.action = cfg.SpriteAction.STAND
+        self.frame_action = None
         self.key_vec = Vector2() # a normal vector represents the direction
 
 
@@ -630,6 +631,7 @@ class Enemy(GameSprite):
             self.attacker.finish()
             self.action = cfg.EnemyAction.STAND
             self.animation.reset_frame_adds()
+            self.frame_action = None
         else:
             if not self.brain.persistent:
                 self.action = cfg.EnemyAction.STAND
@@ -870,8 +872,72 @@ class TwoHeadSkeleton(Enemy):
         super(TwoHeadSkeleton, self).__init__(setting, pos, direction)
 
 
+    def draw(self, camera):
+        if self.status.get(cfg.SpriteStatus.IN_AIR) is not None:
+            self.animation.draw_with_height(camera, self.attacker.fall_in_air_height)
+            #self.animation.draw_hp_bar(camera)
+            return
+
+        super(TwoHeadSkeleton, self).draw(camera)
+
+
     def fall(self, passed_seconds):
-        pass
+        ak = self.attacker
+        if ak.fall_run_up_time_add < ak.fall_run_up_time:
+            ak.fall_run_up_time_add += passed_seconds
+            self.frame_action = cfg.EnemyAction.WALK
+            self.animation.run_sequence_frame(cfg.EnemyAction.WALK, passed_seconds, ak.fall_run_up_rate)
+
+        elif ak.fall_kneel_time_add < ak.fall_kneel_time:
+            self.frame_action = cfg.EnemyAction.KNEEL
+            self.animation.run_sequence_frame(cfg.EnemyAction.KNEEL, passed_seconds)
+            ak.fall_kneel_time_add += passed_seconds
+            if ak.fall_kneel_time_add >= ak.fall_kneel_time:
+                # a timing for setting vector and speed for x axis
+                ak.fall_in_air_v_x = Vector2.from_points(self.pos, self.brain.target.pos)
+                ak.fall_in_air_speed_x = ak.fall_in_air_v_x.get_length() / ak.fall_in_air_time
+                self.status[cfg.SpriteStatus.IN_AIR] = {"height": 0}
+
+        elif ak.fall_in_air_time_add < ak.fall_in_air_time:
+            ak.fall_in_air_time_add += passed_seconds
+
+            self.frame_action = cfg.EnemyAction.STAND
+            self.animation.set_frame_add(cfg.EnemyAction.STAND, 0)
+
+            ak.fall_in_air_height = ak.fall_v0_y * ak.fall_in_air_time_add \
+                + 0.5 * ak.fall_acceleration * pow(ak.fall_in_air_time_add, 2)
+            self.status[cfg.SpriteStatus.IN_AIR]["height"] = ak.fall_in_air_height
+
+            self.move(ak.fall_in_air_speed_x, passed_seconds, check_reachable=False, 
+                key_vec=ak.fall_in_air_v_x)
+
+            if ak.fall_in_air_time_add >= ak.fall_in_air_time:
+                # timing for attack calculation
+                hit_it = ak.run(self.brain.target, None)
+                if hit_it:
+                    self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
+
+                # fall back in air
+                ak.fall_in_air_v_x.x = - ak.fall_in_air_v_x.x
+                ak.fall_in_air_v_x.y = - ak.fall_in_air_v_x.y
+                ak.fall_in_air_speed_x *= 0.2
+
+        elif ak.fall_back_in_air_time_add < ak.fall_back_in_air_time:
+            ak.fall_back_in_air_time_add += passed_seconds
+
+            self.frame_action = cfg.EnemyAction.WALK
+            self.animation.run_sequence_frame(cfg.EnemyAction.WALK, passed_seconds, ak.fall_run_up_rate)
+
+            ak.fall_in_air_height = ak.fall_back_v0_y * ak.fall_back_in_air_time_add \
+                + 0.5 * ak.fall_acceleration * pow(ak.fall_back_in_air_time_add, 2)
+            self.status[cfg.SpriteStatus.IN_AIR]["height"] = ak.fall_in_air_height
+
+            self.move(ak.fall_in_air_speed_x, passed_seconds, check_reachable=True, 
+                key_vec=ak.fall_in_air_v_x)
+
+        else:
+            self.status.pop(cfg.SpriteStatus.IN_AIR)
+            self.reset_action(force=True)
 
 
     def attack(self, passed_seconds):
@@ -970,7 +1036,6 @@ class Ambush(pygame.sprite.LayeredDirty):
 
 ENEMY_CLASS_MAPPING = {
     sfg.SkeletonWarrior.ID: Enemy,
-    #sfg.CastleWarrior.ID: Enemy,
     sfg.CastleWarrior.ID: CastleWarrior,
     sfg.SkeletonArcher.ID: Enemy,
     sfg.LeonHardt.ID: Leonhardt,
@@ -978,7 +1043,8 @@ ENEMY_CLASS_MAPPING = {
     sfg.SwordRobber.ID: Enemy,
     sfg.SkeletonWarrior2.ID: Enemy,
     sfg.Ghost.ID: Enemy,
-    sfg.TwoHeadSkeleton.ID: Enemy,
+    #sfg.TwoHeadSkeleton.ID: Enemy,
+    sfg.TwoHeadSkeleton.ID: TwoHeadSkeleton,
     sfg.Werwolf.ID: Enemy,
     sfg.SilverTentacle.ID: Enemy,
 }

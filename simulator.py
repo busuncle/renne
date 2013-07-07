@@ -925,6 +925,7 @@ class TwoHeadSkeletonAttacker(EnemyShortAttacker):
         self.method = None
         self.fall_range = attacker_params["fall_range"]
         self.fall_run_up_time = attacker_params["fall_run_up_time"]
+        self.fall_run_up_rate = attacker_params["fall_run_up_rate"]
         self.fall_kneel_time = attacker_params["fall_kneel_time"]
         self.fall_acceleration = attacker_params["fall_acceleration"]
         self.fall_v0_y = attacker_params["fall_v0_y"]
@@ -939,6 +940,7 @@ class TwoHeadSkeletonAttacker(EnemyShortAttacker):
         self.fall_back_in_air_time_add = 0
         self.fall_in_air_height = 0
         self.fall_in_air_v_x = None
+        self.fall_in_air_speed_x = None
 
 
     def fall_chance(self, target):
@@ -996,6 +998,7 @@ class TwoHeadSkeletonAttacker(EnemyShortAttacker):
         self.fall_back_in_air_time_add = 0
         self.fall_in_air_height = 0
         self.fall_in_air_v_x = None
+        self.fall_in_air_speed_x = None
 
 
 
@@ -1287,7 +1290,8 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.SwordRobber.ID: EnemyWeakShortAttacker,
     sfg.SkeletonWarrior2.ID: EnemyPoisonShortAttacker,
     sfg.Ghost.ID: EnemyLeakShortAttacker,
-    sfg.TwoHeadSkeleton.ID: EnemyBloodShortAttacker,
+    #sfg.TwoHeadSkeleton.ID: EnemyBloodShortAttacker,
+    sfg.TwoHeadSkeleton.ID: TwoHeadSkeletonAttacker,
     sfg.Werwolf.ID: EnemyFrozenShortAttacker,
     sfg.SilverTentacle.ID: EnemyImpaleShortAttacker,
 }

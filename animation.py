@@ -247,13 +247,20 @@ class SpriteAnimator(object):
         if not self.rect.colliderect(camera.rect):
             return 
 
+        sp = self.sprite
         if self.image_mix is not None:
             # image_mix will overwrite image if it is not none
             image_blit_pos = (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top)
             camera.screen.blit(self.image_mix, image_blit_pos)
+
         elif self.image is not None:
             # don't modify rect itself, but pass the relative topleft point to the blit function
-            image_blit_pos = (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top)
+            if sp.status.get(cfg.SpriteStatus.IN_AIR) is not None:
+                image_blit_pos = (self.rect.left - camera.rect.left, 
+                    self.rect.top - camera.rect.top - sp.status[cfg.SpriteStatus.IN_AIR]["height"])
+            else:
+                image_blit_pos = (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top)
+
             camera.screen.blit(self.image, image_blit_pos)
 
         if self.sprite.status.get(cfg.SpriteStatus.WEAK) is not None:
@@ -318,9 +325,10 @@ class EnemyAnimator(SpriteAnimator):
 
     def update_image(self):
         sp = self.sprite
-        if sp.action in self.frame_adds:
-            self.image = self.sprite_image_contoller.get_subsurface(sp.action,
-                sp.direction, self.frame_adds[sp.action])
+        action = sp.frame_action or sp.action
+        if action in self.frame_adds:
+            self.image = self.sprite_image_contoller.get_subsurface(action,
+                sp.direction, self.frame_adds[action])
 
 
     def dead_tick(self):
@@ -356,8 +364,10 @@ class EnemyAnimator(SpriteAnimator):
         # adjust hp_bar position relative to screen
         r = self.hp_bar.get_rect()
         r.center = (sp.pos.x, sp.pos.y * 0.5 - sp.setting.HEIGHT)
-        r.top -= camera.rect.top
         r.left -= camera.rect.left
+        r.top -= camera.rect.top
+        if sp.status.get(cfg.SpriteStatus.IN_AIR) is not None:
+            r.top -= sp.status[cfg.SpriteStatus.IN_AIR]["height"]
         camera.screen.blit(self.hp_bar, r)
 
 
