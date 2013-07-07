@@ -458,10 +458,13 @@ class TwoHeadSkeleton(Enemy):
         "fall_run_up_time": 0.8,
         "fall_run_up_rate": 30,
         "fall_kneel_time": 0.5,
-        "fall_acceleration": -400,
-        "fall_v0_y": 200,
-        "fall_back_v0_y": 50,
+        "fall_acceleration": -600,
+        "fall_v0_y": 300,
+        "fall_back_v0_y": 200,
         "fall_damage": 80,
+        "fall_thump_crick_time": 0.3,
+        "fall_thump_acceleration": -4500,
+        "fall_thump_out_speed": 1000,
     }
 
     WALK_SPEED = 90

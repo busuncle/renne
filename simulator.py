@@ -933,6 +933,9 @@ class TwoHeadSkeletonAttacker(EnemyShortAttacker):
         self.fall_in_air_time = (-self.fall_v0_y * 2.0) / self.fall_acceleration
         self.fall_back_in_air_time = (-self.fall_back_v0_y * 2.0) / self.fall_acceleration
         self.fall_damage = attacker_params["fall_damage"]
+        self.fall_thump_crick_time = attacker_params["fall_thump_crick_time"]
+        self.fall_thump_acceleration = attacker_params["fall_thump_acceleration"]
+        self.fall_thump_out_speed = attacker_params["fall_thump_out_speed"]
 
         self.fall_run_up_time_add = 0
         self.fall_kneel_time_add = 0
@@ -984,6 +987,10 @@ class TwoHeadSkeletonAttacker(EnemyShortAttacker):
             if self.fall_hit(hero):
                 sp = self.sprite
                 hero.attacker.handle_under_attack(sp, self.fall_damage)
+                hero.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP, 
+                    {"crick_time": self.fall_thump_crick_time, "out_speed": self.fall_thump_out_speed,
+                    "acceleration": self.fall_thump_acceleration, 
+                    "key_vec": Vector2.from_points(sp.pos, hero.pos)})
                 return True
 
         return False

@@ -895,6 +895,7 @@ class TwoHeadSkeleton(Enemy):
             if ak.fall_kneel_time_add >= ak.fall_kneel_time:
                 # a timing for setting vector and speed for x axis
                 ak.fall_in_air_v_x = Vector2.from_points(self.pos, self.brain.target.pos)
+                ak.fall_in_air_v_x *= 0.9
                 ak.fall_in_air_speed_x = ak.fall_in_air_v_x.get_length() / ak.fall_in_air_time
                 self.status[cfg.SpriteStatus.IN_AIR] = {"height": 0}
 
@@ -920,7 +921,7 @@ class TwoHeadSkeleton(Enemy):
                 # fall back in air
                 ak.fall_in_air_v_x.x = - ak.fall_in_air_v_x.x
                 ak.fall_in_air_v_x.y = - ak.fall_in_air_v_x.y
-                ak.fall_in_air_speed_x *= 0.2
+                ak.fall_in_air_speed_x *= 0.25
 
         elif ak.fall_back_in_air_time_add < ak.fall_back_in_air_time:
             ak.fall_back_in_air_time_add += passed_seconds
