@@ -377,8 +377,22 @@ class EnemyAnimator(SpriteAnimator):
 
 
     def draw(self, camera):
+        sp = self.sprite
+        if sp.status.get(cfg.SpriteStatus.AMBUSH) is not None:
+            # this enemy is in ambush status, draw it according the corresponding status stage
+            if sp.status[cfg.SpriteStatus.AMBUSH]["status"] == cfg.Ambush.STATUS_INIT:
+                # don't draw it because hero doesn't enter this ambush
+                return
+
+            elif self.status[cfg.SpriteStatus.AMBUSH]["status"] == cfg.Ambush.STATUS_ENTER:
+                # hero enter the ambush, draw corresponding episode
+                if self.status[cfg.SpriteStatus.AMBUSH]["type"] == cfg.Ambush.APPEAR_TYPE_TOP_DOWN:
+                    self.draw_with_height(camera, 
+                        sp.status[cfg.SpriteStatus.AMBUSH]["height"])
+                return
+
         super(EnemyAnimator, self).draw(camera)
-        if self.sprite.status["hp"] in cfg.HpStatus.ALIVE:
+        if sp.status["hp"] in cfg.HpStatus.ALIVE:
             self.draw_hp_bar(camera)
 
 

@@ -552,20 +552,7 @@ class Enemy(GameSprite):
 
 
     def draw(self, camera):
-        if self.status.get(cfg.SpriteStatus.AMBUSH) is not None:
-            # this enemy is in ambush status, draw it according the corresponding status stage
-            if self.status[cfg.SpriteStatus.AMBUSH]["status"] == cfg.Ambush.STATUS_INIT:
-                # don't draw it because hero doesn't enter this ambush
-                return
-
-            elif self.status[cfg.SpriteStatus.AMBUSH]["status"] == cfg.Ambush.STATUS_ENTER:
-                # hero enter the ambush, draw corresponding episode
-                if self.status[cfg.SpriteStatus.AMBUSH]["type"] == cfg.Ambush.APPEAR_TYPE_TOP_DOWN:
-                    self.animation.draw_with_height(camera, self.status[cfg.SpriteStatus.AMBUSH]["height"])
-                return
-
         self.animation.draw(camera)
-
         if self.status["hp"] == cfg.HpStatus.DIE:
             return
 
