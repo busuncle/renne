@@ -174,11 +174,6 @@ class GameWorld(pygame.sprite.LayeredDirty):
                         # and damage calculation among all the sprites 
                         magic.update(passed_seconds)
 
-                # adhoc code for leon's hell claw tips
-                #if sp.setting.ID == sfg.LeonHardt.ID and sp.attacker.method == "hell_claw" \
-                #    and sp.attacker.current_magic is not None:
-                #    sp.attacker.update_hell_claw_tips(passed_seconds)
-
             if sp.setting.ID in sfg.SPRITES_WITH_AMMO:
                 sp.attacker.update_ammo(passed_seconds)
 
@@ -200,11 +195,6 @@ class GameWorld(pygame.sprite.LayeredDirty):
                     movings.extend(magic.magic_sprites)
                     for msp in magic.magic_sprites:
                         msp.draw_shadow(camera)
-
-                # adhoc code for leon's hell claw tips
-                #if sp.setting.ID == sfg.LeonHardt.ID and sp.attacker.method == "hell_claw" \
-                #    and sp.attacker.current_magic is not None:
-                #    sp.attacker.draw_hell_claw_tips(camera)
 
             if sp.setting.ID in sfg.SPRITES_WITH_AMMO:
                 movings.extend(sp.attacker.ammo_list)

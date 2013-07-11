@@ -537,7 +537,7 @@ class HellClawSet(MagicSkill):
             self.status = cfg.Magic.STATUS_VANISH
         else:
             # update tips area util this magic skill is vanish
-            self.tips_area_mix = self.blink.make(self.tips_area_mix, passed_seconds)
+            self.tips_area_mix = self.blink.make(self.tips_area, passed_seconds)
 
 
     def draw(self, camera):
@@ -1196,20 +1196,6 @@ class LeonhardtAttacker(AngleAttacker):
         self.magic_list = []
         self.current_magic = None
         self.method = None
-
-
-    def update_hell_claw_tips(self, passed_seconds):
-        # update as a blink mix
-        self.hell_claw_ellipse_surface_mix = self.blink.make(self.hell_claw_ellipse_surface,
-            passed_seconds)
-
-
-    def draw_hell_claw_tips(self, camera):
-        r = self.hell_claw_ellipse_surface_mix.get_rect()
-        r.center = self.current_magic.target_pos("xy")
-        r.centery *= 0.5
-        camera.screen.blit(self.hell_claw_ellipse_surface_mix,
-            (r.x - camera.rect.x, r.y - camera.rect.y))
 
 
     def chance(self, target):
