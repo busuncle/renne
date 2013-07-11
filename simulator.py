@@ -273,12 +273,6 @@ class DestroyBombSet(MagicSkill):
             bomb.update(passed_seconds)
             if bomb.status == cfg.Magic.STATUS_VANISH:
                 self.magic_sprites.pop(i)
-        
-
-    def draw(self, camera):
-        if self.status == cfg.Magic.STATUS_ALIVE:
-            for bomb in self.magic_sprites:
-                bomb.draw(camera)
 
 
 
