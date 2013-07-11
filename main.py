@@ -6,7 +6,7 @@ from base import constant as cfg
 from etc import setting as sfg
 from etc import ai_setting as ai
 from gameworld import GameWorld, GameMap, StaticObjectGroup, StaticObject
-from gamestatus import GameStatus, Menu, bg_box, start_game, loading_chapter_picture, end_game
+from gamedirector import GameDirector, Menu, bg_box, start_game, loading_chapter_picture, end_game
 from renderer import Camera
 import debug_tools
 from base import util
@@ -133,11 +133,11 @@ def enter_chapter(screen, chapter, renne):
     game_world.batch_add(allsprites)
     game_world.batch_add(static_objects)
 
-    game_status = GameStatus(chapter, renne, enemies)
+    game_director = GameDirector(chapter, renne, enemies)
 
     if COMMAND_DEBUG_MODE:
         # skip the init status in command debug mode
-        game_status.status = cfg.GameStatus.IN_PROGRESS
+        game_director.status = cfg.GameStatus.IN_PROGRESS
 
     clock = pygame.time.Clock()
     running = True
@@ -150,34 +150,34 @@ def enter_chapter(screen, chapter, renne):
 
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    if game_status.status == cfg.GameStatus.IN_PROGRESS:
-                        game_status.status = cfg.GameStatus.PAUSE
+                    if game_director.status == cfg.GameStatus.IN_PROGRESS:
+                        game_director.status = cfg.GameStatus.PAUSE
                         bg_box.pause()
-                        game_status.menu.index = 0
-                    elif game_status.status == cfg.GameStatus.PAUSE:
-                        game_status.status = cfg.GameStatus.IN_PROGRESS
+                        game_director.menu.index = 0
+                    elif game_director.status == cfg.GameStatus.PAUSE:
+                        game_director.status = cfg.GameStatus.IN_PROGRESS
                         bg_box.unpause()
 
                 if event.key == K_RETURN:
-                    if game_status.status == cfg.GameStatus.HERO_WIN:
+                    if game_director.status == cfg.GameStatus.HERO_WIN:
                         util.save_chapter_win_screen_image(chapter, camera.screen)
                         dat = util.load_auto_save() or {}
                         dat["current_chapter"] = chapter
                         dat.setdefault("chapter_detail", {})
                         dat["chapter_detail"].setdefault(chapter, {})
                         dat["chapter_detail"][chapter]["total_score"] \
-                            = game_status.achievement.chapter_score.next_value
+                            = game_director.achievement.chapter_score.next_value
                         util.auto_save(dat)
                         return {"status": cfg.GameControl.NEXT}
-                    elif game_status.status == cfg.GameStatus.HERO_LOSE:
+                    elif game_director.status == cfg.GameStatus.HERO_LOSE:
                         return {"status": cfg.GameControl.AGAIN}
-                    elif game_status.status == cfg.GameStatus.PAUSE:
-                        if game_status.menu.current_menu() == "CONTINUE":
-                            game_status.status = cfg.GameStatus.IN_PROGRESS
+                    elif game_director.status == cfg.GameStatus.PAUSE:
+                        if game_director.menu.current_menu() == "CONTINUE":
+                            game_director.status = cfg.GameStatus.IN_PROGRESS
                             bg_box.unpause()
-                        elif game_status.menu.current_menu() == "MAIN":
+                        elif game_director.menu.current_menu() == "MAIN":
                             return {"status": cfg.GameControl.MAIN}
-                        elif game_status.menu.current_menu() == "QUIT":
+                        elif game_director.menu.current_menu() == "QUIT":
                             return {"status": cfg.GameControl.QUIT}
 
                 if event.key in sfg.UserKey.DIRECTION_KEYS:
@@ -188,37 +188,37 @@ def enter_chapter(screen, chapter, renne):
                             # adhoc for special key event
                             renne.action = cfg.HeroAction.RUN
 
-                if game_status.status == cfg.GameStatus.PAUSE:
-                    game_status.menu.update(event.key)
+                if game_director.status == cfg.GameStatus.PAUSE:
+                    game_director.menu.update(event.key)
 
             if event.type == KEYUP:
                 if event.key in sfg.UserKey.DIRECTION_KEYS:
                     last_direct_key_up = (event.key, time())
 
         pressed_keys = pygame.key.get_pressed()
-        renne.event_handle(pressed_keys, external_event=game_status.status)
+        renne.event_handle(pressed_keys, external_event=game_director.status)
 
         for enemy in enemies:
             if enemy_in_one_screen(renne, enemy):
-                enemy.event_handle(pressed_keys, external_event=game_status.status)
+                enemy.event_handle(pressed_keys, external_event=game_director.status)
 
         time_passed = clock.tick(sfg.FPS)
         passed_seconds = time_passed * 0.001
 
-        # update renne, enemies, game_status in sequence
-        renne.update(passed_seconds, external_event=game_status.status)
+        # update renne, enemies, game_director in sequence
+        renne.update(passed_seconds, external_event=game_director.status)
         for enemy in enemies:
             if enemy_in_one_screen(renne, enemy):
-                enemy.update(passed_seconds, external_event=game_status.status)
+                enemy.update(passed_seconds, external_event=game_director.status)
 
-        if game_status.status != cfg.GameStatus.PAUSE:
+        if game_director.status != cfg.GameStatus.PAUSE:
             game_world.update(passed_seconds)
 
         # check ambush status, only one ambush can be enter in one time
-        if game_status.status == cfg.GameStatus.ENTER_AMBUSH:
+        if game_director.status == cfg.GameStatus.ENTER_AMBUSH:
             game_world.active_ambush.update(passed_seconds)
             if game_world.active_ambush.status == cfg.Ambush.STATUS_FINISH:
-                game_status.status = cfg.GameStatus.IN_PROGRESS
+                game_director.status = cfg.GameStatus.IN_PROGRESS
                 game_world.ambush_list.remove(game_world.active_ambush)
                 game_world.active_ambush = None
         else:
@@ -226,7 +226,7 @@ def enter_chapter(screen, chapter, renne):
                 if ambush.enter(renne):
                     renne.set_emotion(cfg.SpriteEmotion.ALERT)
                     # only one ambush is active
-                    game_status.status = cfg.GameStatus.ENTER_AMBUSH
+                    game_director.status = cfg.GameStatus.ENTER_AMBUSH
                     game_world.active_ambush = ambush
                     for monster in ambush:
                         monster_ai_setting = ai.AI_MAPPING[monster.setting.ID]
@@ -240,13 +240,13 @@ def enter_chapter(screen, chapter, renne):
                     game_world.batch_add(ambush)
                     break
 
-        game_status.update(passed_seconds)
+        game_director.update(passed_seconds)
 
         camera.screen_follow(renne.pos)
 
         game_map.draw(camera)
         game_world.draw(camera)
-        game_status.draw(camera)
+        game_director.draw(camera)
 
         if COMMAND_DEBUG_MODE or sfg.DEBUG_MODE:
             debug_tools.run_debug_by_option_list(COMMAND_DEBUG_OPTIONS,

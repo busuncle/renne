@@ -338,7 +338,7 @@ def end_game(screen):
 
 
 
-class GameStatus(object):
+class GameDirector(object):
     def __init__(self, chapter, hero, enemy_list):
         self.chapter = chapter
         self.win_cond = sfg.Chapter.WIN_CONDITION[self.chapter]
