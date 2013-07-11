@@ -757,10 +757,10 @@ class Leonhardt(Enemy):
     def __init__(self, setting, pos, direction):
         super(Leonhardt, self).__init__(setting, pos, direction)
         self.mp = self.setting.MP
-        self.running_attack_frame_type = None
 
 
     def stand(self, passed_seconds):
+        self.frame_action = cfg.LeonHardtAction.STAND
         super(Leonhardt, self).stand(passed_seconds)
         self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
 
@@ -771,44 +771,46 @@ class Leonhardt(Enemy):
         self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
 
 
-    def walk(self, passed_seconds):
+    def walk(self, passed_seconds, check_reachable):
         # Leon doesn't walk, he always runs
+        self.frame_action = cfg.LeonHardtAction.RUN
         self.run(passed_seconds)
 
 
     def attack(self, passed_seconds):
-        if self.running_attack_frame_type is None:
+        if self.frame_action == cfg.EnemyAction.STAND:
+            # enemy must stand before attack action!
             if self.attacker.method == "death_coil":
                 # death coil use this attack frame
-                self.running_attack_frame_type = cfg.LeonHardtAction.SKILL1
+                self.frame_action = cfg.LeonHardtAction.SKILL1
             elif self.attacker.method == "hell_claw":
                 # hell claw use this attack frame
-                self.running_attack_frame_type = cfg.LeonHardtAction.SKILL2
+                self.frame_action = cfg.LeonHardtAction.SKILL2
             else:
                 # random attack frame for others
-                self.running_attack_frame_type = random.choice(
+                self.frame_action = random.choice(
                     (cfg.LeonHardtAction.ATTACK, cfg.LeonHardtAction.ATTACK2))
-            self.sound_box.play(random.choice(sfg.Sound.LEONHARDT_ATTACKS))
 
-        is_finish = self.animation.run_sequence_frame(self.running_attack_frame_type, passed_seconds)
+        self.sound_box.play(random.choice(sfg.Sound.LEONHARDT_ATTACKS))
+
+        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
             self.attacker.finish()
-            self.running_attack_frame_type = None
-            self.brain.persistent = False
+            self.reset_action(force=True)
         else:
             if self.attacker.method == "regular":
                 hit_it = self.attacker.run(self.brain.target, 
-                    self.animation.get_current_frame_add(self.running_attack_frame_type))
+                    self.animation.get_current_frame_add(self.frame_action))
                 if hit_it:
                     self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
 
             elif self.attacker.method == "death_coil":
                 self.attacker.death_coil(self.brain.target, 
-                    self.animation.get_current_frame_add(self.running_attack_frame_type))
+                    self.animation.get_current_frame_add(self.frame_action))
 
             elif self.attacker.method == "hell_claw":
                 self.attacker.hell_claw(self.brain.target,
-                    self.animation.get_current_frame_add(self.running_attack_frame_type))
+                    self.animation.get_current_frame_add(self.frame_action))
 
 
 
@@ -1022,7 +1024,6 @@ ENEMY_CLASS_MAPPING = {
     sfg.SwordRobber.ID: Enemy,
     sfg.SkeletonWarrior2.ID: Enemy,
     sfg.Ghost.ID: Enemy,
-    #sfg.TwoHeadSkeleton.ID: Enemy,
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeleton,
     sfg.Werwolf.ID: Enemy,
     sfg.SilverTentacle.ID: Enemy,

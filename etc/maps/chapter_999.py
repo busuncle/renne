@@ -1,7 +1,7 @@
 map_setting = {'ambush_list': [],
  'hero': {'direction': 6, 'pos': (64, 480)},
  'monsters': [{'direction': 5, 'id': 2, 'pos': (970, 1458)},
-              {'direction': 5, 'id': 9, 'pos': (446, 774)}],
+              {'direction': 6, 'id': 4, 'pos': (465, 846)}],
  'size': [1536, 1792],
  'static_objects': [{'id': 6, 'pos': (128, 350)},
                     {'id': 6, 'pos': (384, 350)},

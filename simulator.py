@@ -492,6 +492,15 @@ class HellClawSet(MagicSkill):
         self.has_hits = set()
         self.magic_sprites = []
 
+        # hell claw has a ellipse for telling the player that this skill is coming!
+        self.tips_area = pygame.Surface((
+            self.params["claw_shake_on_x"] * 2 + 20, 
+            self.params["claw_shake_on_x"] + 10)).convert_alpha()
+        self.tips_area.fill(pygame.Color(0, 0, 0, 0))
+        pygame.draw.ellipse(self.tips_area, pygame.Color(255, 0, 0, 128), self.tips_area.get_rect())
+        self.blink = Blink()
+        self.tips_area_mix = self.tips_area.copy()
+
 
     def update(self, passed_seconds):
         self.passed_seconds += passed_seconds
@@ -526,6 +535,16 @@ class HellClawSet(MagicSkill):
 
         if len(self.trigger_times) == 0 and len(self.magic_sprites) == 0:
             self.status = cfg.Magic.STATUS_VANISH
+        else:
+            # update tips area util this magic skill is vanish
+            self.tips_area_mix = self.blink.make(self.tips_area_mix, passed_seconds)
+
+
+    def draw(self, camera):
+        r = self.tips_area_mix.get_rect()
+        r.center = self.target_pos("xy")
+        r.centery *= 0.5
+        camera.screen.blit(self.tips_area_mix, (r.x - camera.rect.x, r.y - camera.rect.y))
 
 
 
