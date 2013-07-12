@@ -331,7 +331,7 @@ class LeonHardt(Enemy):
         }
     }
 
-    RUN_SPEED = 200
+    WALK_SPEED = 200
 
 
 
@@ -1319,7 +1319,7 @@ SPRITE_FRAMES = {
     }),
     LeonHardt.ID: ("leonhardt", {
         cfg.LeonHardtAction.STAND: ("stand_8.png", 8, 12),
-        cfg.LeonHardtAction.RUN: ("run_8.png", 8, 14),
+        cfg.LeonHardtAction.WALK: ("walk_8.png", 8, 14),
         cfg.LeonHardtAction.ATTACK: ("attack_8.png", 8, 12),
         cfg.LeonHardtAction.ATTACK2: ("attack2_8.png", 8, 12),
         cfg.LeonHardtAction.SKILL1: ("skill1_2.png", 2, 2),

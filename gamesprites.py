@@ -760,26 +760,17 @@ class Leonhardt(Enemy):
 
 
     def stand(self, passed_seconds):
-        self.frame_action = cfg.LeonHardtAction.STAND
         super(Leonhardt, self).stand(passed_seconds)
         self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
 
 
-    def run(self, passed_seconds):
-        self.move(self.setting.RUN_SPEED, passed_seconds, check_reachable=False)
-        self.animation.run_circle_frame(cfg.LeonHardtAction.RUN, passed_seconds)
+    def walk(self, passed_seconds, check_reachable):
+        super(Leonhardt, self).walk(passed_seconds)
         self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
 
 
-    def walk(self, passed_seconds, check_reachable):
-        # Leon doesn't walk, he always runs
-        self.frame_action = cfg.LeonHardtAction.RUN
-        self.run(passed_seconds)
-
-
     def attack(self, passed_seconds):
-        if self.frame_action == cfg.EnemyAction.STAND:
-            # enemy must stand before attack action!
+        if self.frame_action is None or self.frame_action == cfg.EnemyAction.STAND:
             if self.attacker.method == "death_coil":
                 # death coil use this attack frame
                 self.frame_action = cfg.LeonHardtAction.SKILL1
