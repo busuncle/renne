@@ -10,6 +10,9 @@ class AIBase(object):
     # when hp drops to 0.5 * full-hp, monster gets angry
     ANGRY_HP_RATIO = 0.5
 
+    # the probability(between 0 and 1, both sides include) that give rise an emotion on the sprite
+    EMOTION_SILENT_PROB = 0.2
+
     # used in gauss function, MU is the mean, SIGMA is the standard deviation
     STAY_TIME_MU = 1
     STAY_TIME_SIGMA = 0.1
@@ -22,9 +25,6 @@ class ShortNormalAI(AIBase):
     # this ai is for some short-distance-attack monster
 
     CHASE_RANGE = 520
-
-    # the probability(between 0 and 1, both sides include) that give rise an emotion on the sprite
-    EMOTION_SILENT_PROB = 0.2
 
     CHASE_GO_DELAY_TIME = 0.5
     OFFENCE_GO_DELAY_TIME_MU = 0.8
@@ -53,9 +53,6 @@ class LongNormalAI(AIBase):
     # this ai is for some long-distance-attack monster
 
     CHASE_RANGE = 580
-
-    # the probability(between 0 and 1, both sides include) that give rise an emotion on the sprite
-    EMOTION_SILENT_PROB = 0.2
 
     CHASE_GO_DELAY_TIME = 0.5
     OFFENCE_GO_DELAY_TIME_MU = 1.2
