@@ -1188,6 +1188,9 @@ class Effect(object):
     HELL_CLAW_SHADOW_INDEX = 1
     HELL_CLAW_SHADOW_RECT_DELTA_Y = 18
 
+    BOMB_IMAGE_KEY = "e2"
+    BOMB_RECT = (0, 64, 192, 64)
+
     BLINK_RATE = 256
     BLINK_DEPTH_SECTION = (32, 128)
 
