@@ -12,6 +12,7 @@ class AIBase(object):
 
     # the probability(between 0 and 1, both sides include) that give rise an emotion on the sprite
     EMOTION_SILENT_PROB = 0.2
+    EMOTION_ANGRY_PROB = 0.9
 
     # used in gauss function, MU is the mean, SIGMA is the standard deviation
     STAY_TIME_MU = 1
@@ -157,6 +158,11 @@ class SilverTentacleAI(ShortNormalAI):
 
 
 
+class RobotAI(ShortNormalAI):
+    EMOTION_SILENT_PROB = 0.0
+    EMOTION_ANGRY_PROB = 0.0
+
+
 AI_MAPPING = {
     sfg.SkeletonWarrior.ID: ShortNormalAI,
     #sfg.CastleWarrior.ID: ShortNormalAI,
@@ -170,4 +176,5 @@ AI_MAPPING = {
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeletonAI,
     sfg.Werwolf.ID: WerwolfAI,
     sfg.SilverTentacle.ID: SilverTentacleAI,
+    sfg.Robot.ID: RobotAI,
 }

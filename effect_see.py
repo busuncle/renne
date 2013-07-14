@@ -17,6 +17,15 @@ bomb_images = animation.effect_image_controller.get(
     sfg.Effect.BOMB_IMAGE_KEY).convert_alpha().subsurface(sfg.Effect.BOMB_RECT)
 bombs = [bomb_images.subsurface((i * 64, 0, 64, 64)) for i in xrange(3)]
 
+bomb_images2 = animation.effect_image_controller.get(
+    sfg.Effect.BOMB2_IMAGE_KEY).convert_alpha()
+bombs2 = [
+    bomb_images2.subsurface((0, 0, 128, 128)),
+    bomb_images2.subsurface((128, 0, 128, 128)),
+    bomb_images2.subsurface((0, 128, 128, 128)),
+    bomb_images2.subsurface((128, 128, 128, 128)),
+]
+
 
 def run():
 
@@ -35,8 +44,11 @@ def run():
         time_passed_seconds = time_passed / 200.0
 
         t += time_passed_seconds
+
         t %= len(bombs)
         screen.blit(bombs[int(t)], (100, 100))
+        #t %= len(bombs2)
+        #screen.blit(bombs2[int(t)], (100, 100))
 
         pygame.display.update()
 

@@ -1,9 +1,10 @@
 import pygame
 from pygame.locals import BLEND_ADD
+from pygame import transform
 from base.util import LineSegment, line_segment_intersect_with_rect, cos_for_vec
 from base.util import manhattan_distance, Timer, happen, Blink
 import math
-from random import gauss, randint, choice
+from random import gauss, randint, choice, random
 from math import pow, radians, sqrt, tan, cos
 from time import time
 from gameobjects.vector2 import Vector2
@@ -35,22 +36,27 @@ class MagicSprite(pygame.sprite.DirtySprite):
 
 
     def draw_shadow(self, camera):
-        shd_rect = self.shadow["image"].get_rect()
-        shd_rect.center = self.pos
-        camera.screen.blit(self.shadow["image"],
-            (shd_rect.x - camera.rect.x, shd_rect.y * 0.5 - camera.rect.y - self.shadow["dy"]))
+        if self.shadow is not None:
+            shd_rect = self.shadow["image"].get_rect()
+            shd_rect.center = self.pos
+            camera.screen.blit(self.shadow["image"],
+                (shd_rect.x - camera.rect.x, shd_rect.y * 0.5 - camera.rect.y - self.shadow["dy"]))
 
 
     def draw(self, camera):
         if self.status == cfg.Magic.STATUS_ALIVE:
             camera.screen.blit(self.image,
                 (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy))
+            #self.draw_area(camera)
 
-        #r = pygame.Rect(0, 0, self.area.width, self.area.height * 0.5)
-        #r.center = (self.pos.x, self.pos.y * 0.5)
-        #r.top -= camera.rect.top
-        #r.left -= camera.rect.left
-        #pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
+
+    def draw_area(self, camera):
+        # for debug
+        r = pygame.Rect(0, 0, self.area.width, self.area.height * 0.5)
+        r.center = (self.pos.x, self.pos.y * 0.5)
+        r.top -= camera.rect.top
+        r.left -= camera.rect.left
+        pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
 
 
 
@@ -58,7 +64,7 @@ class MagicSkill(object):
     # represent a magic skill, it may contain one or more magic sprite(s)
     # it's a member in magic_list
     def __init__(self):
-        pass
+        self.status = cfg.Magic.STATUS_ALIVE
 
 
     def update(self, passed_seconds):
@@ -67,6 +73,86 @@ class MagicSkill(object):
 
     def draw(self, camera):
         pass
+
+
+
+class Bomb(MagicSprite):
+    bombs_image = animation.effect_image_controller.get(
+        sfg.Effect.BOMB_IMAGE_KEY).subsurface(sfg.Effect.BOMB_RECT).convert_alpha()
+    bomb_images = [bombs_image.subsurface((i * 64, 0, 64, 64)) for i in xrange(3)]
+    def __init__(self, pos, dx, dy, damage, angle, scale):
+        super(Bomb, self).__init__(pos, sfg.Effect.BOMB_RADIUS, dx, dy, damage, None, None)
+        self.angle = angle
+        self.scale = scale
+        self.image = transform.rotozoom(self.bomb_images[0], self.angle, self.scale)
+        self.rate = sfg.Effect.BOMB_RATE
+        self.frame_add = 0
+
+
+    def update(self, passed_seconds):
+        cur_frame_add = self.frame_add + self.rate * passed_seconds
+        if cur_frame_add > len(self.bomb_images):
+            self.status = cfg.Magic.STATUS_VANISH
+        else:
+            if int(cur_frame_add) != int(self.frame_add):
+                # change bomb image
+                self.image = transform.rotozoom(
+                    self.bomb_images[int(cur_frame_add)], self.angle, self.scale)
+
+            self.frame_add = cur_frame_add
+
+
+
+class BombSet(MagicSkill):
+    def __init__(self, sprite, target_list, damage, trigger_times, 
+        thump_crick_time, thump_acceleration, thump_out_speed):
+        super(BombSet, self).__init__()
+        self.sprite = sprite
+        self.damage = damage
+        self.thump_crick_time = thump_crick_time
+        self.thump_acceleration = thump_acceleration
+        self.thump_out_speed = thump_out_speed
+        self.target_list = target_list
+        self.has_hits = set()
+        self.trigger_times = trigger_times
+        self.passed_seconds = 0
+        self.magic_sprites = []
+
+
+    def update(self, passed_seconds):
+        self.passed_seconds += passed_seconds
+        if len(self.trigger_times) > 0 and self.passed_seconds > self.trigger_times[0]:
+            self.trigger_times.pop(0)
+            pos = self.sprite.pos.copy()
+            pos.x = randint(int(pos.x - 30), int(pos.x + 30))
+            pos.y = randint(int(pos.y - 30), int(pos.y + 30))
+            scale = max(0.9, random() * 2)
+            dx = 32 * scale
+            dy = randint(64, 96)
+            #scale = 1
+            angle = randint(-180, 180)
+            bomb = Bomb(pos, dx, dy, self.damage, angle, scale)
+            self.magic_sprites.append(bomb)
+
+        for i, bomb in enumerate(self.magic_sprites):
+            bomb.update(passed_seconds)
+            if bomb.status == cfg.Magic.STATUS_VANISH:
+                self.magic_sprites.pop(i)
+                continue
+
+            for sp in self.target_list:
+                if sp not in self.has_hits and sp.area.colliderect(bomb.area):
+                    self.has_hits.add(sp)
+                    damage = bomb.damage
+                    sp.attacker.handle_under_attack(self.sprite, damage)
+                    sp.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                        {"crick_time": self.thump_crick_time, 
+                        "out_speed": self.thump_out_speed, 
+                        "acceleration": self.thump_acceleration,
+                        "key_vec": Vector2.from_points(bomb.pos, sp.pos)})
+
+        if len(self.trigger_times) == 0 and len(self.magic_sprites) == 0:
+            self.status = cfg.Magic.STATUS_VANISH
 
 
 
@@ -105,10 +191,10 @@ class EnergyBall(MagicSprite):
 
 class EnergyBallSet(MagicSkill):
     def __init__(self, image, shadow, sprite, target_list, static_objects, params, pos, target_pos):
+        super(EnergyBallSet, self).__init__()
         self.sprite = sprite
         self.target_list = target_list
         self.static_objects = static_objects
-        self.status = cfg.Magic.STATUS_ALIVE
         self.has_hits = set()
         self.magic_sprites = []
         # only one ball right now
@@ -201,6 +287,7 @@ class DestroyBombSet(MagicSkill):
             destroy_bomb_images.append(destroy_bombs_image.subsurface((i * 64, j * 64, 64, 64)))
 
     def __init__(self, sprite, target_list, static_objects, params, pos, direction):
+        super(DestroyBombSet, self).__init__()
         self.sprite = sprite
         self.target_list = target_list
         self.static_objects = static_objects
@@ -208,7 +295,6 @@ class DestroyBombSet(MagicSkill):
         self.params = params
         self.speed = params["speed"]
         self.range = params["range"]
-        self.status = cfg.Magic.STATUS_ALIVE
 
         # this 3 list are related, put them together
         self.pos_list = []
@@ -330,12 +416,12 @@ class DestroyAeroliteSet(MagicSkill):
         sfg.Effect.DESTROY_AEROLITE_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.DESTROY_AEROLITE_RECT)
     def __init__(self, sprite, target_list, static_objects, params, pos):
+        super(DestroyAeroliteSet, self).__init__()
         self.sprite = sprite
         self.target_list = target_list
         self.static_objects = static_objects
         self.params = params
         self.has_hits = set()
-        self.status = cfg.Magic.STATUS_ALIVE
         self.passed_seconds = 0
         self.trigger_times = list(params["trigger_times"])
         self.magic_sprites = []
@@ -390,6 +476,7 @@ class DestroyAeroliteSet(MagicSkill):
 class RenneDizzy(MagicSkill):
     # Renne skill
     def __init__(self, sprite, target_list, dizzy_range, dizzy_time, effective_time, prob):
+        super(RenneDizzy, self).__init__()
         self.sprite = sprite
         self.target_list = target_list
         self.dizzy_range = dizzy_range
@@ -397,7 +484,6 @@ class RenneDizzy(MagicSkill):
         self.effective_time = effective_time
         self.prob = prob
         self.dizzy_targets = set()
-        self.status = cfg.Magic.STATUS_ALIVE
         # actually no magic sprite in this skill, but this variable should exist in every magic skill
         self.magic_sprites = []
 
@@ -479,6 +565,7 @@ class HellClawSet(MagicSkill):
         sfg.Effect.HELL_CLAW_RECT)
     claw_image_list = [hell_claw_image.subsurface((i * 64, 0, 64, 72)) for i in xrange(2)]
     def __init__(self, sprite, target, static_objects, params):
+        super(HellClawSet, self).__init__()
         self.sprite = sprite
         self.target = target
         self.target_pos = target.pos.copy()
@@ -487,7 +574,6 @@ class HellClawSet(MagicSkill):
         self.params = params
         self.trigger_times = list(params["trigger_times"])
         self.passed_seconds = 0
-        self.status = cfg.Magic.STATUS_ALIVE
         self.img_id = 0
         self.has_hits = set()
         self.magic_sprites = []
@@ -1085,6 +1171,35 @@ class EnemyImpaleShortAttacker(EnemyShortAttacker):
 
 
 
+class EnemySelfDestructionAttacker(EnemyShortAttacker):
+    def __init__(self, sprite, attacker_params):
+        super(EnemySelfDestructionAttacker, self).__init__(sprite, attacker_params)
+        self.magic_list = []
+        self.method = None
+        self.bomb_damage = attacker_params["bomb_damage"]
+        self.bomb_trigger_times = list(attacker_params["bomb_trigger_times"])
+        self.bomb_thump_crick_time = attacker_params["bomb_thump_crick_time"]
+        self.bomb_thump_acceleration = attacker_params["bomb_thump_acceleration"]
+        self.bomb_thump_out_speed = attacker_params["bomb_thump_out_speed"]
+
+
+    def run(self, hero, current_frame_add):
+        if self.method is None:
+            # only use self-destruction
+            self.method = "self_destruction"
+            bomb_set = BombSet(self.sprite, [hero, ], self.bomb_damage, self.bomb_trigger_times, 
+                self.bomb_thump_crick_time, self.bomb_thump_acceleration, self.bomb_thump_out_speed)
+            self.magic_list.append(bomb_set)
+            return False
+        else:
+            if len(self.magic_list) == 0:
+                # self-destruction is over!
+                return True
+            else:
+                return False
+
+
+
 class EnemyLongAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
         attack_range = attacker_params["range"]
@@ -1182,16 +1297,6 @@ class LeonhardtAttacker(AngleAttacker):
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
         self.death_coil_params = attacker_params["death_coil"]
         self.hell_claw_params = attacker_params["hell_claw"]
-
-        # hell claw has a ellipse for telling the player that this skill is coming!
-        self.hell_claw_ellipse_surface = pygame.Surface((
-            self.hell_claw_params["claw_shake_on_x"] * 2 + 20, 
-            self.hell_claw_params["claw_shake_on_x"] + 10)).convert_alpha()
-        self.hell_claw_ellipse_surface.fill(pygame.Color(0, 0, 0, 0))
-        pygame.draw.ellipse(self.hell_claw_ellipse_surface, pygame.Color(255, 0, 0, 128),
-            self.hell_claw_ellipse_surface.get_rect())
-        self.blink = Blink()
-        self.hell_claw_ellipse_surface_mix = self.hell_claw_ellipse_surface.copy()
 
         self.magic_list = []
         self.current_magic = None
@@ -1305,6 +1410,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeletonAttacker,
     sfg.Werwolf.ID: EnemyFrozenShortAttacker,
     sfg.SilverTentacle.ID: EnemyImpaleShortAttacker,
+    sfg.Robot.ID: EnemySelfDestructionAttacker,
 }
 
 

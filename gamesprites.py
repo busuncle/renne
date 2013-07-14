@@ -627,7 +627,8 @@ class Enemy(GameSprite):
     def cal_angry(self, damage):
         # calculate enemy's emotion
         angry_hp_threshold = self.setting.HP * self.brain.ai.ANGRY_HP_RATIO
-        if self.hp < angry_hp_threshold and self.hp + damage >= angry_hp_threshold:
+        if self.hp < angry_hp_threshold and self.hp + damage >= angry_hp_threshold \
+            and happen(self.brain.ai.EMOTION_ANGRY_PROB):
             self.set_emotion(cfg.SpriteEmotion.ANGRY)
 
 
@@ -919,6 +920,21 @@ class TwoHeadSkeleton(Enemy):
             self.fall(passed_seconds)
 
 
+class Robot(Enemy):
+    def __init__(self, setting, pos, direction):
+        super(Robot, self).__init__(setting, pos, direction)
+
+
+    def attack(self, passed_seconds):
+        is_finish = self.animation.run_sequence_frame(cfg.EnemyAction.ATTACK, passed_seconds)
+        if is_finish:
+            self.frame_action = cfg.EnemyAction.KNEEL
+            can_self_destruction = self.attacker.run(self.brain.target, None)
+            if can_self_destruction:
+                self.status["hp"] = cfg.HpStatus.DIE
+
+
+
 ######## sprite group subclass ########
 class GameSpritesGroup(pygame.sprite.LayeredDirty):
     def __init__(self):
@@ -1018,4 +1034,5 @@ ENEMY_CLASS_MAPPING = {
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeleton,
     sfg.Werwolf.ID: Enemy,
     sfg.SilverTentacle.ID: Enemy,
+    sfg.Robot.ID: Robot,
 }

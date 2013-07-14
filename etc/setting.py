@@ -522,6 +522,34 @@ class SilverTentacle(Enemy):
 
 
 
+class Robot(Enemy):
+    NAME = "Robot"
+    HP = 200
+    ATK = 10
+    DFS = 1
+
+    RADIUS = 24
+    HEIGHT = 60
+    POS_RECT_DELTA_Y = 40
+    SHADOW_RECT_DELTA_Y = 60
+    SHADOW_INDEX = 3
+
+    ATTACKER_PARAMS = {
+        "range": 30,
+        "angle": 80,
+        "key_frames": (4, 5),
+        "bomb_damage": 100, 
+        "bomb_trigger_times": [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        #"bomb_trigger_times": [0.2, ],
+        "bomb_thump_crick_time": 0.3,
+        "bomb_thump_acceleration": -4500,
+        "bomb_thump_out_speed": 1000,
+    }
+
+    WALK_SPEED = 200
+
+
+
 class GameMap(object):
     TILE_SIZE = 256
     ONE_SCREEN_DISTANCE_WIDTH = TILE_SIZE * 4
@@ -1190,6 +1218,10 @@ class Effect(object):
 
     BOMB_IMAGE_KEY = "e2"
     BOMB_RECT = (0, 64, 192, 64)
+    BOMB_RADIUS = 32
+    BOMB_RATE = 6
+
+    BOMB2_IMAGE_KEY = "e5"
 
     BLINK_RATE = 256
     BLINK_DEPTH_SECTION = (32, 128)
@@ -1237,6 +1269,7 @@ SPRITE_SETTING_LIST = [
     TwoHeadSkeleton,
     Werwolf,
     SilverTentacle,
+    Robot,
 ]
 
 STATIC_OBJECT_SETTING_LIST = [
@@ -1283,7 +1316,7 @@ SPRITE_SETTING_MAPPING = dict((cls.ID, cls) for cls in SPRITE_SETTING_LIST)
 STATIC_OBJECT_SETTING_MAPPING = dict((cls.ID, cls) for cls in STATIC_OBJECT_SETTING_LIST)
 
 
-SPRITES_WITH_MAGIC_SKILL = (Renne.ID, LeonHardt.ID)
+SPRITES_WITH_MAGIC_SKILL = (Renne.ID, LeonHardt.ID, Robot.ID)
 SPRITES_WITH_AMMO = (SkeletonArcher.ID, )
 
 
@@ -1371,6 +1404,13 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
         cfg.EnemyAction.ATTACK: ("attack_5.png", 5, 6),
         cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
+    }),
+    Robot.ID: ("robot", {
+        cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
+        cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
+        cfg.EnemyAction.ATTACK: ("attack_8.png", 5, 12),
+        cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
+        cfg.EnemyAction.KNEEL: ("kneel.png", 1, 0),
     }),
 }
 
@@ -1462,4 +1502,5 @@ EFFECT = ("effect", {
     "e2": "e2.png",
     "e3": "e3.png",
     "e4": "e4.png",
+    "e5": "e5.png",
 })
