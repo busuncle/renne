@@ -535,7 +535,7 @@ class Robot(Enemy):
     SHADOW_INDEX = 3
 
     ATTACKER_PARAMS = {
-        "range": 80,
+        "range": 90,
         "angle": 80,
         "key_frames": (4, 5),
         "bomb_damage": 100, 
