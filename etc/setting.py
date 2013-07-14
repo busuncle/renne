@@ -535,7 +535,7 @@ class Robot(Enemy):
     SHADOW_INDEX = 3
 
     ATTACKER_PARAMS = {
-        "range": 30,
+        "range": 80,
         "angle": 80,
         "key_frames": (4, 5),
         "bomb_damage": 100, 
@@ -1137,6 +1137,7 @@ class Chapter(object):
         4: WIN_CONDITION_ALL_ENEMY_DIE,
         5: WIN_CONDITION_BOSS_DIE,
         999: WIN_CONDITION_ALL_ENEMY_DIE,
+        998: WIN_CONDITION_ALL_ENEMY_DIE,
     }
 
 
@@ -1437,7 +1438,7 @@ TILE_IMAGES = ("tiles", {
     3: "3.png", 
     4: "4.png", 
     5: "5.png", 
-    #6: "6.png", 
+    6: "6.png", 
     #7: "7.png", 
     8: "8.png", 
 })
@@ -1477,6 +1478,7 @@ BACKGROUND_MUSICS = ("background", {
     "chapter_3": "chapter_3.ogg",
     "chapter_4": "chapter_4.ogg",
     "chapter_5": "chapter_5.ogg",
+    "chapter_998": "chapter_5.ogg",
     "chapter_999": "chapter_5.ogg",
     "hero_win": "hero_win.wav",
     "hero_lose": "hero_lose.wav",

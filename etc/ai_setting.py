@@ -162,6 +162,11 @@ class RobotAI(ShortNormalAI):
     EMOTION_SILENT_PROB = 0.0
     EMOTION_ANGRY_PROB = 0.0
 
+    STAY_CHANGE_DIRECTION_PROB = 0
+    STAY_TO_OFFENCE_PROB = 1
+    CHASE_TO_OFFENCE_PROB = 1
+    DEFENCE_TO_OFFENCE_PROB = 1
+
 
 AI_MAPPING = {
     sfg.SkeletonWarrior.ID: ShortNormalAI,

@@ -160,10 +160,10 @@ class Renne(GameSprite):
 
         # represent the sprite area, used for deciding frame layer and collide, attack computing or so
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
-        self.area.center = self.pos('xy')
 
 
     def activate(self, allsprites, enemies, static_objects, game_map):
+        self.area.center = self.pos("xy")
         self.allsprites = allsprites
         self.enemies = enemies
         self.static_objects = static_objects

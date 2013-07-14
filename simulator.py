@@ -149,7 +149,7 @@ class BombSet(MagicSkill):
                         {"crick_time": self.thump_crick_time, 
                         "out_speed": self.thump_out_speed, 
                         "acceleration": self.thump_acceleration,
-                        "key_vec": Vector2.from_points(bomb.pos, sp.pos)})
+                        "key_vec": Vector2.from_points(self.sprite.pos, sp.pos)})
 
         if len(self.trigger_times) == 0 and len(self.magic_sprites) == 0:
             self.status = cfg.Magic.STATUS_VANISH
