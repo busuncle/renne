@@ -103,10 +103,10 @@ class Bomb(MagicSprite):
 
 
 
-class BombSet(MagicSkill):
+class SelfDestruction(MagicSkill):
     def __init__(self, sprite, target_list, damage, trigger_times, 
         thump_crick_time, thump_acceleration, thump_out_speed):
-        super(BombSet, self).__init__()
+        super(SelfDestruction, self).__init__()
         self.sprite = sprite
         self.damage = damage
         self.thump_crick_time = thump_crick_time
@@ -1187,9 +1187,9 @@ class EnemySelfDestructionAttacker(EnemyShortAttacker):
         if self.method is None:
             # only use self-destruction
             self.method = "self_destruction"
-            bomb_set = BombSet(self.sprite, [hero, ], self.bomb_damage, self.bomb_trigger_times, 
+            self_destruction = SelfDestruction(self.sprite, [hero, ], self.bomb_damage, self.bomb_trigger_times, 
                 self.bomb_thump_crick_time, self.bomb_thump_acceleration, self.bomb_thump_out_speed)
-            self.magic_list.append(bomb_set)
+            self.magic_list.append(self_destruction)
             return False
         else:
             if len(self.magic_list) == 0:
