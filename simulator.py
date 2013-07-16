@@ -1174,29 +1174,46 @@ class EnemyImpaleShortAttacker(EnemyShortAttacker):
 class EnemySelfDestructionAttacker(EnemyShortAttacker):
     def __init__(self, sprite, attacker_params):
         super(EnemySelfDestructionAttacker, self).__init__(sprite, attacker_params)
-        self.magic_list = []
-        self.method = None
         self.bomb_damage = attacker_params["bomb_damage"]
+        self.bomb_run_up_time = attacker_params["bomb_run_up_time"]
+        self.bomb_acceleration = attacker_params["bomb_acceleration"]
+        self.bomb_lock_distance = attacker_params["bomb_lock_distance"]
         self.bomb_trigger_times = list(attacker_params["bomb_trigger_times"])
         self.bomb_thump_crick_time = attacker_params["bomb_thump_crick_time"]
         self.bomb_thump_acceleration = attacker_params["bomb_thump_acceleration"]
         self.bomb_thump_out_speed = attacker_params["bomb_thump_out_speed"]
 
+        self.magic_list = []
+        self.bomb_begin = False
+        self.bomb_run_up_time_add = 0
+        self.key_vec = None
+        self.final_bomb_time = None
+        self.speed = self.sprite.setting.WALK_SPEED
 
-    def run(self, hero, current_frame_add):
-        if self.method is None:
-            # only use self-destruction
-            self.method = "self_destruction"
-            self_destruction = SelfDestruction(self.sprite, [hero, ], self.bomb_damage, self.bomb_trigger_times, 
-                self.bomb_thump_crick_time, self.bomb_thump_acceleration, self.bomb_thump_out_speed)
-            self.magic_list.append(self_destruction)
-            return False
-        else:
-            if len(self.magic_list) == 0:
-                # self-destruction is over!
-                return True
-            else:
-                return False
+
+    def chance(self, target):
+        sp = self.sprite
+        distance_to_target = sp.pos.get_distance_to(target.pos)
+        if distance_to_target <= self.attack_range * 5:
+            self.key_vec = Vector2.from_points(sp.pos, target.pos)
+            return True
+        return False
+
+
+    def set_self_destruction(self, hero):
+        self_destruction = SelfDestruction(self.sprite, [hero, ], self.bomb_damage, self.bomb_trigger_times, 
+            self.bomb_thump_crick_time, self.bomb_thump_acceleration, self.bomb_thump_out_speed)
+        self.magic_list.append(self_destruction)
+        self.bomb_begin = True
+        self.sprite.status["hp"] = cfg.HpStatus.DIE
+
+
+    def finish(self):
+        self.magic_list = []
+        self.bomb_begin = False
+        self.bomb_run_up_time_add = 0
+        self.final_bomb_time = None
+        self.speed = self.sprite.setting.WALK_SPEED
 
 
 

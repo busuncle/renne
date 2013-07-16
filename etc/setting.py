@@ -539,17 +539,17 @@ class Robot(Enemy):
         "angle": 80,
         "key_frames": (4, 5),
         "bomb_damage": 100, 
-        "bomb_tips_time": 1,
-        "bomb_acceleration": 1000,
+        "bomb_run_up_time": 1,
+        "bomb_acceleration": 1500,
         "bomb_lock_distance": 200,
-        "bomb_trigger_times": [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        "bomb_trigger_times": [0.2, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.7, 0.8],
         #"bomb_trigger_times": [0.2, ],
         "bomb_thump_crick_time": 0.3,
         "bomb_thump_acceleration": -4500,
         "bomb_thump_out_speed": 1000,
     }
 
-    WALK_SPEED = 200
+    WALK_SPEED = 120
 
 
 
