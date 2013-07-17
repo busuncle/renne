@@ -539,7 +539,7 @@ class Robot(Enemy):
         "angle": 80,
         "key_frames": (4, 5),
         "bomb_damage": 100, 
-        "bomb_run_up_time": 1,
+        "bomb_run_up_time": 0.5,
         "bomb_acceleration": 1500,
         "bomb_lock_distance": 200,
         "bomb_trigger_times": [0.2, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.7, 0.8],
