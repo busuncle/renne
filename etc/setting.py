@@ -92,6 +92,13 @@ class Stuff(object):
 
 
 
+class Physics(object):
+    # define all physics constants, it's only values, not included direction, add it if necessary
+    SPRITE_FLOOR_FRICION_ACCELERATION = 4500
+    GRAVITY_ACCELERATION = 1200
+
+
+
 class Sprite(object):
     SHADOW_IMAGE_KEY = "sprite_shadow"
     UNDER_ATTACK_MIX_COLOR = pygame.Color("gray")
@@ -133,7 +140,7 @@ class Renne(object):
         "run_attack": {
             "crick_time": 0.4,
             "out_speed": 1000,
-            "acceleration": -4500,
+            "acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
         },
         "destroy_fire": {
             "range": 300,
@@ -165,7 +172,7 @@ class Renne(object):
             "key_frames": (1, ),
             "fall_range": 128,
             "damage": 70,
-            "acceleration": 400,
+            "acceleration": Physics.GRAVITY_ACCELERATION,
             "mana": 80,
             "cd": 10,
             #"mana": 6,
@@ -242,7 +249,7 @@ class CastleWarrior(Enemy):
         "key_frames": (4, ),
         "thump_crick_time": 0.3,
         "thump_out_speed": 1000,
-        "thump_acceleration": -4500,
+        "thump_acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
         "thump_pre_freeze_time": 1,
         "thump_pre_frames": (0, 1, 2),
         "thump_pre_rate": 8,
@@ -458,12 +465,12 @@ class TwoHeadSkeleton(Enemy):
         "fall_run_up_time": 0.8,
         "fall_run_up_rate": 30,
         "fall_kneel_time": 0.5,
-        "fall_acceleration": -1400,
+        "fall_acceleration": -Physics.GRAVITY_ACCELERATION,
         "fall_v0_y": 600,
         "fall_back_v0_y": 300,
         "fall_damage": 80,
         "fall_thump_crick_time": 0.3,
-        "fall_thump_acceleration": -4500,
+        "fall_thump_acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
         "fall_thump_out_speed": 1000,
     }
 
@@ -545,7 +552,7 @@ class Robot(Enemy):
         "bomb_trigger_times": [0.2, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.7, 0.8],
         #"bomb_trigger_times": [0.2, ],
         "bomb_thump_crick_time": 0.3,
-        "bomb_thump_acceleration": -4500,
+        "bomb_thump_acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
         "bomb_thump_out_speed": 1000,
     }
 
