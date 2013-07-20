@@ -1232,6 +1232,15 @@ class Effect(object):
     BOMB_RADIUS = 32
     BOMB_RATE = 6
 
+    POISON_IMAGE_KEY = "e6"
+    POISON_RECT1 = (0, 32, 96, 32)
+    POISON_RECT2 = (0, 192, 128, 64)
+    POISON_RECT3 = (128, 128, 128, 128)
+    POISON_DX1 = 8
+    POISON_DY1 = 8
+    POISON_DX2 = 16
+    POISON_DY2 = 16
+
     BOMB2_IMAGE_KEY = "e5"
 
     BLINK_RATE = 256

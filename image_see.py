@@ -16,7 +16,7 @@ pygame.display.set_caption("Renne Image See")
 
 def run(args):
     img = pygame.image.load(args.filepath).convert_alpha()
-    #img = img.subsurface((294, 720, 68, 74))
+    #img = img.subsurface((0, 0, 256, 256))
     img_rect = img.get_rect()
     words_blit_pos = img_rect.bottomleft
     background_color = args.background_color or "black"
@@ -35,7 +35,9 @@ def run(args):
         #mask.fill(pygame.Color(32, 32, 32), special_flags=BLEND_ADD)
         #img.set_alpha(128)
         #screen.blit(img, (0, 0))
-        screen.blit(mask, (0, 0))
+        #blit_pos = (randint(0, 10), randint(0, 10))
+        blit_pos = (0, 0)
+        screen.blit(mask, blit_pos)
 
         mouse_pos = pygame.mouse.get_pos()
         if mouse_pos[0] > img_rect.right or mouse_pos[1] > img_rect.bottom:

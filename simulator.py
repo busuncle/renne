@@ -24,6 +24,7 @@ class MagicSprite(pygame.sprite.DirtySprite):
         self.area = pygame.Rect(0, 0, radius * 2, radius * 2)
         self.area.center = self.pos
         self.damage = damage
+        # dx and dy is used to fix the blit position for sprite image, x and y axis respectively
         self.dx = dx
         self.dy = dy
         self.image = image
@@ -100,6 +101,49 @@ class Bomb(MagicSprite):
                     self.bomb_images[int(cur_frame_add)], self.angle, self.scale)
 
             self.frame_add = cur_frame_add
+
+
+
+class Poison(MagicSprite):
+    def __init__(self, pos, radius, dx, dy, damage, image, height, key_vec, speed, fall_acceleration, 
+        life_time):
+        super(Poison, self).__init__(pos, radius, dx, dy, damage, image, None)
+        self.origin_image_on_floor = None
+        self.key_vec = key_vec
+        self.speed = speed
+        # notice here, if height is positive, fall_acceleration should be negative
+        self.height = abs(height)
+        self.fall_acceleration = -abs(fall_acceleration)
+        self.v_y = 0
+        self.life_time_left = life_time
+        self.fade_out_list = [{"life_time_left": i * life_time, "scale_ratio": i} for i in [0.5, 0.3]]
+
+
+    def update(self, passed_seconds):
+        self.life_time_left -= passed_seconds
+        if self.height <= 0:
+            if len(self.fade_out_list) > 0 and self.life_time_left < self.fade_out_list[0]["life_time_left"]:
+                # change image, fade it out step by step
+                scale_ratio = self.fade_out_list.pop(0)["scale_ratio"]
+                self.image = self.transform.rotozoom(self.origin_image_on_floor, 0, scale_ratio)
+                self.dx *= scale_ratio
+                self.dy *= scale_ratio
+                self.area.width *= scale_ratio
+                self.area.height * = scale_ratio
+                self.area.center = self.pos("xy") # reassign area center
+
+        else:
+            self.pos *= self.key_vec * self.speed * passed_seconds
+            self.area.center = self.pos("xy")
+            self.height += self.v_y * passed_seconds + \
+                0.5 * self.fall_acceleration * pow(self.passed_seconds, 2)
+            self.v_y += self.fall_acceleration * passed_seconds
+            if self.height <= 0:
+                # the poison is now on the floor, keep an orignal image copy for scale further
+                self.origin_image_on_floor = self.image.copy()
+
+        if self.life_time_left <= 0:
+            self.status = cfg.Magic.STATUS_VANISH
 
 
 
@@ -394,13 +438,6 @@ class DestroyAerolite(MagicSprite):
         self.alive_time += passed_seconds
         if self.alive_time > self.life:
             self.status = cfg.Magic.STATUS_VANISH
-
-        #if self.alive_time > self.damage_cal_time:
-        #    r = pygame.Rect(0, 0, self.area.width, self.area.height * 0.5)
-        #    r.center = (self.pos.x, self.pos.y * 0.5)
-        #    r.top -= camera.rect.top
-        #    r.left -= camera.rect.left
-        #    pygame.draw.rect(camera.screen, pygame.Color("red"), r, 1)
 
 
     def draw(self, camera):
