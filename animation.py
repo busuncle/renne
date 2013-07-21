@@ -261,6 +261,10 @@ class SpriteAnimator(object):
             else:
                 image_blit_pos = (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top)
 
+            if sp.status.get(cfg.SpriteStatus.BODY_SHAKE) is not None:
+                image_blit_pos = (image_blit_pos[0] + sp.status[cfg.SpriteStatus.BODY_SHAKE]["dx"],
+                    image_blit_pos[1] + sp.status[cfg.SpriteStatus.BODY_SHAKE]["dy"])
+
             camera.screen.blit(self.image, image_blit_pos)
 
         if self.sprite.status.get(cfg.SpriteStatus.WEAK) is not None:

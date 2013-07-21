@@ -413,9 +413,21 @@ class SkeletonWarrior2(Enemy):
         "poison_damage_per_second": 5,
         "poison_persist_time": 5,
         "poison_prob": 0.6,
+        "spit_poison": {
+            "damage": 5,
+            "damage_time": 5,
+            "speed": 500,
+            "fall_acceleration": Physics.GRAVITY_ACCELERATION,
+            "life_time": 10,
+            "height": 60,
+            #"num": 1,
+            "num": 8,
+            "ready_time": 1,
+            "hold_time": 0.5,
+        },
     }
 
-    WALK_SPEED = 160
+    WALK_SPEED = 130
 
 
 
@@ -1336,7 +1348,7 @@ SPRITE_SETTING_MAPPING = dict((cls.ID, cls) for cls in SPRITE_SETTING_LIST)
 STATIC_OBJECT_SETTING_MAPPING = dict((cls.ID, cls) for cls in STATIC_OBJECT_SETTING_LIST)
 
 
-SPRITES_WITH_MAGIC_SKILL = (Renne.ID, LeonHardt.ID, Robot.ID)
+SPRITES_WITH_MAGIC_SKILL = (Renne.ID, LeonHardt.ID, Robot.ID, SkeletonWarrior2.ID)
 SPRITES_WITH_AMMO = (SkeletonArcher.ID, )
 
 
@@ -1524,4 +1536,5 @@ EFFECT = ("effect", {
     "e3": "e3.png",
     "e4": "e4.png",
     "e5": "e5.png",
+    "e6": "e6.png",
 })

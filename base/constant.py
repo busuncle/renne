@@ -123,6 +123,7 @@ class SpriteStatus(object):
     FROZEN = 9
     WEAK = 10
     IN_AIR = 11
+    BODY_SHAKE = 12
 
     BAD_STATUS_LIST = (POISON, FROZEN, WEAK)
     REJECT_THUMP_STATUS_LIST = (STUN, DIZZY, IN_AIR)

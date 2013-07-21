@@ -4,7 +4,7 @@ from pygame import transform
 from base.util import LineSegment, line_segment_intersect_with_rect, cos_for_vec
 from base.util import manhattan_distance, Timer, happen, Blink
 import math
-from random import gauss, randint, choice, random
+from random import gauss, randint, choice, random, sample
 from math import pow, radians, sqrt, tan, cos
 from time import time
 from gameobjects.vector2 import Vector2
@@ -48,7 +48,7 @@ class MagicSprite(pygame.sprite.DirtySprite):
         if self.status == cfg.Magic.STATUS_ALIVE:
             camera.screen.blit(self.image,
                 (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy))
-            #self.draw_area(camera)
+            self.draw_area(camera)
 
 
     def draw_area(self, camera):
@@ -66,6 +66,7 @@ class MagicSkill(object):
     # it's a member in magic_list
     def __init__(self):
         self.status = cfg.Magic.STATUS_ALIVE
+        self.has_hits = set()
 
 
     def update(self, passed_seconds):
@@ -116,33 +117,127 @@ class Poison(MagicSprite):
         self.fall_acceleration = -abs(fall_acceleration)
         self.v_y = 0
         self.life_time_left = life_time
-        self.fade_out_list = [{"life_time_left": i * life_time, "scale_ratio": i} for i in [0.5, 0.3]]
+        self.fade_out_list = [{"life_time_left": i * life_time, "scale_ratio": i} for i in [0.7, 0.5]]
 
 
     def update(self, passed_seconds):
         self.life_time_left -= passed_seconds
         if self.height <= 0:
+            # on the floor
             if len(self.fade_out_list) > 0 and self.life_time_left < self.fade_out_list[0]["life_time_left"]:
                 # change image, fade it out step by step
                 scale_ratio = self.fade_out_list.pop(0)["scale_ratio"]
-                self.image = self.transform.rotozoom(self.origin_image_on_floor, 0, scale_ratio)
+                self.image = transform.rotozoom(self.origin_image_on_floor, 0, scale_ratio)
                 self.dx *= scale_ratio
                 self.dy *= scale_ratio
                 self.area.width *= scale_ratio
-                self.area.height * = scale_ratio
+                self.area.height *= scale_ratio
                 self.area.center = self.pos("xy") # reassign area center
 
         else:
-            self.pos *= self.key_vec * self.speed * passed_seconds
+            # in the air
+            self.pos += self.key_vec * self.speed * passed_seconds
             self.area.center = self.pos("xy")
-            self.height += self.v_y * passed_seconds + \
-                0.5 * self.fall_acceleration * pow(self.passed_seconds, 2)
+            self.height += self.v_y * passed_seconds + 0.5 * self.fall_acceleration * pow(passed_seconds, 2)
             self.v_y += self.fall_acceleration * passed_seconds
             if self.height <= 0:
                 # the poison is now on the floor, keep an orignal image copy for scale further
                 self.origin_image_on_floor = self.image.copy()
 
         if self.life_time_left <= 0:
+            self.status = cfg.Magic.STATUS_VANISH
+
+
+    def draw(self, camera):
+        if self.status == cfg.Magic.STATUS_ALIVE:
+            camera.screen.blit(self.image,
+                (self.pos.x - camera.rect.x - self.dx, 
+                self.pos.y * 0.5 - camera.rect.y - self.dy - self.height))
+            #self.draw_area(camera)
+
+
+
+class PoisonSet(MagicSkill):
+    poison_image_list = []
+    def __init__(self, sprite, target_list, static_objects, params):
+        super(PoisonSet, self).__init__()
+        self.init_poison_image_list()
+        self.sprite = sprite
+        self.target_list = target_list
+        self.static_objects = static_objects
+        self.params = params
+        self.magic_sprites = self.gen_magic_sprites()
+
+
+    def init_poison_image_list(self):
+        if len(self.poison_image_list) == 0:
+            img = animation.effect_image_controller.get(sfg.Effect.POISON_IMAGE_KEY)
+
+            img1 = img.subsurface(sfg.Effect.POISON_RECT1).convert_alpha()
+            self.poison_image_list.extend([img1.subsurface((i * 32, 0, 32, 32)) for i in xrange(3)])
+
+            img2 = img.subsurface(sfg.Effect.POISON_RECT2).convert_alpha()
+            self.poison_image_list.extend([img2.subsurface((i * 32, 0, 32, 32)) for i in xrange(4)])
+            self.poison_image_list.extend([img2.subsurface((i * 32, 32, 32, 32)) for i in xrange(4)])
+
+            img3 = img.subsurface(sfg.Effect.POISON_RECT3).convert_alpha()
+            self.poison_image_list.append(img3.subsurface((64, 0, 64, 64)))
+            self.poison_image_list.append(img3.subsurface((0, 64, 64, 64)))
+            self.poison_image_list.append(img3.subsurface((64, 64, 64, 64)))
+
+
+    def gen_magic_sprites(self):
+        sp = self.sprite
+        res = []
+        imgs = sample(self.poison_image_list, self.params["num"])
+        for img in imgs:
+            # add some noise for key_vec of poison that spit out!
+            key_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
+            key_vec.x = gauss(key_vec.x, 0.1)
+            key_vec.y = gauss(key_vec.y, 0.1)
+            radius = img.get_width() * 0.5
+            # add some noise for speed
+            speed = gauss(self.params["speed"], self.params["speed"] / 5)
+            print speed
+
+            tf_img = transform.smoothscale(img, (img.get_width(), img.get_height() / 2))
+            dx = tf_img.get_width() * 0.5
+            dy = tf_img.get_height() * 0.5
+
+            # add some noise for life time
+            life_time = gauss(self.params["life_time"], self.params["life_time"] / 5)
+
+            poison = Poison(sp.pos, radius, dx, dy, self.params["damage"], tf_img, self.params["height"],
+                key_vec, speed, self.params["fall_acceleration"], life_time)
+            res.append(poison)
+
+        return res
+
+
+    def update(self, passed_seconds):
+        sp = self.sprite
+        for i, poison in enumerate(self.magic_sprites):
+            for target in self.target_list:
+                if target not in self.has_hits \
+                    and poison.area.colliderect(target.area):
+                    self.has_hits.add(target)
+                    if target.status.get(cfg.SpriteStatus.POISON) is None:
+                        target.attacker.handle_additional_status(cfg.SpriteStatus.POISON,
+                            {"dps": self.params["damage"], "time_list": range(self.params["damage_time"]),
+                            "time_left": self.params["damage_time"]})
+
+            if poison.height > 0:
+                for obj in self.static_objects:
+                    if not obj.setting.IS_ELIMINABLE and obj.area.colliderect(poison.area):
+                        # this poison will no longer move horizontally
+                        poison.key_vec = Vector2(0, 0)
+                        break
+
+            poison.update(passed_seconds)
+            if poison.status == cfg.Magic.STATUS_VANISH:
+                self.magic_sprites.pop(i)
+
+        if len(self.magic_sprites) == 0:
             self.status = cfg.Magic.STATUS_VANISH
 
 
@@ -921,6 +1016,48 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
         self.poison_dps = attacker_params["poison_damage_per_second"]
         self.poison_time = attacker_params["poison_persist_time"]
         self.poison_prob = attacker_params["poison_prob"]
+        self.spit_poison_params = attacker_params["spit_poison"]
+        self.spit_poison_ready_time = self.spit_poison_params["ready_time"]
+        self.spit_poison_hold_time = self.spit_poison_params["hold_time"]
+        self.magic_list = []
+        self.method = None
+        self.current_magic = None
+        self.spit_poison_ready_time_add = 0
+        self.spit_poison_hold_time_add = 0
+        self.spit_poison_total = 3
+
+
+    def spit_poison_chance(self, target):
+        sp = self.sprite
+        if self.spit_poison_total <= 0:
+            return False
+
+        distance_to_target = sp.pos.get_distance_to(target.pos)
+        if distance_to_target <= self.attack_range * 5:
+            return True
+
+        return False
+
+
+    def chance(self, target):
+        sp = self.sprite
+        if happen(sp.brain.ai.ATTACK_SPIT_POISON) and self.spit_poison_chance(target):
+            self.method = "spit_poison"
+            self.spit_poison_total -= 1
+            return True
+
+        if super(EnemyPoisonShortAttacker, self).chance(target):
+            self.method = "regular"
+            return True
+
+        return False
+
+
+    def spit_poison(self, hero):
+        sp = self.sprite
+        if self.current_magic is None:
+            self.current_magic = PoisonSet(sp, [hero, ], sp.static_objects, self.spit_poison_params)
+            self.magic_list.append(self.current_magic)
 
 
     def run(self, hero, current_frame_add):
@@ -935,6 +1072,14 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
             sp.animation.show_words(words, 0.3, 
                 (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
         return hit_it
+
+
+    def finish(self):
+        super(EnemyPoisonShortAttacker, self).finish()
+        self.method = None
+        self.current_magic = None
+        self.spit_poison_ready_time_add = 0
+        self.spit_poison_hold_time_add = 0
 
 
 
@@ -1460,7 +1605,6 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.SwordRobber.ID: EnemyWeakShortAttacker,
     sfg.SkeletonWarrior2.ID: EnemyPoisonShortAttacker,
     sfg.Ghost.ID: EnemyLeakShortAttacker,
-    #sfg.TwoHeadSkeleton.ID: EnemyBloodShortAttacker,
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeletonAttacker,
     sfg.Werwolf.ID: EnemyFrozenShortAttacker,
     sfg.SilverTentacle.ID: EnemyImpaleShortAttacker,

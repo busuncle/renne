@@ -170,6 +170,14 @@ class RobotAI(ShortNormalAI):
     DEFENCE_TO_OFFENCE_PROB = 1
 
 
+
+class SkeletonWarrior2AI(ShortNormalAI):
+    ATTACK_SPIT_POISON = 0.9
+    STAY_CHANGE_DIRECTION_PROB = 0
+
+    STAY_TO_PATROL_PROB = 0
+
+
 AI_MAPPING = {
     sfg.SkeletonWarrior.ID: ShortNormalAI,
     #sfg.CastleWarrior.ID: ShortNormalAI,
@@ -178,7 +186,8 @@ AI_MAPPING = {
     sfg.LeonHardt.ID: LeonHardtAI,
     sfg.ArmouredShooter.ID: ArmouredShooterAI,
     sfg.SwordRobber.ID: SwordRobberAI,
-    sfg.SkeletonWarrior2.ID: ShortNormalAI,
+    #sfg.SkeletonWarrior2.ID: ShortNormalAI,
+    sfg.SkeletonWarrior2.ID: SkeletonWarrior2AI,
     sfg.Ghost.ID: ShortNormalAI,
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeletonAI,
     sfg.Werwolf.ID: WerwolfAI,
