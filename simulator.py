@@ -30,6 +30,7 @@ class MagicSprite(pygame.sprite.DirtySprite):
         self.image = image
         self.shadow = shadow
         self.status = cfg.Magic.STATUS_ALIVE
+        self.layer = cfg.Magic.LAYER_AIR
 
 
     def update(self, passed_seconds):
@@ -143,6 +144,7 @@ class Poison(MagicSprite):
             if self.height <= 0:
                 # the poison is now on the floor, keep an orignal image copy for scale further
                 self.origin_image_on_floor = self.image.copy()
+                self.layer = cfg.Magic.LAYER_FLOOR
 
         if self.life_time_left <= 0:
             self.status = cfg.Magic.STATUS_VANISH
@@ -198,7 +200,6 @@ class PoisonSet(MagicSkill):
             radius = img.get_width() * 0.5
             # add some noise for speed
             speed = gauss(self.params["speed"], self.params["speed"] / 5)
-            print speed
 
             tf_img = transform.smoothscale(img, (img.get_width(), img.get_height() / 2))
             dx = tf_img.get_width() * 0.5

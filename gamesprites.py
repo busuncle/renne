@@ -126,6 +126,11 @@ class GameSprite(pygame.sprite.DirtySprite):
                 self.status.pop(cfg.SpriteStatus.DIZZY)
                 self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
 
+        if self.status.get(cfg.SpriteStatus.BODY_SHAKE) is not None:
+            self.status[cfg.SpriteStatus.BODY_SHAKE]["dx"] = random.randint(-5, 5)
+            self.status[cfg.SpriteStatus.BODY_SHAKE]["dy"] = random.randint(-3, 3)
+
+
 
     def update(self, passed_seconds):
         pass
@@ -620,6 +625,8 @@ class Enemy(GameSprite):
             self.action = cfg.EnemyAction.STAND
             self.animation.reset_frame_adds()
             self.frame_action = None
+            if self.status.get(cfg.SpriteStatus.BODY_SHAKE) is not None:
+                self.status.pop(cfg.SpriteStatus.BODY_SHAKE)
         else:
             if not self.brain.persistent:
                 self.action = cfg.EnemyAction.STAND
@@ -969,6 +976,42 @@ class Robot(Enemy):
 
 
 
+class SkeletonWarrior2(Enemy):
+    def __init__(self, setting, pos, direction):
+        super(SkeletonWarrior2, self).__init__(setting, pos, direction)
+
+
+    def spit_poison(self, passed_seconds):
+        ak = self.attacker
+        if ak.spit_poison_ready_time_add == 0:
+            # first time into spit poison, add body shake status
+            ak.spit_poison_ready_time_add += passed_seconds
+            self.status[cfg.SpriteStatus.BODY_SHAKE] = {"dx": random.randint(-5, 5), 
+                "dy": random.randint(-3, 3)}
+
+        elif ak.spit_poison_ready_time_add < ak.spit_poison_ready_time:
+            ak.spit_poison_ready_time_add += passed_seconds
+            self.frame_action = cfg.EnemyAction.UNDER_THUMP
+            if ak.spit_poison_ready_time_add >= ak.spit_poison_ready_time:
+                self.status.pop(cfg.SpriteStatus.BODY_SHAKE)
+
+        elif ak.spit_poison_hold_time_add < ak.spit_poison_hold_time:
+            ak.spit_poison_hold_time_add += passed_seconds
+            self.frame_action = cfg.EnemyAction.STAND
+            ak.spit_poison(self.brain.target)
+
+        else:
+            self.reset_action(force=True)
+
+    
+    def attack(self, passed_seconds):
+        if self.attacker.method == "regular":
+            super(SkeletonWarrior2, self).attack(passed_seconds)
+        elif self.attacker.method == "spit_poison":
+            self.spit_poison(passed_seconds)
+
+
+
 ######## sprite group subclass ########
 class GameSpritesGroup(pygame.sprite.LayeredDirty):
     def __init__(self):
@@ -1063,7 +1106,8 @@ ENEMY_CLASS_MAPPING = {
     sfg.LeonHardt.ID: Leonhardt,
     sfg.ArmouredShooter.ID: Enemy,
     sfg.SwordRobber.ID: Enemy,
-    sfg.SkeletonWarrior2.ID: Enemy,
+    #sfg.SkeletonWarrior2.ID: Enemy,
+    sfg.SkeletonWarrior2.ID: SkeletonWarrior2,
     sfg.Ghost.ID: Enemy,
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeleton,
     sfg.Werwolf.ID: Enemy,

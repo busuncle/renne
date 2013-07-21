@@ -180,6 +180,7 @@ class GameWorld(pygame.sprite.LayeredDirty):
 
     def draw(self, camera):
         movings = []
+        floor_objects = []
         movings.extend(self.dynamic_objects)
 
         # draw shawdow first
@@ -191,10 +192,15 @@ class GameWorld(pygame.sprite.LayeredDirty):
                 for magic in sp.attacker.magic_list:
                     magic.draw(camera)
 
-                    # magic sprite is dynamic objects too, put them into movings
-                    movings.extend(magic.magic_sprites)
+                    #movings.extend(magic.magic_sprites)
                     for msp in magic.magic_sprites:
                         msp.draw_shadow(camera)
+                        # magic sprite is dynamic objects too, 
+                        # put them into corresponding list according their layer
+                        if msp.layer == cfg.Magic.LAYER_FLOOR:
+                            floor_objects.append(msp)
+                        elif msp.layer == cfg.Magic.LAYER_AIR:
+                            movings.append(msp)
 
             if sp.setting.ID in sfg.SPRITES_WITH_AMMO:
                 movings.extend(sp.attacker.ammo_list)
@@ -205,6 +211,11 @@ class GameWorld(pygame.sprite.LayeredDirty):
         for obj in self.static_objects:
             if obj.setting.IS_ELIMINABLE:
                 obj.draw_shadow(camera)
+
+        # draw floor objects first
+        floor_objects.sort(key=lambda obj: obj.pos.y)
+        for obj in floor_objects:
+            obj.draw(camera)
 
         # only sort dynamic objects, static object is sorted in nature and no longer change 
         # the algorithm is inspired by merge sort

@@ -203,6 +203,9 @@ class Magic(object):
     STATUS_ALIVE = 0 
     STATUS_VANISH = 1
 
+    LAYER_FLOOR = 1
+    LAYER_AIR = 2
+
 
 
 class Ammo(object):
