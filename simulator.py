@@ -201,6 +201,7 @@ class PoisonSet(MagicSkill):
             # add some noise for speed
             speed = gauss(self.params["speed"], self.params["speed"] / 5)
 
+            img = transform.rotate(img, randint(-180, 180))
             tf_img = transform.smoothscale(img, (img.get_width(), img.get_height() / 2))
             dx = tf_img.get_width() * 0.5
             dy = tf_img.get_height() * 0.5
