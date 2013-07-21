@@ -1025,12 +1025,12 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
         self.current_magic = None
         self.spit_poison_ready_time_add = 0
         self.spit_poison_hold_time_add = 0
-        self.spit_poison_total = 3
+        self.spit_poison_max_time = self.spit_poison_params["max_time"]
 
 
     def spit_poison_chance(self, target):
         sp = self.sprite
-        if self.spit_poison_total <= 0:
+        if self.spit_poison_max_time <= 0:
             return False
 
         distance_to_target = sp.pos.get_distance_to(target.pos)
@@ -1044,7 +1044,7 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
         sp = self.sprite
         if happen(sp.brain.ai.ATTACK_SPIT_POISON) and self.spit_poison_chance(target):
             self.method = "spit_poison"
-            self.spit_poison_total -= 1
+            self.spit_poison_max_time -= 1
             return True
 
         if super(EnemyPoisonShortAttacker, self).chance(target):
