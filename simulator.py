@@ -49,7 +49,7 @@ class MagicSprite(pygame.sprite.DirtySprite):
         if self.status == cfg.Magic.STATUS_ALIVE:
             camera.screen.blit(self.image,
                 (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy))
-            self.draw_area(camera)
+            #self.draw_area(camera)
 
 
     def draw_area(self, camera):
@@ -1031,7 +1031,7 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
 
     def spit_poison_chance(self, target):
         sp = self.sprite
-        if self.spit_poison_max_time <= 0:
+        if len(self.magic_list) >= self.spit_poison_max_time:
             return False
 
         distance_to_target = sp.pos.get_distance_to(target.pos)
@@ -1045,7 +1045,6 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
         sp = self.sprite
         if happen(sp.brain.ai.ATTACK_SPIT_POISON) and self.spit_poison_chance(target):
             self.method = "spit_poison"
-            self.spit_poison_max_time -= 1
             return True
 
         if super(EnemyPoisonShortAttacker, self).chance(target):

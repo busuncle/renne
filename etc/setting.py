@@ -422,8 +422,8 @@ class GanDie(Enemy):
             "height": 60,
             #"num": 1,
             "num": 10,
-            "max_time": 2,
-            "ready_time": 1,
+            "max_time": 3,
+            "ready_time": 0.6,
             "hold_time": 0.5,
         },
     }
