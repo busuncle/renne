@@ -1605,7 +1605,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.LeonHardt.ID: LeonhardtAttacker,
     sfg.ArmouredShooter.ID: EnemyLongAttacker,
     sfg.SwordRobber.ID: EnemyWeakShortAttacker,
-    sfg.SkeletonWarrior2.ID: EnemyPoisonShortAttacker,
+    sfg.GanDie.ID: EnemyPoisonShortAttacker,
     sfg.Ghost.ID: EnemyLeakShortAttacker,
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeletonAttacker,
     sfg.Werwolf.ID: EnemyFrozenShortAttacker,

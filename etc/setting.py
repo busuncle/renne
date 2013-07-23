@@ -394,8 +394,8 @@ class SwordRobber(Enemy):
 
 
 
-class SkeletonWarrior2(Enemy):
-    NAME = "SkeletonWarrior2"
+class GanDie(Enemy):
+    NAME = "GanDie"
     HP = 350
     ATK = 30
     DFS = 2
@@ -1297,7 +1297,7 @@ SPRITE_SETTING_LIST = [
     LeonHardt,
     ArmouredShooter,
     SwordRobber,
-    SkeletonWarrior2,
+    GanDie,
     Ghost,
     TwoHeadSkeleton,
     Werwolf,
@@ -1349,7 +1349,7 @@ SPRITE_SETTING_MAPPING = dict((cls.ID, cls) for cls in SPRITE_SETTING_LIST)
 STATIC_OBJECT_SETTING_MAPPING = dict((cls.ID, cls) for cls in STATIC_OBJECT_SETTING_LIST)
 
 
-SPRITES_WITH_MAGIC_SKILL = (Renne.ID, LeonHardt.ID, Robot.ID, SkeletonWarrior2.ID)
+SPRITES_WITH_MAGIC_SKILL = (Renne.ID, LeonHardt.ID, Robot.ID, GanDie.ID)
 SPRITES_WITH_AMMO = (SkeletonArcher.ID, )
 
 
@@ -1407,7 +1407,7 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.ATTACK: ("attack_7.png", 7, 8),
         cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
     }),
-    SkeletonWarrior2.ID: ("skeleton_warrior2", {
+    GanDie.ID: ("gan_die", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 14),
         cfg.EnemyAction.ATTACK: ("attack_8.png", 8, 10),

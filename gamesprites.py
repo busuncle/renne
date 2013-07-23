@@ -976,9 +976,9 @@ class Robot(Enemy):
 
 
 
-class SkeletonWarrior2(Enemy):
+class GanDie(Enemy):
     def __init__(self, setting, pos, direction):
-        super(SkeletonWarrior2, self).__init__(setting, pos, direction)
+        super(GanDie, self).__init__(setting, pos, direction)
 
 
     def spit_poison(self, passed_seconds):
@@ -1006,7 +1006,7 @@ class SkeletonWarrior2(Enemy):
     
     def attack(self, passed_seconds):
         if self.attacker.method == "regular":
-            super(SkeletonWarrior2, self).attack(passed_seconds)
+            super(GanDie, self).attack(passed_seconds)
         elif self.attacker.method == "spit_poison":
             self.spit_poison(passed_seconds)
 
@@ -1106,8 +1106,8 @@ ENEMY_CLASS_MAPPING = {
     sfg.LeonHardt.ID: Leonhardt,
     sfg.ArmouredShooter.ID: Enemy,
     sfg.SwordRobber.ID: Enemy,
-    #sfg.SkeletonWarrior2.ID: Enemy,
-    sfg.SkeletonWarrior2.ID: SkeletonWarrior2,
+    #sfg.GanDie.ID: Enemy,
+    sfg.GanDie.ID: GanDie,
     sfg.Ghost.ID: Enemy,
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeleton,
     sfg.Werwolf.ID: Enemy,
