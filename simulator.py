@@ -228,12 +228,9 @@ class PoisonSet(MagicSkill):
                             {"dps": self.params["damage"], "time_list": range(self.params["damage_time"]),
                             "time_left": self.params["damage_time"]})
 
-            if poison.height > 0:
-                for obj in self.static_objects:
-                    if not obj.setting.IS_ELIMINABLE and obj.area.colliderect(poison.area):
-                        # this poison will no longer move horizontally
-                        poison.key_vec = Vector2(0, 0)
-                        break
+            if poison.height > 0 and (not sp.reachable(poison.area)):
+                # this poison will no longer move horizontally
+                poison.key_vec = Vector2(0, 0)
 
             poison.update(passed_seconds)
             if poison.status == cfg.Magic.STATUS_VANISH:
@@ -363,9 +360,8 @@ class EnergyBallSet(MagicSkill):
                     sp.attacker.handle_under_attack(self.sprite, damage)
                     self.has_hits.add(sp)
 
-            for obj in self.static_objects:
-                if not obj.setting.IS_ELIMINABLE and obj.area.colliderect(msp.area):
-                    msp.status = cfg.Magic.STATUS_VANISH
+            if not self.sprite.reachable(msp.pos):
+                msp.status = cfg.Magic.STATUS_VANISH
 
         if vanish_num == len(self.magic_sprites):
             self.status = cfg.Magic.STATUS_VANISH
@@ -468,13 +464,7 @@ class DestroyBombSet(MagicSkill):
                     self.params["dy"], self.params["damage"], choice(self.destroy_bomb_images),
                     self.params["bomb_life"], self.params["bomb_shake_on_x"], self.params["bomb_shake_on_y"])
 
-                can_create = True
-                for obj in self.static_objects:
-                    if not obj.setting.IS_ELIMINABLE and obj.area.colliderect(bomb.area):
-                        can_create = False
-                        break
-
-                if can_create:
+                if self.sprite.reachable(bomb.pos):
                     self.magic_sprites.append(bomb)
                 else:
                     # this line can be dropped
@@ -572,13 +562,7 @@ class DestroyAeroliteSet(MagicSkill):
                 self.params["aerolite_damage_cal_time"], self.params["aerolite_life"],
                 self.params["aerolite_shake_on_x"], self.params["aerolite_shake_on_y"])
 
-            can_create = True
-            for obj in self.static_objects:
-                if not obj.setting.IS_ELIMINABLE and obj.area.colliderect(aerolite.area):
-                    can_create = False
-                    break
-            
-            if can_create:
+            if self.sprite.reachable(aerolite.pos):
                 self.magic_sprites.append(aerolite)
 
         for i, aerolite in enumerate(self.magic_sprites):
@@ -732,13 +716,7 @@ class HellClawSet(MagicSkill):
                 self.params["claw_damage_cal_time"],
                 self.params["claw_shake_on_x"], self.params["claw_shake_on_y"])
 
-            can_create = True
-            for obj in self.static_objects:
-                if not obj.setting.IS_ELIMINABLE and obj.area.colliderect(claw.area):
-                    can_create = False
-                    break
-
-            if can_create:
+            if self.sprite.reachable(claw.pos):
                 self.magic_sprites.append(claw)
                 self.img_id = 1 - self.img_id
 

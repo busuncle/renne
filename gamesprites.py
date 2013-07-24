@@ -199,6 +199,18 @@ class Renne(GameSprite):
         self.emotion_animation.draw(camera)
 
 
+    def reachable(self, pos=None):
+        p = pos or self.pos
+        wps = self.game_map.waypoints
+        step = sfg.WayPoint.STEP_WIDTH
+        x0 = p.x - p.x % step
+        y0 = p.y - p.y % step
+        for p in ((x0, y0), (x0 + step, y0), (x0, y0 + step), (x0 + step, y0 + step)):
+            if p not in wps:
+                return False
+        return True
+
+
     def move(self, speed, passed_seconds, key_vec=None):
         # try x and y direction move, go back to the old position when collided with something unwalkable
         k_vec = key_vec or self.key_vec
@@ -577,12 +589,13 @@ class Enemy(GameSprite):
             self.brain.interrupt = True
 
 
-    def reachable(self):
+    def reachable(self, pos=None):
         # use waypoints to check whether the current self.pos is reachable
+        p = pos or self.pos
         wps = self.brain.waypoints
         step = sfg.WayPoint.STEP_WIDTH
-        x0 = self.pos.x - self.pos.x % step
-        y0 = self.pos.y - self.pos.y % step
+        x0 = p.x - p.x % step
+        y0 = p.y - p.y % step
         for p in ((x0, y0), (x0 + step, y0), (x0, y0 + step), (x0 + step, y0 + step)):
             if p not in wps:
                 return False
