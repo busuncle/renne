@@ -44,7 +44,7 @@ class BuildExe:
         self.exclude_modules = []
         self.exclude_dll = ['']
         self.extra_scripts = ["gamesprites", "gameworld", 
-            "simulator", "controller", "pathfinding", "gamestatus", 
+            "simulator", "controller", "pathfinding", "gamedirector", 
             "renderer", "animation", "debug_tools", "musicbox"]
         self.zipfile_name = None
         self.dist_dir ='Release'
