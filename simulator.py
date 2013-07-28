@@ -301,9 +301,11 @@ class Grenade(MagicSkill):
     rotate_angle_rate = 360
     land_height_threshold = 5
     vy_loss_rate = 0.5
+    vx_loss_rate = 0.8
     def __init__(self, sprite, target_list, params):
         super(Grenade, self).__init__()
         self.image = transform.rotate(self.grenade_image.copy(), randint(-180, 180))
+        self.image_mix = self.image.copy()
         self.sprite = sprite
         self.target_list = target_list
         self.pos = Vector2(sprite.pos)
@@ -315,6 +317,7 @@ class Grenade(MagicSkill):
         self.thump_crick_time = params["thump_crick_time"]
         self.thump_acceleration = params["thump_acceleration"]
         self.thump_out_speed = params["thump_out_speed"]
+        self.blink = Blink()
         self.passed_seconds = 0
         self.height = params["init_height"]
         self.vx = params["init_vx"]
@@ -345,10 +348,12 @@ class Grenade(MagicSkill):
                     # touch the floor, vy must set to the same direction with height
                     self.height = abs(self.height)
                     self.vy = abs(self.vy) * self.vy_loss_rate
+                    self.vx *= self.vx_loss_rate
 
                 self.pos += self.key_vec * self.vx * passed_seconds
 
         elif self.phase == "on_floor":
+            self.image_mix = self.blink.make(self.image, passed_seconds)
             if self.passed_seconds > self.trigger_times[0]:
                 self.phase = "bomb"
 
@@ -389,11 +394,15 @@ class Grenade(MagicSkill):
 
     def draw(self, camera):
         if self.phase != "bomb":
-            camera.screen.blit(self.image,
+            if self.phase == "in_air":
+                img = self.image
+            else:
+                img = self.image_mix
+            camera.screen.blit(img,
                 (self.pos.x - camera.rect.x - self.dx, 
                     self.pos.y * 0.5 - camera.rect.y - self.dy - self.height))
 
-        self.draw_area(camera)
+        #self.draw_area(camera)
 
 
     def draw_area(self, camera):
