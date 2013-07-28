@@ -362,6 +362,19 @@ class ArmouredShooter(Enemy):
         "range": 420,
         "angle": 12,
         "key_frames": (5, 6),
+        "grenade": {
+            "key_frames": [1, ],
+            "damage": 80,
+            "trigger_times": [3.2, 3.3, 3.35, 3.4, 3.45, 3.5, 3.55, 3.6, 3.7, 3.8],
+            "thump_crick_time": 0.3,
+            "thump_acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
+            "thump_out_speed": 1000,
+            "init_height": 50,
+            "init_vx": 300,
+            "init_vy": 0,
+            "fall_acceleration": Physics.GRAVITY_ACCELERATION,
+            "max_num": 3,
+        },
     }
 
     WALK_SPEED = 150
@@ -1256,6 +1269,9 @@ class Effect(object):
 
     BOMB2_IMAGE_KEY = "e5"
 
+    GRENADE_IMAGE_KEY = "e7"
+    GRENADE_RECT = (224, 0, 32, 32)
+
     BLINK_RATE = 256
     BLINK_DEPTH_SECTION = (32, 128)
 
@@ -1349,7 +1365,7 @@ SPRITE_SETTING_MAPPING = dict((cls.ID, cls) for cls in SPRITE_SETTING_LIST)
 STATIC_OBJECT_SETTING_MAPPING = dict((cls.ID, cls) for cls in STATIC_OBJECT_SETTING_LIST)
 
 
-SPRITES_WITH_MAGIC_SKILL = (Renne.ID, LeonHardt.ID, Robot.ID, GanDie.ID)
+#SPRITES_WITH_MAGIC_SKILL = (Renne.ID, LeonHardt.ID, Robot.ID, GanDie.ID)
 SPRITES_WITH_AMMO = (SkeletonArcher.ID, )
 
 
@@ -1400,6 +1416,7 @@ SPRITE_FRAMES = {
         cfg.EnemyAction.WALK: ("walk_8.png", 8, 12),
         cfg.EnemyAction.ATTACK: ("attack_10.png", 10, 10),
         cfg.EnemyAction.UNDER_THUMP: ("under_thump.png", 1, 0),
+        cfg.EnemyAction.SKILL: ("skill_2.png", 2, 2),
     }),
     SwordRobber.ID: ("sword_robber", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
@@ -1538,4 +1555,5 @@ EFFECT = ("effect", {
     "e4": "e4.png",
     "e5": "e5.png",
     "e6": "e6.png",
+    "e7": "e7.png",
 })

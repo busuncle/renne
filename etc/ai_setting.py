@@ -129,6 +129,7 @@ class ArmouredShooterAI(LongNormalAI):
     STAY_CHANGE_DIRECTION_PROB = 0.1
     STAY_TO_PATROL_PROB = 0.05
 
+    ATTACK_GRENADE_PROB = 0.9
 
 
 class WerwolfAI(ShortNormalAI):
@@ -176,6 +177,7 @@ class GanDieAI(ShortNormalAI):
     STAY_CHANGE_DIRECTION_PROB = 0
 
     STAY_TO_PATROL_PROB = 0
+
 
 
 AI_MAPPING = {

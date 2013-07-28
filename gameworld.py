@@ -165,7 +165,8 @@ class GameWorld(pygame.sprite.LayeredDirty):
             if sp.status["hp"] == cfg.HpStatus.VANISH:
                 self.dynamic_objects.pop(i)
 
-            if sp.setting.ID in sfg.SPRITES_WITH_MAGIC_SKILL:
+            #if sp.setting.ID in sfg.SPRITES_WITH_MAGIC_SKILL:
+            if hasattr(sp.attacker, "magic_list"):
                 for i, magic in enumerate(sp.attacker.magic_list):
                     if magic.status == cfg.Magic.STATUS_VANISH:
                         sp.attacker.magic_list.pop(i)
@@ -174,7 +175,8 @@ class GameWorld(pygame.sprite.LayeredDirty):
                         # and damage calculation among all the sprites 
                         magic.update(passed_seconds)
 
-            if sp.setting.ID in sfg.SPRITES_WITH_AMMO:
+            #if sp.setting.ID in sfg.SPRITES_WITH_AMMO:
+            if hasattr(sp.attacker, "ammo_list"):
                 sp.attacker.update_ammo(passed_seconds)
 
 
@@ -188,9 +190,13 @@ class GameWorld(pygame.sprite.LayeredDirty):
             # adjust_rect by the way
             sp.adjust_rect()
             sp.animation.draw_shadow(camera)
-            if sp.setting.ID in sfg.SPRITES_WITH_MAGIC_SKILL:
+            #if sp.setting.ID in sfg.SPRITES_WITH_MAGIC_SKILL:
+            if hasattr(sp.attacker, "magic_list"):
                 for magic in sp.attacker.magic_list:
-                    magic.draw(camera)
+                    if hasattr(magic, "image"):
+                        movings.append(magic)
+                    else:
+                        magic.draw(camera)
 
                     #movings.extend(magic.magic_sprites)
                     for msp in magic.magic_sprites:
@@ -202,7 +208,8 @@ class GameWorld(pygame.sprite.LayeredDirty):
                         elif msp.layer == cfg.Magic.LAYER_AIR:
                             movings.append(msp)
 
-            if sp.setting.ID in sfg.SPRITES_WITH_AMMO:
+            #if sp.setting.ID in sfg.SPRITES_WITH_AMMO:
+            if hasattr(sp.attacker, "ammo_list"):
                 movings.extend(sp.attacker.ammo_list)
                 #for ammo in sp.attacker.ammo_list:
                 #    ammo.draw_shadow(camera)

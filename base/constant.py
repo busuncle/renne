@@ -92,6 +92,7 @@ class EnemyAction(SpriteAction):
     LOOKOUT = 23
     PATHFINDING = 24
     STEER = 25
+    SKILL = 26
 
 
 

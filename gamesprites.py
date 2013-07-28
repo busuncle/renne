@@ -1025,6 +1025,30 @@ class GanDie(Enemy):
 
 
 
+class ArmouredShooter(Enemy):
+    def __init__(self, setting, pos, direction):
+        super(ArmouredShooter, self).__init__(setting, pos, direction)
+
+
+    def grenade(self, passed_seconds):
+        self.frame_action = cfg.EnemyAction.SKILL
+        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+        if is_finish:
+            self.attacker.finish()
+            self.reset_action(force=True)
+        else:
+            self.attacker.grenade(self.brain.target, 
+                self.animation.get_current_frame_add(self.frame_action))
+
+            
+    def attack(self, passed_seconds):
+        if self.attacker.method == "regular":
+            super(ArmouredShooter, self).attack(passed_seconds)
+        elif self.attacker.method == "grenade":
+            self.grenade(passed_seconds)
+        
+
+
 ######## sprite group subclass ########
 class GameSpritesGroup(pygame.sprite.LayeredDirty):
     def __init__(self):
@@ -1117,7 +1141,7 @@ ENEMY_CLASS_MAPPING = {
     sfg.CastleWarrior.ID: CastleWarrior,
     sfg.SkeletonArcher.ID: Enemy,
     sfg.LeonHardt.ID: Leonhardt,
-    sfg.ArmouredShooter.ID: Enemy,
+    sfg.ArmouredShooter.ID: ArmouredShooter,
     sfg.SwordRobber.ID: Enemy,
     #sfg.GanDie.ID: Enemy,
     sfg.GanDie.ID: GanDie,

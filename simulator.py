@@ -251,7 +251,6 @@ class SelfDestruction(MagicSkill):
         self.thump_acceleration = thump_acceleration
         self.thump_out_speed = thump_out_speed
         self.target_list = target_list
-        self.has_hits = set()
         self.trigger_times = trigger_times
         self.passed_seconds = 0
         self.magic_sprites = []
@@ -291,6 +290,119 @@ class SelfDestruction(MagicSkill):
 
         if len(self.trigger_times) == 0 and len(self.magic_sprites) == 0:
             self.status = cfg.Magic.STATUS_VANISH
+
+
+
+class Grenade(MagicSkill):
+    grenade_image = animation.effect_image_controller.get(
+        sfg.Effect.GRENADE_IMAGE_KEY).subsurface(sfg.Effect.GRENADE_RECT).convert_alpha()
+    dx = grenade_image.get_width() * 0.5
+    dy = grenade_image.get_height() * 0.5
+    rotate_angle_rate = 360
+    land_height_threshold = 5
+    vy_loss_rate = 0.5
+    def __init__(self, sprite, target_list, params):
+        super(Grenade, self).__init__()
+        self.image = transform.rotate(self.grenade_image.copy(), randint(-180, 180))
+        self.sprite = sprite
+        self.target_list = target_list
+        self.pos = Vector2(sprite.pos)
+        self.key_vec = Vector2.from_points(self.pos, target_list[0].pos).normalize()
+        self.area = self.image.get_rect()
+        self.area.center = self.pos
+        self.damage = params["damage"]
+        self.trigger_times = list(params["trigger_times"])
+        self.thump_crick_time = params["thump_crick_time"]
+        self.thump_acceleration = params["thump_acceleration"]
+        self.thump_out_speed = params["thump_out_speed"]
+        self.passed_seconds = 0
+        self.height = params["init_height"]
+        self.vx = params["init_vx"]
+        self.vy = params["init_vy"]
+        # fall_acceleration must be negative against height
+        self.fall_acceleration = -abs(params["fall_acceleration"])
+        self.phase = "in_air" # in_air, on_floor, disapear
+        self.magic_sprites = []
+
+
+    def update(self, passed_seconds):
+        self.passed_seconds += passed_seconds
+        if self.phase == "in_air":
+
+            # s = v0 * t + 0.5 * a * t^2
+            s = self.vy * passed_seconds + 0.5 * self.fall_acceleration * pow(passed_seconds, 2)
+            self.height += s  
+            v1 = self.vy + self.fall_acceleration * passed_seconds
+            if self.vy > 0 and v1 <= 0 and self.height <= self.land_height_threshold:
+                # land on the floor
+                self.phase = "on_floor"
+                self.vy = 0
+                self.vx = 0
+
+            else:
+                self.vy = v1
+                if self.height < 0:
+                    # touch the floor, vy must set to the same direction with height
+                    self.height = abs(self.height)
+                    self.vy = abs(self.vy) * self.vy_loss_rate
+
+                self.pos += self.key_vec * self.vx * passed_seconds
+
+        elif self.phase == "on_floor":
+            if self.passed_seconds > self.trigger_times[0]:
+                self.phase = "bomb"
+
+        elif self.phase == "bomb":
+            if len(self.trigger_times) > 0 and self.passed_seconds > self.trigger_times[0]:
+                self.trigger_times.pop(0)
+                pos = self.pos.copy()
+                pos.x = randint(int(pos.x - 30), int(pos.x + 30))
+                pos.y = randint(int(pos.y - 30), int(pos.y + 30))
+                scale = max(0.9, random() * 2)
+                dx = 32 * scale
+                dy = randint(64, 96)
+                #scale = 1
+                angle = randint(-180, 180)
+                bomb = Bomb(pos, dx, dy, self.damage, angle, scale)
+                self.magic_sprites.append(bomb)
+
+            for i, bomb in enumerate(self.magic_sprites):
+                bomb.update(passed_seconds)
+                if bomb.status == cfg.Magic.STATUS_VANISH:
+                    self.magic_sprites.pop(i)
+                    continue
+
+                for sp in self.target_list:
+                    if sp not in self.has_hits and sp.area.colliderect(bomb.area):
+                        self.has_hits.add(sp)
+                        damage = bomb.damage
+                        sp.attacker.handle_under_attack(self.sprite, damage)
+                        sp.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                            {"crick_time": self.thump_crick_time, 
+                            "out_speed": self.thump_out_speed, 
+                            "acceleration": self.thump_acceleration,
+                            "key_vec": Vector2.from_points(self.pos, sp.pos)})
+
+            if len(self.trigger_times) == 0 and len(self.magic_sprites) == 0:
+                self.status = cfg.Magic.STATUS_VANISH
+
+
+    def draw(self, camera):
+        if self.phase != "bomb":
+            camera.screen.blit(self.image,
+                (self.pos.x - camera.rect.x - self.dx, 
+                    self.pos.y * 0.5 - camera.rect.y - self.dy - self.height))
+
+        self.draw_area(camera)
+
+
+    def draw_area(self, camera):
+        # for debug
+        r = pygame.Rect(0, 0, self.area.width, self.area.height * 0.5)
+        r.center = (self.pos.x, self.pos.y * 0.5)
+        r.top -= camera.rect.top
+        r.left -= camera.rect.left
+        pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
 
 
 
@@ -1469,6 +1581,44 @@ class ArrowAttacker(EnemyLongAttacker):
 
 
 
+class ArmouredShooterAttacker(EnemyLongAttacker):
+    def __init__(self, sprite, attacker_params):
+        super(ArmouredShooterAttacker, self).__init__(sprite, attacker_params)
+        self.grenade_params = attacker_params["grenade"]
+        self.method = None
+        self.magic_list = []
+        self.current_magic = None
+
+
+    def chance(self, target):
+        sp = self.sprite
+        is_chance = super(ArmouredShooterAttacker, self).chance(target)
+        if not is_chance:
+            return False
+
+        if happen(sp.brain.ai.ATTACK_GRENADE_PROB) \
+            and len(self.magic_list) < self.grenade_params["max_num"]:
+            self.method = "grenade"
+        else:
+            self.method = "regular"
+
+        return True
+
+
+    def grenade(self, hero, current_frame_add):
+        sp = self.sprite
+        if self.current_magic is None and int(current_frame_add) in self.grenade_params["key_frames"]:
+            self.current_magic = Grenade(sp, [hero, ], self.grenade_params)
+            self.magic_list.append(self.current_magic)
+
+
+    def finish(self):
+        super(ArmouredShooterAttacker, self).finish()
+        self.method = None
+        self.current_magic = None
+
+
+
 class LeonhardtAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
         super(LeonhardtAttacker, self).__init__(sprite, 
@@ -1580,7 +1730,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.CastleWarrior.ID: EnemyThumpShortAttacker,
     sfg.SkeletonArcher.ID: ArrowAttacker,
     sfg.LeonHardt.ID: LeonhardtAttacker,
-    sfg.ArmouredShooter.ID: EnemyLongAttacker,
+    sfg.ArmouredShooter.ID: ArmouredShooterAttacker,
     sfg.SwordRobber.ID: EnemyWeakShortAttacker,
     sfg.GanDie.ID: EnemyPoisonShortAttacker,
     sfg.Ghost.ID: EnemyLeakShortAttacker,
