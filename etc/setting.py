@@ -377,7 +377,7 @@ class ArmouredShooter(Enemy):
         },
     }
 
-    WALK_SPEED = 150
+    WALK_SPEED = 110
 
 
 
