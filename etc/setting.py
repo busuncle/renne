@@ -365,7 +365,7 @@ class ArmouredShooter(Enemy):
         "grenade": {
             "key_frames": [1, ],
             "damage": 80,
-            "trigger_times": [3.2, 3.3, 3.35, 3.4, 3.45, 3.5, 3.55, 3.6, 3.7, 3.8],
+            "trigger_times": [3.0, 3.1, 3.25, 3.2, 3.25, 3.3, 3.35, 3.4, 3.5, 3.6],
             "thump_crick_time": 0.3,
             "thump_acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
             "thump_out_speed": 1000,
