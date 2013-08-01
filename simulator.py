@@ -320,7 +320,7 @@ class Grenade(MagicSkill):
         self.blink = Blink()
         self.passed_seconds = 0
         self.height = params["init_height"]
-        self.vx = params["init_vx"]
+        self.vx = self.pos.get_distance_to(target_list[0].pos)
         self.vy = params["init_vy"]
         # fall_acceleration must be negative against height
         self.fall_acceleration = -abs(params["fall_acceleration"])
