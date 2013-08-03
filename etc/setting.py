@@ -464,9 +464,13 @@ class Ghost(Enemy):
         "leak_prob": 0.7,
         "leak_mp": 60,
         "leak_sp": 60,
+        "invisible": {
+            "pre_enter_time": 0.5,
+            "time": 3,
+        }
     }
 
-    WALK_SPEED = 130
+    WALK_SPEED = 100
 
 
 

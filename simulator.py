@@ -1183,16 +1183,32 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
 
 
 
-class EnemyLeakShortAttacker(EnemyShortAttacker):
+class GhostAttacker(EnemyShortAttacker):
     def __init__(self, sprite, attacker_params):
-        super(EnemyLeakShortAttacker, self).__init__(sprite, attacker_params)
+        super(GhostAttacker, self).__init__(sprite, attacker_params)
         self.leak_prob = attacker_params["leak_prob"]
         self.leak_mp = attacker_params["leak_mp"]
         self.leak_sp = attacker_params["leak_sp"]
+        self.pre_enter_invisible_time = attacker_params["invisible"]["pre_enter_time"]
+        self.pre_enter_invisible_time_add = 0
+        self.invisible_time = attacker_params["invisible"]["time"]
+        self.method = None
+
+
+    def chance(self, target):
+        sp = self.sprite
+        if sp.status.get(cfg.SpriteStatus.INVISIBLE) is None \
+            and happen(sp.brain.ai.ATTACK_ENTER_INVISIBLE_PROB):
+            self.method = "invisible"
+            return True
+        if super(GhostAttacker, self).chance(target):
+            self.method = "regular"
+            return True
+        return False
 
 
     def run(self, hero, current_frame_add):
-        hit_it = super(EnemyLeakShortAttacker, self).run(hero, current_frame_add)
+        hit_it = super(GhostAttacker, self).run(hero, current_frame_add)
         if hit_it and happen(self.leak_prob):
             hero.mp = max(0, hero.mp - self.leak_mp)
             hero.sp = max(0, hero.sp - self.leak_sp)
@@ -1202,6 +1218,19 @@ class EnemyLeakShortAttacker(EnemyShortAttacker):
                 (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
 
         return hit_it
+
+
+    def handle_under_attack(self, from_who, cost_hp):
+        super(GhostAttacker, self).handle_under_attack(from_who, cost_hp)
+        # when this enemy is under attack, it will lose invisible status
+        if self.sprite.status.get(cfg.SpriteStatus.INVISIBLE) is not None:
+            self.sprite.status.pop(cfg.SpriteStatus.INVISIBLE)
+
+
+    def finish(self):
+        super(GhostAttacker, self).finish()
+        self.method = None
+        self.pre_enter_invisible_time_add = 0
 
 
 
@@ -1742,7 +1771,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.ArmouredShooter.ID: ArmouredShooterAttacker,
     sfg.SwordRobber.ID: EnemyWeakShortAttacker,
     sfg.GanDie.ID: EnemyPoisonShortAttacker,
-    sfg.Ghost.ID: EnemyLeakShortAttacker,
+    sfg.Ghost.ID: GhostAttacker,
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeletonAttacker,
     sfg.Werwolf.ID: EnemyFrozenShortAttacker,
     sfg.SilverTentacle.ID: EnemyImpaleShortAttacker,

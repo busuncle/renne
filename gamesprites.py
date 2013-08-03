@@ -130,6 +130,10 @@ class GameSprite(pygame.sprite.DirtySprite):
             self.status[cfg.SpriteStatus.BODY_SHAKE]["dx"] = random.randint(-5, 5)
             self.status[cfg.SpriteStatus.BODY_SHAKE]["dy"] = random.randint(-3, 3)
 
+        if self.status.get(cfg.SpriteStatus.INVISIBLE) is not None:
+            self.status[cfg.SpriteStatus.INVISIBLE]["time"]-= passed_seconds
+            if self.status[cfg.SpriteStatus.INVISIBLE]["time"] < 0:
+                self.status.pop(cfg.SpriteStatus.INVISIBLE)
 
 
     def update(self, passed_seconds):
@@ -1046,6 +1050,35 @@ class ArmouredShooter(Enemy):
             super(ArmouredShooter, self).attack(passed_seconds)
         elif self.attacker.method == "grenade":
             self.grenade(passed_seconds)
+
+
+
+class Ghost(Enemy):
+    def __init__(self, setting, pos, direction):
+        super(Ghost, self).__init__(setting, pos, direction)
+
+
+    def invisible(self, passed_seconds):
+        ak = self.attacker
+        if ak.pre_enter_invisible_time_add < ak.pre_enter_invisible_time:
+            ak.pre_enter_invisible_time_add += passed_seconds
+            self.frame_action = cfg.EnemyAction.STAND
+            key_vec = Vector2.from_points(self.pos, self.brain.target.pos)
+            self.move(self.setting.WALK_SPEED * 0.8, passed_seconds, check_reachable=True, key_vec=key_vec)
+        else:
+            self.status[cfg.SpriteStatus.INVISIBLE] = {"time": ak.invisible_time}
+            ak.finish()
+            self.reset_action(force=True)
+
+
+    def attack(self, passed_seconds):
+        if self.attacker.method == "regular":
+            super(Ghost, self).attack(passed_seconds)
+            if self.status.get(cfg.SpriteStatus.INVISIBLE) is not None:
+                # when ghost attack, it will be visible
+                self.status.pop(cfg.SpriteStatus.INVISIBLE)
+        elif self.attacker.method == "invisible":
+            self.invisible(passed_seconds)
         
 
 
@@ -1145,7 +1178,7 @@ ENEMY_CLASS_MAPPING = {
     sfg.SwordRobber.ID: Enemy,
     #sfg.GanDie.ID: Enemy,
     sfg.GanDie.ID: GanDie,
-    sfg.Ghost.ID: Enemy,
+    sfg.Ghost.ID: Ghost,
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeleton,
     sfg.Werwolf.ID: Enemy,
     sfg.SilverTentacle.ID: Enemy,

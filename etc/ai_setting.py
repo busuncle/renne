@@ -180,6 +180,14 @@ class GanDieAI(ShortNormalAI):
 
 
 
+class GhostAI(ShortNormalAI):
+    ATTACK_ENTER_INVISIBLE_PROB = 0.9
+    STAY_CHANGE_DIRECTION_PROB = 0
+
+    STAY_TO_PATROL_PROB = 0
+
+
+
 AI_MAPPING = {
     sfg.SkeletonWarrior.ID: ShortNormalAI,
     #sfg.CastleWarrior.ID: ShortNormalAI,
@@ -188,9 +196,8 @@ AI_MAPPING = {
     sfg.LeonHardt.ID: LeonHardtAI,
     sfg.ArmouredShooter.ID: ArmouredShooterAI,
     sfg.SwordRobber.ID: SwordRobberAI,
-    #sfg.GanDie.ID: ShortNormalAI,
     sfg.GanDie.ID: GanDieAI,
-    sfg.Ghost.ID: ShortNormalAI,
+    sfg.Ghost.ID: GhostAI,
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeletonAI,
     sfg.Werwolf.ID: WerwolfAI,
     sfg.SilverTentacle.ID: SilverTentacleAI,
