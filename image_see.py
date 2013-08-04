@@ -15,12 +15,15 @@ screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
 pygame.display.set_caption("Renne Image See")
 
 def run(args):
+    tile_image = pygame.image.load(os.path.join("res", "image", "tiles", "1.png")).convert_alpha()
+    tile_image = transform.smoothscale(tile_image, (256, 128))
     img = pygame.image.load(args.filepath).convert_alpha()
     #img = img.subsurface((0, 0, 256, 256))
     img_rect = img.get_rect()
-    words_blit_pos = img_rect.bottomleft
+    words_blit_pos = img_rect.topright
     background_color = args.background_color or "black"
-    #mask = pygame.Surface((256, 256)).convert_alpha()
+    mask = pygame.Surface((256, 256)).convert_alpha()
+    mask.fill((0, 0, 0, 128))
 
     clock = pygame.time.Clock()
     while True:
@@ -30,14 +33,20 @@ def run(args):
             if event.type == KEYDOWN and event.key == K_ESCAPE:
                 return
 
-        screen.fill(pygame.Color(background_color))
-        mask = img.copy()
+        for i in xrange(4):
+            for j in xrange(6):
+                screen.blit(tile_image, (i * 256, j * 128))
+
+        screen.blit(img, (0, 0))
+
+        #screen.fill(pygame.Color(background_color))
+        #mask = img.copy()
         #mask.fill(pygame.Color(32, 32, 32), special_flags=BLEND_ADD)
         #img.set_alpha(128)
         #screen.blit(img, (0, 0))
         #blit_pos = (randint(0, 10), randint(0, 10))
-        blit_pos = (0, 0)
-        screen.blit(mask, blit_pos)
+        #blit_pos = (0, 0)
+        #screen.blit(mask, blit_pos)
 
         mouse_pos = pygame.mouse.get_pos()
         if mouse_pos[0] > img_rect.right or mouse_pos[1] > img_rect.bottom:

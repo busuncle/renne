@@ -238,9 +238,14 @@ class SpriteAnimator(object):
         if not self.rect.colliderect(camera.rect):
             return 
 
-        if self.image is not None:
-            shadow_blit_pos = (self.shadow_rect.left - camera.rect.left, self.shadow_rect.top - camera.rect.top)
-            camera.screen.blit(self.shadow_image, shadow_blit_pos)
+        if self.image is None:
+            return
+
+        if self.sprite.status.get(cfg.SpriteStatus.INVISIBLE) is not None:
+            return
+
+        shadow_blit_pos = (self.shadow_rect.left - camera.rect.left, self.shadow_rect.top - camera.rect.top)
+        camera.screen.blit(self.shadow_image, shadow_blit_pos)
 
 
     def draw(self, camera):
@@ -394,6 +399,9 @@ class EnemyAnimator(SpriteAnimator):
                     self.draw_with_height(camera, 
                         sp.status[cfg.SpriteStatus.AMBUSH]["height"])
                 return
+
+        if self.sprite.status.get(cfg.SpriteStatus.INVISIBLE) is not None:
+            return
 
         super(EnemyAnimator, self).draw(camera)
         if sp.status["hp"] in cfg.HpStatus.ALIVE:
