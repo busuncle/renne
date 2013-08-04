@@ -18,6 +18,7 @@ def run(args):
     tile_image = pygame.image.load(os.path.join("res", "image", "tiles", "1.png")).convert_alpha()
     tile_image = transform.smoothscale(tile_image, (256, 128))
     img = pygame.image.load(args.filepath).convert_alpha()
+    #img.fill((0, 128, 0), special_flags=BLEND_MULT)
     #img = img.subsurface((0, 0, 256, 256))
     img_rect = img.get_rect()
     words_blit_pos = img_rect.topright
