@@ -89,6 +89,7 @@ class GameSprite(pygame.sprite.DirtySprite):
 
     def reset_action(self):
         self.action = cfg.SpriteAction.STAND
+        self.frame_action = None
         self.animation.reset_frame_adds()
 
 
@@ -311,6 +312,19 @@ class Renne(GameSprite):
                 self.attacker.destroy_aerolite(self.animation.get_current_frame_add(frame_action))
 
 
+    def attack1(self, passed_seconds):
+        self.frame_action = cfg.HeroAction.ATTACK
+        self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds, frame_rate=12)
+        current_frame_add = self.animation.get_current_frame_add(cfg.HeroAction.ATTACK)
+        if current_frame_add >= 6:
+            print "over"
+            self.attacker.finish()
+            self.reset_action()
+        else:
+            for em in self.enemies:
+                self.attacker.run(em, current_frame_add)
+
+
     def run_attack(self, passed_seconds):
         # a special attack type, when hero is running and press attack
         self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds)
@@ -353,7 +367,8 @@ class Renne(GameSprite):
 
     def locked(self):
         # check whether renne is locked, if so, and lock her without handling any event from user input
-        if self.action in (cfg.HeroAction.ATTACK, cfg.HeroAction.RUN_ATTACK, cfg.HeroAction.SKILL):
+        if self.action in (cfg.HeroAction.ATTACK, cfg.HeroAction.RUN_ATTACK, 
+            cfg.HeroAction.ATTACK1, cfg.HeroAction.SKILL):
             # attacking, return directly
             return True
 
@@ -404,6 +419,10 @@ class Renne(GameSprite):
             self.action = cfg.HeroAction.ATTACK
             atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS)
             self.sound_box.play(atk_snd)
+
+        elif pressed_keys[sfg.UserKey.ATTACK1]:
+            self.action = cfg.HeroAction.ATTACK1
+            self.animation.set_frame_add(cfg.HeroAction.ATTACK, 3)
 
         elif pressed_keys[sfg.UserKey.ATTACK_DESTROY_FIRE]:
             if self.mp > self.attacker.destroy_fire_params["mana"] \
@@ -479,6 +498,9 @@ class Renne(GameSprite):
                 self.run_attack(passed_seconds)
             else:
                 self.attack(passed_seconds)
+
+        elif self.action == cfg.HeroAction.ATTACK1:
+            self.attack1(passed_seconds)
 
         elif self.action == cfg.HeroAction.SKILL:
             self.attack(passed_seconds)

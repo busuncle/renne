@@ -295,13 +295,14 @@ class RenneAnimator(SpriteAnimator):
 
     def update_image(self):
         sp = self.sprite
-        if sp.action in self.frame_adds:
-            if sp.action == cfg.HeroAction.WIN:
+        action = sp.frame_action or sp.action
+        if action in self.frame_adds:
+            if action == cfg.HeroAction.WIN:
                 self.image = self.sprite_image_contoller.get_surface(
-                    sp.action)[int(self.frame_adds[sp.action])]
+                    action)[int(self.frame_adds[action])]
             else:
-                self.image = self.sprite_image_contoller.get_subsurface(sp.action,
-                    sp.direction, self.frame_adds[sp.action])
+                self.image = self.sprite_image_contoller.get_subsurface(action,
+                    sp.direction, self.frame_adds[action])
 
 
     def _run_renne_win_frame(self, passed_seconds):
