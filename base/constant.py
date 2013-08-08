@@ -227,3 +227,8 @@ class Ambush(object):
         APPEAR_TYPE_TOP_DOWN: "top_down",
         APPEAR_TYPE_FADE_IN: "fade_in",
     }
+
+
+class Attack(object):
+    METHOD_REGULAR = 1
+    METHOD_MAGIC = 2

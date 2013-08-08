@@ -281,7 +281,7 @@ class SelfDestruction(MagicSkill):
                 if sp not in self.has_hits and sp.area.colliderect(bomb.area):
                     self.has_hits.add(sp)
                     damage = bomb.damage
-                    sp.attacker.handle_under_attack(self.sprite, damage)
+                    sp.attacker.handle_under_attack(self.sprite, damage, attack_method=cfg.Attack.METHOD_MAGIC)
                     sp.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
                         {"crick_time": self.thump_crick_time, 
                         "out_speed": self.thump_out_speed, 
@@ -381,7 +381,7 @@ class Grenade(MagicSkill):
                     if sp not in self.has_hits and sp.area.colliderect(bomb.area):
                         self.has_hits.add(sp)
                         damage = bomb.damage
-                        sp.attacker.handle_under_attack(self.sprite, damage)
+                        sp.attacker.handle_under_attack(self.sprite, damage, attack_method=cfg.Attack.METHOD_MAGIC)
                         sp.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
                             {"crick_time": self.thump_crick_time, 
                             "out_speed": self.thump_out_speed, 
@@ -476,9 +476,7 @@ class EnergyBallSet(MagicSkill):
 
                 if sp.status.get(cfg.SpriteStatus.IN_AIR) is None and sp.area.colliderect(msp.area):
                     damage = msp.damage
-                    if hasattr(sp.setting, "MAGIC_RESISTANCE_SCALE"):
-                        damage = int(damage / sp.setting.MAGIC_RESISTANCE_SCALE)
-                    sp.attacker.handle_under_attack(self.sprite, damage)
+                    sp.attacker.handle_under_attack(self.sprite, damage, cfg.Attack.METHOD_MAGIC)
                     self.has_hits.add(sp)
 
             if not self.sprite.reachable(msp.pos):
@@ -601,9 +599,7 @@ class DestroyBombSet(MagicSkill):
             for bomb in self.magic_sprites:
                 if sp.status.get(cfg.SpriteStatus.IN_AIR) is None and sp.area.colliderect(bomb.area):
                     damage = bomb.damage
-                    if hasattr(sp.setting, "MAGIC_RESISTANCE_SCALE"):
-                        damage = int(damage / sp.setting.MAGIC_RESISTANCE_SCALE)
-                    sp.attacker.handle_under_attack(self.sprite, damage)
+                    sp.attacker.handle_under_attack(self.sprite, damage, cfg.Attack.METHOD_MAGIC)
                     self.has_hits.add(sp)
                     break
 
@@ -700,9 +696,7 @@ class DestroyAeroliteSet(MagicSkill):
                     # aerolite hit the target
                     self.has_hits.add(sp)
                     damage = aerolite.damage
-                    if hasattr(sp.setting, "MAGIC_RESISTANCE_SCALE"):
-                        damage = int(damage / sp.setting.MAGIC_RESISTANCE_SCALE)
-                    sp.attacker.handle_under_attack(self.sprite, damage)
+                    sp.attacker.handle_under_attack(self.sprite, damage, cfg.Attack.METHOD_MAGIC)
                     sp.attacker.handle_additional_status(cfg.SpriteStatus.STUN, 
                         {"time": self.params["stun_time"]})
                     sp.set_emotion(cfg.SpriteEmotion.STUN)
@@ -846,7 +840,7 @@ class HellClawSet(MagicSkill):
                 and claw.alive_time > claw.damage_cal_time \
                 and claw.area.colliderect(self.target.area):
                 self.has_hits.add(self.target)
-                self.target.attacker.handle_under_attack(self.sprite, claw.damage)
+                self.target.attacker.handle_under_attack(self.sprite, claw.damage, cfg.Attack.METHOD_MAGIC)
 
             claw.update(passed_seconds)
             if claw.status == cfg.Magic.STATUS_VANISH:
@@ -886,7 +880,7 @@ class Attacker(object):
         pass
 
 
-    def handle_under_attack(self, from_who, cost_hp):
+    def handle_under_attack(self, from_who, cost_hp, attack_method=cfg.Attack.METHOD_REGULAR):
         sp = self.sprite
         sp.hp = max(sp.hp - cost_hp, 0)
         sp.status["hp"] = sp.cal_sprite_status(sp.hp, sp.setting.HP)
@@ -1023,8 +1017,6 @@ class RenneAttacker(AngleAttacker):
         if self.hit(enemy, current_frame_add):
             damage = max(0, self.sprite.atk - enemy.dfs)
             enemy.attacker.handle_under_attack(self.sprite, damage)
-            if hasattr(enemy.setting, "ATK_REBOUNCE"):
-                self.sprite.attacker.handle_under_attack(enemy, damage)
             return True
         return False
 
@@ -1220,8 +1212,8 @@ class GhostAttacker(EnemyShortAttacker):
         return hit_it
 
 
-    def handle_under_attack(self, from_who, cost_hp):
-        super(GhostAttacker, self).handle_under_attack(from_who, cost_hp)
+    def handle_under_attack(self, from_who, cost_hp, attack_method=cfg.Attack.METHOD_REGULAR):
+        super(GhostAttacker, self).handle_under_attack(from_who, cost_hp, attack_method=cfg.Attack.METHOD_REGULAR)
         # when this enemy is under attack, it will lose invisible status
         if self.sprite.status.get(cfg.SpriteStatus.INVISIBLE) is not None:
             self.sprite.status.pop(cfg.SpriteStatus.INVISIBLE)
@@ -1479,6 +1471,28 @@ class EnemyImpaleShortAttacker(EnemyShortAttacker):
             hero.attacker.handle_under_attack(self.sprite, damage)
             return True
         return False
+
+
+    def handle_under_attack(self, from_who, cost_hp, attack_method=cfg.Attack.METHOD_REGULAR):
+        if attack_method == cfg.Attack.METHOD_REGULAR:
+            # attack rebounce for this enemy
+            super(EnemyImpaleShortAttacker, self).handle_under_attack(from_who, cost_hp, attack_method)
+            from_who.attacker.handle_under_attack(self.sprite, cost_hp)
+        elif attack_method == cfg.Attack.METHOD_MAGIC:
+            # but recieve more hp-cost from magic attack
+            super(EnemyImpaleShortAttacker, self).handle_under_attack(from_who, cost_hp * 2, attack_method)
+
+
+    def handle_additional_status(self, status_id, status_object):
+        if status_id == cfg.SpriteStatus.UNDER_THUMP:
+            # anti under_thump
+            from_who = status_object["from_who"]
+            from_who.attacker.finish()
+            from_who.animation.set_init_frame(cfg.SpriteAction.STAND)
+            status_object["key_vec"] = Vector2.from_points(self.sprite.pos, from_who.pos)
+            from_who.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP, status_object)
+        else:
+            super(EnemyImpaleShortAttacker, self).handle_additional_status(status_id, status_object)
 
 
 

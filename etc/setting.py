@@ -551,11 +551,7 @@ class SilverTentacle(Enemy):
         "key_frames": (4,),
     }
 
-    WALK_SPEED = 150
-    # special attribute
-    ATK_REBOUNCE = True
-    ANTI_THUMP = True
-    MAGIC_RESISTANCE_SCALE = 0.5
+    WALK_SPEED = 110
 
 
 
