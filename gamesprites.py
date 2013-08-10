@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 import random
+from time import time
 import math
 from gameobjects.vector2 import Vector2
 import simulator
@@ -172,6 +173,9 @@ class Renne(GameSprite):
         # represent the sprite area, used for deciding frame layer and collide, attack computing or so
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
 
+        # for regular attack combo
+        self.attack_combo = {"count": 0, "last_time": time()}
+
 
     def activate(self, allsprites, enemies, static_objects, game_map):
         self.area.center = self.pos("xy")
@@ -280,7 +284,9 @@ class Renne(GameSprite):
 
 
     def attack(self, passed_seconds):
-        if self.attacker.method == "regular":
+        if self.attacker.method == "regular1":
+            self.attack1(passed_seconds)
+        elif self.attacker.method == "regular2":
             self.attack2(passed_seconds)
         elif self.attacker.method == "destroy_fire":
             self.destroy_fire(passed_seconds)
@@ -322,9 +328,13 @@ class Renne(GameSprite):
 
     def attack1(self, passed_seconds):
         self.frame_action = cfg.HeroAction.ATTACK
-        self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds, frame_rate=16)
         current_frame_add = self.animation.get_current_frame_add(cfg.HeroAction.ATTACK)
+        if current_frame_add < 4:
+            # short attack starts from 4
+            self.animation.set_frame_add(cfg.HeroAction.ATTACK, 4)
+
         if current_frame_add >= 7:
+            # ends at 7
             self.attacker.finish()
             self.reset_action()
         else:
@@ -336,6 +346,8 @@ class Renne(GameSprite):
                         {"time": 0.1, "old_action": em.action})
             if hit_count > 0:
                 self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
+
+        self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds)
 
 
     def attack2(self, passed_seconds):
@@ -350,6 +362,10 @@ class Renne(GameSprite):
                 hit_it = self.attacker.run(em, self.animation.get_current_frame_add(self.frame_action))
                 if hit_it:
                     hit_count += 1
+                    em.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                        {"crick_time": 0.3, "out_speed": 800, 
+                        "acceleration": -sfg.Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
+                        "key_vec": Vector2.from_points(self.pos, em.pos)})
 
             if hit_count > 0:
                 self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
@@ -445,14 +461,29 @@ class Renne(GameSprite):
             if self.action == cfg.HeroAction.RUN and self.sp > 0:
                 self.attacker.method = "run_attack"
             else:
-                self.attacker.method = "regular"
+                if self.attack_combo["count"] >= 2:
+                    # clear combo when reaching max
+                    self.attack_combo["count"] = 0
+
+                attack_time = time()
+                if attack_time - 0.5 < self.attack_combo["last_time"]:
+                    self.attack_combo["count"] += 1
+                else:
+                    self.attack_combo["count"] = max(self.attack_combo["count"] - 1, 0)
+
+                self.attack_combo["last_time"] = attack_time
+
+                if self.attack_combo["count"] < 2:
+                    self.attacker.method = "regular1"
+                else:
+                    self.attacker.method = "regular2"
+                    atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS)
+                    self.sound_box.play(atk_snd)
+
             self.action = cfg.HeroAction.ATTACK
-            atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS)
-            self.sound_box.play(atk_snd)
 
         elif one_pressed_keys[sfg.UserKey.ATTACK1]["pressed"]:
             self.action = cfg.HeroAction.ATTACK1
-            self.animation.set_frame_add(cfg.HeroAction.ATTACK, 4)
 
         elif one_pressed_keys[sfg.UserKey.ATTACK_DESTROY_FIRE]["pressed"]:
             if self.mp > self.attacker.destroy_fire_params["mana"] \

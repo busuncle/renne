@@ -121,7 +121,7 @@ class Renne(object):
     SP = 180
     SP_COST_RATE = 15
     SP_RECOVERY_RATE = 20
-    ATK = 30
+    ATK = 10
     DFS = 2
 
     # sprite radius
