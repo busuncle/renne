@@ -72,10 +72,7 @@ class UserKey(object):
     REST = K_k
     WIN = K_h
 
-    ATTACK1 = K_l
-
-    ONE_PRESSED_KEYS = (ATTACK, ATTACK_DESTROY_FIRE, ATTACK_DESTROY_BOMB, ATTACK_DESTROY_AEROLITE,
-        WIN, ATTACK1)
+    ONE_PRESSED_KEYS = (ATTACK, ATTACK_DESTROY_FIRE, ATTACK_DESTROY_BOMB, ATTACK_DESTROY_AEROLITE, WIN)
     DIRECTION_KEYS = (UP, DOWN, LEFT, RIGHT)
     # double press some direction key to run, this is the threshold between 2 presses
     RUN_THRESHOLD = 0.2

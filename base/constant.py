@@ -79,7 +79,6 @@ class SpriteAction(object):
 
 
 class HeroAction(SpriteAction):
-    ATTACK1 = 15
     SKILL = 16
     RUN_ATTACK = 17
     REST = 18

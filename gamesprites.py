@@ -175,6 +175,8 @@ class Renne(GameSprite):
 
         # for regular attack combo
         self.attack_combo = {"count": 0, "last_time": time()}
+        self.attack2_accumulate_power_frame = 2
+        self.attack2_accumulate_power_time = 0.1
 
 
     def activate(self, allsprites, enemies, static_objects, game_map):
@@ -352,23 +354,29 @@ class Renne(GameSprite):
 
     def attack2(self, passed_seconds):
         self.frame_action = cfg.HeroAction.ATTACK
-        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
-        if is_finish:
-            self.attacker.finish()
-            self.reset_action()
+        current_frame_add = self.animation.get_current_frame_add(self.frame_action)
+        if int(current_frame_add) == self.attack2_accumulate_power_frame \
+            and self.attack2_accumulate_power_time > 0:
+            self.attack2_accumulate_power_time -= passed_seconds
         else:
-            hit_count = 0
-            for em in self.enemies:
-                hit_it = self.attacker.run(em, self.animation.get_current_frame_add(self.frame_action))
-                if hit_it:
-                    hit_count += 1
-                    em.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
-                        {"crick_time": 0.3, "out_speed": 800, 
-                        "acceleration": -sfg.Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
-                        "key_vec": Vector2.from_points(self.pos, em.pos)})
+            is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+            if is_finish:
+                self.attacker.finish()
+                self.reset_action()
+                self.attack2_accumulate_power_time = 0.5
+            else:
+                hit_count = 0
+                for em in self.enemies:
+                    hit_it = self.attacker.run(em, self.animation.get_current_frame_add(self.frame_action))
+                    if hit_it:
+                        hit_count += 1
+                        em.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                            {"crick_time": 0.3, "out_speed": 900, 
+                            "acceleration": -sfg.Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
+                            "key_vec": Vector2.from_points(self.pos, em.pos)})
 
-            if hit_count > 0:
-                self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
+                if hit_count > 0:
+                    self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
 
 
     def run_attack(self, passed_seconds):
@@ -414,7 +422,7 @@ class Renne(GameSprite):
     def locked(self):
         # check whether renne is locked, if so, and lock her without handling any event from user input
         if self.action in (cfg.HeroAction.ATTACK, cfg.HeroAction.RUN_ATTACK, 
-            cfg.HeroAction.ATTACK1, cfg.HeroAction.SKILL):
+            cfg.HeroAction.SKILL):
             # attacking, return directly
             return True
 
@@ -481,9 +489,6 @@ class Renne(GameSprite):
                     self.sound_box.play(atk_snd)
 
             self.action = cfg.HeroAction.ATTACK
-
-        elif one_pressed_keys[sfg.UserKey.ATTACK1]["pressed"]:
-            self.action = cfg.HeroAction.ATTACK1
 
         elif one_pressed_keys[sfg.UserKey.ATTACK_DESTROY_FIRE]["pressed"]:
             if self.mp > self.attacker.destroy_fire_params["mana"] \
@@ -559,9 +564,6 @@ class Renne(GameSprite):
                 self.run_attack(passed_seconds)
             else:
                 self.attack(passed_seconds)
-
-        elif self.action == cfg.HeroAction.ATTACK1:
-            self.attack1(passed_seconds)
 
         elif self.action == cfg.HeroAction.SKILL:
             self.attack(passed_seconds)
