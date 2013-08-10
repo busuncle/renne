@@ -74,6 +74,8 @@ class UserKey(object):
 
     ATTACK1 = K_l
 
+    ONE_PRESSED_KEYS = (ATTACK, ATTACK_DESTROY_FIRE, ATTACK_DESTROY_BOMB, ATTACK_DESTROY_AEROLITE,
+        WIN, ATTACK1)
     DIRECTION_KEYS = (UP, DOWN, LEFT, RIGHT)
     # double press some direction key to run, this is the threshold between 2 presses
     RUN_THRESHOLD = 0.2
@@ -1380,7 +1382,7 @@ SPRITE_FRAMES = {
         cfg.HeroAction.STAND: ("stand_8.png", 8, 12),
         cfg.HeroAction.WALK: ("walk_8.png", 8, 14),
         cfg.HeroAction.RUN: ("run_8.png", 8, 16),
-        cfg.HeroAction.ATTACK: ("attack_14.png", 14, 18),
+        cfg.HeroAction.ATTACK: ("attack_14.png", 14, 16),
         cfg.HeroAction.WIN: ("win_31.png", 31, 14),
         cfg.HeroAction.REST: ("rest_4.png", 4, 8),
         cfg.HeroAction.SKILL: ("skill_2.png", 2, 2),

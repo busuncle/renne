@@ -142,7 +142,7 @@ def enter_chapter(screen, chapter, renne):
     clock = pygame.time.Clock()
     running = True
     last_direct_key_up = None
-    hero_run = False
+    one_pressed_keys = dict((k, {"pressed": False, "cd": 0}) for k in sfg.UserKey.ONE_PRESSED_KEYS)
     while running:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 
@@ -188,6 +188,10 @@ def enter_chapter(screen, chapter, renne):
                             # adhoc for special key event
                             renne.action = cfg.HeroAction.RUN
 
+                if event.key in one_pressed_keys and one_pressed_keys[event.key]["cd"] == 0:
+                    one_pressed_keys[event.key]["pressed"] = True
+                    one_pressed_keys[event.key]["cd"] = 0.2
+
                 if game_director.status == cfg.GameStatus.PAUSE:
                     game_director.menu.update(event.key)
 
@@ -196,7 +200,7 @@ def enter_chapter(screen, chapter, renne):
                     last_direct_key_up = (event.key, time())
 
         pressed_keys = pygame.key.get_pressed()
-        renne.event_handle(pressed_keys, external_event=game_director.status)
+        renne.event_handle(pressed_keys, one_pressed_keys, external_event=game_director.status)
 
         for enemy in enemies:
             if enemy_in_one_screen(renne, enemy):
@@ -204,6 +208,10 @@ def enter_chapter(screen, chapter, renne):
 
         time_passed = clock.tick(sfg.FPS)
         passed_seconds = time_passed * 0.001
+
+        for k in one_pressed_keys:
+            one_pressed_keys[k]["pressed"] = False
+            one_pressed_keys[k]["cd"] = max(one_pressed_keys[k]["cd"] - passed_seconds, 0)
 
         # update renne, enemies, game_director in sequence
         renne.update(passed_seconds, external_event=game_director.status)

@@ -322,14 +322,20 @@ class Renne(GameSprite):
 
     def attack1(self, passed_seconds):
         self.frame_action = cfg.HeroAction.ATTACK
-        self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds, frame_rate=12)
+        self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds, frame_rate=16)
         current_frame_add = self.animation.get_current_frame_add(cfg.HeroAction.ATTACK)
-        if current_frame_add >= 6:
+        if current_frame_add >= 7:
             self.attacker.finish()
             self.reset_action()
         else:
+            hit_count = 0
             for em in self.enemies:
-                self.attacker.run(em, current_frame_add)
+                hit_it = self.attacker.run(em, current_frame_add)
+                if hit_it:
+                    em.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
+                        {"time": 0.1, "old_action": em.action})
+            if hit_count > 0:
+                self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
 
 
     def attack2(self, passed_seconds):
@@ -403,7 +409,7 @@ class Renne(GameSprite):
         return False
         
 
-    def event_handle(self, pressed_keys, external_event=None):
+    def event_handle(self, pressed_keys, one_pressed_keys, external_event=None):
         if external_event is not None:
             if external_event == cfg.GameStatus.INIT:
                 self.action = cfg.HeroAction.STAND
@@ -435,7 +441,7 @@ class Renne(GameSprite):
             self.key_vec.y += 1.0
         self.direction = cfg.Direction.VEC_TO_DIRECT.get(self.key_vec.as_tuple(), self.direction)
 
-        if pressed_keys[sfg.UserKey.ATTACK]:
+        if one_pressed_keys[sfg.UserKey.ATTACK]["pressed"]:
             if self.action == cfg.HeroAction.RUN and self.sp > 0:
                 self.attacker.method = "run_attack"
             else:
@@ -444,11 +450,11 @@ class Renne(GameSprite):
             atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS)
             self.sound_box.play(atk_snd)
 
-        elif pressed_keys[sfg.UserKey.ATTACK1]:
+        elif one_pressed_keys[sfg.UserKey.ATTACK1]["pressed"]:
             self.action = cfg.HeroAction.ATTACK1
-            self.animation.set_frame_add(cfg.HeroAction.ATTACK, 3)
+            self.animation.set_frame_add(cfg.HeroAction.ATTACK, 4)
 
-        elif pressed_keys[sfg.UserKey.ATTACK_DESTROY_FIRE]:
+        elif one_pressed_keys[sfg.UserKey.ATTACK_DESTROY_FIRE]["pressed"]:
             if self.mp > self.attacker.destroy_fire_params["mana"] \
                 and self.attacker.magic_cds["destroy_fire"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
@@ -456,7 +462,7 @@ class Renne(GameSprite):
                 self.action = cfg.HeroAction.ATTACK
                 self.attacker.method = "destroy_fire"
 
-        elif pressed_keys[sfg.UserKey.ATTACK_DESTROY_BOMB]:
+        elif one_pressed_keys[sfg.UserKey.ATTACK_DESTROY_BOMB]["pressed"]:
             if self.mp > self.attacker.destroy_bomb_params["mana"] \
                 and self.attacker.magic_cds["destroy_bomb"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
@@ -464,7 +470,7 @@ class Renne(GameSprite):
                 self.action = cfg.HeroAction.ATTACK
                 self.attacker.method = "destroy_bomb"
 
-        elif pressed_keys[sfg.UserKey.ATTACK_DESTROY_AEROLITE]:
+        elif one_pressed_keys[sfg.UserKey.ATTACK_DESTROY_AEROLITE]["pressed"]:
             if self.mp > self.attacker.destroy_aerolite_params["mana"] \
                 and self.attacker.magic_cds["destroy_aerolite"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
@@ -472,13 +478,13 @@ class Renne(GameSprite):
                 self.action = cfg.HeroAction.SKILL
                 self.attacker.method = "destroy_aerolite"
 
-        elif pressed_keys[sfg.UserKey.REST]:
-            self.action = cfg.HeroAction.REST
-
-        elif pressed_keys[sfg.UserKey.WIN]:
+        elif one_pressed_keys[sfg.UserKey.WIN]["pressed"]:
             if self.attacker.magic_cds["dizzy"] == 0:
                 self.action = cfg.HeroAction.WIN
                 self.sound_box.play(sfg.Sound.RENNE_WIN)
+
+        elif pressed_keys[sfg.UserKey.REST]:
+            self.action = cfg.HeroAction.REST
 
         elif self.key_vec:
             if self.action == cfg.HeroAction.RUN and self.sp > 0:
