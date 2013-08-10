@@ -280,36 +280,44 @@ class Renne(GameSprite):
 
 
     def attack(self, passed_seconds):
-        if self.attacker.method == "destroy_aerolite":
-            # use another action frame for this skill
-            frame_action = cfg.HeroAction.SKILL
-        else:
-            frame_action = cfg.HeroAction.ATTACK
+        if self.attacker.method == "regular":
+            self.attack2(passed_seconds)
+        elif self.attacker.method == "destroy_fire":
+            self.destroy_fire(passed_seconds)
+        elif self.attacker.method == "destroy_bomb":
+            self.destroy_bomb(passed_seconds)
+        elif self.attacker.method == "destroy_aerolite":
+            self.destroy_aerolite(passed_seconds)
 
-        is_finish = self.animation.run_sequence_frame(frame_action, passed_seconds)
 
+    def destroy_fire(self, passed_seconds):
+        self.frame_action = cfg.HeroAction.ATTACK
+        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
             self.attacker.finish()
-            self.action = cfg.HeroAction.STAND
+            self.reset_action()
         else:
-            if self.attacker.method == "regular":
-                hit_count = 0
-                for em in self.enemies:
-                    hit_it = self.attacker.run(em, self.animation.get_current_frame_add(frame_action))
-                    if hit_it:
-                        hit_count += 1
+            self.attacker.destroy_fire(self.animation.get_current_frame_add(self.frame_action))
 
-                if hit_count > 0:
-                    self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
 
-            elif self.attacker.method == "destroy_fire":
-                self.attacker.destroy_fire(self.animation.get_current_frame_add(frame_action))
+    def destroy_bomb(self, passed_seconds):
+        self.frame_action = cfg.HeroAction.ATTACK
+        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+        if is_finish:
+            self.attacker.finish()
+            self.reset_action()
+        else:
+            self.attacker.destroy_bomb(self.animation.get_current_frame_add(self.frame_action))
 
-            elif self.attacker.method == "destroy_bomb":
-                self.attacker.destroy_bomb(self.animation.get_current_frame_add(frame_action))
 
-            elif self.attacker.method == "destroy_aerolite":
-                self.attacker.destroy_aerolite(self.animation.get_current_frame_add(frame_action))
+    def destroy_aerolite(self, passed_seconds):
+        self.frame_action = cfg.HeroAction.SKILL
+        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+        if is_finish:
+            self.attacker.finish()
+            self.reset_action()
+        else:
+            self.attacker.destroy_aerolite(self.animation.get_current_frame_add(self.frame_action))
 
 
     def attack1(self, passed_seconds):
@@ -317,12 +325,28 @@ class Renne(GameSprite):
         self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds, frame_rate=12)
         current_frame_add = self.animation.get_current_frame_add(cfg.HeroAction.ATTACK)
         if current_frame_add >= 6:
-            print "over"
             self.attacker.finish()
             self.reset_action()
         else:
             for em in self.enemies:
                 self.attacker.run(em, current_frame_add)
+
+
+    def attack2(self, passed_seconds):
+        self.frame_action = cfg.HeroAction.ATTACK
+        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+        if is_finish:
+            self.attacker.finish()
+            self.reset_action()
+        else:
+            hit_count = 0
+            for em in self.enemies:
+                hit_it = self.attacker.run(em, self.animation.get_current_frame_add(self.frame_action))
+                if hit_it:
+                    hit_count += 1
+
+            if hit_count > 0:
+                self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
 
 
     def run_attack(self, passed_seconds):
