@@ -174,7 +174,7 @@ class Renne(GameSprite):
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
 
         # for regular attack combo
-        self.attack_combo = {"count": 0, "last_time": time()}
+        self.attack_combo = {"count": 0, "last_time": time(), "time_delta": 0.6, "count_max": 2}
         self.attack1_start_frame = self.setting.ATTACKER_PARAMS["attack1"]["start_frame"]
         self.attack1_end_frame = self.setting.ATTACKER_PARAMS["attack1"]["end_frame"]
         self.attack2_accumulate_power_frame = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_frame"]
@@ -460,19 +460,19 @@ class Renne(GameSprite):
             if self.action == cfg.HeroAction.RUN and self.sp > 0:
                 self.attacker.method = "run_attack"
             else:
-                if self.attack_combo["count"] >= 2:
+                if self.attack_combo["count"] >= self.attack_combo["count_max"]:
                     # clear combo when reaching max
                     self.attack_combo["count"] = 0
 
                 attack_time = time()
-                if attack_time - 0.5 < self.attack_combo["last_time"]:
+                if attack_time - self.attack_combo["time_delta"] < self.attack_combo["last_time"]:
                     self.attack_combo["count"] += 1
                 else:
                     self.attack_combo["count"] = max(self.attack_combo["count"] - 1, 0)
 
                 self.attack_combo["last_time"] = attack_time
 
-                if self.attack_combo["count"] < 2:
+                if self.attack_combo["count"] < self.attack_combo["count_max"]:
                     self.attacker.method = "regular1"
                 else:
                     self.attacker.method = "regular2"
