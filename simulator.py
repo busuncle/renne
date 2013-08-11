@@ -997,6 +997,9 @@ class RenneAttacker(AngleAttacker):
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
         self.hit_record = []
         self.kill_record = []
+        self.attack1_params = attacker_params["attack1"]
+        self.attack2_params = attacker_params["attack2"]
+        self.run_attack_params = attacker_params["run_attack"]
         self.destroy_fire_params = attacker_params["destroy_fire"]
         self.destroy_bomb_params = attacker_params["destroy_bomb"]
         self.destroy_aerolite_params = attacker_params["destroy_aerolite"]
@@ -1010,10 +1013,39 @@ class RenneAttacker(AngleAttacker):
         self.method = None
 
 
-    def run(self, enemy, current_frame_add):
+    def regular1(self, enemy, current_frame_add):
         if self.hit(enemy, current_frame_add):
-            damage = max(0, self.sprite.atk - enemy.dfs)
+            damage = max(0, self.attack1_params["damage"] - enemy.dfs)
             enemy.attacker.handle_under_attack(self.sprite, damage)
+            enemy.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
+                {"time": self.attack1_params["crick_time"], "old_action": enemy.action})
+            return True
+        return False
+
+
+    def regular2(self, enemy, current_frame_add):
+        if self.hit(enemy, current_frame_add):
+            damage = int(max(0, self.attack2_params["damage"] - enemy.dfs))
+            enemy.attacker.handle_under_attack(self.sprite, damage)
+            enemy.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                {"crick_time": self.attack2_params["thump_crick_time"], 
+                "out_speed": self.attack2_params["thump_out_speed"], 
+                "acceleration": self.attack2_params["thump_acceleration"],
+                "key_vec": Vector2.from_points(self.sprite.pos, enemy.pos)})
+            return True
+        return False
+
+
+    def run_attack(self, enemy, current_frame_add):
+        if self.hit(enemy, current_frame_add):
+            damage = max(0, self.run_attack_params["damage"] - enemy.dfs)
+            enemy.attacker.handle_under_attack(self.sprite, damage)
+            enemy.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                {"crick_time": self.run_attack_params["crick_time"],
+                "out_speed": self.run_attack_params["out_speed"], 
+                "acceleration": self.run_attack_params["acceleration"],
+                "from_who": self.sprite,
+                "key_vec": Vector2.from_points(self.sprite.pos, enemy.pos)})
             return True
         return False
 

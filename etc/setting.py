@@ -135,10 +135,25 @@ class Renne(object):
     RUN_SPEED = 200
 
     ATTACKER_PARAMS = {
+        "attack1":{
+            "damage": ATK,
+            "crick_time": 0.2,
+            "start_frame": 4,
+            "end_frame": 7,
+        },
+        "attack2": {
+            "damage": int(ATK * 1.5),
+            "accumulate_power_frame": 2,
+            "accumulate_power_time": 0.1,
+            "thump_crick_time": 0.3,
+            "thump_out_speed": 900,
+            "thump_acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
+        },
         "range": 100,
         "angle": 120,
         "key_frames": (4, 5),
         "run_attack": {
+            "damage": 18,
             "crick_time": 0.4,
             "out_speed": 1000,
             "acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,

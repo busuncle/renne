@@ -175,8 +175,10 @@ class Renne(GameSprite):
 
         # for regular attack combo
         self.attack_combo = {"count": 0, "last_time": time()}
-        self.attack2_accumulate_power_frame = 2
-        self.attack2_accumulate_power_time = 0.1
+        self.attack1_start_frame = self.setting.ATTACKER_PARAMS["attack1"]["start_frame"]
+        self.attack1_end_frame = self.setting.ATTACKER_PARAMS["attack1"]["end_frame"]
+        self.attack2_accumulate_power_frame = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_frame"]
+        self.attack2_accumulate_power_time = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_time"]
 
 
     def activate(self, allsprites, enemies, static_objects, game_map):
@@ -331,21 +333,20 @@ class Renne(GameSprite):
     def attack1(self, passed_seconds):
         self.frame_action = cfg.HeroAction.ATTACK
         current_frame_add = self.animation.get_current_frame_add(cfg.HeroAction.ATTACK)
-        if current_frame_add < 4:
-            # short attack starts from 4
-            self.animation.set_frame_add(cfg.HeroAction.ATTACK, 4)
+        if current_frame_add < self.attack1_start_frame:
+            # short attack starts
+            self.animation.set_frame_add(cfg.HeroAction.ATTACK, self.attack1_start_frame)
 
-        if current_frame_add >= 7:
-            # ends at 7
+        if current_frame_add >= self.attack1_end_frame:
+            # ends at this frame
             self.attacker.finish()
             self.reset_action()
         else:
             hit_count = 0
             for em in self.enemies:
-                hit_it = self.attacker.run(em, current_frame_add)
+                hit_it = self.attacker.regular1(em, current_frame_add)
                 if hit_it:
-                    em.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
-                        {"time": 0.1, "old_action": em.action})
+                    hit_count += 1
             if hit_count > 0:
                 self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
 
@@ -363,17 +364,13 @@ class Renne(GameSprite):
             if is_finish:
                 self.attacker.finish()
                 self.reset_action()
-                self.attack2_accumulate_power_time = 0.5
+                self.attack2_accumulate_power_time = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_time"]
             else:
                 hit_count = 0
                 for em in self.enemies:
-                    hit_it = self.attacker.run(em, self.animation.get_current_frame_add(self.frame_action))
+                    hit_it = self.attacker.regular2(em, self.animation.get_current_frame_add(self.frame_action))
                     if hit_it:
                         hit_count += 1
-                        em.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
-                            {"crick_time": 0.3, "out_speed": 900, 
-                            "acceleration": -sfg.Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
-                            "key_vec": Vector2.from_points(self.pos, em.pos)})
 
                 if hit_count > 0:
                     self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
@@ -391,14 +388,8 @@ class Renne(GameSprite):
             self.move(self.setting.RUN_SPEED * 0.6, passed_seconds)
             hit_count = 0
             for em in self.enemies:
-                hit_it = self.attacker.run(em, self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
+                hit_it = self.attacker.run_attack(em, self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
                 if hit_it:
-                    em.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP, 
-                        {"crick_time": self.setting.ATTACKER_PARAMS["run_attack"]["crick_time"],
-                        "out_speed": self.setting.ATTACKER_PARAMS["run_attack"]["out_speed"], 
-                        "acceleration": self.setting.ATTACKER_PARAMS["run_attack"]["acceleration"],
-                        "from_who": self,
-                        "key_vec": Vector2.from_points(self.pos, em.pos)})
                     hit_count += 1
 
             if hit_count > 0:
