@@ -137,6 +137,14 @@ class GameSprite(pygame.sprite.DirtySprite):
             if self.status[cfg.SpriteStatus.INVISIBLE]["time"] < 0:
                 self.status.pop(cfg.SpriteStatus.INVISIBLE)
 
+        if self.status.get(cfg.SpriteStatus.CRICK) is not None:
+            self.action = cfg.SpriteAction.UNCONTROLLED
+            self.status[cfg.SpriteStatus.CRICK]["time"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.CRICK]["time"] <= 0:
+                # reset to old action
+                self.action = self.status[cfg.SpriteStatus.CRICK]["old_action"]
+                self.status.pop(cfg.SpriteStatus.CRICK)
+
 
     def update(self, passed_seconds):
         pass
@@ -788,14 +796,6 @@ class Enemy(GameSprite):
             if self.status[cfg.SpriteStatus.UNDER_THUMP]["crick_time"] <= 0:
                 self.reset_action(force=True)
                 self.status.pop(cfg.SpriteStatus.UNDER_THUMP)
-
-        if self.status.get(cfg.SpriteStatus.CRICK) is not None:
-            self.action = cfg.EnemyAction.UNCONTROLLED
-            self.status[cfg.SpriteStatus.CRICK]["time"] -= passed_seconds
-            if self.status[cfg.SpriteStatus.CRICK]["time"] <= 0:
-                # reset to old action
-                self.action = self.status[cfg.SpriteStatus.CRICK]["old_action"]
-                self.status.pop(cfg.SpriteStatus.CRICK)
 
         if self.status.get(cfg.SpriteStatus.AMBUSH) is not None:
             if self.status[cfg.SpriteStatus.AMBUSH]["status"] == cfg.Ambush.STATUS_INIT:

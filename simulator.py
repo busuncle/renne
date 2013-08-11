@@ -1058,6 +1058,8 @@ class RenneAttacker(AngleAttacker):
             enemy.attacker.handle_under_attack(self.sprite, damage)
             enemy.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
                 {"time": self.attack1_params["crick_time"], "old_action": enemy.action})
+            self.handle_additional_status(cfg.SpriteStatus.CRICK,
+                {"time": self.attack1_params["self_crick_time"], "old_action": self.sprite.action})
             return True
         return False
 
@@ -1071,6 +1073,8 @@ class RenneAttacker(AngleAttacker):
                 "out_speed": self.attack2_params["thump_out_speed"], 
                 "acceleration": self.attack2_params["thump_acceleration"],
                 "key_vec": Vector2.from_points(self.sprite.pos, enemy.pos)})
+            self.handle_additional_status(cfg.SpriteStatus.CRICK,
+                {"time": self.attack2_params["self_crick_time"], "old_action": self.sprite.action})
             return True
         return False
 
@@ -1085,6 +1089,8 @@ class RenneAttacker(AngleAttacker):
                 "acceleration": self.run_attack_params["acceleration"],
                 "from_who": self.sprite,
                 "key_vec": Vector2.from_points(self.sprite.pos, enemy.pos)})
+            self.handle_additional_status(cfg.SpriteStatus.CRICK,
+                {"time": self.run_attack_params["self_crick_time"], "old_action": self.sprite.action})
             return True
         return False
 
