@@ -149,7 +149,7 @@ class Renne(object):
             "thump_crick_time": 0.3,
             "thump_out_speed": 900,
             "thump_acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
-            "self_crick_time": 0.1,
+            "self_crick_time": 0.15,
         },
         "range": 100,
         "range2": 110,
@@ -161,7 +161,7 @@ class Renne(object):
             "crick_time": 0.4,
             "out_speed": 1000,
             "acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
-            "self_crick_time": 0.1,
+            "self_crick_time": 0.2,
         },
         "destroy_fire": {
             "range": 300,
