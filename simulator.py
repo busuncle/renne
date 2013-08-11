@@ -886,9 +886,6 @@ class Attacker(object):
         sp.status["hp"] = sp.cal_sprite_status(sp.hp, sp.setting.HP)
         sp.status[cfg.SpriteStatus.UNDER_ATTACK] = {"time": sfg.Sprite.UNDER_ATTACK_EFFECT_TIME}
         sp.animation.show_cost_hp(cost_hp)
-        if sp.setting.ROLE == cfg.SpriteRole.ENEMY:
-            sp.cal_angry(cost_hp)
-            sp.set_target(from_who)
 
 
     def handle_additional_status(self, status_id, status_object):
@@ -1075,7 +1072,15 @@ class RenneAttacker(AngleAttacker):
 
 
 
-class EnemyShortAttacker(AngleAttacker):
+class EnemyAngleAttacker(AngleAttacker):
+    def handle_under_attack(self, from_who, cost_hp, attack_method=cfg.Attack.METHOD_REGULAR):
+        super(EnemyAngleAttacker, self).handle_under_attack(from_who, cost_hp, attack_method=attack_method)
+        self.sprite.cal_angry(cost_hp)
+        self.sprite.set_target(from_who)
+
+
+
+class EnemyShortAttacker(EnemyAngleAttacker):
     def __init__(self, sprite, attacker_params):
         super(EnemyShortAttacker, self).__init__(sprite, 
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
@@ -1542,7 +1547,7 @@ class EnemySelfDestructionAttacker(EnemyShortAttacker):
 
 
 
-class EnemyLongAttacker(AngleAttacker):
+class EnemyLongAttacker(EnemyAngleAttacker):
     def __init__(self, sprite, attacker_params):
         attack_range = attacker_params["range"]
         angle = attacker_params["angle"]
@@ -1671,7 +1676,7 @@ class ArmouredShooterAttacker(EnemyLongAttacker):
 
 
 
-class LeonhardtAttacker(AngleAttacker):
+class LeonhardtAttacker(EnemyAngleAttacker):
     def __init__(self, sprite, attacker_params):
         super(LeonhardtAttacker, self).__init__(sprite, 
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
