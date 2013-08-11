@@ -892,8 +892,13 @@ class Attacker(object):
         # do some rejection check for some status
         sp = self.sprite
         if status_id == cfg.SpriteStatus.UNDER_THUMP:
-            for reject_thump_status in cfg.SpriteStatus.REJECT_THUMP_STATUS_LIST:
-                if sp.status.get(reject_thump_status) is not None:
+            for reject_status in cfg.SpriteStatus.REJECT_THUMP_STATUS_LIST:
+                if sp.status.get(reject_status) is not None:
+                    return
+
+        if status_id == cfg.SpriteStatus.CRICK:
+            for reject_status in cfg.SpriteStatus.REJECT_CRICK_STATUS_LIST:
+                if sp.status.get(reject_status) is not None:
                     return
 
         sp.status[status_id] = status_object
