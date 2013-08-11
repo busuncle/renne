@@ -394,14 +394,14 @@ class EnemyAnimator(SpriteAnimator):
                 # don't draw it because hero doesn't enter this ambush
                 return
 
-            elif self.status[cfg.SpriteStatus.AMBUSH]["status"] == cfg.Ambush.STATUS_ENTER:
+            elif sp.status[cfg.SpriteStatus.AMBUSH]["status"] == cfg.Ambush.STATUS_ENTER:
                 # hero enter the ambush, draw corresponding episode
-                if self.status[cfg.SpriteStatus.AMBUSH]["type"] == cfg.Ambush.APPEAR_TYPE_TOP_DOWN:
+                if sp.status[cfg.SpriteStatus.AMBUSH]["type"] == cfg.Ambush.APPEAR_TYPE_TOP_DOWN:
                     self.draw_with_height(camera, 
                         sp.status[cfg.SpriteStatus.AMBUSH]["height"])
                 return
 
-        if self.sprite.status.get(cfg.SpriteStatus.INVISIBLE) is not None:
+        if sp.status.get(cfg.SpriteStatus.INVISIBLE) is not None:
             return
 
         super(EnemyAnimator, self).draw(camera)
