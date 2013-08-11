@@ -922,6 +922,18 @@ class AngleAttacker(Attacker):
         self.cos_min = cos(radians(angle * 0.5))
 
 
+    def in_angle_scope(self, target, cos_min):
+        sp = self.sprite
+        direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
+        vec_to_target = Vector2.from_points(sp.pos, target.pos)
+        cos_val = cos_for_vec(direct_vec, vec_to_target)
+        if self.attack_range + target.setting.RADIUS > vec_to_target.get_length() \
+            and cos_val >= cos_min:
+            return True
+
+        return False
+
+
     def hit(self, target, current_frame_add):
         if int(current_frame_add) not in self.key_frames:
             return False
@@ -929,17 +941,17 @@ class AngleAttacker(Attacker):
         if target in self.has_hits:
             return False
 
-        sp = self.sprite
-        direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
-        vec_to_target = Vector2.from_points(sp.area.center, target.area.center)
-        cos_val = cos_for_vec(direct_vec, vec_to_target)
-        if self.attack_range + target.setting.RADIUS > vec_to_target.get_length() \
-            and cos_val >= self.cos_min and target.status["hp"] != cfg.HpStatus.DIE:
-            if target.status.get(cfg.SpriteStatus.IN_AIR) is not None:
-                # check whether target is in air status, then compare in-air height with its own height
-                if sp.setting.HEIGHT * 0.5 < target.status[cfg.SpriteStatus.IN_AIR]["height"]:
-                    return False
+        if target.status["hp"] not in cfg.HpStatus.ALIVE:
+            return False
 
+        if target.status.get(cfg.SpriteStatus.IN_AIR) is not None \
+            and sp.setting.HEIGHT * 0.5 < target.status[cfg.SpriteStatus.IN_AIR]["height"]:
+            # check whether target is in air status, then compare in-air height with its own height
+            return False
+
+        # check whether target in angle scope
+        if self.in_angle_scope(target, self.cos_min):
+            # add target to has_hits by the way
             self.has_hits.add(target)
             return True
 
