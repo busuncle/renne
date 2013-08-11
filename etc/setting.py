@@ -150,7 +150,9 @@ class Renne(object):
             "thump_acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
         },
         "range": 100,
+        "range2": 110,
         "angle": 120,
+        "angle2": 180,
         "key_frames": (4, 5),
         "run_attack": {
             "damage": 18,

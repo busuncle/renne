@@ -927,19 +927,19 @@ class AngleAttacker(Attacker):
         self.cos_min = cos(radians(angle * 0.5))
 
 
-    def in_angle_scope(self, target, cos_min):
+    def in_angle_scope(self, target, attack_range, cos_min):
         sp = self.sprite
         direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
         vec_to_target = Vector2.from_points(sp.pos, target.pos)
         cos_val = cos_for_vec(direct_vec, vec_to_target)
-        if self.attack_range + target.setting.RADIUS > vec_to_target.get_length() \
+        if attack_range + target.setting.RADIUS > vec_to_target.get_length() \
             and cos_val >= cos_min:
             return True
 
         return False
 
 
-    def hit(self, target, current_frame_add):
+    def in_hit_condition(self, target, current_frame_add):
         if int(current_frame_add) not in self.key_frames:
             return False
 
@@ -953,9 +953,15 @@ class AngleAttacker(Attacker):
             and sp.setting.HEIGHT * 0.5 < target.status[cfg.SpriteStatus.IN_AIR]["height"]:
             # check whether target is in air status, then compare in-air height with its own height
             return False
+        return True
+
+
+    def hit(self, target, current_frame_add):
+        if not self.in_hit_condition(target, current_frame_add):
+            return False
 
         # check whether target in angle scope
-        if self.in_angle_scope(target, self.cos_min):
+        if self.in_angle_scope(target, self.attack_range, self.cos_min):
             # add target to has_hits by the way
             self.has_hits.add(target)
             return True
@@ -1012,6 +1018,8 @@ class RenneAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
         super(RenneAttacker, self).__init__(sprite, 
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
+        self.attack_range2 = attacker_params["range2"]
+        self.cos_min2 = cos(radians(attacker_params["angle2"] * 0.5))
         self.hit_record = []
         self.kill_record = []
         self.attack1_params = attacker_params["attack1"]
@@ -1030,6 +1038,20 @@ class RenneAttacker(AngleAttacker):
         self.method = None
 
 
+    def hit2(self, target, current_frame_add):
+        # for attack2, a bigger angle attack scope
+        if not self.in_hit_condition(target, current_frame_add):
+            return False
+
+        # check whether target in angle scope
+        if self.in_angle_scope(target, self.attack_range2, self.cos_min2):
+            # add target to has_hits by the way
+            self.has_hits.add(target)
+            return True
+
+        return False
+
+
     def regular1(self, enemy, current_frame_add):
         if self.hit(enemy, current_frame_add):
             damage = max(0, self.attack1_params["damage"] - enemy.dfs)
@@ -1041,7 +1063,7 @@ class RenneAttacker(AngleAttacker):
 
 
     def regular2(self, enemy, current_frame_add):
-        if self.hit(enemy, current_frame_add):
+        if self.hit2(enemy, current_frame_add):
             damage = int(max(0, self.attack2_params["damage"] - enemy.dfs))
             enemy.attacker.handle_under_attack(self.sprite, damage)
             enemy.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
