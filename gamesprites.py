@@ -182,7 +182,7 @@ class Renne(GameSprite):
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
 
         # for regular attack combo
-        self.attack_combo = {"count": 0, "last_time": time(), "time_delta": 0.8, "count_max": 2}
+        self.attack_combo = {"count": 0, "last_time": time(), "time_delta": 0.6, "count_max": 2}
         self.attack1_start_frame = self.setting.ATTACKER_PARAMS["attack1"]["start_frame"]
         self.attack1_end_frame = self.setting.ATTACKER_PARAMS["attack1"]["end_frame"]
         self.attack2_accumulate_power_frame = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_frame"]
