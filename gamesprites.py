@@ -346,6 +346,17 @@ class Renne(GameSprite):
             self.animation.set_frame_add(cfg.HeroAction.ATTACK, self.attack1_start_frame)
 
         if current_frame_add >= self.attack1_end_frame:
+            # change combo count if this attack has hit some one
+            if len(self.attacker.has_hits) > 0:
+                attack_time = time()
+                if self.attack_combo["count"] == 0 \
+                    or attack_time - self.attack_combo["time_delta"] < self.attack_combo["last_time"]:
+                    self.attack_combo["count"] += 1
+                else:
+                    self.attack_combo["count"] = max(self.attack_combo["count"] - 1, 0)
+
+                self.attack_combo["last_time"] = attack_time
+
             # ends at this frame
             self.attacker.finish()
             self.reset_action()
@@ -372,6 +383,8 @@ class Renne(GameSprite):
             if is_finish:
                 self.attacker.finish()
                 self.reset_action()
+                # clean combo count after an "attack2"
+                self.attack_combo["count"] = 0
                 self.attack2_accumulate_power_time = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_time"]
             else:
                 hit_count = 0
@@ -468,18 +481,6 @@ class Renne(GameSprite):
             if self.action == cfg.HeroAction.RUN and self.sp > 0:
                 self.attacker.method = "run_attack"
             else:
-                if self.attack_combo["count"] >= self.attack_combo["count_max"]:
-                    # clear combo when reaching max
-                    self.attack_combo["count"] = 0
-
-                attack_time = time()
-                if attack_time - self.attack_combo["time_delta"] < self.attack_combo["last_time"]:
-                    self.attack_combo["count"] += 1
-                else:
-                    self.attack_combo["count"] = max(self.attack_combo["count"] - 1, 0)
-
-                self.attack_combo["last_time"] = attack_time
-
                 if self.attack_combo["count"] < self.attack_combo["count_max"]:
                     self.attacker.method = "regular1"
                 else:
