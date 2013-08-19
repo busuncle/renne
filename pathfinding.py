@@ -66,6 +66,8 @@ class OpenList(object):
 class Astar(object):
     # an empirical value for limiting the size of close list
     MAX_SEARCHING_STEP = 300
+    # a penalty for evaluating the next_h if some alliance unit occupies the coordinate
+    ALLIANCE_OCCUPY_PENALTY = 1000000
     # unit cost in every direction
     direct_vec_cost = dict((v, math.sqrt(v[0]**2 + v[1]**2)) for v in cfg.Direction.VEC_ALL)
 
@@ -110,10 +112,37 @@ class Astar(object):
         return None
 
 
+    def cal_alliance_occupy_waypoints(self):
+        sp = self.sprite
+        step = sfg.WayPoint.STEP_WIDTH
+        sp_points = set()
+        p = sp.pos
+        x0 = p.x - p.x % step
+        y0 = p.y - p.y % step
+        for p2 in ((x0, y0), (x0 + step, y0), (x0, y0 + step), (x0 + step, y0 + step)):
+            sp_points.add(p2)
+
+        res = set()
+        for other in sp.hero.enemies:
+            if other is sp:
+                continue
+
+            p = other.pos
+            x0 = p.x - p.x % step
+            y0 = p.y - p.y % step
+            for p2 in ((x0, y0), (x0 + step, y0), (x0, y0 + step), (x0 + step, y0 + step)):
+                if p2 in self.waypoints and p2 not in sp_points:
+                    res.add(p2)
+        
+        return res
+
+
     def find(self, target_coord, reach_delta):
         # target_coord should be a tuple like (x, y), representing the target coordinate on the map
 
         sp = self.sprite
+
+        alliance_waypoints = self.cal_alliance_occupy_waypoints()
 
         start = self.get_start_node(sp.pos)
         if start is None:
@@ -167,6 +196,10 @@ class Astar(object):
                 next_g = cur_node.g + cost * sfg.WayPoint.STEP_WIDTH
                 # manhattan distance
                 next_h = abs(next_x - target.x) + abs(next_y - target.y)
+
+                # add penalty if some other alliance sprite occupies the waypoint
+                if (next_x, next_y) in alliance_waypoints:
+                    next_h += self.ALLIANCE_OCCUPY_PENALTY
 
                 # astar heuristic search formula
                 next_f = next_g + next_h

@@ -673,8 +673,8 @@ class Enemy(GameSprite):
         step = sfg.WayPoint.STEP_WIDTH
         x0 = p.x - p.x % step
         y0 = p.y - p.y % step
-        for p in ((x0, y0), (x0 + step, y0), (x0, y0 + step), (x0 + step, y0 + step)):
-            if p not in wps:
+        for p2 in ((x0, y0), (x0 + step, y0), (x0, y0 + step), (x0 + step, y0 + step)):
+            if p2 not in wps:
                 return False
         return True
 
