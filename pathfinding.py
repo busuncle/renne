@@ -66,8 +66,6 @@ class OpenList(object):
 class Astar(object):
     # an empirical value for limiting the size of close list
     MAX_SEARCHING_STEP = 300
-    # a penalty for evaluating the next_h if some alliance unit occupies the coordinate
-    ALLIANCE_OCCUPY_PENALTY = 1000000
     # unit cost in every direction
     direct_vec_cost = dict((v, math.sqrt(v[0]**2 + v[1]**2)) for v in cfg.Direction.VEC_ALL)
 
@@ -203,7 +201,7 @@ class Astar(object):
 
                 # add penalty if some other alliance sprite occupies the waypoint
                 if (next_x, next_y) in alliance_heatmap:
-                    next_h += self.ALLIANCE_OCCUPY_PENALTY * alliance_heatmap[next_x, next_y]
+                    next_h += next_h * alliance_heatmap[next_x, next_y]
 
                 # astar heuristic search formula
                 next_f = next_g + next_h
