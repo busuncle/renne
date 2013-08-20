@@ -127,8 +127,8 @@ class Astar(object):
             sp_points.add(p2)
 
         res = {}
-        for other in sp.hero.enemies:
-            if other is sp:
+        for other in sp.allsprites:
+            if other is sp or other is sp.hero:
                 continue
 
             p = other.pos

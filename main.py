@@ -245,6 +245,7 @@ def enter_chapter(screen, chapter, renne):
                         monster.brain.set_active_state(cfg.SpriteState.CHASE)
                         enemies.add(monster)
 
+                    allsprites.add(enemies)
                     game_world.batch_add(ambush)
                     break
 
