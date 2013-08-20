@@ -71,6 +71,9 @@ class Astar(object):
     # unit cost in every direction
     direct_vec_cost = dict((v, math.sqrt(v[0]**2 + v[1]**2)) for v in cfg.Direction.VEC_ALL)
 
+    STEP = sfg.WayPoint.STEP_WIDTH
+    STEPx2 = sfg.WayPoint.STEP_WIDTH * 2
+
     def __init__(self, sprite, waypoints):
         self.sprite = sprite
         self.chapter = sprite.game_map.chapter
@@ -93,11 +96,13 @@ class Astar(object):
 
     def get_start_node(self, pos):
         # try 4 corners first
-        x0, y0 = map(lambda v: v - v % sfg.WayPoint.STEP_WIDTH, pos.as_tuple())
+        x0 = pos.x - pos.x % self.STEP
+        y0 = pos.y - pos.y % self.STEP
         node = self.try_nearby_waypoints(x0, y0, 2)
         if node is None:
             # try a bigger area, i think it will return a valid node anyhow
-            x0, y0 = map(lambda v: v - v % (sfg.WayPoint.STEP_WIDTH * 2), pos.as_tuple())
+            x0 = pos.x - pos.x % self.STEPx2
+            y0 = pos.y - pos.y % self.STEPx2
             node = self.try_nearby_waypoints(x0, y0, 4)
         return node
 
@@ -105,8 +110,8 @@ class Astar(object):
     def try_nearby_waypoints(self, x0, y0, steps):
         for i in xrange(0, steps):
             for j in xrange(0, steps):
-                x = x0 + sfg.WayPoint.STEP_WIDTH * i
-                y = y0 + sfg.WayPoint.STEP_WIDTH * j
+                x = x0 + self.STEP * i
+                y = y0 + self.STEP * j
                 if (x, y) in self.waypoints:
                     return Node((x, y), 0, None)
         return None
@@ -114,12 +119,11 @@ class Astar(object):
 
     def cal_alliance_occupy_waypoints(self):
         sp = self.sprite
-        step = sfg.WayPoint.STEP_WIDTH
         sp_points = set()
         p = sp.pos
-        x0 = p.x - p.x % step
-        y0 = p.y - p.y % step
-        for p2 in ((x0, y0), (x0 + step, y0), (x0, y0 + step), (x0 + step, y0 + step)):
+        x0 = p.x - p.x % self.STEP
+        y0 = p.y - p.y % self.STEP
+        for p2 in ((x0, y0), (x0 + self.STEP, y0), (x0, y0 + self.STEP), (x0 + self.STEP, y0 + self.STEP)):
             sp_points.add(p2)
 
         res = set()
@@ -128,9 +132,9 @@ class Astar(object):
                 continue
 
             p = other.pos
-            x0 = p.x - p.x % step
-            y0 = p.y - p.y % step
-            for p2 in ((x0, y0), (x0 + step, y0), (x0, y0 + step), (x0 + step, y0 + step)):
+            x0 = p.x - p.x % self.STEP
+            y0 = p.y - p.y % self.STEP
+            for p2 in ((x0, y0), (x0 + self.STEP, y0), (x0, y0 + self.STEP), (x0 + self.STEP, y0 + self.STEP)):
                 if p2 in self.waypoints and p2 not in sp_points:
                     res.add(p2)
         
@@ -180,7 +184,7 @@ class Astar(object):
 
             for vec, cost in self.direct_vec_cost.iteritems():
                 direct_vec.x, direct_vec.y = vec
-                direct_vec *= sfg.WayPoint.STEP_WIDTH
+                direct_vec *= self.STEP
                 next_x, next_y = cur_x + direct_vec.x, cur_y + direct_vec.y
 
                 if not (0 <= next_x <= sp.game_map.size[0]) \
@@ -193,7 +197,7 @@ class Astar(object):
                 if (next_x, next_y) not in self.waypoints:
                     continue
 
-                next_g = cur_node.g + cost * sfg.WayPoint.STEP_WIDTH
+                next_g = cur_node.g + cost * self.STEP
                 # manhattan distance
                 next_h = abs(next_x - target.x) + abs(next_y - target.y)
 
