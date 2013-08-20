@@ -805,13 +805,17 @@ class Enemy(GameSprite):
                     # delay time is over, turn to *STATUS_ENTER*
                     self.status[cfg.SpriteStatus.AMBUSH]["status"] = cfg.Ambush.STATUS_ENTER
             elif self.status[cfg.SpriteStatus.AMBUSH]["status"] == cfg.Ambush.STATUS_ENTER:
+                v0 = self.status[cfg.SpriteStatus.AMBUSH]["speed"]
+                a = self.status[cfg.SpriteStatus.AMBUSH]["acceleration"]
+                s =  v0 * passed_seconds + 0.5 * a * pow(passed_seconds, 2)
                 self.status[cfg.SpriteStatus.AMBUSH]["height"] = max(0, 
-                    self.status[cfg.SpriteStatus.AMBUSH]["height"] - self.status[cfg.SpriteStatus.AMBUSH]["speed"] * passed_seconds)
+                    self.status[cfg.SpriteStatus.AMBUSH]["height"] - s)
                 if self.status[cfg.SpriteStatus.AMBUSH]["height"] == 0:
                     self.status[cfg.SpriteStatus.AMBUSH]["status"] = cfg.Ambush.STATUS_FINISH
                     self.action = cfg.EnemyAction.STAND
                 else:
                     self.action = cfg.EnemyAction.UNCONTROLLED
+                    self.status[cfg.SpriteStatus.AMBUSH]["speed"] = v0 + a * passed_seconds
                  
 
     def update(self, passed_seconds, external_event=None):
@@ -1192,7 +1196,8 @@ class Ambush(pygame.sprite.LayeredDirty):
             if self.appear_type == cfg.Ambush.APPEAR_TYPE_TOP_DOWN:
                 sp.status[cfg.SpriteStatus.AMBUSH] = {"type": self.appear_type, 
                     "height": random.randint(*sfg.Ambush.APPEAR_TYPE_TOP_DOWN_HEIGHT_RAND_RANGE),
-                    "speed": sfg.Ambush.APPEAR_TYPE_TOP_DOWN_SPEED,
+                    "speed": 0,
+                    "acceleration": sfg.Physics.GRAVITY_ACCELERATION,
                     "init_delay": random.uniform(*sfg.Ambush.APPEAR_TYPE_TOP_DOWN_INIT_DELAY_RAND_RANGE),
                     "status": cfg.Ambush.STATUS_INIT}
 
