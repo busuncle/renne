@@ -442,6 +442,10 @@ class Renne(GameSprite):
             # painted egg, return directly
             return True
 
+        if cfg.SpriteStatus.CRICK in self.status \
+            or cfg.SpriteStatus.UNDER_THUMP in self.status:
+            return True
+
         return False
         
 

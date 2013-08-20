@@ -117,7 +117,7 @@ class Astar(object):
         return None
 
 
-    def cal_alliance_occupy_waypoints(self):
+    def cal_alliance_heatmap(self):
         sp = self.sprite
         sp_points = set()
         p = sp.pos
@@ -126,7 +126,7 @@ class Astar(object):
         for p2 in ((x0, y0), (x0 + self.STEP, y0), (x0, y0 + self.STEP), (x0 + self.STEP, y0 + self.STEP)):
             sp_points.add(p2)
 
-        res = set()
+        res = {}
         for other in sp.hero.enemies:
             if other is sp:
                 continue
@@ -136,7 +136,7 @@ class Astar(object):
             y0 = p.y - p.y % self.STEP
             for p2 in ((x0, y0), (x0 + self.STEP, y0), (x0, y0 + self.STEP), (x0 + self.STEP, y0 + self.STEP)):
                 if p2 in self.waypoints and p2 not in sp_points:
-                    res.add(p2)
+                    res[p2] = res.get(p2, 0) + 1
         
         return res
 
@@ -146,7 +146,7 @@ class Astar(object):
 
         sp = self.sprite
 
-        alliance_waypoints = self.cal_alliance_occupy_waypoints()
+        alliance_heatmap = self.cal_alliance_heatmap()
 
         start = self.get_start_node(sp.pos)
         if start is None:
@@ -202,8 +202,8 @@ class Astar(object):
                 next_h = abs(next_x - target.x) + abs(next_y - target.y)
 
                 # add penalty if some other alliance sprite occupies the waypoint
-                if (next_x, next_y) in alliance_waypoints:
-                    next_h += self.ALLIANCE_OCCUPY_PENALTY
+                if (next_x, next_y) in alliance_heatmap:
+                    next_h += self.ALLIANCE_OCCUPY_PENALTY * alliance_heatmap[next_x, next_y]
 
                 # astar heuristic search formula
                 next_f = next_g + next_h
