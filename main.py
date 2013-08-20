@@ -260,6 +260,10 @@ def enter_chapter(screen, chapter, renne):
         if COMMAND_DEBUG_MODE or sfg.DEBUG_MODE:
             debug_tools.run_debug_by_option_list(COMMAND_DEBUG_OPTIONS,
                 camera, game_world, game_map, clock)
+            if COMMAND_DEBUG_OPTIONS["god"]:
+                renne.hp = renne.setting.HP
+                renne.mp = renne.setting.MP
+                renne.sp = renne.setting.SP
 
         pygame.display.flip()
 
@@ -274,12 +278,14 @@ if __name__ == "__main__":
         (["--area"], {"dest": "area", "action": "store_true"}),
         (["--pos"], {"dest": "pos", "action": "store_true"}),
         (["--mute"], {"dest": "mute", "action": "store_true"}),
+        (["--god"], {"dest": "god", "action": "store_true"}),
     ])
     COMMAND_DEBUG_MODE = args.debug is True
     COMMAND_DEBUG_OPTIONS["waypoints"] = args.waypoints
     COMMAND_DEBUG_OPTIONS["fps"] = args.fps
     COMMAND_DEBUG_OPTIONS["area"] = args.area
     COMMAND_DEBUG_OPTIONS["pos"] = args.pos
+    COMMAND_DEBUG_OPTIONS["god"] = args.god
     if args.mute:
         sfg.Music.BACKGROUND_VOLUME = 0
         sfg.Music.SOUND_VOLUME = 0
