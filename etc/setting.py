@@ -154,7 +154,7 @@ class Renne(object):
         "range": 100,
         "range2": 110,
         "angle": 120,
-        "angle2": 180,
+        "angle2": 160,
         "key_frames": (4, 5),
         "run_attack": {
             "damage": 18,
