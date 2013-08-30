@@ -181,6 +181,17 @@ class SpriteAnimator(object):
         self.frame_adds[action] %= self.frame_nums[action]
 
 
+    def run_circle_frame_backward(self, action, passed_seconds):
+        # run circle frame in backward way
+        sp = self.sprite
+        if sp.status.get(cfg.SpriteStatus.FROZEN) is not None:
+            self.frame_adds[action] -= passed_seconds * self.frame_rates[action] \
+                * sp.status[cfg.SpriteStatus.FROZEN]["action_rate_scale"]
+        else:
+            self.frame_adds[action] -= passed_seconds * self.frame_rates[action]
+        self.frame_adds[action] %= self.frame_nums[action]
+
+
     def run_sequence_frame(self, action, passed_seconds, frame_rate=None):
         # animation will be running only once util the next event occurs
         # return True is a sequence frames is finish else False

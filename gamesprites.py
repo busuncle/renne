@@ -692,6 +692,11 @@ class Enemy(GameSprite):
         self.animation.run_circle_frame(cfg.EnemyAction.WALK, passed_seconds)
 
 
+    def backward(self, passed_seconds):
+        self.move(self.setting.WALK_SPEED, passed_seconds, check_reachable=True)
+        self.animation.run_circle_frame_backward(cfg.EnemyAction.WALK, passed_seconds)
+
+
     def attack(self, passed_seconds):
         is_finish = self.animation.run_sequence_frame(cfg.EnemyAction.ATTACK, passed_seconds)
         if is_finish:
@@ -786,8 +791,13 @@ class Enemy(GameSprite):
 
             elif action == cfg.EnemyAction.WALK:
                 self.action = cfg.EnemyAction.WALK
-                self.check_reachable = False
+                self.check_reachable = True
                 self.key_vec.x, self.key_vec.y = cfg.Direction.DIRECT_TO_VEC[self.direction] 
+
+            elif action == cfg.EnemyAction.BACKWARD:
+                self.action = cfg.EnemyAction.BACKWARD
+                self.key_vec.x, self.key_vec.y = cfg.Direction.DIRECT_TO_VEC[
+                    (self.direction + 4) % cfg.Direction.TOTAL]
 
 
     def update_status(self, passed_seconds):
@@ -846,6 +856,9 @@ class Enemy(GameSprite):
 
             elif self.action == cfg.EnemyAction.UNDER_THUMP:
                 self.under_thump(passed_seconds)
+
+            elif self.action == cfg.EnemyAction.backward:
+                self.backward(passed_seconds)
 
         self.animation.update(passed_seconds)
         self.emotion_animation.update(passed_seconds)

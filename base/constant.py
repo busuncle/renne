@@ -14,7 +14,8 @@ class Direction(object):
     SOUTH = 6
     SOUTH_WEST = 7
 
-    TOTAL = 8 # 8 directions totally
+    # 8 directions totally
+    TOTAL = 8 
 
     ALL = [
         WEST,
@@ -93,6 +94,7 @@ class EnemyAction(SpriteAction):
     PATHFINDING = 24
     STEER = 25
     SKILL = 26
+    BACKWARD = 27
 
 
 
