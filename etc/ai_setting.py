@@ -48,6 +48,8 @@ class ShortNormalAI(AIBase):
     DEFENCE_TO_OFFENCE_PROB = 0.9
     DEFENCE_TO_CHASE_PROB = 0.8
 
+    DEFENCE_BACKWARD_PROB = 0.5
+
 
 
 class LongNormalAI(AIBase):

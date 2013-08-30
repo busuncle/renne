@@ -693,7 +693,7 @@ class Enemy(GameSprite):
 
 
     def backward(self, passed_seconds):
-        self.move(self.setting.WALK_SPEED, passed_seconds, check_reachable=True)
+        self.move(self.setting.WALK_SPEED * 0.5, passed_seconds, check_reachable=True)
         self.animation.run_circle_frame_backward(cfg.EnemyAction.WALK, passed_seconds)
 
 
@@ -857,7 +857,7 @@ class Enemy(GameSprite):
             elif self.action == cfg.EnemyAction.UNDER_THUMP:
                 self.under_thump(passed_seconds)
 
-            elif self.action == cfg.EnemyAction.backward:
+            elif self.action == cfg.EnemyAction.BACKWARD:
                 self.backward(passed_seconds)
 
         self.animation.update(passed_seconds)
