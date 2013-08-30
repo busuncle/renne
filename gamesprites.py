@@ -858,6 +858,7 @@ class Enemy(GameSprite):
                 self.under_thump(passed_seconds)
 
             elif self.action == cfg.EnemyAction.BACKWARD:
+                self.frame_action = cfg.EnemyAction.WALK
                 self.backward(passed_seconds)
 
         self.animation.update(passed_seconds)
