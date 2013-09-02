@@ -415,20 +415,21 @@ class SpriteDefence(State):
        super(SpriteDefence, self).__init__(cfg.SpriteState.DEFENCE)
        self.sprite = sprite
        self.ai = ai
-       self.action_to_do = cfg.EnemyAction.STAND
+       #self.action_to_do = cfg.EnemyAction.STAND
 
 
     def enter(self, last_state):
         sp = self.sprite
         sp.direction = cal_face_direct(sp.pos.as_tuple(), sp.brain.target.pos.as_tuple())
-        if sp.status["hp"] == cfg.HpStatus.DANGER and happen(self.ai.DEFENCE_BACKWARD_PROB):
-            self.action_to_do = cfg.EnemyAction.BACKWARD
-        else:
-            self.action_to_do = cfg.EnemyAction.STAND
+        #if sp.status["hp"] == cfg.HpStatus.DANGER and happen(self.ai.DEFENCE_BACKWARD_PROB):
+        #    self.action_to_do = cfg.EnemyAction.BACKWARD
+        #else:
+        #    self.action_to_do = cfg.EnemyAction.STAND
 
 
     def send_actions(self):
-        return (self.action_to_do, )
+        return (cfg.EnemyAction.STAND, )
+        #return (self.action_to_do, )
 
 
     def check_conditions(self):
