@@ -1670,7 +1670,7 @@ class ArrowAttacker(EnemyLongAttacker):
         "dy": sfg.Ammo.ARROW_SHADOW_DY}
     def __init__(self, sprite, attacker_params):
         super(ArrowAttacker, self).__init__(sprite, attacker_params)
-        self.hero = sprite.hero # you see it's an attacker only for enemy...
+        self.target = None
         self.static_objects = sprite.static_objects
         self.current_ammo = None
         self.ammo_list = []
@@ -1681,9 +1681,13 @@ class ArrowAttacker(EnemyLongAttacker):
         self.arrow_damage = attacker_params["arrow_damage"]
 
 
-    def run(self, hero, current_frame_add):
+    def run(self, target, current_frame_add):
         sp = self.sprite
         if self.current_ammo is None and int(current_frame_add) in self.key_frames:
+            # set target_list if it's None
+            if self.target is None:
+                self.target = target
+
             # generate arrow
             self.current_ammo = Ammo(sp.pos, self.arrow_radius, self.arrow_speed, 
                 cfg.Direction.DIRECT_TO_VEC[sp.direction], self.arrow_dx, self.arrow_dy, self.arrow_damage, 
@@ -1694,8 +1698,8 @@ class ArrowAttacker(EnemyLongAttacker):
     def update_ammo(self, passed_seconds):
         for i, am in enumerate(self.ammo_list):
             am.update(passed_seconds)
-            if am.area.colliderect(self.hero.area):
-                self.hero.attacker.handle_under_attack(self.sprite, self.arrow_damage)
+            if am.area.colliderect(self.target.area):
+                self.target.attacker.handle_under_attack(self.sprite, self.arrow_damage)
                 self.ammo_list.pop(i)
 
             elif am.pos.get_distance_to(am.origin_pos) > self.attack_range:
