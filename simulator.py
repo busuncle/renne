@@ -1735,6 +1735,43 @@ class ArmouredShooterAttacker(EnemyLongAttacker):
 
 
 
+class WerwolfAttacker(EnemyShortAttacker):
+    def __init__(self, sprite, attacker_params):
+        super(WerwolfAttacker, self).__init__(sprite, attacker_params)
+        self.method = None
+        catch = attacker_params["catch"]
+        self.ready_time = catch["ready_time"]
+        self.run_speed_scale = catch["run_speed_scale"]
+        self.run_frame_scale = catch["run_frame_scale"]
+        self.freeze_time = catch["freeze_time"]
+        self.cast_speed = catch["cast_speed"]
+        self.friction = catch["friction"]
+        self.crick_time = catch["crick_time"]
+        self.damage_a = catch["damage_a"]
+        self.damage_b = catch["damage_b"]
+        self.reset_vars()
+
+
+    def reset_vars(self):
+        self.method = None
+        self.ready_time_add = 0
+        self.freeze_time_add = 0
+
+
+    def catch_chance(self, target):
+        sp = self.sprite
+
+
+    def chance(self, target):
+        sp = self.sprite
+
+
+    def finish(self):
+        super(WerwolfAttacker, self).finish()
+        self.reset_vars()
+
+
+
 class LeonhardtAttacker(EnemyAngleAttacker):
     def __init__(self, sprite, attacker_params):
         super(LeonhardtAttacker, self).__init__(sprite, 
