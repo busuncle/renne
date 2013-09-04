@@ -918,6 +918,7 @@ class AngleAttacker(Attacker):
 
 
     def in_hit_condition(self, target, current_frame_add):
+        sp = self.sprite
         if int(current_frame_add) not in self.key_frames:
             return False
 

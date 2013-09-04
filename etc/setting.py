@@ -439,6 +439,7 @@ class GanDie(Enemy):
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
+    WALK_SPEED = 110
 
     ATTACKER_PARAMS = {
         "range": 60,
@@ -462,7 +463,6 @@ class GanDie(Enemy):
         },
     }
 
-    WALK_SPEED = 130
 
 
 
