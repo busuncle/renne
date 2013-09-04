@@ -1169,6 +1169,23 @@ class Ghost(Enemy):
         
 
 
+class Werwolf(Enemy):
+    def __init__(self, setting, pos, direction):
+        super(Werwolf, self).__init__(setting, pos, direction)
+
+
+    def catch(self, passed_seconds):
+        ak = self.attacker
+
+
+    def attack(self, passed_seconds):
+        if self.attacker.method == "regular":
+            super(Werwolf, self).attack(passed_seconds)
+        elif self.attacker.method == "catch":
+            self.catch(passed_seconds)
+
+
+
 ######## sprite group subclass ########
 class GameSpritesGroup(pygame.sprite.LayeredDirty):
     def __init__(self):
