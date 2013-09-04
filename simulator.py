@@ -65,9 +65,12 @@ class MagicSprite(pygame.sprite.DirtySprite):
 class MagicSkill(object):
     # represent a magic skill, it may contain one or more magic sprite(s)
     # it's a member in magic_list
-    def __init__(self):
+    def __init__(self, sprite, target_list):
+        self.sprite = sprite
+        self.target_list = target_list
         self.status = cfg.Magic.STATUS_ALIVE
         self.has_hits = set()
+        self.magic_sprites = []
 
 
     def update(self, passed_seconds):
@@ -162,13 +165,11 @@ class Poison(MagicSprite):
 class PoisonSet(MagicSkill):
     poison_image_list = []
     def __init__(self, sprite, target_list, static_objects, params):
-        super(PoisonSet, self).__init__()
+        super(PoisonSet, self).__init__(sprite, target_list)
         self.init_poison_image_list()
-        self.sprite = sprite
-        self.target_list = target_list
         self.static_objects = static_objects
         self.params = params
-        self.magic_sprites = self.gen_magic_sprites()
+        self.gen_magic_sprites()
 
 
     def init_poison_image_list(self):
@@ -190,7 +191,6 @@ class PoisonSet(MagicSkill):
 
     def gen_magic_sprites(self):
         sp = self.sprite
-        res = []
         imgs = sample(self.poison_image_list, self.params["num"])
         for img in imgs:
             # add some noise for key_vec of poison that spit out!
@@ -211,9 +211,7 @@ class PoisonSet(MagicSkill):
 
             poison = Poison(sp.pos, radius, dx, dy, self.params["damage"], tf_img, self.params["height"],
                 key_vec, speed, self.params["fall_acceleration"], life_time)
-            res.append(poison)
-
-        return res
+            self.magic_sprites.append(poison)
 
 
     def update(self, passed_seconds):
@@ -244,16 +242,13 @@ class PoisonSet(MagicSkill):
 class SelfDestruction(MagicSkill):
     def __init__(self, sprite, target_list, damage, trigger_times, 
         thump_crick_time, thump_acceleration, thump_out_speed):
-        super(SelfDestruction, self).__init__()
-        self.sprite = sprite
+        super(SelfDestruction, self).__init__(sprite, target_list)
         self.damage = damage
         self.thump_crick_time = thump_crick_time
         self.thump_acceleration = thump_acceleration
         self.thump_out_speed = thump_out_speed
-        self.target_list = target_list
         self.trigger_times = trigger_times
         self.passed_seconds = 0
-        self.magic_sprites = []
 
 
     def update(self, passed_seconds):
@@ -303,11 +298,9 @@ class Grenade(MagicSkill):
     vy_loss_rate = 0.5
     vx_loss_rate = 0.8
     def __init__(self, sprite, target_list, params):
-        super(Grenade, self).__init__()
+        super(Grenade, self).__init__(sprite, target_list)
         self.image = transform.rotate(self.grenade_image.copy(), randint(-180, 180))
         self.image_mix = self.image.copy()
-        self.sprite = sprite
-        self.target_list = target_list
         self.pos = Vector2(sprite.pos)
         self.key_vec = Vector2.from_points(self.pos, target_list[0].pos).normalize()
         self.area = self.image.get_rect()
@@ -325,7 +318,6 @@ class Grenade(MagicSkill):
         # fall_acceleration must be negative against height
         self.fall_acceleration = -abs(params["fall_acceleration"])
         self.phase = "in_air" # in_air, on_floor, disapear
-        self.magic_sprites = []
 
 
     def update(self, passed_seconds):
@@ -450,12 +442,8 @@ class EnergyBall(MagicSprite):
 
 class EnergyBallSet(MagicSkill):
     def __init__(self, image, shadow, sprite, target_list, static_objects, params, pos, target_pos):
-        super(EnergyBallSet, self).__init__()
-        self.sprite = sprite
-        self.target_list = target_list
+        super(EnergyBallSet, self).__init__(sprite, target_list)
         self.static_objects = static_objects
-        self.has_hits = set()
-        self.magic_sprites = []
         # only one ball right now
         self.magic_sprites.append(EnergyBall(pos, params["radius"], params["dx"], params["dy"], 
             params["damage"], image, shadow, target_pos, params["range"], params["speed"]))
@@ -543,9 +531,7 @@ class DestroyBombSet(MagicSkill):
             destroy_bomb_images.append(destroy_bombs_image.subsurface((i * 64, j * 64, 64, 64)))
 
     def __init__(self, sprite, target_list, static_objects, params, pos, direction):
-        super(DestroyBombSet, self).__init__()
-        self.sprite = sprite
-        self.target_list = target_list
+        super(DestroyBombSet, self).__init__(sprite, target_list)
         self.static_objects = static_objects
         self.origin_pos = pos.copy()
         self.params = params
@@ -563,9 +549,6 @@ class DestroyBombSet(MagicSkill):
         vec_right = Vector2(cfg.Direction.DIRECT_TO_VEC[(direction + 1) % cfg.Direction.TOTAL])
         self.key_vec_list = [vec, vec_left, vec_right, 
             (vec + vec_left).normalize(), (vec + vec_right).normalize()]
-
-        self.magic_sprites = []
-        self.has_hits = set()
 
 
     def update(self, passed_seconds):
@@ -657,15 +640,11 @@ class DestroyAeroliteSet(MagicSkill):
         sfg.Effect.DESTROY_AEROLITE_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.DESTROY_AEROLITE_RECT)
     def __init__(self, sprite, target_list, static_objects, params, pos):
-        super(DestroyAeroliteSet, self).__init__()
-        self.sprite = sprite
-        self.target_list = target_list
+        super(DestroyAeroliteSet, self).__init__(sprite, target_list)
         self.static_objects = static_objects
         self.params = params
-        self.has_hits = set()
         self.passed_seconds = 0
         self.trigger_times = list(params["trigger_times"])
-        self.magic_sprites = []
 
 
     def update(self, passed_seconds):
@@ -709,16 +688,12 @@ class DestroyAeroliteSet(MagicSkill):
 class RenneDizzy(MagicSkill):
     # Renne skill
     def __init__(self, sprite, target_list, dizzy_range, dizzy_time, effective_time, prob):
-        super(RenneDizzy, self).__init__()
-        self.sprite = sprite
-        self.target_list = target_list
+        super(RenneDizzy, self).__init__(sprite, target_list)
         self.dizzy_range = dizzy_range
         self.dizzy_time = dizzy_time
         self.effective_time = effective_time
         self.prob = prob
         self.dizzy_targets = set()
-        # actually no magic sprite in this skill, but this variable should exist in every magic skill
-        self.magic_sprites = []
 
 
     def update(self, passed_seconds):
@@ -793,9 +768,7 @@ class HellClawSet(MagicSkill):
         sfg.Effect.HELL_CLAW_RECT)
     claw_image_list = [hell_claw_image.subsurface((i * 64, 0, 64, 72)) for i in xrange(2)]
     def __init__(self, sprite, target_list, static_objects, params):
-        super(HellClawSet, self).__init__()
-        self.sprite = sprite
-        self.target_list = target_list
+        super(HellClawSet, self).__init__(sprite, target_list)
         self.target_pos = self.cal_target_pos(target_list)
         self.static_objects = static_objects
         self.range = params["range"]
@@ -803,8 +776,6 @@ class HellClawSet(MagicSkill):
         self.trigger_times = list(params["trigger_times"])
         self.passed_seconds = 0
         self.img_id = 0
-        self.has_hits = set()
-        self.magic_sprites = []
 
         # hell claw has a ellipse for telling the player that this skill is coming!
         self.tips_area = pygame.Surface((
