@@ -1011,9 +1011,13 @@ class RenneAttacker(AngleAttacker):
         # magic_list has kinds of magics, eg. DestroyBombSet and DestroyAeroliteSet, 
         # every magic has one or more magic sprite(s), eg. DestroyBombSet has many "bombs"
         self.magic_list = []
+        self.reset_vars()
+
+
+    def reset_vars(self):
         # a lock, only one magic is running in an attack
-        self.current_magic = None
         self.method = None
+        self.current_magic = None
 
 
     def hit2(self, target, current_frame_add):
@@ -1122,8 +1126,7 @@ class RenneAttacker(AngleAttacker):
                     self.kill_record.append({"time": time()})
             self.has_hits.clear()
 
-        self.method = None
-        self.current_magic = None
+        self.reset_vars()
 
 
 
@@ -1172,12 +1175,16 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
         self.spit_poison_params = attacker_params["spit_poison"]
         self.spit_poison_ready_time = self.spit_poison_params["ready_time"]
         self.spit_poison_hold_time = self.spit_poison_params["hold_time"]
+        self.spit_poison_max_time = self.spit_poison_params["max_time"]
         self.magic_list = []
+        self.reset_vars()
+
+
+    def reset_vars(self):
         self.method = None
         self.current_magic = None
         self.spit_poison_ready_time_add = 0
         self.spit_poison_hold_time_add = 0
-        self.spit_poison_max_time = self.spit_poison_params["max_time"]
 
 
     def spit_poison_chance(self, target):
@@ -1228,10 +1235,7 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
 
     def finish(self):
         super(EnemyPoisonShortAttacker, self).finish()
-        self.method = None
-        self.current_magic = None
-        self.spit_poison_ready_time_add = 0
-        self.spit_poison_hold_time_add = 0
+        self.reset_vars()
 
 
 
@@ -1242,9 +1246,13 @@ class GhostAttacker(EnemyShortAttacker):
         self.leak_mp = attacker_params["leak_mp"]
         self.leak_sp = attacker_params["leak_sp"]
         self.pre_enter_invisible_time = attacker_params["invisible"]["pre_enter_time"]
-        self.pre_enter_invisible_time_add = 0
         self.invisible_time = attacker_params["invisible"]["time"]
+        self.reset_vars()
+
+
+    def reset_vars(self):
         self.method = None
+        self.pre_enter_invisible_time_add = 0
 
 
     def chance(self, target):
@@ -1281,8 +1289,7 @@ class GhostAttacker(EnemyShortAttacker):
 
     def finish(self):
         super(GhostAttacker, self).finish()
-        self.method = None
-        self.pre_enter_invisible_time_add = 0
+        self.reset_vars()
 
 
 
@@ -1776,10 +1783,13 @@ class LeonhardtAttacker(EnemyAngleAttacker):
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
         self.death_coil_params = attacker_params["death_coil"]
         self.hell_claw_params = attacker_params["hell_claw"]
-
         self.magic_list = []
-        self.current_magic = None
+        self.reset_vars()
+
+
+    def reset_vars(self):
         self.method = None
+        self.current_magic = None
 
 
     def chance(self, target):
@@ -1834,8 +1844,7 @@ class LeonhardtAttacker(EnemyAngleAttacker):
 
     def finish(self):
         len(self.has_hits) > 0 and self.has_hits.clear()
-        self.method = None
-        self.current_magic = None
+        self.reset_vars()
 
 
 
