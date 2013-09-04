@@ -970,11 +970,11 @@ class TwoHeadSkeleton(Enemy):
         if ak.fall_run_up_time_add < ak.fall_run_up_time:
             ak.fall_run_up_time_add += passed_seconds
             self.frame_action = cfg.EnemyAction.WALK
-            self.animation.run_sequence_frame(cfg.EnemyAction.WALK, passed_seconds, ak.fall_run_up_rate)
+            self.animation.run_circle_frame(cfg.EnemyAction.WALK, passed_seconds, ak.fall_run_up_rate)
 
         elif ak.fall_kneel_time_add < ak.fall_kneel_time:
             self.frame_action = cfg.EnemyAction.KNEEL
-            self.animation.run_sequence_frame(cfg.EnemyAction.KNEEL, passed_seconds)
+            self.animation.run_circle_frame(cfg.EnemyAction.KNEEL, passed_seconds)
             ak.fall_kneel_time_add += passed_seconds
             if ak.fall_kneel_time_add >= ak.fall_kneel_time:
                 # a timing for setting vector and speed for x axis
@@ -1176,6 +1176,11 @@ class Werwolf(Enemy):
 
     def catch(self, passed_seconds):
         ak = self.attacker
+        if ak.ready_time_add < ak.ready_time:
+            ak.ready_time_add += passed_seconds
+            self.frame_action = cfg.EnemyAction.UNDER_THUMP
+            self.animation.run_circle_frame(cfg.EnemyAction.UNDER_THUMP, passed_seconds) 
+
 
 
     def attack(self, passed_seconds):
