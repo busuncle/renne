@@ -540,6 +540,7 @@ class Werwolf(Enemy):
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
+    WALK_SPEED = 130
 
     ATTACKER_PARAMS = {
         "range": 70,
@@ -548,9 +549,12 @@ class Werwolf(Enemy):
         "frozen_prob": 0.6,
         "frozen_time": 5,
         "action_rate_scale": 0.5,
+        "catch": {
+            "ready_time": 1,
+            "run_speed_scale": 1.5,
+            "run_frame_scale": 1.5,
+        },
     }
-
-    WALK_SPEED = 170
 
 
 
