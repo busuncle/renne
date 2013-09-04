@@ -783,11 +783,6 @@ class HellClaw(MagicSprite):
     def draw(self, camera):
         camera.screen.blit(self.image_mix,
             (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy))
-        #r = pygame.Rect(0, 0, self.area.width, self.area.height * 0.5)
-        #r.center = (self.pos.x, self.pos.y * 0.5)
-        #r.top -= camera.rect.top
-        #r.left -= camera.rect.left
-        #pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
 
 
 
@@ -800,7 +795,6 @@ class HellClawSet(MagicSkill):
     def __init__(self, sprite, target_list, static_objects, params):
         super(HellClawSet, self).__init__()
         self.sprite = sprite
-        self.target = target
         self.target_list = target_list
         self.target_pos = self.cal_target_pos(target_list)
         self.static_objects = static_objects
