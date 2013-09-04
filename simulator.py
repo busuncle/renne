@@ -1706,8 +1706,11 @@ class ArmouredShooterAttacker(EnemyLongAttacker):
     def __init__(self, sprite, attacker_params):
         super(ArmouredShooterAttacker, self).__init__(sprite, attacker_params)
         self.grenade_params = attacker_params["grenade"]
-        self.method = None
         self.magic_list = []
+        self.reset_vars()
+
+    def reset_vars(self):
+        self.method = None
         self.current_magic = None
 
 
@@ -1735,15 +1738,13 @@ class ArmouredShooterAttacker(EnemyLongAttacker):
 
     def finish(self):
         super(ArmouredShooterAttacker, self).finish()
-        self.method = None
-        self.current_magic = None
+        self.reset_vars()
 
 
 
 class WerwolfAttacker(EnemyShortAttacker):
     def __init__(self, sprite, attacker_params):
         super(WerwolfAttacker, self).__init__(sprite, attacker_params)
-        self.method = None
         catch = attacker_params["catch"]
         self.ready_time = catch["ready_time"]
         self.run_speed_scale = catch["run_speed_scale"]
