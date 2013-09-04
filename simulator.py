@@ -797,11 +797,12 @@ class HellClawSet(MagicSkill):
         sfg.Effect.HELL_CLAW_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.HELL_CLAW_RECT)
     claw_image_list = [hell_claw_image.subsurface((i * 64, 0, 64, 72)) for i in xrange(2)]
-    def __init__(self, sprite, target, static_objects, params):
+    def __init__(self, sprite, target_list, static_objects, params):
         super(HellClawSet, self).__init__()
         self.sprite = sprite
         self.target = target
-        self.target_pos = target.pos.copy()
+        self.target_list = target_list
+        self.target_pos = self.cal_target_pos(target_list)
         self.static_objects = static_objects
         self.range = params["range"]
         self.params = params
@@ -821,6 +822,17 @@ class HellClawSet(MagicSkill):
         self.tips_area_mix = self.tips_area.copy()
 
 
+    def cal_target_pos(self, target_list):
+        s_x = 0.0
+        s_y = 0.0
+        n = len(target_list)
+        for target in target_list:
+            s_x += target.pos.x
+            s_y += target.pos.y
+
+        return Vector2(s_x / n, s_y / n)
+
+
     def update(self, passed_seconds):
         self.passed_seconds += passed_seconds
         if len(self.trigger_times) > 0 and self.passed_seconds > self.trigger_times[0]:
@@ -836,11 +848,12 @@ class HellClawSet(MagicSkill):
                 self.img_id = 1 - self.img_id
 
         for i, claw in enumerate(self.magic_sprites):
-            if self.target not in self.has_hits \
-                and claw.alive_time > claw.damage_cal_time \
-                and claw.area.colliderect(self.target.area):
-                self.has_hits.add(self.target)
-                self.target.attacker.handle_under_attack(self.sprite, claw.damage, cfg.Attack.METHOD_MAGIC)
+            for target in self.target_list:
+                if target not in self.has_hits \
+                    and claw.alive_time > claw.damage_cal_time \
+                    and claw.area.colliderect(target.area):
+                    self.has_hits.add(target)
+                    target.attacker.handle_under_attack(self.sprite, claw.damage, cfg.Attack.METHOD_MAGIC)
 
             claw.update(passed_seconds)
             if claw.status == cfg.Magic.STATUS_VANISH:
@@ -1806,7 +1819,7 @@ class LeonhardtAttacker(EnemyAngleAttacker):
             # this magic trigger at once for showing the tips, 
             # but damage claws will trigger at a certain delay
             sp.mp -= self.hell_claw_params["mana"]
-            self.current_magic = HellClawSet(sp, target, 
+            self.current_magic = HellClawSet(sp, [target, ], 
                 sp.static_objects, self.hell_claw_params)
             self.magic_list.append(self.current_magic)
 
