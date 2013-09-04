@@ -1301,9 +1301,13 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
         self.thump_slide_speed = attacker_params["thump_slide_speed"]
         self.thump_slide_range = self.thump_slide_speed * self.thump_slide_time
         self.thump_cos_min = attacker_params["thump_cos_min"]
+        self.reset_vars()
+
+
+    def reset_vars(self):
+        self.method = None
         self.thump_slide_time_add = 0
         self.thump_pre_freeze_time_add = 0
-        self.method = None
 
 
     def thump_chance(self, target):
@@ -1359,9 +1363,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
 
     def finish(self):
         super(EnemyThumpShortAttacker, self).finish()
-        self.method = None
-        self.thump_slide_time_add = 0
-        self.thump_pre_freeze_time_add = 0
+        self.reset_vars()
 
 
 
