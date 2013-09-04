@@ -136,9 +136,12 @@ class ArmouredShooterAI(LongNormalAI):
     ATTACK_GRENADE_PROB = 0.9
 
 
+
 class WerwolfAI(ShortNormalAI):
     STAY_CHANGE_DIRECTION_PROB = 0.001
     STAY_TO_PATROL_PROB = 0
+
+    ATTACK_CATCH_PROB = 0.9
 
 
 
