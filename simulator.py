@@ -1389,7 +1389,6 @@ class EnemyBloodShortAttacker(EnemyShortAttacker):
 class TwoHeadSkeletonAttacker(EnemyShortAttacker):
     def __init__(self, sprite, attacker_params):
         super(TwoHeadSkeletonAttacker, self).__init__(sprite, attacker_params)
-        self.method = None
         self.fall_range = attacker_params["fall_range"]
         self.fall_run_up_time = attacker_params["fall_run_up_time"]
         self.fall_run_up_rate = attacker_params["fall_run_up_rate"]
@@ -1403,7 +1402,11 @@ class TwoHeadSkeletonAttacker(EnemyShortAttacker):
         self.fall_thump_crick_time = attacker_params["fall_thump_crick_time"]
         self.fall_thump_acceleration = attacker_params["fall_thump_acceleration"]
         self.fall_thump_out_speed = attacker_params["fall_thump_out_speed"]
+        self.reset_vars()
 
+
+    def reset_vars(self):
+        self.method = None
         self.fall_run_up_time_add = 0
         self.fall_kneel_time_add = 0
         self.fall_in_air_time_add = 0
@@ -1465,14 +1468,7 @@ class TwoHeadSkeletonAttacker(EnemyShortAttacker):
 
     def finish(self):
         super(TwoHeadSkeletonAttacker, self).finish()
-        self.method = None
-        self.fall_run_up_time_add = 0
-        self.fall_kneel_time_add = 0
-        self.fall_in_air_time_add = 0
-        self.fall_back_in_air_time_add = 0
-        self.fall_in_air_height = 0
-        self.fall_in_air_v_x = None
-        self.fall_in_air_speed_x = None
+        self.reset_vars()
 
 
 
