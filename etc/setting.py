@@ -95,7 +95,7 @@ class Stuff(object):
 
 class Physics(object):
     # define all physics constants, it's only values, not included direction, add it if necessary
-    SPRITE_FLOOR_FRICION_ACCELERATION = 4500
+    SPRITE_FLOOR_FRICTION_ACCELERATION = 4500
     GRAVITY_ACCELERATION = 1200
 
 
@@ -148,7 +148,7 @@ class Renne(object):
             "accumulate_power_time": 0.08,
             "thump_crick_time": 0.3,
             "thump_out_speed": 900,
-            "thump_acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
+            "thump_acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
             "self_crick_time": 0.15,
         },
         "range": 100,
@@ -160,7 +160,7 @@ class Renne(object):
             "damage": 18,
             "crick_time": 0.4,
             "out_speed": 1000,
-            "acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
+            "acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
             "self_crick_time": 0.2,
         },
         "destroy_fire": {
@@ -270,7 +270,7 @@ class CastleWarrior(Enemy):
         "key_frames": (4, ),
         "thump_crick_time": 0.3,
         "thump_out_speed": 1000,
-        "thump_acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
+        "thump_acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
         "thump_pre_freeze_time": 1,
         "thump_pre_frames": (0, 1, 2),
         "thump_pre_rate": 8,
@@ -388,7 +388,7 @@ class ArmouredShooter(Enemy):
             "damage": 80,
             "trigger_times": [3.0, 3.1, 3.25, 3.2, 3.25, 3.3, 3.35, 3.4, 3.5, 3.6],
             "thump_crick_time": 0.3,
-            "thump_acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
+            "thump_acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
             "thump_out_speed": 1000,
             "init_height": 50,
             "init_vx": 300,
@@ -521,7 +521,7 @@ class TwoHeadSkeleton(Enemy):
         "fall_back_v0_y": 300,
         "fall_damage": 80,
         "fall_thump_crick_time": 0.3,
-        "fall_thump_acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
+        "fall_thump_acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
         "fall_thump_out_speed": 1000,
     }
 
@@ -553,6 +553,12 @@ class Werwolf(Enemy):
             "ready_time": 1,
             "run_speed_scale": 1.5,
             "run_frame_scale": 1.5,
+            "freeze_time": 1,
+            "cast_speed": 2000,
+            "friction": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
+            "crick_time": 1,
+            "damage_a": 25,
+            "damage_b": 35,
         },
     }
 
@@ -603,7 +609,7 @@ class Robot(Enemy):
         "bomb_trigger_times": [0.2, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.7, 0.8],
         #"bomb_trigger_times": [0.2, ],
         "bomb_thump_crick_time": 0.3,
-        "bomb_thump_acceleration": -Physics.SPRITE_FLOOR_FRICION_ACCELERATION,
+        "bomb_thump_acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
         "bomb_thump_out_speed": 1000,
     }
 
