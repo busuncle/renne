@@ -550,6 +550,7 @@ class Werwolf(Enemy):
         "frozen_time": 5,
         "action_rate_scale": 0.5,
         "catch": {
+            "chance_range": 500,
             "ready_time": 1,
             "run_speed_scale": 1.5,
             "run_frame_scale": 1.5,
@@ -1395,9 +1396,6 @@ for i, cls in enumerate(STATIC_OBJECT_SETTING_LIST):
 SPRITE_SETTING_MAPPING = dict((cls.ID, cls) for cls in SPRITE_SETTING_LIST)
 STATIC_OBJECT_SETTING_MAPPING = dict((cls.ID, cls) for cls in STATIC_OBJECT_SETTING_LIST)
 
-
-#SPRITES_WITH_MAGIC_SKILL = (Renne.ID, LeonHardt.ID, Robot.ID, GanDie.ID)
-SPRITES_WITH_AMMO = (SkeletonArcher.ID, )
 
 
 ########### resource mapping ###########
