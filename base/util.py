@@ -273,6 +273,16 @@ class LineSegment(object):
         # point_a and point_b should be tuple type
         self.a = point_a
         self.b = point_b
+        self.aabb = self.cal_aabb(point_a, point_b)
+
+
+    def cal_aabb(self, point_a, point_b):
+        x = min(point_a[0], point_b[0])
+        y = min(point_a[1], point_b[1])
+        w = abs(point_a[0] - point_b[0])
+        h = abs(point_a[1] - point_b[1])
+        return pygame.Rect((x, y, w, h))
+
 
     def __str__(self):
         return "(%s, %s)" % (str(self.a), str(self.b))
@@ -349,6 +359,9 @@ def line_segment_intersect(line_a, line_b):
 def line_segment_intersect_with_rect(line_seg, rect):
     # check whether a line intersect with any side of a rect
     # line is a LineSegment object, rect is a Rect object
+
+    if not line_seg.aabb.colliderect(rect):
+        return False
 
     for a, b in ((rect.topleft, rect.topright), (rect.topleft, rect.bottomleft),
         (rect.bottomleft, rect.bottomright), (rect.topright, rect.bottomright)):
