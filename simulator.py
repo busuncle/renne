@@ -1747,6 +1747,7 @@ class WerwolfAttacker(EnemyShortAttacker):
     def __init__(self, sprite, attacker_params):
         super(WerwolfAttacker, self).__init__(sprite, attacker_params)
         catch = attacker_params["catch"]
+        self.chance_range = catch["chance_range"]
         self.ready_time = catch["ready_time"]
         self.run_speed_scale = catch["run_speed_scale"]
         self.run_frame_scale = catch["run_frame_scale"]
