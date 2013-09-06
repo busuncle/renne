@@ -349,12 +349,11 @@ def line_segment_intersect(line_a, line_b):
 def line_segment_intersect_with_rect(line_seg, rect):
     # check whether a line intersect with any side of a rect
     # line is a LineSegment object, rect is a Rect object
-    v_lines = map(lambda seg:LineSegment(*seg),
-        [(rect.topleft, rect.topright), (rect.topleft, rect.bottomleft), 
-        (rect.bottomleft, rect.bottomright), (rect.topright, rect.bottomright)])
 
-    for v in v_lines:
-        if line_segment_intersect(line_seg, v):
+    for a, b in ((rect.topleft, rect.topright), (rect.topleft, rect.bottomleft),
+        (rect.bottomleft, rect.bottomright), (rect.topright, rect.bottomright)):
+        rect_side = LineSegment(a, b)
+        if line_segment_intersect(line_seg, rect_side):
             return True
 
     return False

@@ -554,12 +554,15 @@ class Werwolf(Enemy):
             "ready_time": 1,
             "run_speed_scale": 1.5,
             "run_frame_scale": 1.5,
-            "freeze_time": 1,
+            "hold_time_a": 1,
+            "hold_time_b": 1,
             "cast_speed": 2000,
             "friction": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
             "crick_time": 1,
             "damage_a": 25,
             "damage_b": 35,
+            "key_frame_a": 3,
+            "key_frame_b": 0,
         },
     }
 

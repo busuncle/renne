@@ -1751,7 +1751,8 @@ class WerwolfAttacker(EnemyShortAttacker):
         self.ready_time = catch["ready_time"]
         self.run_speed_scale = catch["run_speed_scale"]
         self.run_frame_scale = catch["run_frame_scale"]
-        self.freeze_time = catch["freeze_time"]
+        self.hold_time_a = catch["hold_time_a"]
+        self.hold_time_b = catch["hold_time_b"]
         self.cast_speed = catch["cast_speed"]
         self.friction = catch["friction"]
         self.crick_time = catch["crick_time"]
@@ -1763,7 +1764,8 @@ class WerwolfAttacker(EnemyShortAttacker):
     def reset_vars(self):
         self.method = None
         self.ready_time_add = 0
-        self.freeze_time_add = 0
+        self.hold_time_a_add = 0
+        self.hold_time_b_add = 0
 
 
     def catch_chance(self, target):
