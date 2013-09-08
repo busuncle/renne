@@ -1191,7 +1191,6 @@ class Werwolf(Enemy):
                 target.frame_action = cfg.SpriteAction.UNDER_THUMP
                 target.direction = (self.direction + 4) % cfg.Direction.TOTAL
                 ak.catch_run_a(target)
-                print "hit"
                 ak.speed == 0
 
             if ak.speed == 0:
