@@ -869,80 +869,68 @@ class StoneWall7_1(object):
 
 
 
-class RoastChicken(object):
+class Food(object):
+    IS_BLOCK = False
+    IS_VIEW_BLOCK = False
+    IS_ELIMINABLE = True
+    ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
+
+
+
+class RoastChicken(Food):
     NAME = "RoastChicken"
     IMAGE_KEY = "food"
     IMAGE_RECT = (192, 192, 64, 64)
     POS_RECT_DELTA_Y = 8
     AREA_RECT = (0, 0, 32, 32)
-    IS_BLOCK = False
-    IS_VIEW_BLOCK = False
-    IS_ELIMINABLE = True
-    ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
     RECOVER_HP = 100
     SHADOW_INDEX = 3
     SHADOW_RECT_DELTA_Y = 12
 
 
 
-class Omelette(object):
+class Omelette(Food):
     NAME = "Omelette"
     IMAGE_KEY = "food"
     IMAGE_RECT = (192, 128, 64, 64)
     POS_RECT_DELTA_Y = 8
     AREA_RECT = (0, 0, 32, 32)
-    IS_BLOCK = False
-    IS_VIEW_BLOCK = False
-    IS_ELIMINABLE = True
-    ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
     RECOVER_HP = 100
     SHADOW_INDEX = 3
     SHADOW_RECT_DELTA_Y = 12
 
 
 
-class BreadBasket(object):
+class BreadBasket(Food):
     NAME = "BreadBasket"
     IMAGE_KEY = "food"
     IMAGE_RECT = (64, 128, 64, 64)
     POS_RECT_DELTA_Y = 16
     AREA_RECT = (0, 0, 32, 32)
-    IS_BLOCK = False
-    IS_VIEW_BLOCK = False
-    IS_ELIMINABLE = True
-    ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
     RECOVER_HP = 100
     SHADOW_INDEX = 3
     SHADOW_RECT_DELTA_Y = 12
 
 
 
-class Salad(object):
+class Salad(Food):
     NAME = "Salad"
     IMAGE_KEY = "food"
     IMAGE_RECT = (192, 64, 64, 64)
     POS_RECT_DELTA_Y = 16
     AREA_RECT = (0, 0, 32, 32)
-    IS_BLOCK = False
-    IS_VIEW_BLOCK = False
-    IS_ELIMINABLE = True
-    ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
     RECOVER_HP = 100
     SHADOW_INDEX = 3
     SHADOW_RECT_DELTA_Y = 12
 
 
 
-class Wine(object):
+class Wine(Food):
     NAME = "Wine"
     IMAGE_KEY = "food"
     IMAGE_RECT = (0, 160, 32, 64)
     POS_RECT_DELTA_Y = 24
     AREA_RECT = (0, 0, 16, 16)
-    IS_BLOCK = False
-    IS_VIEW_BLOCK = False
-    IS_ELIMINABLE = True
-    ELIMINATION_TYPE = cfg.StaticObject.ELIMINATION_TYPE_FOOD
     RECOVER_HP = 50
     SHADOW_INDEX = 0
     SHADOW_RECT_DELTA_Y = 16
@@ -950,7 +938,6 @@ class Wine(object):
 
 
 class WayPoint(object):
-    DIR = os.path.join("etc", "waypoints")
     STEP_WIDTH = 24
     BOUNDING_BOX_RECT = (0, 0, 48, 48)
 
