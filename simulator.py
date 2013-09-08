@@ -1154,10 +1154,10 @@ class EnemyShortAttacker(EnemyAngleAttacker):
         return False
 
 
-    def run(self, hero, current_frame_add):
-        if self.hit(hero, current_frame_add):
-            damage = max(0, self.sprite.atk - hero.dfs)
-            hero.attacker.handle_under_attack(self.sprite, damage)
+    def run(self, target, current_frame_add):
+        if self.hit(target, current_frame_add):
+            damage = max(0, self.sprite.atk - target.dfs)
+            target.attacker.handle_under_attack(self.sprite, damage)
             return True
         return False
         
@@ -1213,18 +1213,18 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
         return False
 
 
-    def spit_poison(self, hero):
+    def spit_poison(self, target):
         sp = self.sprite
         if self.current_magic is None:
-            self.current_magic = PoisonSet(sp, [hero, ], sp.static_objects, self.spit_poison_params)
+            self.current_magic = PoisonSet(sp, [target, ], sp.static_objects, self.spit_poison_params)
             self.magic_list.append(self.current_magic)
 
 
-    def run(self, hero, current_frame_add):
-        hit_it = super(EnemyPoisonShortAttacker, self).run(hero, current_frame_add)
+    def run(self, target, current_frame_add):
+        hit_it = super(EnemyPoisonShortAttacker, self).run(target, current_frame_add)
         # add additional poison damage
         if hit_it and happen(self.poison_prob):
-            hero.attacker.handle_additional_status(cfg.SpriteStatus.POISON, 
+            target.attacker.handle_additional_status(cfg.SpriteStatus.POISON, 
                 {"dps": self.poison_dps, "time_list": range(self.poison_time), 
                 "time_left": self.poison_time})
             words = sfg.Font.ARIAL_BLACK_24.render("Poison!", True, pygame.Color("green"))
@@ -1268,11 +1268,11 @@ class GhostAttacker(EnemyShortAttacker):
         return False
 
 
-    def run(self, hero, current_frame_add):
-        hit_it = super(GhostAttacker, self).run(hero, current_frame_add)
+    def run(self, target, current_frame_add):
+        hit_it = super(GhostAttacker, self).run(target, current_frame_add)
         if hit_it and happen(self.leak_prob):
-            hero.mp = max(0, hero.mp - self.leak_mp)
-            hero.sp = max(0, hero.sp - self.leak_sp)
+            target.mp = max(0, target.mp - self.leak_mp)
+            target.sp = max(0, target.sp - self.leak_sp)
             words = sfg.Font.ARIAL_BLACK_24.render("Leak!", True, pygame.Color("black"))
             sp = self.sprite
             sp.animation.show_words(words, 0.3, 
@@ -1295,7 +1295,7 @@ class GhostAttacker(EnemyShortAttacker):
 
 
 class EnemyThumpShortAttacker(EnemyShortAttacker):
-    # thump hero, make her back a distance
+    # thump target, make it back a distance
     def __init__(self, sprite, attacker_params):
         super(EnemyThumpShortAttacker, self).__init__(sprite, attacker_params)
         self.thump_crick_time = attacker_params["thump_crick_time"]
@@ -1345,25 +1345,25 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
         return False
 
 
-    def run(self, hero, current_frame_add):
+    def run(self, target, current_frame_add):
         sp = self.sprite
-        if self.hit(hero, current_frame_add):
+        if self.hit(target, current_frame_add):
             atk = sp.atk
             if self.method == "thump":
-                # thump results in a double attack and hero-fallback
+                # thump results in a double attack and fallback
                 atk *= 2
                 words = sfg.Font.ARIAL_BLACK_24.render("Thump!", True, pygame.Color("gold"))
                 sp.animation.show_words(words, 0.3, 
                     (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
-                if hero.status.get(cfg.SpriteStatus.UNDER_THUMP) is None:
-                    hero.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                if target.status.get(cfg.SpriteStatus.UNDER_THUMP) is None:
+                    target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
                         {"crick_time": self.thump_crick_time, 
                         "out_speed": self.thump_out_speed, 
                         "acceleration": self.thump_acceleration,
-                        "key_vec": Vector2.from_points(sp.pos, hero.pos)})
+                        "key_vec": Vector2.from_points(sp.pos, target.pos)})
 
-            damage = max(0, atk - hero.dfs)
-            hero.attacker.handle_under_attack(sp, damage)
+            damage = max(0, atk - target.dfs)
+            target.attacker.handle_under_attack(sp, damage)
             return True
 
         return False
@@ -1382,8 +1382,8 @@ class EnemyBloodShortAttacker(EnemyShortAttacker):
         self.suck_blood_ratio = attacker_params["suck_blood_ratio"]
 
 
-    def run(self, hero, current_frame_add):
-        hit_it = super(EnemyBloodShortAttacker, self).run(hero, current_frame_add)
+    def run(self, target, current_frame_add):
+        hit_it = super(EnemyBloodShortAttacker, self).run(target, current_frame_add)
         if hit_it:
             sp = self.sprite
             sp.hp = min(sp.hp + self.suck_blood_ratio * sp.setting.ATK, sp.setting.HP)
@@ -1435,13 +1435,13 @@ class TwoHeadSkeletonAttacker(EnemyShortAttacker):
         return False
 
 
-    def fall_hit(self, hero):
-        if hero in self.has_hits:
+    def fall_hit(self, target):
+        if target in self.has_hits:
             return False
 
         sp = self.sprite
-        if sp.area.colliderect(hero.area):
-            self.has_hits.add(hero)
+        if sp.area.colliderect(target.area):
+            self.has_hits.add(target)
             return True
 
         return False
@@ -1460,17 +1460,17 @@ class TwoHeadSkeletonAttacker(EnemyShortAttacker):
         return False
 
 
-    def run(self, hero, current_frame_add):
+    def run(self, target, current_frame_add):
         if self.method == "regular":
-            return super(TwoHeadSkeletonAttacker, self).run(hero, current_frame_add)
+            return super(TwoHeadSkeletonAttacker, self).run(target, current_frame_add)
         elif self.method == "fall":
-            if self.fall_hit(hero):
+            if self.fall_hit(target):
                 sp = self.sprite
-                hero.attacker.handle_under_attack(sp, self.fall_damage)
-                hero.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP, 
+                target.attacker.handle_under_attack(sp, self.fall_damage)
+                target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP, 
                     {"crick_time": self.fall_thump_crick_time, "out_speed": self.fall_thump_out_speed,
                     "acceleration": self.fall_thump_acceleration, 
-                    "key_vec": Vector2.from_points(sp.pos, hero.pos)})
+                    "key_vec": Vector2.from_points(sp.pos, target.pos)})
                 return True
 
         return False
@@ -1491,10 +1491,10 @@ class EnemyFrozenShortAttacker(EnemyShortAttacker):
         self.action_rate_scale = attacker_params["action_rate_scale"]
 
 
-    def run(self, hero, current_frame_add):
-        hit_it = super(EnemyFrozenShortAttacker, self).run(hero, current_frame_add)
+    def run(self, target, current_frame_add):
+        hit_it = super(EnemyFrozenShortAttacker, self).run(target, current_frame_add)
         if hit_it and happen(self.frozen_prob):
-            hero.attacker.handle_additional_status(cfg.SpriteStatus.FROZEN, 
+            target.attacker.handle_additional_status(cfg.SpriteStatus.FROZEN, 
                 {"time_left": self.frozen_time, "action_rate_scale": self.action_rate_scale})
             words = sfg.Font.ARIAL_BLACK_24.render("Frozen!", True, pygame.Color("cyan"))
             sp = self.sprite
@@ -1505,7 +1505,7 @@ class EnemyFrozenShortAttacker(EnemyShortAttacker):
 
 
 class EnemyWeakShortAttacker(EnemyShortAttacker):
-    # give hero weak status
+    # give target weak status
     def __init__(self, sprite, attacker_params):
         super(EnemyWeakShortAttacker, self).__init__(sprite, attacker_params)
         self.weak_prob = attacker_params["weak_prob"]
@@ -1514,13 +1514,13 @@ class EnemyWeakShortAttacker(EnemyShortAttacker):
         self.weak_dfs = attacker_params["weak_dfs"]
     
 
-    def run(self, hero, current_frame_add):
-        hit_it = super(EnemyWeakShortAttacker, self).run(hero, current_frame_add)
+    def run(self, target, current_frame_add):
+        hit_it = super(EnemyWeakShortAttacker, self).run(target, current_frame_add)
         if hit_it and happen(self.weak_prob):
-            hero.attacker.handle_additional_status(cfg.SpriteStatus.WEAK, 
+            target.attacker.handle_additional_status(cfg.SpriteStatus.WEAK, 
                 {"time_left": self.weak_time, "y": 0})
-            hero.atk = max(0, hero.atk - self.weak_atk)
-            hero.dfs = max(0, hero.dfs - self.weak_dfs)
+            target.atk = max(0, target.atk - self.weak_atk)
+            target.dfs = max(0, target.dfs - self.weak_dfs)
             words = sfg.Font.ARIAL_BLACK_24.render("Weak!", True, pygame.Color("gray"))
             sp = self.sprite
             sp.animation.show_words(words, 0.3, 
@@ -1530,11 +1530,11 @@ class EnemyWeakShortAttacker(EnemyShortAttacker):
 
 
 class EnemyImpaleShortAttacker(EnemyShortAttacker):
-    def run(self, hero, current_frame_add):
-        if self.hit(hero, current_frame_add):
-            # regardless of hero's dfs
+    def run(self, target, current_frame_add):
+        if self.hit(target, current_frame_add):
+            # regardless of target's dfs
             damage = self.sprite.atk
-            hero.attacker.handle_under_attack(self.sprite, damage)
+            target.attacker.handle_under_attack(self.sprite, damage)
             return True
         return False
 
@@ -1591,8 +1591,8 @@ class EnemySelfDestructionAttacker(EnemyShortAttacker):
         return False
 
 
-    def set_self_destruction(self, hero):
-        self_destruction = SelfDestruction(self.sprite, [hero, ], self.bomb_damage, self.bomb_trigger_times, 
+    def set_self_destruction(self, target):
+        self_destruction = SelfDestruction(self.sprite, [target, ], self.bomb_damage, self.bomb_trigger_times, 
             self.bomb_thump_crick_time, self.bomb_thump_acceleration, self.bomb_thump_out_speed)
         self.magic_list.append(self_destruction)
         self.bomb_begin = True
@@ -1629,10 +1629,10 @@ class EnemyLongAttacker(EnemyAngleAttacker):
         return False
 
 
-    def run(self, hero, current_frame_add):
-        if self.hit(hero, current_frame_add):
-            damage = max(0, self.sprite.atk - hero.dfs)
-            hero.attacker.handle_under_attack(self.sprite, damage)
+    def run(self, target, current_frame_add):
+        if self.hit(target, current_frame_add):
+            damage = max(0, self.sprite.atk - target.dfs)
+            target.attacker.handle_under_attack(self.sprite, damage)
             return True
         return False
 
@@ -1730,10 +1730,10 @@ class ArmouredShooterAttacker(EnemyLongAttacker):
         return True
 
 
-    def grenade(self, hero, current_frame_add):
+    def grenade(self, target, current_frame_add):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.grenade_params["key_frames"]:
-            self.current_magic = Grenade(sp, [hero, ], self.grenade_params)
+            self.current_magic = Grenade(sp, [target, ], self.grenade_params)
             self.magic_list.append(self.current_magic)
 
 
@@ -1749,15 +1749,19 @@ class WerwolfAttacker(EnemyShortAttacker):
         catch = attacker_params["catch"]
         self.chance_range = catch["chance_range"]
         self.ready_time = catch["ready_time"]
-        self.run_speed_scale = catch["run_speed_scale"]
-        self.run_frame_scale = catch["run_frame_scale"]
+        self.run_speed = self.sprite.setting.WALK_SPEED * catch["run_speed_scale"]
+        self.run_frame_rate = self.sprite.animation.frame_rates[cfg.EnemyAction.WALK] * catch["run_frame_scale"]
         self.hold_time_a = catch["hold_time_a"]
         self.hold_time_b = catch["hold_time_b"]
-        self.cast_speed = catch["cast_speed"]
         self.friction = catch["friction"]
         self.crick_time = catch["crick_time"]
         self.damage_a = catch["damage_a"]
         self.damage_b = catch["damage_b"]
+        self.key_frame_a = catch["key_frame_a"]
+        self.key_frame_b = catch["key_frame_b"]
+        self.thump_out_speed = catch["thump_out_speed"]
+        self.thump_crick_time = catch["thump_crick_time"]
+        self.thump_acceleration = catch["thump_acceleration"]
         self.reset_vars()
 
 
@@ -1766,14 +1770,56 @@ class WerwolfAttacker(EnemyShortAttacker):
         self.ready_time_add = 0
         self.hold_time_a_add = 0
         self.hold_time_b_add = 0
+        self.speed = self.run_speed
 
 
     def catch_chance(self, target):
         sp = self.sprite
+        line_seg = LineSegment(sp.pos, target.pos)
+        for obj in sp.static_objects:
+            if obj.setting.IS_BLOCK and line_segment_intersect_with_rect(line_seg, obj.area):
+                return False
+
+        return True
 
 
     def chance(self, target):
         sp = self.sprite
+        if happen(sp.brain.ai.ATTACK_CATCH_PROB) and self.catch_chance(target):
+            self.target_pos = target.pos.copy()
+            self.key_vec = Vector2.from_points(sp.pos, self.target_pos)
+            self.method = "catch"
+            return True
+
+        if super(WerwolfAttacker, self).chance(target):
+            self.method = "regular"
+            return True
+
+        return False
+
+
+    def catch_hit(self, target):
+        if target in self.has_hits:
+            return False
+
+        if self.sprite.area.collidepoint(target.pos.x, target.pos.y):
+            self.has_hits.add(target)
+            return True
+
+        return False
+
+
+    def catch_run_a(self, target):
+        target.attacker.handle_under_attack(self.sprite, self.damage_a)
+
+
+    def catch_run_b(self, target):
+        sp = self.sprite
+        target.attacker.handle_under_attack(sp, self.damage_b)
+        target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+            {"crick_time": self.thump_crick_time, "out_speed": self.thump_out_speed,
+            "acceleration": self.thump_acceleration, 
+            "key_vec": -self.key_vec})
 
 
     def finish(self):
@@ -1799,7 +1845,7 @@ class LeonhardtAttacker(EnemyAngleAttacker):
 
     def chance(self, target):
         # totally for ai, because player can judge whether it's a good attack chance himself
-        # at the same time, choose which method to attack hero
+        # at the same time, choose which method to attack target
         sp = self.sprite
         distance_to_target = sp.pos.get_distance_to(target.pos)
         if happen(sp.brain.ai.ATTACK_REGULAR_PROB) \
@@ -1839,10 +1885,10 @@ class LeonhardtAttacker(EnemyAngleAttacker):
             self.magic_list.append(self.current_magic)
 
 
-    def run(self, hero, current_frame_add):
-        if self.hit(hero, current_frame_add):
-            damage = max(0, self.sprite.atk - hero.dfs)
-            hero.attacker.handle_under_attack(self.sprite, damage)
+    def run(self, target, current_frame_add):
+        if self.hit(target, current_frame_add):
+            damage = max(0, self.sprite.atk - target.dfs)
+            target.attacker.handle_under_attack(self.sprite, damage)
             return True
         return False
 
@@ -1900,7 +1946,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.GanDie.ID: EnemyPoisonShortAttacker,
     sfg.Ghost.ID: GhostAttacker,
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeletonAttacker,
-    sfg.Werwolf.ID: EnemyFrozenShortAttacker,
+    sfg.Werwolf.ID: WerwolfAttacker,
     sfg.SilverTentacle.ID: EnemyImpaleShortAttacker,
     sfg.Robot.ID: EnemySelfDestructionAttacker,
 }

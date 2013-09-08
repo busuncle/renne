@@ -442,6 +442,9 @@ class Renne(GameSprite):
             # painted egg, return directly
             return True
 
+        if self.action == cfg.SpriteAction.UNCONTROLLED:
+            return True
+
         if cfg.SpriteStatus.CRICK in self.status \
             or cfg.SpriteStatus.UNDER_THUMP in self.status:
             return True
@@ -1176,11 +1179,53 @@ class Werwolf(Enemy):
 
     def catch(self, passed_seconds):
         ak = self.attacker
+        target = self.brain.target
         if ak.ready_time_add < ak.ready_time:
             ak.ready_time_add += passed_seconds
             self.frame_action = cfg.EnemyAction.UNDER_THUMP
             self.animation.run_circle_frame(cfg.EnemyAction.UNDER_THUMP, passed_seconds) 
 
+        elif ak.hold_time_a_add < ak.hold_time_a:
+            if ak.catch_hit(target):
+                target.action = cfg.SpriteAction.UNCONTROLLED
+                target.frame_action = cfg.SpriteAction.UNDER_THUMP
+                target.direction = (self.direction + 4) % cfg.Direction.TOTAL
+                ak.catch_run_a(target)
+                print "hit"
+                ak.speed == 0
+
+            if ak.speed == 0:
+                if len(ak.has_hits) == 0:
+                    # no one hit, reset action
+                    self.reset_action(force=True)
+                else:
+                    ak.hold_time_a_add += passed_seconds
+                    if ak.hold_time_a_add >= ak.hold_time_a:
+                        # give a thump!
+                        ak.catch_run_b(target)
+                        target.direction = (target.direction + 4) % cfg.Direction.TOTAL
+            else:
+                distance_to_origin_target = self.pos.get_distance_to(ak.target_pos)
+                if distance_to_origin_target < ak.attack_range:
+                    self.frame_action = cfg.EnemyAction.ATTACK
+                    self.animation.set_frame_add(cfg.EnemyAction.ATTACK, ak.key_frame_a)
+                    ak.speed = max(ak.speed + ak.friction * passed_seconds, 0)
+                    if ak.speed > 0:
+                        self.move(ak.speed, passed_seconds, check_reachable=True, key_vec=ak.key_vec)
+                else:
+                    self.frame_action = cfg.EnemyAction.WALK
+                    self.animation.run_circle_frame(cfg.EnemyAction.WALK, passed_seconds, ak.run_frame_rate)
+                    self.move(ak.speed, passed_seconds, check_reachable=True, key_vec=ak.key_vec)
+                    if self.brain.interrupt:
+                        self.reset_action(force=True)
+
+        elif ak.hold_time_b_add < ak.hold_time_b:
+            ak.hold_time_b_add += passed_seconds
+            self.frame_action = cfg.EnemyAction.ATTACK
+            self.animation.set_frame_add(cfg.EnemyAction.ATTACK, ak.key_frame_b)
+
+        else:
+            self.reset_action(force=True)
 
 
     def attack(self, passed_seconds):
@@ -1290,7 +1335,7 @@ ENEMY_CLASS_MAPPING = {
     sfg.GanDie.ID: GanDie,
     sfg.Ghost.ID: Ghost,
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeleton,
-    sfg.Werwolf.ID: Enemy,
+    sfg.Werwolf.ID: Werwolf,
     sfg.SilverTentacle.ID: Enemy,
     sfg.Robot.ID: Robot,
 }
