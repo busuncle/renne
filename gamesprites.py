@@ -1187,11 +1187,13 @@ class Werwolf(Enemy):
 
         elif ak.hold_time_a_add < ak.hold_time_a:
             if ak.catch_hit(target):
+                self.frame_action = cfg.EnemyAction.ATTACK
+                self.animation.set_frame_add(cfg.EnemyAction.ATTACK, ak.key_frame_a)
                 target.action = cfg.SpriteAction.UNCONTROLLED
                 target.frame_action = cfg.SpriteAction.UNDER_THUMP
                 target.direction = (self.direction + 4) % cfg.Direction.TOTAL
                 ak.catch_run_a(target)
-                ak.speed == 0
+                ak.speed = 0
 
             if ak.speed == 0:
                 if len(ak.has_hits) == 0:
