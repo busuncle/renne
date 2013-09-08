@@ -1212,11 +1212,11 @@ class Werwolf(Enemy):
                     self.animation.set_frame_add(cfg.EnemyAction.ATTACK, ak.key_frame_a)
                     ak.speed = max(ak.speed + ak.friction * passed_seconds, 0)
                     if ak.speed > 0:
-                        self.move(ak.speed, passed_seconds, check_reachable=True, key_vec=ak.key_vec)
+                        self.move(ak.speed, passed_seconds, check_reachable=False, key_vec=ak.key_vec)
                 else:
                     self.frame_action = cfg.EnemyAction.WALK
                     self.animation.run_circle_frame(cfg.EnemyAction.WALK, passed_seconds, ak.run_frame_rate)
-                    self.move(ak.speed, passed_seconds, check_reachable=True, key_vec=ak.key_vec)
+                    self.move(ak.speed, passed_seconds, check_reachable=False, key_vec=ak.key_vec)
                     if self.brain.interrupt:
                         self.reset_action(force=True)
 

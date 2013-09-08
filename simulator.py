@@ -1775,10 +1775,12 @@ class WerwolfAttacker(EnemyShortAttacker):
 
     def catch_chance(self, target):
         sp = self.sprite
-        line_seg = LineSegment(sp.pos, target.pos)
-        for obj in sp.static_objects:
-            if obj.setting.IS_BLOCK and line_segment_intersect_with_rect(line_seg, obj.area):
-                return False
+        r = target.area
+        for p in ("topleft", "topright", "bottomleft", "bottomright"):
+            line_seg = LineSegment(getattr(sp.area, p), getattr(target.area, p))
+            for obj in sp.static_objects:
+                if obj.setting.IS_BLOCK and line_segment_intersect_with_rect(line_seg, obj.area):
+                    return False
 
         return True
 

@@ -563,7 +563,7 @@ class Werwolf(Enemy):
             "key_frame_a": 4,
             "key_frame_b": 2,
             "thump_out_speed": 1500,
-            "thump_crick_time": 0.4,
+            "thump_crick_time": 0.5,
             "thump_acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
         },
     }
