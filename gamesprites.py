@@ -145,6 +145,17 @@ class GameSprite(pygame.sprite.DirtySprite):
                 self.action = self.status[cfg.SpriteStatus.CRICK]["old_action"]
                 self.status.pop(cfg.SpriteStatus.CRICK)
 
+        if self.status.get(cfg.SpriteStatus.UNDER_THUMP) is not None:
+            self.action = cfg.SpriteStatus.UNDER_THUMP
+            # friction is an negative acceleration variable
+            friction = - sfg.Physics.FRICTION_FACTOR * self.setting.WEIGHT
+            self.status[cfg.SpriteStatus.UNDER_THUMP]["out_speed"] = max(0, 
+                self.status[cfg.SpriteStatus.UNDER_THUMP]["out_speed"] + friction * passed_seconds)
+            self.status[cfg.SpriteStatus.UNDER_THUMP]["crick_time"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.UNDER_THUMP]["crick_time"] <= 0:
+                self.reset_action()
+                self.status.pop(cfg.SpriteStatus.UNDER_THUMP)
+
 
     def update(self, passed_seconds):
         pass
@@ -546,18 +557,6 @@ class Renne(GameSprite):
         self.animation.run_circle_frame(cfg.HeroAction.UNDER_THUMP, passed_seconds)
 
 
-    def update_status(self, passed_seconds):
-        super(Renne, self).update_status(passed_seconds)
-        if self.status.get(cfg.SpriteStatus.UNDER_THUMP) is not None:
-            self.action = cfg.HeroAction.UNDER_THUMP
-            self.status[cfg.SpriteStatus.UNDER_THUMP]["out_speed"] = max(0, self.status[cfg.SpriteStatus.UNDER_THUMP]["out_speed"] \
-                + self.status[cfg.SpriteStatus.UNDER_THUMP]["acceleration"] * passed_seconds)
-            self.status[cfg.SpriteStatus.UNDER_THUMP]["crick_time"] -= passed_seconds
-            if self.status[cfg.SpriteStatus.UNDER_THUMP]["crick_time"] <= 0:
-                self.reset_action()
-                self.status.pop(cfg.SpriteStatus.UNDER_THUMP)
-
-
     def update(self, passed_seconds, external_event=None):
         if external_event is not None:
             if external_event == cfg.GameStatus.PAUSE:
@@ -718,7 +717,7 @@ class Enemy(GameSprite):
         self.animation.run_circle_frame(cfg.EnemyAction.UNDER_THUMP, passed_seconds) 
 
 
-    def reset_action(self, force=False):
+    def reset_action(self, force=True):
         if force:
             # reset all related things for enemy by force!
             self.brain.persistent = False
@@ -753,10 +752,10 @@ class Enemy(GameSprite):
             if external_event == cfg.GameStatus.INIT:
                 self.action = cfg.EnemyAction.STAND
             elif external_event == cfg.GameStatus.HERO_LOSE:
-                self.reset_action()
+                self.reset_action(force=False)
                 return
             elif external_event == cfg.GameStatus.ENTER_AMBUSH:
-                self.reset_action()
+                self.reset_action(force=False)
                 return
             elif external_event == cfg.GameStatus.PAUSE:
                 # do nothing
@@ -805,15 +804,6 @@ class Enemy(GameSprite):
 
     def update_status(self, passed_seconds):
         super(Enemy, self).update_status(passed_seconds)
-
-        if self.status.get(cfg.SpriteStatus.UNDER_THUMP) is not None:
-            self.action = cfg.EnemyAction.UNDER_THUMP
-            self.status[cfg.SpriteStatus.UNDER_THUMP]["out_speed"] = max(0, self.status[cfg.SpriteStatus.UNDER_THUMP]["out_speed"] \
-                + self.status[cfg.SpriteStatus.UNDER_THUMP]["acceleration"] * passed_seconds)
-            self.status[cfg.SpriteStatus.UNDER_THUMP]["crick_time"] -= passed_seconds
-            if self.status[cfg.SpriteStatus.UNDER_THUMP]["crick_time"] <= 0:
-                self.reset_action(force=True)
-                self.status.pop(cfg.SpriteStatus.UNDER_THUMP)
 
         if self.status.get(cfg.SpriteStatus.AMBUSH) is not None:
             if self.status[cfg.SpriteStatus.AMBUSH]["status"] == cfg.Ambush.STATUS_INIT:

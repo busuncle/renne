@@ -96,6 +96,7 @@ class Stuff(object):
 class Physics(object):
     # define all physics constants, it's only values, not included direction, add it if necessary
     SPRITE_FLOOR_FRICTION_ACCELERATION = 4500
+    FRICTION_FACTOR = 45
     GRAVITY_ACCELERATION = 1200
 
 
@@ -124,6 +125,7 @@ class Renne(object):
     # sprite radius
     RADIUS = 18 
     HEIGHT = 70
+    WEIGHT = 100
     # distance from coord to sprite foot
     POS_RECT_DELTA_Y = 40
 
@@ -238,6 +240,7 @@ class SkeletonWarrior(Enemy):
 
     RADIUS = 24
     HEIGHT = 80
+    WEIGHT = 100
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
@@ -260,6 +263,7 @@ class CastleWarrior(Enemy):
 
     RADIUS = 24
     HEIGHT = 82
+    WEIGHT = 110
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
@@ -292,6 +296,7 @@ class SkeletonArcher(Enemy):
 
     RADIUS = 24
     HEIGHT = 65
+    WEIGHT = 100
     POS_RECT_DELTA_Y = 35
     SHADOW_RECT_DELTA_Y = 55
     SHADOW_INDEX = 3
@@ -326,6 +331,7 @@ class LeonHardt(Enemy):
 
     RADIUS = 24
     HEIGHT = 80
+    WEIGHT = 100
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 2
@@ -375,6 +381,7 @@ class ArmouredShooter(Enemy):
 
     RADIUS = 24
     HEIGHT = 70
+    WEIGHT = 100
     POS_RECT_DELTA_Y = 35
     SHADOW_RECT_DELTA_Y = 55
     SHADOW_INDEX = 3
@@ -410,6 +417,7 @@ class SwordRobber(Enemy):
 
     RADIUS = 24
     HEIGHT = 75
+    WEIGHT = 100
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
@@ -436,6 +444,7 @@ class GanDie(Enemy):
 
     RADIUS = 24
     HEIGHT = 75
+    WEIGHT = 100
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
@@ -474,6 +483,7 @@ class Ghost(Enemy):
 
     RADIUS = 24
     HEIGHT = 90
+    WEIGHT = 95
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
@@ -503,6 +513,7 @@ class TwoHeadSkeleton(Enemy):
 
     RADIUS = 24
     HEIGHT = 120
+    WEIGHT = 120
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
@@ -537,6 +548,7 @@ class Werwolf(Enemy):
 
     RADIUS = 24
     HEIGHT = 85 
+    WEIGHT = 110
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
@@ -578,6 +590,7 @@ class SilverTentacle(Enemy):
 
     RADIUS = 24
     HEIGHT = 75
+    WEIGHT = 95
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
@@ -600,6 +613,7 @@ class Robot(Enemy):
 
     RADIUS = 24
     HEIGHT = 60
+    WEIGHT = 95
     POS_RECT_DELTA_Y = 40
     SHADOW_RECT_DELTA_Y = 60
     SHADOW_INDEX = 3
