@@ -1197,7 +1197,7 @@ class Werwolf(Enemy):
                         target.direction = (target.direction + 4) % cfg.Direction.TOTAL
             else:
                 distance_to_origin_target = self.pos.get_distance_to(ak.target_pos)
-                if distance_to_origin_target < ak.attack_range:
+                if ak.speed < ak.run_speed or distance_to_origin_target < ak.attack_range:
                     # change a pose and speed down
                     self.frame_action = cfg.EnemyAction.ATTACK
                     self.animation.set_frame_add(cfg.EnemyAction.ATTACK, ak.key_frame_a)
