@@ -555,7 +555,7 @@ class Werwolf(Enemy):
             "hold_time_a": 0.5,
             "hold_time_b": 0.5,
             "run_speed_scale": 2,
-            "run_frame_scale": 1.5,
+            "run_frame_scale": 2,
             "friction": -520,
             "crick_time": 1,
             "damage_a": 25,
