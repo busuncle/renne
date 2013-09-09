@@ -1208,11 +1208,12 @@ class Werwolf(Enemy):
             else:
                 distance_to_origin_target = self.pos.get_distance_to(ak.target_pos)
                 if distance_to_origin_target < ak.attack_range:
+                    # change a pose and speed down
                     self.frame_action = cfg.EnemyAction.ATTACK
                     self.animation.set_frame_add(cfg.EnemyAction.ATTACK, ak.key_frame_a)
                     ak.speed = max(ak.speed + ak.friction * passed_seconds, 0)
                     if ak.speed > 0:
-                        self.move(ak.speed, passed_seconds, check_reachable=False, key_vec=ak.key_vec)
+                        self.move(ak.speed, passed_seconds, check_reachable=True, key_vec=ak.key_vec)
                 else:
                     self.frame_action = cfg.EnemyAction.WALK
                     self.animation.run_circle_frame(cfg.EnemyAction.WALK, passed_seconds, ak.run_frame_rate)

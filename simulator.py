@@ -1747,7 +1747,7 @@ class WerwolfAttacker(EnemyShortAttacker):
     def __init__(self, sprite, attacker_params):
         super(WerwolfAttacker, self).__init__(sprite, attacker_params)
         catch = attacker_params["catch"]
-        self.chance_range = catch["chance_range"]
+        self.chance_range_min = catch["chance_range_min"]
         self.ready_time = catch["ready_time"]
         self.run_speed = self.sprite.setting.WALK_SPEED * catch["run_speed_scale"]
         self.run_frame_rate = self.sprite.animation.frame_rates[cfg.EnemyAction.WALK] * catch["run_frame_scale"]
@@ -1775,6 +1775,10 @@ class WerwolfAttacker(EnemyShortAttacker):
 
     def catch_chance(self, target):
         sp = self.sprite
+        distance_to_target = sp.pos.get_distance_to(target.pos)
+        if distance_to_target < self.chance_range_min:
+            return False
+
         r = target.area
         for p in ("topleft", "topright", "bottomleft", "bottomright"):
             line_seg = LineSegment(getattr(sp.area, p), getattr(target.area, p))

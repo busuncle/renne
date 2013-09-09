@@ -550,7 +550,7 @@ class Werwolf(Enemy):
         "frozen_time": 5,
         "action_rate_scale": 0.5,
         "catch": {
-            "chance_range": 500,
+            "chance_range_min": 200,
             "ready_time": 0.5,
             "hold_time_a": 0.5,
             "hold_time_b": 0.5,
