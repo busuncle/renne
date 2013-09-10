@@ -167,11 +167,10 @@ class Astar(object):
             close_list.add((cur_x, cur_y))
 
             if len(close_list) > self.MAX_SEARCHING_STEP:
-                # pruning, reaching the max search step, return the most likely path
+                # pruning, reaching the max search step, return None
                 # avoiding the exhaust of cpu
                 #print "impossible: %s" % len(close_list)
-                path = self.gen_path(cur_node)
-                return path
+                return None
 
             # using manhattan distance to judge whether reaching the target for a non-grid map
             # a value little equal than a reach_delta is regarded as reaching the target

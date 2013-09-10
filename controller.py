@@ -68,11 +68,11 @@ class Steerer(object):
             return
 
         self.is_ok = True
+        self.is_end = False
         self.coord_list = self.path_smoothing(coord_list)
         self.next_coord = self.coord_list.pop()
         self.cur_direct = cal_face_direct(self.sprite.pos.as_tuple(), self.next_coord)
         self.delta = 2
-        self.is_end = False
 
 
     def run(self):
@@ -343,7 +343,7 @@ class SpriteChase(State):
             #print "to attack"
             return cfg.SpriteState.OFFENCE
 
-        if happen(self.ai.CHASE_TO_DEFENCE_PROB):
+        if (not self.steerer.is_ok) or happen(self.ai.CHASE_TO_DEFENCE_PROB):
             return cfg.SpriteState.DEFENCE
 
         distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
