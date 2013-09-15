@@ -276,6 +276,7 @@ class CastleWarrior(Enemy):
         "thump_out_speed": 1000,
         "thump_acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
         "thump_pre_freeze_time": 1,
+        "thump_last_freeze_time": 0.8,
         "thump_pre_frames": (0, 1, 2),
         "thump_pre_rate": 8,
         "thump_frame": 4,
@@ -430,9 +431,15 @@ class SwordRobber(Enemy):
         "weak_time": 6,
         "weak_atk": 15,
         "weak_dfs": 5,
+        "whirlwind": {
+            "rotate_rate": 36,
+            "rotate_time": 3,
+            "move_speed": 160,
+            "offset_time": 0.3,
+        }
     }
 
-    WALK_SPEED = 165
+    WALK_SPEED = 120
 
 
 

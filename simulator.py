@@ -1302,6 +1302,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
         self.thump_out_speed = attacker_params["thump_out_speed"]
         self.thump_acceleration = attacker_params["thump_acceleration"]
         self.thump_pre_freeze_time = attacker_params["thump_pre_freeze_time"]
+        self.thump_last_freeze_time = attacker_params["thump_last_freeze_time"]
         self.thump_pre_frames = attacker_params["thump_pre_frames"]
         self.thump_pre_rate = attacker_params["thump_pre_rate"]
         self.thump_frame = attacker_params["thump_frame"]
@@ -1316,6 +1317,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
         self.method = None
         self.thump_slide_time_add = 0
         self.thump_pre_freeze_time_add = 0
+        self.thump_last_freeze_time_add = 0
 
 
     def thump_chance(self, target):
@@ -1526,6 +1528,74 @@ class EnemyWeakShortAttacker(EnemyShortAttacker):
             sp.animation.show_words(words, 0.3, 
                 (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
         return hit_it
+
+
+
+class SwordRobberAttacker(EnemyShortAttacker):
+    def __init__(self, sprite, attacker_params):
+        super(SwordRobberAttacker, self).__init__(sprite, attacker_params)
+        whirlwind = attacker_params["whirlwind"]
+        self.rotate_rate = whirlwind["rotate_rate"]
+        self.rotate_time = whirlwind["rotate_time"]
+        self.offset_time = whirlwind["offset_time"]
+        self.move_speed = whirlwind["move_speed"]
+        self.reset_vars()
+
+
+    def reset_vars(self):
+        self.offset_vec = Vector2(1, -1)
+        self.offset_time_add = 0
+        self.rotate_time_add = 0
+
+
+    def whirlwind_chance(self, target):
+        sp = self.sprite
+        x = min(sp.pos.x, target.pos.x)
+        y = min(sp.pos.y, target.pos.y)
+        w = abs(sp.pos.x - target.pos.x)
+        h = abs(sp.pos.y - target.pos.y)
+        r = pygame.Rect((x, y, w, h))
+        for obj in sp.static_objects:
+            if obj.setting.IS_BLOCK and obj.area.colliderect(r):
+                return False
+
+        return True
+
+
+    def chance(self, target):
+        sp = self.sprite
+        if happen(sp.brain.ai.ATTACK_WHIRLWIND_PROB) and self.whirlwind_chance(target):
+            self.target_pos = target.pos.copy()
+            v = Vector2.from_points(sp.pos, self.target_pos)
+            self.key_vec = (v + v * self.offset_vec).normalize()
+            self.direction_add = sp.direction
+            self.method = "whirlwind"
+            return True
+
+        if super(SwordRobber, self).chance(target):
+            self.method = "regular"
+            return True
+
+        return False
+
+
+    def whirlwind_hit(self, target):
+        if target in self.has_hits:
+            return False
+
+        if self.sprite.area.colliderect(target.area):
+            self.has_hits.add(target)
+            return True
+
+        return False
+
+    def whirlwind_run(self, target):
+        if self.whirlwind_hit(target):
+            target.attacker.handle_under_attack(self.sprite, self.sprite.atk)
+
+    def finish(self):
+        super(SwordRobberAttacker, self).finish()
+        self.reset_vars()
 
 
 
@@ -1948,7 +2018,7 @@ ENEMY_ATTACKER_MAPPING = {
     sfg.SkeletonArcher.ID: ArrowAttacker,
     sfg.LeonHardt.ID: LeonhardtAttacker,
     sfg.ArmouredShooter.ID: ArmouredShooterAttacker,
-    sfg.SwordRobber.ID: EnemyWeakShortAttacker,
+    sfg.SwordRobber.ID: SwordRobberAttacker,
     sfg.GanDie.ID: EnemyPoisonShortAttacker,
     sfg.Ghost.ID: GhostAttacker,
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeletonAttacker,

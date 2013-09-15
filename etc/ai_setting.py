@@ -125,7 +125,9 @@ class CastleWarriorAI(ShortNormalAI):
 
 class SwordRobberAI(ShortNormalAI):
     STAY_CHANGE_DIRECTION_PROB = 0.1
-    STAY_TO_PATROL_PROB = 0.05
+    STAY_TO_PATROL_PROB = 0.01
+
+    ATTACK_WHIRLWIND_PROB = 0.9
 
 
 

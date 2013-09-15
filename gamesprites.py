@@ -939,6 +939,10 @@ class CastleWarrior(Enemy):
             if hit_it:
                 self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
 
+        elif self.attacker.thump_last_freeze_time_add < self.attacker.thump_last_freeze_time:
+            # freeze for a short time
+            self.attacker.thump_last_freeze_time_add += passed_seconds
+
         else:
             self.animation.set_frame_add(cfg.EnemyAction.ATTACK, 0)
             self.attacker.finish()
@@ -1228,6 +1232,41 @@ class Werwolf(Enemy):
 
 
 
+class SwordRobber(Enemy):
+    def __init__(self, setting, pos, direction):
+        super(SwordRobber, self).__init__(setting, pos, direction)
+
+
+    def whirlwind(self, passed_seconds):
+        ak = self.attacker
+        target = self.brain.target
+        if ak.rotate_time_add < ak.rotate_time:
+            ak.rotate_time_add += passed_seconds
+            self.frame_action = cfg.EnemyAction.UNDER_THUMP
+            ak.direction_add = (ak.direction_add + ak.rotate_rate * passed_seconds) % cfg.Direction.TOTAL
+            self.direction = int(ak.direction_add)
+            self.move(ak.move_speed, passed_seconds, check_reachable=False, key_vec=ak.key_vec)
+            ak.offset_time_add += passed_seconds
+            if ak.offset_time_add > ak.offset_time:
+                # modify offset_vec, turn a direction
+                ak.offset_time_add = 0
+                ak.offset_vec = -ak.offset_vec
+                v = Vector2.from_points(self.pos, ak.target_pos)
+                ak.key_vec = (v + v * ak.offset_vec).normalize()
+            if self.brain.interrupt:
+                self.reset_action(force=True)
+            ak.whirlwind_run(target)
+        else:
+            self.reset_action(force=True)
+
+    
+    def attack(self, passed_seconds):
+        if self.attacker.method == "regular":
+            super(SwordRobber, self).attack(passed_seconds)
+        elif self.attacker.method == "whirlwind":
+            self.whirlwind(passed_seconds)
+
+
 ######## sprite group subclass ########
 class GameSpritesGroup(pygame.sprite.LayeredDirty):
     def __init__(self):
@@ -1322,8 +1361,7 @@ ENEMY_CLASS_MAPPING = {
     sfg.SkeletonArcher.ID: Enemy,
     sfg.LeonHardt.ID: Leonhardt,
     sfg.ArmouredShooter.ID: ArmouredShooter,
-    sfg.SwordRobber.ID: Enemy,
-    #sfg.GanDie.ID: Enemy,
+    sfg.SwordRobber.ID: SwordRobber,
     sfg.GanDie.ID: GanDie,
     sfg.Ghost.ID: Ghost,
     sfg.TwoHeadSkeleton.ID: TwoHeadSkeleton,
