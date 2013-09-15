@@ -1595,6 +1595,7 @@ class SwordRobberAttacker(EnemyShortAttacker):
         if self.whirlwind_hit(target):
             target.attacker.handle_under_attack(self.sprite, self.sprite.atk)
 
+
     def finish(self):
         super(SwordRobberAttacker, self).finish()
         self.reset_vars()

@@ -434,8 +434,8 @@ class SwordRobber(Enemy):
         "whirlwind": {
             "rotate_rate": 36,
             "rotate_time": 3,
-            "move_speed": 160,
-            "offset_time": 0.3,
+            "move_speed": 180,
+            "offset_time": 0.2,
             "self_stun_prob": 0.9,
             "self_stun_time": 3,
         }
