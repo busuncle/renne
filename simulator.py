@@ -1539,6 +1539,8 @@ class SwordRobberAttacker(EnemyShortAttacker):
         self.rotate_time = whirlwind["rotate_time"]
         self.offset_time = whirlwind["offset_time"]
         self.move_speed = whirlwind["move_speed"]
+        self.self_stun_prob = whirlwind["self_stun_prob"]
+        self.self_stun_time = whirlwind["self_stun_time"]
         self.reset_vars()
 
 
@@ -1572,7 +1574,7 @@ class SwordRobberAttacker(EnemyShortAttacker):
             self.method = "whirlwind"
             return True
 
-        if super(SwordRobber, self).chance(target):
+        if super(SwordRobberAttacker, self).chance(target):
             self.method = "regular"
             return True
 

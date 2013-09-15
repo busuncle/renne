@@ -1258,6 +1258,9 @@ class SwordRobber(Enemy):
             ak.whirlwind_run(target)
         else:
             self.reset_action(force=True)
+            if happen(ak.self_stun_prob):
+                ak.handle_additional_status(cfg.SpriteStatus.STUN, {"time": ak.self_stun_time})
+                self.set_emotion(cfg.SpriteEmotion.STUN)
 
     
     def attack(self, passed_seconds):

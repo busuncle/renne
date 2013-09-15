@@ -436,6 +436,8 @@ class SwordRobber(Enemy):
             "rotate_time": 3,
             "move_speed": 160,
             "offset_time": 0.3,
+            "self_stun_prob": 0.9,
+            "self_stun_time": 3,
         }
     }
 
