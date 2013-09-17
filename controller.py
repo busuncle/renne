@@ -210,8 +210,7 @@ class SpriteStay(State):
     def enter(self, last_state):
         self.enter_timer.begin(gauss(self.ai.STAY_TIME_MU, self.ai.STAY_TIME_SIGMA))
         # turn for a random direction if the last state is the same "stay"
-        if last_state and last_state.id == cfg.SpriteState.STAY \
-            and happen(self.ai.STAY_CHANGE_DIRECTION_PROB):
+        if last_state and last_state.id == cfg.SpriteState.STAY \ and happen(self.ai.STAY_CHANGE_DIRECTION_PROB):
             self.sprite.direction = choice(cfg.Direction.ALL)   # a random direction from "all"
 
         if happen(self.ai.EMOTION_SILENT_PROB):
@@ -412,13 +411,15 @@ class SpriteOffence(State):
 
 class SpriteDefence(State):
     def __init__(self, sprite, ai):
-       super(SpriteDefence, self).__init__(cfg.SpriteState.DEFENCE)
-       self.sprite = sprite
-       self.ai = ai
-       #self.action_to_do = cfg.EnemyAction.STAND
+        super(SpriteDefence, self).__init__(cfg.SpriteState.DEFENCE)
+        self.sprite = sprite
+        self.ai = ai
+        self.enter_timer = Timer()
+        #self.action_to_do = cfg.EnemyAction.STAND
 
 
     def enter(self, last_state):
+        self.enter_timer.begin(gauss(self.ai.DEFENCE_TIME_MU, self.ai.DEFENCE_TIME_SIGMA))
         sp = self.sprite
         sp.direction = cal_face_direct(sp.pos.as_tuple(), sp.brain.target.pos.as_tuple())
         #if sp.status["hp"] == cfg.HpStatus.DANGER and happen(self.ai.DEFENCE_BACKWARD_PROB):
@@ -434,22 +435,27 @@ class SpriteDefence(State):
 
     def check_conditions(self):
         sp = self.sprite
-        if happen(self.ai.DEFENCE_TO_OFFENCE_PROB) and sp.attacker.chance(sp.brain.target):
-            return cfg.SpriteState.OFFENCE
+        if self.enter_timer.exceed():
+            if happen(self.ai.DEFENCE_TO_OFFENCE_PROB) and sp.attacker.chance(sp.brain.target):
+                return cfg.SpriteState.OFFENCE
 
-        distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
-        if happen(self.ai.DEFENCE_TO_CHASE_PROB) and distance_to_target <= self.ai.CHASE_RANGE :
-            return cfg.SpriteState.CHASE
+            distance_to_target = sp.pos.get_distance_to(sp.brain.target.pos)
+            if happen(self.ai.DEFENCE_TO_CHASE_PROB) and distance_to_target <= self.ai.CHASE_RANGE :
+                return cfg.SpriteState.CHASE
 
-        if distance_to_target > self.ai.CHASE_RANGE:
-            sp.brain.target = None
-            return cfg.SpriteState.STAY
+            if distance_to_target > self.ai.CHASE_RANGE:
+                sp.brain.target = None
+                return cfg.SpriteState.STAY
 
-        return cfg.SpriteState.DEFENCE
+            return cfg.SpriteState.DEFENCE
+
+        else:
+            sp.direction = cal_face_direct(sp.pos.as_tuple(), sp.brain.target.pos.as_tuple())
 
 
     def exit(self):
-        pass
+        self.enter_timer.clear()
+
 
 
 

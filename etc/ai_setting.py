@@ -19,6 +19,8 @@ class AIBase(object):
     STAY_TIME_SIGMA = 0.1
     WALK_TIME_MU = 0.8
     WALK_TIME_SIGMA = 0.1
+    DEFENCE_TIME_MU = 3
+    DEFENCE_TIME_SIGMA = 1
 
 
 
