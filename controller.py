@@ -210,7 +210,8 @@ class SpriteStay(State):
     def enter(self, last_state):
         self.enter_timer.begin(gauss(self.ai.STAY_TIME_MU, self.ai.STAY_TIME_SIGMA))
         # turn for a random direction if the last state is the same "stay"
-        if last_state and last_state.id == cfg.SpriteState.STAY \ and happen(self.ai.STAY_CHANGE_DIRECTION_PROB):
+        if last_state and last_state.id == cfg.SpriteState.STAY \
+            and happen(self.ai.STAY_CHANGE_DIRECTION_PROB):
             self.sprite.direction = choice(cfg.Direction.ALL)   # a random direction from "all"
 
         if happen(self.ai.EMOTION_SILENT_PROB):
