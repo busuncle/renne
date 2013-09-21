@@ -1967,23 +1967,40 @@ class LeonhardtAttacker(EnemyAngleAttacker):
         self.current_magic = None
 
 
+    def is_target_blocked(self, target):
+        sp = self.sprite
+        x = min(sp.pos.x, target.pos.x)
+        y = min(sp.pos.y, target.pos.y)
+        w = abs(sp.pos.x - target.pos.x)
+        h = abs(sp.pos.y - target.pos.y)
+        r = pygame.Rect((x, y, w, h))
+        for obj in sp.static_objects:
+            if obj.setting.IS_BLOCK and obj.area.colliderect(r):
+                return True
+
+        return False
+
+
     def chance(self, target):
         # totally for ai, because player can judge whether it's a good attack chance himself
         # at the same time, choose which method to attack target
         sp = self.sprite
         distance_to_target = sp.pos.get_distance_to(target.pos)
+        blocked = self.is_target_blocked(target)
         if happen(sp.brain.ai.ATTACK_REGULAR_PROB) \
             and distance_to_target <= self.attack_range:
             self.method = "regular"
             return True
         if happen(sp.brain.ai.ATTACK_DEATH_COIL_PROB) \
             and sp.mp > self.death_coil_params["mana"] \
-            and distance_to_target <= self.death_coil_params["range"] * 2:
+            and distance_to_target <= self.death_coil_params["range"] * 2 \
+            and (not blocked):
             self.method = "death_coil"
             return True
         if happen(sp.brain.ai.ATTACK_HELL_CLAW_PROB) \
             and sp.mp > self.hell_claw_params["mana"] \
-            and distance_to_target <= self.hell_claw_params["range"]:
+            and distance_to_target <= self.hell_claw_params["range"] \
+            and (not blocked):
             self.method = "hell_claw"
             return True
         return False
