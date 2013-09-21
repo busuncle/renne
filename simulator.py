@@ -412,7 +412,7 @@ class EnergyBall(MagicSprite):
         super(EnergyBall, self).__init__(pos, radius, dx, dy, damage, image, shadow)
         self.range = range
         self.speed = speed
-        self.origin_pos = self.pos.copy()
+        self.life_time = float(range) / speed
         self.key_vec = Vector2.from_points(pos, target_pos)
         self.key_vec.normalize()
         self.image_mix = self.image.copy()
@@ -424,7 +424,8 @@ class EnergyBall(MagicSprite):
         self.pos += self.key_vec * self.speed * passed_seconds
         self.area.center = self.pos("xy")
         self.image_mix = self.blink.make(self.image, passed_seconds)
-        if self.origin_pos.get_distance_to(self.pos) > self.range:
+        self.life_time -= passed_seconds
+        if self.life_time <= 0:
             self.status = cfg.Magic.STATUS_VANISH
 
 
