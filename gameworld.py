@@ -196,6 +196,9 @@ class GameWorld(pygame.sprite.LayeredDirty):
                         magic.draw(camera)
 
                     for msp in magic.magic_sprites:
+                        if msp.status == cfg.Magic.STATUS_VANISH:
+                            continue
+
                         msp.draw_shadow(camera)
                         # magic sprite is dynamic objects too, 
                         # put them into corresponding list according their layer

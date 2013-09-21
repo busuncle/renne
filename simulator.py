@@ -713,7 +713,7 @@ class RenneDizzy(MagicSkill):
 
 
 
-class DeathCoil(EnergyBallSet):
+class DeathCoilSet(MagicSkill):
     # Leon Hardt skill
     death_coil_image = animation.effect_image_controller.get(
         sfg.Effect.DEATH_COIL_IMAGE_KEY).convert_alpha().subsurface(
@@ -721,9 +721,54 @@ class DeathCoil(EnergyBallSet):
     image_list = [death_coil_image.subsurface((i * 64, 0, 64, 64)) for i in xrange(2)]
     shadow = {"image": animation.get_shadow_image(sfg.Effect.DEATH_COIL_SHADOW_INDEX),
         "dy": sfg.Effect.DEATH_COIL_SHADOW_RECT_DELTA_Y}
-    def __init__(self, sprite, target, static_objects, params, pos, target_pos):
-        super(DeathCoil, self).__init__(choice(self.image_list), self.shadow,
-            sprite, [target], static_objects, params, pos, target_pos)
+    def __init__(self, sprite, target_list, static_objects, params, pos, target_pos):
+        super(DeathCoilSet,  self).__init__(sprite, target_list)
+        self.static_objects = static_objects
+        ball = EnergyBall(pos, params["radius"], params["dx"], params["dy"], 
+            params["damage"], choice(self.image_list), self.shadow, target_pos, 
+            params["range"], params["speed"])
+        ball.can_split = True
+        self.magic_sprites.append(ball)
+        self.params = params
+
+
+    def update(self, passed_seconds):
+        vanish_num = 0
+        for msp in self.magic_sprites:
+            if msp.status == cfg.Magic.STATUS_VANISH:
+                vanish_num += 1
+                continue
+
+            msp.update(passed_seconds)
+
+            for sp in self.target_list:
+                if sp in self.has_hits:
+                    continue
+
+                if sp.status.get(cfg.SpriteStatus.IN_AIR) is None and sp.area.colliderect(msp.area):
+                    damage = msp.damage
+                    sp.attacker.handle_under_attack(self.sprite, damage, cfg.Attack.METHOD_MAGIC)
+                    self.has_hits.add(sp)
+
+            if not self.sprite.reachable(msp.pos):
+                msp.status = cfg.Magic.STATUS_VANISH
+
+            # check whether can split
+            if msp.status == cfg.Magic.STATUS_VANISH and msp.can_split:
+                msp.can_split = False
+                p = self.params
+                for sn in xrange(p["split_num"]):
+                    target_pos = choice(self.target_list).pos.copy()
+                    target_pos.x = randint(int(target_pos.x - p["split_dx"]), int(target_pos.x + p["split_dx"]))
+                    target_pos.y = randint(int(target_pos.y - p["split_dy"]), int(target_pos.y + p["split_dy"]))
+                    ball = EnergyBall(msp.pos, p["radius"], p["dx"], p["dy"],
+                        p["damage"], choice(self.image_list), self.shadow, target_pos, p["range"], p["speed"]
+                    )
+                    ball.can_split = False
+                    self.magic_sprites.append(ball)
+
+        if vanish_num == len(self.magic_sprites):
+            self.status = cfg.Magic.STATUS_VANISH
 
 
 
@@ -1933,7 +1978,7 @@ class LeonhardtAttacker(EnemyAngleAttacker):
             return True
         if happen(sp.brain.ai.ATTACK_DEATH_COIL_PROB) \
             and sp.mp > self.death_coil_params["mana"] \
-            and distance_to_target <= self.death_coil_params["range"]:
+            and distance_to_target <= self.death_coil_params["range"] * 2:
             self.method = "death_coil"
             return True
         if happen(sp.brain.ai.ATTACK_HELL_CLAW_PROB) \
@@ -1948,7 +1993,7 @@ class LeonhardtAttacker(EnemyAngleAttacker):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.death_coil_params["key_frames"]:
             sp.mp -= self.death_coil_params["mana"]
-            self.current_magic = DeathCoil(sp, target,
+            self.current_magic = DeathCoilSet(sp, [target, ],
                 sp.static_objects, self.death_coil_params, sp.pos, target.pos)
             self.magic_list.append(self.current_magic)
 
