@@ -917,7 +917,7 @@ class Leonhardt(Enemy):
         elif ak.hell_claw_last_freeze_time_add < ak.hell_claw_params["last_freeze_time"]:
             ak.hell_claw_last_freeze_time_add += passed_seconds
             self.animation.set_frame_add(self.frame_action, 
-                self.animation.get_frame_num([self.frame_action]) - 1)
+                self.animation.get_frame_num(self.frame_action) - 1)
 
         else:
             ak.finish()
