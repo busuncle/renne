@@ -360,12 +360,14 @@ class LeonHardt(Enemy):
             "claw_radius": 18,
             "dx": 32, 
             "dy": 64,
-            "trigger_times": (0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6),
+            #"trigger_times": (0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6),
+            "trigger_times": (1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2),
             "claw_damage_cal_time": 0.2,
             "claw_life": 0.6,
             "claw_shake_on_x": 120,
             "claw_shake_on_y": 120,
             "mana": 120,
+            "last_freeze_time": 1,
         }
     }
 

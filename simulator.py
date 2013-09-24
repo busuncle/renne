@@ -1964,6 +1964,7 @@ class LeonhardtAttacker(EnemyAngleAttacker):
 
 
     def reset_vars(self):
+        self.hell_claw_last_freeze_time_add = 0
         self.method = None
         self.current_magic = None
 

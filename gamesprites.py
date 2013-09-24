@@ -875,7 +875,65 @@ class Leonhardt(Enemy):
         self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
 
 
+    def regular(self, passed_seconds):
+        self.sound_box.play(sfg.Sound.LEONHARDT_ATTACKS[0])
+        self.frame_action = random.choice(
+            (cfg.LeonHardtAction.ATTACK, cfg.LeonHardtAction.ATTACK2))
+        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+        if is_finish:
+            self.attacker.finish()
+            self.reset_action(force=True)
+        else:
+            hit_it = self.attacker.run(self.brain.target, 
+                self.animation.get_current_frame_add(self.frame_action))
+            if hit_it:
+                self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
+
+
+    def death_coil(self, passed_seconds):
+        self.sound_box.play(sfg.Sound.LEONHARDT_ATTACKS[1])
+        self.frame_action = cfg.LeonHardtAction.SKILL1
+        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+        if is_finish:
+            self.attacker.finish()
+            self.reset_action(force=True)
+        else:
+            self.attacker.death_coil(self.brain.target, 
+                self.animation.get_current_frame_add(self.frame_action))
+
+
+    def hell_claw(self, passed_seconds):
+        self.sound_box.play(sfg.Sound.LEONHARDT_ATTACKS[2])
+        self.frame_action = cfg.LeonHardtAction.SKILL2
+        ak = self.attacker
+        if ak.hell_claw_last_freeze_time_add == 0:
+            is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+            if is_finish:
+                ak.hell_claw_last_freeze_time_add += passed_seconds
+            else:
+                self.attacker.death_coil(self.brain.target, 
+                    self.animation.get_current_frame_add(self.frame_action))
+
+        elif ak.hell_claw_last_freeze_time_add < ak.hell_claw_params["last_freeze_time"]:
+            ak.hell_claw_last_freeze_time_add += passed_seconds
+            self.animation.set_frame_add(self.frame_action, 
+                self.animation.get_frame_num([self.frame_action]) - 1)
+
+        else:
+            ak.finish()
+            self.reset_action(force=True)
+
+
     def attack(self, passed_seconds):
+        if self.attacker.method == "regular":
+            self.regular(passed_seconds)
+        elif self.attacker.method == "death_coil":
+            self.death_coil(passed_seconds)
+        elif self.attacker.method == "hell_claw":
+            self.hell_claw(passed_seconds)
+
+
+    def attack_bak(self, passed_seconds):
         if self.frame_action is None or self.frame_action == cfg.EnemyAction.STAND:
             if self.attacker.method == "death_coil":
                 # death coil use this attack frame
