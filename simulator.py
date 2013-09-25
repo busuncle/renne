@@ -1959,6 +1959,8 @@ class LeonhardtAttacker(EnemyAngleAttacker):
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
         self.death_coil_params = attacker_params["death_coil"]
         self.hell_claw_params = attacker_params["hell_claw"]
+        self.skill_used_count = {"death_coil": 0, "hell_claw": 0}
+        self.skill_continuously_use_max = 2
         self.magic_list = []
         self.reset_vars()
 
@@ -1993,18 +1995,23 @@ class LeonhardtAttacker(EnemyAngleAttacker):
             and distance_to_target <= self.attack_range:
             self.method = "regular"
             return True
+
         if happen(sp.brain.ai.ATTACK_DEATH_COIL_PROB) \
+            and self.skill_used_count["death_coil"] < self.skill_continuously_use_max \
             and sp.mp > self.death_coil_params["mana"] \
             and distance_to_target <= self.death_coil_params["range"] * 2 \
             and (not blocked):
             self.method = "death_coil"
             return True
+
         if happen(sp.brain.ai.ATTACK_HELL_CLAW_PROB) \
+            and self.skill_used_count["hell_claw"] < self.skill_continuously_use_max \
             and sp.mp > self.hell_claw_params["mana"] \
             and distance_to_target <= self.hell_claw_params["range"] \
             and (not blocked):
             self.method = "hell_claw"
             return True
+
         return False
 
 
@@ -2038,6 +2045,14 @@ class LeonhardtAttacker(EnemyAngleAttacker):
 
     def finish(self):
         len(self.has_hits) > 0 and self.has_hits.clear()
+
+        if self.method in self.skill_used_count:
+            # balance all skills use
+            self.skill_used_count[self.method] += 1
+            for k, v in self.skill_used_count.iteritems():
+                if k != self.method and v > 0:
+                    self.skill_used_count[k] -= 1
+
         self.reset_vars()
 
 

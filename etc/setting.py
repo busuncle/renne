@@ -338,7 +338,7 @@ class LeonHardt(Enemy):
     SHADOW_INDEX = 2
 
     ATTACKER_PARAMS = {
-        "range": 70,
+        "range": 80,
         "angle": 60,
         "key_frames": (4, 5),
         "death_coil": {
