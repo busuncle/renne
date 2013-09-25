@@ -367,7 +367,7 @@ class LeonHardt(Enemy):
             "claw_shake_on_x": 120,
             "claw_shake_on_y": 120,
             "mana": 120,
-            "last_freeze_time": 1,
+            "last_freeze_time": 2,
         }
     }
 

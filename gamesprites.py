@@ -910,8 +910,10 @@ class Leonhardt(Enemy):
             is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
             if is_finish:
                 ak.hell_claw_last_freeze_time_add += passed_seconds
+                self.animation.set_frame_add(self.frame_action, 
+                    self.animation.get_frame_num(self.frame_action) - 1)
             else:
-                self.attacker.death_coil(self.brain.target, 
+                self.attacker.hell_claw(self.brain.target, 
                     self.animation.get_current_frame_add(self.frame_action))
 
         elif ak.hell_claw_last_freeze_time_add < ak.hell_claw_params["last_freeze_time"]:
