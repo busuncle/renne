@@ -195,8 +195,14 @@ class GameWorld(pygame.sprite.LayeredDirty):
 
         for sp in self.dynamic_objects:
             # adjust_rect by the way
-            sp.adjust_rect()
-            sp.animation.draw_shadow(camera)
+            anim = sp.animation
+            anim.adjust_rect()
+            #anim.draw_shadow(camera)
+            if anim.image is not None \
+                and sp.status.get(cfg.SpriteStatus.INVISIBLE) is None:
+                camera.screen.blit(anim.shadow_image, 
+                    (anim.shadow_rect.x - camera.rect.x, anim.shadow_rect.y - camera.rect.y))
+
             if hasattr(sp.attacker, "magic_list"):
                 for magic in sp.attacker.magic_list:
                     if hasattr(magic, "image"):

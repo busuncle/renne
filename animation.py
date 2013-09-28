@@ -250,6 +250,17 @@ class SpriteAnimator(object):
         self.words_renderer.update(passed_seconds)
 
 
+    def adjust_rect(self):
+        # for drawing to the screen, 
+        # y-axis should be a half of pos[1] and considering the distance from pos to image center
+        # both rect and shadow_rect
+        sp = self.sprite
+        rect = self.rect
+        rect.center = (sp.pos.x, sp.pos.y * 0.5 - sp.setting.POS_RECT_DELTA_Y)
+        shadow_rect = self.shadow_rect
+        shadow_rect.center = (rect.center[0], rect.center[1] + sp.setting.SHADOW_RECT_DELTA_Y)
+
+
     def draw_shadow(self, camera):
         if not self.rect.colliderect(camera.rect):
             return 
