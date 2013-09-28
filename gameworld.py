@@ -93,10 +93,8 @@ class StaticObject(pygame.sprite.DirtySprite):
 
 
     def draw_shadow(self, camera):
-        shd_rect = self.shadow_image.get_rect()
-        shd_rect.center = self.area.center
         camera.screen.blit(self.shadow_image,
-            (shd_rect.x - camera.rect.x, shd_rect.y * 0.5 - camera.rect.y - self.shadow_rect_delta_y))
+            (self.shadow_rect.x - camera.rect.x, self.shadow_rect.y - camera.rect.y))
 
 
     def draw(self, camera):
@@ -188,20 +186,12 @@ class GameWorld(pygame.sprite.LayeredDirty):
         # draw shawdow first
         for obj in self.static_objects:
             if obj.setting.IS_ELIMINABLE:
-                #obj.draw_shadow(camera)
-                camera.screen.blit(obj.shadow_image, 
-                    (obj.shadow_rect.x - camera.rect.x, obj.shadow_rect.y - camera.rect.y))
-
+                obj.draw_shadow(camera)
 
         for sp in self.dynamic_objects:
             # adjust_rect by the way
-            anim = sp.animation
-            anim.adjust_rect()
-            #anim.draw_shadow(camera)
-            if anim.image is not None \
-                and sp.status.get(cfg.SpriteStatus.INVISIBLE) is None:
-                camera.screen.blit(anim.shadow_image, 
-                    (anim.shadow_rect.x - camera.rect.x, anim.shadow_rect.y - camera.rect.y))
+            sp.animation.adjust_rect()
+            sp.animation.draw_shadow(camera)
 
             if hasattr(sp.attacker, "magic_list"):
                 for magic in sp.attacker.magic_list:
@@ -242,10 +232,7 @@ class GameWorld(pygame.sprite.LayeredDirty):
         while dy_idx < len(movings) and st_idx < len(self.static_objects):
             if self.static_objects[st_idx].pos.y <= movings[dy_idx].pos.y:
                 if self.static_objects[st_idx].rect.colliderect(camera.rect):
-                    #self.static_objects[st_idx].draw(camera)
-                    v = self.static_objects[st_idx]
-                    camera.screen.blit(v.image,
-                        (v.rect.x - camera.rect.x, v.rect.y - camera.rect.y))
+                    self.static_objects[st_idx].draw(camera)
                 st_idx += 1
 
             else:
@@ -258,8 +245,5 @@ class GameWorld(pygame.sprite.LayeredDirty):
 
         while st_idx < len(self.static_objects):
             if self.static_objects[st_idx].rect.colliderect(camera.rect):
-                #self.static_objects[st_idx].draw(camera)
-                v = self.static_objects[st_idx]
-                camera.screen.blit(v.image,
-                    (v.rect.x - camera.rect.x, v.rect.y - camera.rect.y))
+                self.static_objects[st_idx].draw(camera)
             st_idx += 1
