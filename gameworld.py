@@ -65,25 +65,31 @@ class StaticObject(pygame.sprite.DirtySprite):
             Rect(setting.IMAGE_RECT)
         )
         self.rect = self.image.get_rect()
-        self.adjust_rect()
         self.area = pygame.Rect(setting.AREA_RECT)
         self.area.center = pos
         self.status = cfg.StaticObject.STATUS_NORMAL
         if self.setting.IS_ELIMINABLE:
-            # the object is eliminable, we should make it blink-blink look!
-            self.image_mix = None
+            self.image_origin = self.image.copy()
             self.shadow_image = get_shadow_image(setting.SHADOW_INDEX)
-            self.shadow_rect_delta_y = setting.SHADOW_RECT_DELTA_Y
+            self.shadow_rect = self.shadow_image.get_rect()
             self.blink = Blink(sfg.Effect.BLINK_RATE2, sfg.Effect.BLINK_DEPTH_SECTION2)
+
+        self.adjust_rect()
 
 
     def adjust_rect(self):
-        self.rect.center = (self.pos[0], self.pos[1] * 0.5 - self.setting.POS_RECT_DELTA_Y)
+        # static_objects are static, only call this one time is ok
+        self.rect.center = (self.pos.x, self.pos.y * 0.5 - self.setting.POS_RECT_DELTA_Y)
+        if self.setting.IS_ELIMINABLE:
+            #self.shadow_rect.center = (self.pos.x, self.pos.y * 0.5 - self.shadow_rect_delta_y)
+            self.shadow_rect.center = self.area.center
+            self.shadow_rect.y = self.shadow_rect.y * 0.5 - self.setting.SHADOW_RECT_DELTA_Y
 
 
     def update(self, passed_seconds):
         if self.setting.IS_ELIMINABLE:
-            self.image_mix = self.blink.make(self.image, passed_seconds)
+            # the object is eliminable, we should make it blink-blink look!
+            self.image = self.blink.make(self.image_origin, passed_seconds)
 
 
     def draw_shadow(self, camera):
@@ -97,12 +103,8 @@ class StaticObject(pygame.sprite.DirtySprite):
         if not self.rect.colliderect(camera.rect):
             return
 
-        if self.setting.IS_ELIMINABLE and self.image_mix is not None:
-            camera.screen.blit(self.image_mix,
-                (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top))
-        else:
-            camera.screen.blit(self.image, 
-                (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top))
+        camera.screen.blit(self.image, 
+            (self.rect.x - camera.rect.x, self.rect.y - camera.rect.y))
 
 
 
@@ -184,6 +186,13 @@ class GameWorld(pygame.sprite.LayeredDirty):
         movings.extend(self.dynamic_objects)
 
         # draw shawdow first
+        for obj in self.static_objects:
+            if obj.setting.IS_ELIMINABLE:
+                #obj.draw_shadow(camera)
+                camera.screen.blit(obj.shadow_image, 
+                    (obj.shadow_rect.x - camera.rect.x, obj.shadow_rect.y - camera.rect.y))
+
+
         for sp in self.dynamic_objects:
             # adjust_rect by the way
             sp.adjust_rect()
@@ -213,10 +222,6 @@ class GameWorld(pygame.sprite.LayeredDirty):
                 #    ammo.draw_shadow(camera)
                 
 
-        for obj in self.static_objects:
-            if obj.setting.IS_ELIMINABLE:
-                obj.draw_shadow(camera)
-
         # draw floor objects first
         floor_objects.sort(key=lambda obj: obj.pos.y)
         for obj in floor_objects:
@@ -231,7 +236,10 @@ class GameWorld(pygame.sprite.LayeredDirty):
         while dy_idx < len(movings) and st_idx < len(self.static_objects):
             if self.static_objects[st_idx].pos.y <= movings[dy_idx].pos.y:
                 if self.static_objects[st_idx].rect.colliderect(camera.rect):
-                    self.static_objects[st_idx].draw(camera)
+                    #self.static_objects[st_idx].draw(camera)
+                    v = self.static_objects[st_idx]
+                    camera.screen.blit(v.image,
+                        (v.rect.x - camera.rect.x, v.rect.y - camera.rect.y))
                 st_idx += 1
 
             else:
@@ -244,5 +252,8 @@ class GameWorld(pygame.sprite.LayeredDirty):
 
         while st_idx < len(self.static_objects):
             if self.static_objects[st_idx].rect.colliderect(camera.rect):
-                self.static_objects[st_idx].draw(camera)
+                #self.static_objects[st_idx].draw(camera)
+                v = self.static_objects[st_idx]
+                camera.screen.blit(v.image,
+                    (v.rect.x - camera.rect.x, v.rect.y - camera.rect.y))
             st_idx += 1

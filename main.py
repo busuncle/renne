@@ -253,6 +253,7 @@ def enter_chapter(screen, chapter, renne):
 
         camera.screen_follow(renne.pos)
 
+        # 3 layers from bottom to top: floor -> sprites in the playground -> game info(player hp, ep etc)
         game_map.draw(camera)
         game_world.draw(camera)
         game_director.draw(camera)
