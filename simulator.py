@@ -961,6 +961,14 @@ class DeathDomain(MagicSkill):
                 self.magic_sprites.pop(i)
 
         for target in self.target_list:
+            pull_vec = Vector2.from_points(target.pos, self.init_pos)
+            pull_vec.normalize()
+            if target.status.get(cfg.SpriteStatus.UNDER_PULL) is None:
+                target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_PULL,
+                    {"key_vec": pull_vec})
+            else:
+                target.status[cfg.SpriteStatus.UNDER_PULL]["key_vec"] = pull_vec
+
             if self.init_pos.get_distance_to(target.pos) < self.radius \
                 and self.hit_cds.get(id(target), 0) == 0:
                 target.attacker.handle_under_attack(sp, self.params["damage"], cfg.Attack.METHOD_MAGIC)

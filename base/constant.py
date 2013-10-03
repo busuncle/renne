@@ -128,6 +128,7 @@ class SpriteStatus(object):
     IN_AIR = 11
     BODY_SHAKE = 12
     INVISIBLE = 13
+    UNDER_PULL = 14
 
     BAD_STATUS_LIST = (POISON, FROZEN, WEAK)
     REJECT_THUMP_STATUS_LIST = (STUN, DIZZY, IN_AIR)

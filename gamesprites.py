@@ -236,6 +236,9 @@ class Renne(GameSprite):
     def move(self, speed, passed_seconds, key_vec=None):
         # try x and y direction move, go back to the old position when collided with something unwalkable
         k_vec = key_vec or self.key_vec
+        if self.status.get(cfg.SpriteStatus.UNDER_PULL) is not None:
+            k_vec = k_vec + self.status[cfg.SpriteStatus.UNDER_PULL]["key_vec"]
+
         k_vec.normalize()
         for coord in ("x", "y"):
             key_vec_coord = getattr(k_vec, coord)
@@ -530,7 +533,7 @@ class Renne(GameSprite):
         elif pressed_keys[sfg.UserKey.REST]:
             self.action = cfg.HeroAction.REST
 
-        elif self.key_vec:
+        elif self.key_vec or self.status.get(cfg.SpriteStatus.UNDER_PULL) is not None:
             if self.action == cfg.HeroAction.RUN and self.sp > 0:
                 # press run and stamina enough
                 self.action = cfg.HeroAction.RUN
@@ -946,6 +949,9 @@ class Leonhardt(Enemy):
             self.direction = int(ak.direction_add)
         elif ak.death_domain_post_run_time_add < ak.death_domain_params["post_run_time"]:
             ak.death_domain_post_run_time_add += passed_seconds
+            # clean attaction for targets if needed
+            if self.brain.target.status.get(cfg.SpriteStatus.UNDER_PULL) is not None:
+                self.brain.target.status.pop(cfg.SpriteStatus.UNDER_PULL)
         else:
             ak.finish()
             self.reset_action(force=True)
