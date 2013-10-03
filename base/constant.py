@@ -133,6 +133,8 @@ class SpriteStatus(object):
     REJECT_THUMP_STATUS_LIST = (STUN, DIZZY, IN_AIR)
     REJECT_CRICK_STATUS_LIST = (STUN, DIZZY, IN_AIR, UNDER_THUMP)
 
+    BREAK_STATUS_LIST = (UNDER_THUMP, DIZZY, STUN)
+
 
 
 class HpStatus(object):

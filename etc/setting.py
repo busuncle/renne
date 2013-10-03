@@ -367,10 +367,21 @@ class LeonHardt(Enemy):
             "claw_shake_on_x": 120,
             "claw_shake_on_y": 120,
             "mana": 120,
-            "last_freeze_time": 2,
+            "last_freeze_time": 2.2,
+        },
+        "death_domain": {
+            "damage": 10,
+            "hit_cd": 1,
+            "radius": 300,
+            "pre_run_time": 1,
+            "run_time": 5,
+            "post_run_time": 1,
+            "rotate_rate": 36,
+            "sword_up_speed": 400,
+            "sword_up_life_time": 0.5,
+            "mana": 200,
         }
     }
-
     WALK_SPEED = 200
 
 
@@ -1305,6 +1316,14 @@ class Effect(object):
     HELL_CLAW_SHADOW_INDEX = 1
     HELL_CLAW_SHADOW_RECT_DELTA_Y = 18
 
+    DEATH_DOMAIN_IMAGE_KEY = "e8"
+    DEATH_DOMAIN_SIGN_RECT = (64, 64, 128, 128)
+    DEATH_DOMAIN_SIGN_DX = 64
+    DEATH_DOMAIN_SIGN_DY = 192
+    DEATH_DOMAIN_SWORD_RECT = (192, 0, 64, 160)
+    DEATH_DOMAIN_SWORD_DX = 32
+    DEATH_DOMAIN_SWORD_DY = 160
+
     BOMB_IMAGE_KEY = "e2"
     BOMB_RECT = (0, 64, 192, 64)
     BOMB_RADIUS = 32
@@ -1605,4 +1624,5 @@ EFFECT = ("effect", {
     "e5": "e5.png",
     "e6": "e6.png",
     "e7": "e7.png",
+    "e8": "e8.png",
 })

@@ -114,8 +114,9 @@ class LeonHardtAI(AIBase):
 
     # attack method related
     ATTACK_REGULAR_PROB = 0.8
-    ATTACK_DEATH_COIL_PROB = 0.4
-    ATTACK_HELL_CLAW_PROB = 0.4
+    ATTACK_DEATH_COIL_PROB = 0.0
+    ATTACK_HELL_CLAW_PROB = 0.0
+    ATTACK_DEATH_DOMAIN_PROB = 0.9
 
 
 

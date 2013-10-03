@@ -18,7 +18,7 @@ class MagicSprite(pygame.sprite.DirtySprite):
     """
     represent some magic unit
     """
-    def __init__(self, pos, radius, dx, dy, damage, image, shadow):
+    def __init__(self, pos, radius, dx, dy, damage, image, shadow=None):
         super(MagicSprite, self).__init__()
         self.pos = Vector2(pos)
         self.area = pygame.Rect(0, 0, radius * 2, radius * 2)
@@ -415,29 +415,18 @@ class EnergyBall(MagicSprite):
         self.life_time = float(range) / speed
         self.key_vec = Vector2.from_points(pos, target_pos)
         self.key_vec.normalize()
-        self.image_mix = self.image.copy()
         self.shadow = shadow
+        self.origin_image = self.image.copy()
         self.blink = Blink()
 
         
     def update(self, passed_seconds):
         self.pos += self.key_vec * self.speed * passed_seconds
         self.area.center = self.pos("xy")
-        self.image_mix = self.blink.make(self.image, passed_seconds)
+        self.image = self.blink.make(self.origin_image, passed_seconds)
         self.life_time -= passed_seconds
         if self.life_time <= 0:
             self.status = cfg.Magic.STATUS_VANISH
-
-
-    def draw(self, camera):
-        if self.status == cfg.Magic.STATUS_ALIVE:
-            camera.screen.blit(self.image_mix,
-                (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy))
-            #r = pygame.Rect(0, 0, self.area.width, self.area.height * 0.5)
-            #r.center = (self.pos.x, self.pos.y * 0.5)
-            #r.top -= camera.rect.top
-            #r.left -= camera.rect.left
-            #pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
 
 
 
@@ -790,20 +779,15 @@ class HellClaw(MagicSprite):
         self.life = life
         self.damage_cal_time = damage_cal_time
         self.alive_time = 0
-        self.image_mix = None
+        self.origin_image = self.image.copy()
         self.blink = Blink()
 
 
     def update(self, passed_seconds):
-        self.image_mix = self.blink.make(self.image, passed_seconds)
+        self.image = self.blink.make(self.origin_image, passed_seconds)
         self.alive_time += passed_seconds
         if self.alive_time > self.life:
             self.status = cfg.Magic.STATUS_VANISH
-
-
-    def draw(self, camera):
-        camera.screen.blit(self.image_mix,
-            (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy))
 
 
 
@@ -882,6 +866,96 @@ class HellClawSet(MagicSkill):
         r.center = self.target_pos("xy")
         r.centery *= 0.5
         camera.screen.blit(self.tips_area_mix, (r.x - camera.rect.x, r.y - camera.rect.y))
+
+
+
+class DeathDomainSign(MagicSprite):
+    radius = sfg.Effect.DEATH_DOMAIN_SIGN_DX
+    dx = sfg.Effect.DEATH_DOMAIN_SIGN_DX
+    dy = sfg.Effect.DEATH_DOMAIN_SIGN_DY
+    image = animation.effect_image_controller.get(
+        sfg.Effect.DEATH_DOMAIN_IMAGE_KEY).convert_alpha().subsurface(
+        sfg.Effect.DEATH_DOMAIN_SIGN_RECT)
+
+    def __init__(self, pos):
+        super(DeathDomainSign, self).__init__(pos, self.radius, self.dx, self.dy, 0, self.image)
+
+
+
+class DeathDomainSword(MagicSprite):
+    radius = sfg.Effect.DEATH_DOMAIN_SWORD_DX
+    dx = sfg.Effect.DEATH_DOMAIN_SWORD_DX
+    dy = sfg.Effect.DEATH_DOMAIN_SWORD_DY
+    image = animation.effect_image_controller.get(
+        sfg.Effect.DEATH_DOMAIN_IMAGE_KEY).convert_alpha().subsurface(
+        sfg.Effect.DEATH_DOMAIN_SWORD_RECT)
+
+    def __init__(self, pos, up_speed, life_time):
+        super(DeathDomainSword, self).__init__(pos, self.radius, self.dx, self.dy, 0, self.image)
+        self.up_speed = up_speed
+        self.life_time = life_time
+
+
+    def update(self, passed_seconds):
+        # move up when time passed
+        self.dy += self.up_speed * passed_seconds
+        self.life_time -= passed_seconds
+        if self.life_time <= 0:
+            self.status = cfg.Magic.STATUS_VANISH
+
+
+
+class DeathDomain(MagicSkill):
+    # Leon's big magic skill, big!
+    def __init__(self, sprite, target_list, static_objects, params):
+        super(DeathDomain, self).__init__(sprite, target_list)
+        self.init_pos = sprite.pos.copy()
+        self.static_objects = static_objects
+        self.radius = params["radius"]
+        self.run_time = params["run_time"]
+        self.params = params
+        self.magic_sprites.append(DeathDomainSign(self.sprite.pos))
+        self.hit_cds = {}
+
+
+    def update(self, passed_seconds):
+        sp = self.sprite
+        if sp.pos.x != self.init_pos.x or sp.pos.y != self.init_pos.y:
+            # sprite was moved, stop the skill
+            self.status = cfg.Magic.STATUS_VANISH
+            return
+
+        dx = randint(-self.radius, self.radius)
+        y_range = int(sqrt(pow(self.radius, 2) - pow(dx, 2)))
+        dy = randint(-y_range, y_range)
+
+        p = self.init_pos.copy()
+        p.x += dx
+        p.y += dy
+
+        sword = DeathDomainSword(p, self.params["sword_up_speed"], self.params["sword_up_life_time"])
+        self.magic_sprites.append(sword)
+
+        for i, swd in enumerate(self.magic_sprites):
+            if i == 0:
+                continue
+
+            swd.update(passed_seconds)
+            if swd.status == cfg.Magic.STATUS_VANISH:
+                self.magic_sprites.pop(i)
+
+        for target in self.target_list:
+            if self.init_pos.get_distance_to(target.pos) < self.radius \
+                and self.hit_cds.get(id(target), 0) == 0:
+                target.attacker.handle_under_attack(sp, self.params["damage"], cfg.Attack.METHOD_MAGIC)
+                self.hit_cds[id(target)] = self.params["hit_cd"]
+
+        for k in self.hit_cds:
+            self.hit_cds[k] = max(0, self.hit_cds[k] - passed_seconds)
+
+        self.run_time -= passed_seconds
+        if self.run_time <= 0:
+            self.status = cfg.Magic.STATUS_VANISH
 
 
 
@@ -1959,7 +2033,8 @@ class LeonhardtAttacker(EnemyAngleAttacker):
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
         self.death_coil_params = attacker_params["death_coil"]
         self.hell_claw_params = attacker_params["hell_claw"]
-        self.skill_used_count = {"death_coil": 0, "hell_claw": 0}
+        self.death_domain_params = attacker_params["death_domain"]
+        self.skill_used_count = {"death_coil": 0, "hell_claw": 0, "death_domain": 0}
         self.skill_continuously_use_max = 2
         self.magic_list = []
         self.reset_vars()
@@ -1967,6 +2042,9 @@ class LeonhardtAttacker(EnemyAngleAttacker):
 
     def reset_vars(self):
         self.hell_claw_last_freeze_time_add = 0
+        self.death_domain_pre_run_time_add = 0
+        self.death_domain_run_time_add = 0
+        self.death_domain_post_run_time_add = 0
         self.method = None
         self.current_magic = None
 
@@ -2012,6 +2090,12 @@ class LeonhardtAttacker(EnemyAngleAttacker):
             self.method = "hell_claw"
             return True
 
+        if happen(sp.brain.ai.ATTACK_DEATH_DOMAIN_PROB) \
+            and self.skill_used_count["death_domain"] < self.skill_continuously_use_max \
+            and sp.mp > self.death_domain_params["mana"]:
+            self.method = "death_domain"
+            return True
+
         return False
 
 
@@ -2032,6 +2116,15 @@ class LeonhardtAttacker(EnemyAngleAttacker):
             sp.mp -= self.hell_claw_params["mana"]
             self.current_magic = HellClawSet(sp, [target, ], 
                 sp.static_objects, self.hell_claw_params)
+            self.magic_list.append(self.current_magic)
+
+
+    def death_domain(self, target, current_frame_add):
+        sp = self.sprite
+        if self.current_magic is None:
+            sp.mp -= self.death_domain_params["mana"]
+            self.current_magic = DeathDomain(sp, [target, ],
+                sp.static_objects, self.death_domain_params)
             self.magic_list.append(self.current_magic)
 
 

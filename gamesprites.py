@@ -866,8 +866,8 @@ class Leonhardt(Enemy):
 
 
     def regular(self, passed_seconds):
-        self.sound_box.play(sfg.Sound.LEONHARDT_ATTACKS[0])
         if self.frame_action is None or self.frame_action == cfg.EnemyAction.STAND:
+            self.sound_box.play(sfg.Sound.LEONHARDT_ATTACKS[0])
             self.frame_action = random.choice(
                 (cfg.LeonHardtAction.ATTACK, cfg.LeonHardtAction.ATTACK2))
 
@@ -883,8 +883,10 @@ class Leonhardt(Enemy):
 
 
     def death_coil(self, passed_seconds):
-        self.sound_box.play(sfg.Sound.LEONHARDT_ATTACKS[1])
-        self.frame_action = cfg.LeonHardtAction.SKILL1
+        if self.frame_action is None or self.frame_action == cfg.EnemyAction.STAND:
+            self.sound_box.play(sfg.Sound.LEONHARDT_ATTACKS[1])
+            self.frame_action = cfg.LeonHardtAction.SKILL1
+
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
             self.attacker.finish()
@@ -895,8 +897,10 @@ class Leonhardt(Enemy):
 
 
     def hell_claw(self, passed_seconds):
-        self.sound_box.play(sfg.Sound.LEONHARDT_ATTACKS[2])
-        self.frame_action = cfg.LeonHardtAction.SKILL2
+        if self.frame_action is None or self.frame_action == cfg.EnemyAction.STAND:
+            self.sound_box.play(sfg.Sound.LEONHARDT_ATTACKS[2])
+            self.frame_action = cfg.LeonHardtAction.SKILL2
+
         ak = self.attacker
         if ak.hell_claw_last_freeze_time_add == 0:
             is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
@@ -905,7 +909,7 @@ class Leonhardt(Enemy):
                 self.animation.set_frame_add(self.frame_action, 
                     self.animation.get_frame_num(self.frame_action) - 1)
             else:
-                self.attacker.hell_claw(self.brain.target, 
+                ak.hell_claw(self.brain.target, 
                     self.animation.get_current_frame_add(self.frame_action))
 
         elif ak.hell_claw_last_freeze_time_add < ak.hell_claw_params["last_freeze_time"]:
@@ -918,6 +922,34 @@ class Leonhardt(Enemy):
             self.reset_action(force=True)
 
 
+    def death_domain(self, passed_seconds):
+        if self.frame_action is None or self.frame_action == cfg.EnemyAction.STAND:
+            self.sound_box.play(sfg.Sound.LEONHARDT_ATTACKS[2])
+            self.frame_action = cfg.LeonHardtAction.SKILL2
+
+        ak = self.attacker
+        if ak.death_domain_pre_run_time_add == 0:
+            is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+            if is_finish:
+                ak.death_domain_pre_run_time_add += passed_seconds
+                self.animation.set_frame_add(self.frame_action,
+                    self.animation.get_frame_num(self.frame_action) - 1)
+        elif ak.death_domain_pre_run_time_add < ak.death_domain_params["pre_run_time"]: 
+            self.animation.set_frame_add(self.frame_action,
+                self.animation.get_frame_num(self.frame_action) - 1)
+            ak.death_domain_pre_run_time_add += passed_seconds
+            if ak.death_domain_pre_run_time_add >= ak.death_domain_params["pre_run_time"]:
+                # timing! fire the skill!
+                ak.death_domain(self.brain.target, self.animation.get_current_frame_add(self.frame_action))
+        elif ak.death_domain_run_time_add < ak.death_domain_params["run_time"]:
+            ak.death_domain_run_time_add += passed_seconds 
+        elif ak.death_domain_post_run_time_add < ak.death_domain_params["post_run_time"]:
+            ak.death_domain_post_run_time_add += passed_seconds
+        else:
+            ak.finish()
+            self.reset_action(force=True)
+
+
     def attack(self, passed_seconds):
         if self.attacker.method == "regular":
             self.regular(passed_seconds)
@@ -925,6 +957,8 @@ class Leonhardt(Enemy):
             self.death_coil(passed_seconds)
         elif self.attacker.method == "hell_claw":
             self.hell_claw(passed_seconds)
+        elif self.attacker.method == "death_domain":
+            self.death_domain(passed_seconds)
 
 
 

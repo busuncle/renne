@@ -23,8 +23,8 @@ def run(args):
     img_rect = img.get_rect()
     words_blit_pos = img_rect.topright
     background_color = args.background_color or "black"
-    mask = pygame.Surface((256, 256)).convert_alpha()
-    mask.fill((0, 0, 0, 128))
+    #mask = pygame.Surface((256, 256)).convert_alpha()
+    #mask.fill((0, 0, 0, 128))
 
     clock = pygame.time.Clock()
     while True:
@@ -34,10 +34,11 @@ def run(args):
             if event.type == KEYDOWN and event.key == K_ESCAPE:
                 return
 
-        for i in xrange(4):
-            for j in xrange(6):
-                screen.blit(tile_image, (i * 256, j * 128))
+        #for i in xrange(4):
+        #    for j in xrange(6):
+        #        screen.blit(tile_image, (i * 256, j * 128))
 
+        screen.fill(pygame.Color(background_color))
         screen.blit(img, (0, 0))
 
         #screen.fill(pygame.Color(background_color))
