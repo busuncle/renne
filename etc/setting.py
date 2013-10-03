@@ -380,6 +380,7 @@ class LeonHardt(Enemy):
             "sword_up_speed": 500,
             "sword_up_life_time": 0.2,
             "mana": 200,
+            "pull_speed": 100,
         }
     }
     WALK_SPEED = 200

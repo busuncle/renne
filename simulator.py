@@ -961,11 +961,12 @@ class DeathDomain(MagicSkill):
                 self.magic_sprites.pop(i)
 
         for target in self.target_list:
+            # pull target to the center
             pull_vec = Vector2.from_points(target.pos, self.init_pos)
             pull_vec.normalize()
             if target.status.get(cfg.SpriteStatus.UNDER_PULL) is None:
                 target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_PULL,
-                    {"key_vec": pull_vec})
+                    {"key_vec": pull_vec, "speed": self.params["pull_speed"]})
             else:
                 target.status[cfg.SpriteStatus.UNDER_PULL]["key_vec"] = pull_vec
 
