@@ -942,6 +942,8 @@ class Leonhardt(Enemy):
             ak.death_domain_pre_run_time_add += passed_seconds
         elif ak.death_domain_run_time_add < ak.death_domain_params["run_time"]:
             ak.death_domain_run_time_add += passed_seconds 
+            ak.direction_add = (ak.direction_add + ak.death_domain_params["rotate_rate"] * passed_seconds) % cfg.Direction.TOTAL
+            self.direction = int(ak.direction_add)
         elif ak.death_domain_post_run_time_add < ak.death_domain_params["post_run_time"]:
             ak.death_domain_post_run_time_add += passed_seconds
         else:

@@ -2116,6 +2116,7 @@ class LeonhardtAttacker(EnemyAngleAttacker):
         if happen(sp.brain.ai.ATTACK_DEATH_DOMAIN_PROB) \
             and self.skill_used_count["death_domain"] < self.skill_continuously_use_max \
             and sp.mp > self.death_domain_params["mana"]:
+            self.direction_add = sp.direction
             self.method = "death_domain"
             return True
 

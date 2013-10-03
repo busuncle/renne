@@ -376,7 +376,7 @@ class LeonHardt(Enemy):
             "pre_run_time": 1,
             "run_time": 5,
             "post_run_time": 1,
-            "rotate_rate": 36,
+            "rotate_rate": 48,
             "sword_up_speed": 500,
             "sword_up_life_time": 0.2,
             "mana": 200,
