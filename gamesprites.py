@@ -934,13 +934,12 @@ class Leonhardt(Enemy):
                 ak.death_domain_pre_run_time_add += passed_seconds
                 self.animation.set_frame_add(self.frame_action,
                     self.animation.get_frame_num(self.frame_action) - 1)
+                # timing! fire the skill!
+                ak.death_domain(self.brain.target, self.animation.get_current_frame_add(self.frame_action))
         elif ak.death_domain_pre_run_time_add < ak.death_domain_params["pre_run_time"]: 
             self.animation.set_frame_add(self.frame_action,
                 self.animation.get_frame_num(self.frame_action) - 1)
             ak.death_domain_pre_run_time_add += passed_seconds
-            if ak.death_domain_pre_run_time_add >= ak.death_domain_params["pre_run_time"]:
-                # timing! fire the skill!
-                ak.death_domain(self.brain.target, self.animation.get_current_frame_add(self.frame_action))
         elif ak.death_domain_run_time_add < ak.death_domain_params["run_time"]:
             ak.death_domain_run_time_add += passed_seconds 
         elif ak.death_domain_post_run_time_add < ak.death_domain_params["post_run_time"]:

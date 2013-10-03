@@ -916,6 +916,17 @@ class DeathDomain(MagicSkill):
         self.params = params
         self.magic_sprites.append(DeathDomainSign(self.sprite.pos))
         self.hit_cds = {}
+        self.pre_run_time = params["pre_run_time"]
+        self.pre_run_time_add = 0
+
+        # death domain tips
+        self.tips_area = pygame.Surface((
+            self.radius * 2 + 20,
+            self.radius + 10)).convert_alpha()
+        self.tips_area.fill(pygame.Color(0, 0, 0, 0))
+        pygame.draw.ellipse(self.tips_area, pygame.Color(255, 0, 0, 128), self.tips_area.get_rect())
+        self.blink = Blink()
+        self.tips_area_mix = self.tips_area.copy()
 
 
     def update(self, passed_seconds):
@@ -923,6 +934,11 @@ class DeathDomain(MagicSkill):
         if sp.pos.x != self.init_pos.x or sp.pos.y != self.init_pos.y:
             # sprite was moved, stop the skill
             self.status = cfg.Magic.STATUS_VANISH
+            return
+
+        self.tips_area_mix = self.blink.make(self.tips_area, passed_seconds)
+        if self.pre_run_time_add < self.pre_run_time:
+            self.pre_run_time_add += passed_seconds
             return
 
         dx = randint(-self.radius, self.radius)
@@ -956,6 +972,13 @@ class DeathDomain(MagicSkill):
         self.run_time -= passed_seconds
         if self.run_time <= 0:
             self.status = cfg.Magic.STATUS_VANISH
+
+
+    def draw(self, camera):
+        r = self.tips_area_mix.get_rect()
+        r.center = self.init_pos("xy")
+        r.centery *= 0.5
+        camera.screen.blit(self.tips_area_mix, (r.x - camera.rect.x, r.y - camera.rect.y))
 
 
 

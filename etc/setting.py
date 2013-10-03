@@ -377,8 +377,8 @@ class LeonHardt(Enemy):
             "run_time": 5,
             "post_run_time": 1,
             "rotate_rate": 36,
-            "sword_up_speed": 400,
-            "sword_up_life_time": 0.5,
+            "sword_up_speed": 500,
+            "sword_up_life_time": 0.2,
             "mana": 200,
         }
     }
@@ -1319,10 +1319,10 @@ class Effect(object):
     DEATH_DOMAIN_IMAGE_KEY = "e8"
     DEATH_DOMAIN_SIGN_RECT = (64, 64, 128, 128)
     DEATH_DOMAIN_SIGN_DX = 64
-    DEATH_DOMAIN_SIGN_DY = 192
+    DEATH_DOMAIN_SIGN_DY = 224
     DEATH_DOMAIN_SWORD_RECT = (192, 0, 64, 160)
     DEATH_DOMAIN_SWORD_DX = 32
-    DEATH_DOMAIN_SWORD_DY = 160
+    DEATH_DOMAIN_SWORD_DY = 128
 
     BOMB_IMAGE_KEY = "e2"
     BOMB_RECT = (0, 64, 192, 64)
