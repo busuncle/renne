@@ -929,7 +929,7 @@ class Leonhardt(Enemy):
 
     def death_domain(self, passed_seconds):
         if self.frame_action is None or self.frame_action == cfg.EnemyAction.STAND:
-            self.sound_box.play(sfg.Sound.LEONHARDT_ATTACKS[2])
+            self.sound_box.play(sfg.Sound.LEONHARDT_ATTACKS[3])
             self.frame_action = cfg.LeonHardtAction.SKILL2
 
         ak = self.attacker
@@ -941,19 +941,31 @@ class Leonhardt(Enemy):
                     self.animation.get_frame_num(self.frame_action) - 1)
                 # timing! fire the skill!
                 ak.death_domain(self.brain.target, self.animation.get_current_frame_add(self.frame_action))
+
         elif ak.death_domain_pre_run_time_add < ak.death_domain_params["pre_run_time"]: 
             self.animation.set_frame_add(self.frame_action,
                 self.animation.get_frame_num(self.frame_action) - 1)
             ak.death_domain_pre_run_time_add += passed_seconds
+
+            # set super body in pre_run_time
+            if cfg.SpriteStatus.SUPER_BODY not in self.status:
+                self.status[cfg.SpriteStatus.SUPER_BODY] = True
+
         elif ak.death_domain_run_time_add < ak.death_domain_params["run_time"]:
             ak.death_domain_run_time_add += passed_seconds 
             ak.direction_add = (ak.direction_add + ak.death_domain_params["rotate_rate"] * passed_seconds) % cfg.Direction.TOTAL
             self.direction = int(ak.direction_add)
+
         elif ak.death_domain_post_run_time_add < ak.death_domain_params["post_run_time"]:
             ak.death_domain_post_run_time_add += passed_seconds
             if self.brain.target.status.get(cfg.SpriteStatus.UNDER_PULL) is not None:
                 # clean pull status 
                 self.brain.target.status.pop(cfg.SpriteStatus.UNDER_PULL)
+
+            # clean super body in post_run_time
+            if cfg.SpriteStatus.SUPER_BODY in self.status:
+                self.status.pop(cfg.SpriteStatus.SUPER_BODY)
+
         else:
             ak.finish()
             self.reset_action(force=True)

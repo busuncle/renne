@@ -1031,6 +1031,11 @@ class Attacker(object):
                 if sp.status.get(reject_status) is not None:
                     return
 
+        if status_id == cfg.SpriteStatus.DIZZY:
+            for reject_status in cfg.SpriteStatus.REJECT_DIZZY_STATUS_LIST:
+                if sp.status.get(reject_status) is not None:
+                    return 
+
         sp.status[status_id] = status_object
 
 

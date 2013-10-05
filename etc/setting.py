@@ -373,14 +373,14 @@ class LeonHardt(Enemy):
             "damage": 10,
             "hit_cd": 1,
             "radius": 300,
-            "pre_run_time": 1,
-            "run_time": 5,
-            "post_run_time": 1,
+            "pre_run_time": 2,
+            "run_time": 6,
+            "post_run_time": 2,
             "rotate_rate": 48,
             "sword_up_speed": 500,
             "sword_up_life_time": 0.2,
             "mana": 200,
-            "pull_speed": 100,
+            "pull_speed": 120,
         }
     }
     WALK_SPEED = 200
@@ -1287,7 +1287,8 @@ class Sound(object):
 
     ENEMY_ATTACK_HITS = ("attack_hit", "attack_hit2", "attack_hit3")
 
-    LEONHARDT_ATTACKS = ("leonhardt_attack", "leonhardt_attack2", "leonhardt_attack3")
+    LEONHARDT_ATTACKS = ("leonhardt_attack", "leonhardt_attack2", "leonhardt_attack3", 
+        "leonhardt_attack4")
 
 
 
@@ -1615,6 +1616,7 @@ SOUND_EFFECT = ("sound", {
     "leonhardt_attack": "leonhardt_attack.wav",
     "leonhardt_attack2": "leonhardt_attack2.wav",
     "leonhardt_attack3": "leonhardt_attack3.wav",
+    "leonhardt_attack4": "leonhardt_attack4.wav",
 })
 
 EFFECT = ("effect", {
