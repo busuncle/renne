@@ -873,12 +873,17 @@ class DeathDomainSign(MagicSprite):
     radius = sfg.Effect.DEATH_DOMAIN_SIGN_DX
     dx = sfg.Effect.DEATH_DOMAIN_SIGN_DX
     dy = sfg.Effect.DEATH_DOMAIN_SIGN_DY
-    image = animation.effect_image_controller.get(
+    origin_image = animation.effect_image_controller.get(
         sfg.Effect.DEATH_DOMAIN_IMAGE_KEY).convert_alpha().subsurface(
         sfg.Effect.DEATH_DOMAIN_SIGN_RECT)
 
     def __init__(self, pos):
-        super(DeathDomainSign, self).__init__(pos, self.radius, self.dx, self.dy, 0, self.image)
+        super(DeathDomainSign, self).__init__(pos, self.radius, self.dx, self.dy, 0, self.origin_image.copy())
+        self.blink = Blink()
+
+
+    def update(self, passed_seconds):
+        self.image = self.blink.make(self.origin_image, passed_seconds)
 
 
 
@@ -914,7 +919,8 @@ class DeathDomain(MagicSkill):
         self.radius = params["radius"]
         self.run_time = params["run_time"]
         self.params = params
-        self.magic_sprites.append(DeathDomainSign(self.sprite.pos))
+        self.death_domain_sign = DeathDomainSign(self.sprite.pos)
+        self.magic_sprites.append(self.death_domain_sign)
         self.hit_cds = {}
         self.pre_run_time = params["pre_run_time"]
         self.pre_run_time_add = 0
@@ -939,6 +945,8 @@ class DeathDomain(MagicSkill):
         self.tips_area_mix = self.blink.make(self.tips_area, passed_seconds)
         if self.pre_run_time_add < self.pre_run_time:
             self.pre_run_time_add += passed_seconds
+            # DeathDomainSign update
+            self.death_domain_sign.update(passed_seconds)
             return
 
         dx = randint(-self.radius, self.radius)
@@ -952,12 +960,9 @@ class DeathDomain(MagicSkill):
         sword = DeathDomainSword(p, self.params["sword_up_speed"], self.params["sword_up_life_time"])
         self.magic_sprites.append(sword)
 
-        for i, swd in enumerate(self.magic_sprites):
-            if i == 0:
-                continue
-
-            swd.update(passed_seconds)
-            if swd.status == cfg.Magic.STATUS_VANISH:
+        for i, msp in enumerate(self.magic_sprites):
+            msp.update(passed_seconds)
+            if msp.status == cfg.Magic.STATUS_VANISH:
                 self.magic_sprites.pop(i)
 
         for target in self.target_list:
