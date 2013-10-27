@@ -265,6 +265,7 @@ def enter_chapter(screen, chapter, renne):
                 renne.hp = renne.setting.HP
                 renne.mp = renne.setting.MP
                 renne.sp = renne.setting.SP
+                renne.attacker.refresh_skill()
 
         pygame.display.flip()
 

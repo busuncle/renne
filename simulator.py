@@ -648,8 +648,7 @@ class DestroyAeroliteSet(MagicSkill):
                 self.params["aerolite_damage_cal_time"], self.params["aerolite_life"],
                 self.params["aerolite_shake_on_x"], self.params["aerolite_shake_on_y"])
 
-            if self.sprite.reachable(aerolite.pos):
-                self.magic_sprites.append(aerolite)
+            self.magic_sprites.append(aerolite)
 
         for i, aerolite in enumerate(self.magic_sprites):
             aerolite.update(passed_seconds)
@@ -1181,6 +1180,14 @@ class RenneAttacker(AngleAttacker):
         # a lock, only one magic is running in an attack
         self.method = None
         self.current_magic = None
+
+
+    def refresh_skill(self, skill_key=None):
+        if skill_key is not None:
+            self.magic_cds[skill_key] = 0
+        else:
+            for key in self.magic_cds:
+                self.magic_cds[key] = 0
 
 
     def hit2(self, target, current_frame_add):
