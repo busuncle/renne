@@ -117,8 +117,8 @@ class Renne(object):
     MP = 200
     MP_RECOVERY_RATE = 10
     SP = 180
-    SP_COST_RATE = 15
-    SP_RECOVERY_RATE = 20
+    SP_COST_RATE = 12
+    SP_RECOVERY_RATE = 15
     ATK = 10
     DFS = 2
 
@@ -135,6 +135,14 @@ class Renne(object):
     # move speed, in pixel unit
     WALK_SPEED = 100
     RUN_SPEED = 200
+
+    # values for every level
+    LEVEL_HP = (150, 200, 250, 300, 350, 400, 450, 500, 550, 600)
+    LEVEL_MP = (80, 120, 160, 200, 240, 280, 320, 360, 400, 440)
+    LEVEL_SP = (60, 80, 100, 120, 140, 160, 170, 180, 190, 200)
+    LEVEL_ATK = (10, 12, 14, 16, 20, 24, 28, 32, 38, 44)
+    LEVEL_DFS = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    LEVEL_EXP = (0, 100, 200, 320, 440, 600, 760, 920, 1000, 1200)
 
     ATTACKER_PARAMS = {
         "attack1":{
