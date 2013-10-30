@@ -142,7 +142,7 @@ class Renne(object):
     LEVEL_SP = (60, 80, 100, 120, 140, 160, 170, 180, 190, 200)
     LEVEL_ATK = (10, 12, 14, 16, 20, 24, 28, 32, 38, 44)
     LEVEL_DFS = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-    LEVEL_EXP = (0, 100, 200, 320, 440, 600, 760, 920, 1000, 1200)
+    LEVEL_EXP = (0, 100, 300, 700, 1500, 2800, 4600, 7000, 10000, 15000)
 
     ATTACKER_PARAMS = {
         "attack1":{
@@ -230,6 +230,7 @@ class Renne(object):
 
 
                 
+############ enemy models #############
 class Enemy(object):
     ROLE = cfg.SpriteRole.ENEMY
     DEAD_TICK = 1.5
@@ -245,6 +246,7 @@ class SkeletonWarrior(Enemy):
     HP = 300
     ATK = 35
     DFS = 2
+    EXP = 20
 
     RADIUS = 24
     HEIGHT = 80
@@ -268,6 +270,7 @@ class CastleWarrior(Enemy):
     HP = 550
     ATK = 45
     DFS = 4
+    EXP = 50
 
     RADIUS = 24
     HEIGHT = 82
@@ -302,6 +305,7 @@ class SkeletonArcher(Enemy):
     HP = 300
     ATK = 35
     DFS = 2
+    EXP = 25
 
     RADIUS = 24
     HEIGHT = 65
@@ -337,6 +341,7 @@ class LeonHardt(Enemy):
     ATK = 60
     DFS = 5
     MP_RECOVERY_RATE = 10
+    EXP = 1000
 
     RADIUS = 24
     HEIGHT = 80
@@ -400,6 +405,7 @@ class ArmouredShooter(Enemy):
     HP = 400
     ATK = 38
     DFS = 4
+    EXP = 30
 
     # overwrite
     VIEW_RANGE = 500
@@ -440,6 +446,7 @@ class SwordRobber(Enemy):
     HP = 500
     ATK = 45
     DFS = 4
+    EXP = 40
 
     RADIUS = 24
     HEIGHT = 75
@@ -475,6 +482,7 @@ class GanDie(Enemy):
     HP = 350
     ATK = 30
     DFS = 2
+    EXP = 35
 
     RADIUS = 24
     HEIGHT = 75
@@ -514,6 +522,7 @@ class Ghost(Enemy):
     HP = 600
     ATK = 45
     DFS = 3
+    EXP = 40
 
     RADIUS = 24
     HEIGHT = 90
@@ -544,6 +553,7 @@ class TwoHeadSkeleton(Enemy):
     HP = 800
     ATK = 52
     DFS = 5
+    EXP = 80
 
     RADIUS = 24
     HEIGHT = 120
@@ -579,6 +589,7 @@ class Werwolf(Enemy):
     HP = 700
     ATK = 50
     DFS = 4
+    EXP = 70
 
     RADIUS = 24
     HEIGHT = 85 
@@ -621,6 +632,7 @@ class SilverTentacle(Enemy):
     HP = 400
     ATK = 40
     DFS = 4
+    EXP = 40
 
     RADIUS = 24
     HEIGHT = 75
@@ -644,6 +656,7 @@ class Robot(Enemy):
     HP = 200
     ATK = 10
     DFS = 1
+    EXP = 30
 
     RADIUS = 24
     HEIGHT = 60
