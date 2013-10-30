@@ -199,13 +199,14 @@ class Renne(GameSprite):
         self.attacker = simulator.RenneAttacker(self, self.setting.ATTACKER_PARAMS)
 
 
-    def recover(self):
+    def recover(self, level=1):
         # recover renne's whole status, usually when the current chapter pass
-        self.hp = self.setting.HP
-        self.mp = self.setting.MP
-        self.sp = self.setting.SP
-        self.atk = self.setting.ATK
-        self.dfs = self.setting.DFS
+        idx = level - 1
+        self.hp = self.setting.HP = self.LEVEL_HP[idx]
+        self.mp = self.setting.MP = self.LEVEL_MP[idx]
+        self.sp = self.setting.SP = self.LEVEL_SP[idx]
+        self.atk = self.setting.ATK = self.LEVEL_ATK[idx]
+        self.dfs = self.setting.DFS = self.LEVEL_DFS[idx]
         self.status = self.gen_sprite_init_status()
         self.buff = {}
 
@@ -214,6 +215,19 @@ class Renne(GameSprite):
         # place renne at some position, facing some direction
         self.pos = Vector2(pos)
         self.direction = direction
+
+
+    def add_exp(self, exp):
+        last_exp = self.exp
+        self.exp = min(self.exp + exp, self.setting.MAX_EXP)
+        if self.level < self.setting.MAX_LEVEL:
+            # level starts from 1, but LEVEL_EXP list starts from 0, so use level as next_exp_required index
+            next_exp_required = self.setting.LEVEL_EXP[level] 
+            if last_exp < next_exp_required and self.exp >= next_exp_required:
+                # level up
+                self.level = min(self.level + 1, self.setting.MAX_LEVEL)
+                # recover status
+                self.recover(self.level)
 
 
     def draw(self, camera):
