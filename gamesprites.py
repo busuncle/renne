@@ -202,11 +202,11 @@ class Renne(GameSprite):
     def recover(self, level=1):
         # recover renne's whole status, usually when the current chapter pass
         idx = level - 1
-        self.hp = self.setting.HP = self.LEVEL_HP[idx]
-        self.mp = self.setting.MP = self.LEVEL_MP[idx]
-        self.sp = self.setting.SP = self.LEVEL_SP[idx]
-        self.atk = self.setting.ATK = self.LEVEL_ATK[idx]
-        self.dfs = self.setting.DFS = self.LEVEL_DFS[idx]
+        self.hp = self.setting.HP = self.setting.LEVEL_HP[idx]
+        self.mp = self.setting.MP = self.setting.LEVEL_MP[idx]
+        self.sp = self.setting.SP = self.setting.LEVEL_SP[idx]
+        self.atk = self.setting.ATK = self.setting.LEVEL_ATK[idx]
+        self.dfs = self.setting.DFS = self.setting.LEVEL_DFS[idx]
         self.status = self.gen_sprite_init_status()
         self.buff = {}
 
@@ -222,7 +222,7 @@ class Renne(GameSprite):
         self.exp = min(self.exp + exp, self.setting.MAX_EXP)
         if self.level < self.setting.MAX_LEVEL:
             # level starts from 1, but LEVEL_EXP list starts from 0, so use level as next_exp_required index
-            next_exp_required = self.setting.LEVEL_EXP[level] 
+            next_exp_required = self.setting.LEVEL_EXP[self.level] 
             if last_exp < next_exp_required and self.exp >= next_exp_required:
                 # level up
                 self.level = min(self.level + 1, self.setting.MAX_LEVEL)

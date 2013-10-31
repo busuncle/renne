@@ -113,19 +113,22 @@ class Sprite(object):
 class Renne(object):
     NAME = "Renne"
     ROLE = cfg.SpriteRole.HERO
-    HP = 300
-    MP = 200
+
+    HP = 150
+    MP = 80
+    SP = 60
+    ATK = 10
+    DFS = 1
+
     MP_RECOVERY_RATE = 10
-    SP = 180
     SP_COST_RATE = 12
     SP_RECOVERY_RATE = 15
-    ATK = 10
-    DFS = 2
 
     # sprite radius
     RADIUS = 18 
     HEIGHT = 70
     WEIGHT = 100
+
     # distance from coord to sprite foot
     POS_RECT_DELTA_Y = 40
 
