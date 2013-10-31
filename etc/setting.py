@@ -1054,6 +1054,7 @@ class SpriteStatus(object):
         "hero_hp": Font.ARIAL_BOLD_12.render("HP", True, pygame.Color("white")),
         "hero_mp": Font.ARIAL_BOLD_12.render("MP", True, pygame.Color("white")),
         "hero_sp": Font.ARIAL_BOLD_12.render("SP", True, pygame.Color("white")),
+        "hero_exp": Font.ARIAL_BOLD_12.render("EX", True, pygame.Color("white")),
     }
 
     # health point related
@@ -1079,6 +1080,11 @@ class SpriteStatus(object):
     HERO_SP_COLOR = pygame.Color(0, 64, 128),
     HERO_SP_TITLE_BLIT_POS = (82, 48)
     HERO_SP_BLIT_POS = (104, 50)
+
+    # exp related
+    HERO_EXP_COLOR = pygame.Color(211, 211, 211)
+    HERO_EXP_TITTLE_BLIT_POS = (82, 65)
+    HERO_EXP_BLIT_POS = (104, 67)
 
     ENEMY_HP_BAR_SIZE = (50, 5)
 
@@ -1123,6 +1129,13 @@ class SpriteStatus(object):
     RECOVER_HP_WORDS_BLIT_X_SIGMA = 20
     RECOVER_HP_WORDS_BLIT_Y_SIGMA = 10
     RECOVER_HP_WORDS_POS_MOVE_RATE = (0, -60)
+
+    LEVEL_UP_WORDS_COLOR = pygame.Color("yellow")
+    LEVEL_UP_WORDS_FONT = Font.ARIAL_BLACK_32
+    LEVEL_UP_WORDS_SHOW_TIME = 1.5
+    LEVEL_UP_WORDS_BLIT_X_OFFSET = 90
+    LEVEL_UP_WORDS_BLIT_Y_OFFSET = 35
+    LEVEL_UP_WORDS_POS_MOVE_RATE = (0, -12)
 
     # weaken status
     MP_SP_DOWN_WORDS_COLOR = pygame.Color("black")

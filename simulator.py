@@ -1304,8 +1304,11 @@ class RenneAttacker(AngleAttacker):
 
 class EnemyAngleAttacker(AngleAttacker):
     def handle_under_attack(self, from_who, cost_hp, attack_method=cfg.Attack.METHOD_REGULAR):
-        super(EnemyAngleAttacker, self).handle_under_attack(from_who, cost_hp, attack_method=attack_method)
         sp = self.sprite
+        if sp.status["hp"] not in cfg.HpStatus.ALIVE:
+            return
+
+        super(EnemyAngleAttacker, self).handle_under_attack(from_who, cost_hp, attack_method=attack_method)
         sp.cal_angry(cost_hp)
         sp.set_target(from_who)
         # add exp to hero if this enemy is die

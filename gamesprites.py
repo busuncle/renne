@@ -228,6 +228,13 @@ class Renne(GameSprite):
                 self.level = min(self.level + 1, self.setting.MAX_LEVEL)
                 # recover status
                 self.recover(self.level)
+                # show level up words
+                self.animation.show_words(
+                    sfg.SpriteStatus.LEVEL_UP_WORDS_FONT.render("LEVEL UP!", True, sfg.SpriteStatus.LEVEL_UP_WORDS_COLOR),
+                    sfg.SpriteStatus.LEVEL_UP_WORDS_SHOW_TIME,
+                    (self.pos.x - sfg.SpriteStatus.LEVEL_UP_WORDS_BLIT_X_OFFSET, self.pos.y * 0.5 - self.setting.HEIGHT - sfg.SpriteStatus.LEVEL_UP_WORDS_BLIT_Y_OFFSET),
+                    sfg.SpriteStatus.LEVEL_UP_WORDS_POS_MOVE_RATE,
+                    True)
 
 
     def draw(self, camera):

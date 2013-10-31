@@ -478,6 +478,7 @@ class HeroStatus(object):
         self.hero_hp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
         self.hero_mp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
         self.hero_sp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
+        self.hero_exp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
         # skill icons 
         self.destroy_fire_icon = gen_panel(effect_image_controller, 
             sfg.SpriteStatus.DESTROY_FIRE_ICON_IMAGE_KEY, 
@@ -562,6 +563,7 @@ class HeroStatus(object):
         camera.screen.blit(sfg.SpriteStatus.WORDS["hero_hp"], sfg.SpriteStatus.HERO_HP_TITLE_BLIT_POS)
         camera.screen.blit(sfg.SpriteStatus.WORDS["hero_mp"], sfg.SpriteStatus.HERO_MP_TITLE_BLIT_POS)
         camera.screen.blit(sfg.SpriteStatus.WORDS["hero_sp"], sfg.SpriteStatus.HERO_SP_TITLE_BLIT_POS)
+        camera.screen.blit(sfg.SpriteStatus.WORDS["hero_exp"], sfg.SpriteStatus.HERO_EXP_TITTLE_BLIT_POS)
 
         # draw the hp bar for Renne
         self.draw_hero_bar(camera, self.hero.hp, self.hero.setting.HP, self.hero_hp_bar, 
@@ -575,6 +577,16 @@ class HeroStatus(object):
         # draw the sp bar for Renne
         self.draw_hero_bar(camera, self.hero.sp, self.hero.setting.SP, self.hero_sp_bar,
             sfg.SpriteStatus.HERO_SP_COLOR, sfg.SpriteStatus.HERO_SP_BLIT_POS)
+
+        # draw the level bar for Renne
+        last_exp = self.hero.setting.LEVEL_EXP[self.hero.level - 1]
+        if self.hero.level < self.hero.setting.MAX_LEVEL:
+            next_exp = self.hero.setting.LEVEL_EXP[self.hero.level]
+            self.draw_hero_bar(camera, self.hero.exp - last_exp, next_exp - last_exp, self.hero_exp_bar,
+                sfg.SpriteStatus.HERO_EXP_COLOR, sfg.SpriteStatus.HERO_EXP_BLIT_POS)
+        else:
+            self.draw_hero_bar(camera, 1, 1, self.hero_exp_bar,
+                sfg.SpriteStatus.HERO_EXP_COLOR, sfg.SpriteStatus.HERO_EXP_BLIT_POS)
 
         # draw skill icons
         camera.screen.blit(self.destroy_fire_icon, sfg.SpriteStatus.DESTROY_FIRE_ICON_BLIT_POS)
