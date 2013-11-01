@@ -143,7 +143,7 @@ class Renne(object):
     LEVEL_HP = (150, 200, 250, 300, 350, 400, 450, 500, 550, 600)
     LEVEL_MP = (80, 120, 160, 200, 240, 280, 320, 360, 400, 440)
     LEVEL_SP = (60, 80, 100, 120, 140, 160, 170, 180, 190, 200)
-    LEVEL_ATK = (10, 12, 14, 16, 20, 24, 28, 32, 38, 44)
+    LEVEL_ATK = (10, 12, 14, 16, 18, 20, 24, 28, 32, 36)
     LEVEL_DFS = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     LEVEL_EXP = (0, 100, 300, 700, 1500, 2800, 4600, 7000, 10000, 15000)
     #LEVEL_EXP = tuple(range(10))
@@ -181,7 +181,7 @@ class Renne(object):
         },
         "destroy_fire": {
             "range": 400,
-            "damage": 40,
+            "damage": 50,
             "speed": 300,
             "radius": 18,
             "crick_time": 0.3,
@@ -192,7 +192,7 @@ class Renne(object):
         },
         "destroy_bomb": {
             "range": 360,
-            "damage": 60,
+            "damage": 80,
             "speed": 260,
             "mana": 60,
             "cd": 5,
@@ -209,7 +209,7 @@ class Renne(object):
         "destroy_aerolite": {
             "key_frames": (1, ),
             "fall_range": 128,
-            "damage": 70,
+            "damage": 100,
             "acceleration": Physics.GRAVITY_ACCELERATION,
             "mana": 80,
             "cd": 10,

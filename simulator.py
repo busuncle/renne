@@ -1178,6 +1178,12 @@ class RenneAttacker(AngleAttacker):
         self.reset_vars()
 
 
+    def reload_attack_params(self):
+        sp = self.sprite
+        self.attack1_params["damage"] = sp.setting.ATK
+        self.attack2_params["damage"] = int(sp.setting.ATK * 1.5)
+
+
     def reset_vars(self):
         # a lock, only one magic is running in an attack
         self.method = None

@@ -207,8 +207,8 @@ class Renne(GameSprite):
         self.sp = self.setting.SP = self.setting.LEVEL_SP[idx]
         self.atk = self.setting.ATK = self.setting.LEVEL_ATK[idx]
         self.dfs = self.setting.DFS = self.setting.LEVEL_DFS[idx]
+        self.attacker.reload_attack_params()
         self.status = self.gen_sprite_init_status()
-        self.buff = {}
 
 
     def place(self, pos, direction):
