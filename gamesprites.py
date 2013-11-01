@@ -189,6 +189,8 @@ class Renne(GameSprite):
         self.attack2_accumulate_power_frame = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_frame"]
         self.attack2_accumulate_power_time = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_time"]
 
+        self.level_title = sfg.Font.ARIAL_BOLD_12.render("LV%s" % self.level, True, pygame.Color("white"))
+
 
     def activate(self, allsprites, enemies, static_objects, game_map):
         self.area.center = self.pos("xy")
@@ -207,7 +209,7 @@ class Renne(GameSprite):
         self.sp = self.setting.SP = self.setting.LEVEL_SP[idx]
         self.atk = self.setting.ATK = self.setting.LEVEL_ATK[idx]
         self.dfs = self.setting.DFS = self.setting.LEVEL_DFS[idx]
-        self.attacker.reload_attack_params()
+        self.attacker.cal_real_attack_damage()
         self.status = self.gen_sprite_init_status()
 
 
@@ -237,6 +239,8 @@ class Renne(GameSprite):
                 (self.pos.x - sfg.SpriteStatus.LEVEL_UP_WORDS_BLIT_X_OFFSET, self.pos.y * 0.5 - self.setting.HEIGHT - sfg.SpriteStatus.LEVEL_UP_WORDS_BLIT_Y_OFFSET),
                 sfg.SpriteStatus.LEVEL_UP_WORDS_POS_MOVE_RATE,
                 True)
+            # update level title
+            self.level_title = sfg.Font.ARIAL_BOLD_12.render("LV%s" % self.level, True, pygame.Color("white"))
 
 
     def draw(self, camera):

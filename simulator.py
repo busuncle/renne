@@ -1176,12 +1176,15 @@ class RenneAttacker(AngleAttacker):
         # every magic has one or more magic sprite(s), eg. DestroyBombSet has many "bombs"
         self.magic_list = []
         self.reset_vars()
+        self.cal_real_attack_damage()
 
 
-    def reload_attack_params(self):
+    def cal_real_attack_damage(self):
         sp = self.sprite
-        self.attack1_params["damage"] = sp.setting.ATK
-        self.attack2_params["damage"] = int(sp.setting.ATK * 1.5)
+        atk = sp.setting.ATK
+        self.attack1_params["damage"] = int(atk * self.attack1_params["atk_ratio"])
+        self.attack2_params["damage"] = int(atk * self.attack2_params["atk_ratio"])
+        self.run_attack_params["damage"] = int(atk * self.run_attack_params["atk_ratio"])
 
 
     def reset_vars(self):

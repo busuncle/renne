@@ -564,6 +564,8 @@ class HeroStatus(object):
         camera.screen.blit(sfg.SpriteStatus.WORDS["hero_mp"], sfg.SpriteStatus.HERO_MP_TITLE_BLIT_POS)
         camera.screen.blit(sfg.SpriteStatus.WORDS["hero_sp"], sfg.SpriteStatus.HERO_SP_TITLE_BLIT_POS)
         camera.screen.blit(sfg.SpriteStatus.WORDS["hero_exp"], sfg.SpriteStatus.HERO_EXP_TITTLE_BLIT_POS)
+        # level title is not a constant, read it from hero
+        camera.screen.blit(self.hero.level_title, sfg.SpriteStatus.HERO_LEVEL_BLIT_POS)
 
         # draw the hp bar for Renne
         self.draw_hero_bar(camera, self.hero.hp, self.hero.setting.HP, self.hero_hp_bar, 
@@ -658,7 +660,6 @@ class Achievement(object):
             for record in self.hero.attacker.hit_record:
                 score = sfg.Achievement.SCORE["per_hit"] * sum(range(1, record["n_hit"] + 1))
                 self.n_hit_score.incr_next_value(score)
-                #print "%s hit!" % record["n_hit"]
 
             self.hero.attacker.hit_record = []
 
@@ -673,7 +674,6 @@ class Achievement(object):
                     if self.kill_time_list[-1] - self.kill_time_list[-2] <= sfg.Achievement.N_KILL_TIMEDELTA:
                         n_kill = self.n_kill_list[-1] + 1
                         self.n_kill_list.append(n_kill)
-                        #print "%s kill!" % self.n_kill_list[-1]
                         score = sfg.Achievement.SCORE["per_n_kill"] * pow(2, n_kill)
                         self.n_kill_score.incr_next_value(score)
                     else:

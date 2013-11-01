@@ -146,12 +146,13 @@ class Renne(object):
     LEVEL_ATK = (10, 12, 14, 16, 18, 20, 24, 28, 32, 36)
     LEVEL_DFS = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     LEVEL_EXP = (0, 100, 300, 700, 1500, 2800, 4600, 7000, 10000, 15000)
-    #LEVEL_EXP = tuple(range(10))
+    #LEVEL_EXP = tuple(range(0, 28, 3))
     MAX_LEVEL = len(LEVEL_EXP)
     MAX_EXP = LEVEL_EXP[MAX_LEVEL - 1]
 
     ATTACKER_PARAMS = {
         "attack1":{
+            "atk_ratio": 1,
             "damage": ATK,
             "crick_time": 0.2,
             "start_frame": 4,
@@ -159,7 +160,8 @@ class Renne(object):
             "self_crick_time": 0.08,
         },
         "attack2": {
-            "damage": int(ATK * 1.5),
+            "atk_ratio": 1.5,
+            "damage": ATK,
             "accumulate_power_frame": 2,
             "accumulate_power_time": 0.08,
             "thump_crick_time": 0.3,
@@ -173,7 +175,8 @@ class Renne(object):
         "angle2": 160,
         "key_frames": (4, 5),
         "run_attack": {
-            "damage": 18,
+            "atk_ratio": 1.8,
+            "damage": ATK,
             "crick_time": 0.4,
             "out_speed": 1000,
             "acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
@@ -1065,27 +1068,26 @@ class SpriteStatus(object):
         cfg.HpStatus.DANGER: pygame.Color(128, 0, 0),
         cfg.HpStatus.DIE: pygame.Color(128, 128, 128),
     }
-    SPRITE_BAR_BG_COLOR = pygame.Color(0, 0, 0, 128)
+    SPRITE_BAR_BG_COLOR = pygame.Color(0, 0, 0, 224)
     HERO_ALL_BAR_SIZE = (100, 10)
 
     # hp related
-    HERO_HP_TITLE_BLIT_POS = (82, 14)
-    HERO_HP_BLIT_POS = (104, 16)
-
+    HERO_HP_TITLE_BLIT_POS = (84, 10)
+    HERO_HP_BLIT_POS = (104, 12)
     # mp related
     HERO_MP_COLOR = pygame.Color(0, 128, 128),
-    HERO_MP_TITLE_BLIT_POS = (82, 31)
-    HERO_MP_BLIT_POS = (104, 33)
-
+    HERO_MP_TITLE_BLIT_POS = (84, 26)
+    HERO_MP_BLIT_POS = (104, 28)
     # sp related
     HERO_SP_COLOR = pygame.Color(0, 64, 128),
-    HERO_SP_TITLE_BLIT_POS = (82, 48)
-    HERO_SP_BLIT_POS = (104, 50)
-
+    HERO_SP_TITLE_BLIT_POS = (84, 42)
+    HERO_SP_BLIT_POS = (104, 44)
     # exp related
-    HERO_EXP_COLOR = pygame.Color(211, 211, 211)
-    HERO_EXP_TITTLE_BLIT_POS = (82, 65)
-    HERO_EXP_BLIT_POS = (104, 67)
+    HERO_EXP_COLOR = pygame.Color(128, 128, 0)
+    HERO_EXP_TITTLE_BLIT_POS = (84, 58)
+    HERO_EXP_BLIT_POS = (104, 60)
+    # level related
+    HERO_LEVEL_BLIT_POS = (84, 74)
 
     ENEMY_HP_BAR_SIZE = (50, 5)
 
