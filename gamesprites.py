@@ -218,23 +218,25 @@ class Renne(GameSprite):
 
 
     def add_exp(self, exp):
-        last_exp = self.exp
         self.exp = min(self.exp + exp, self.setting.MAX_EXP)
-        if self.level < self.setting.MAX_LEVEL:
-            # level starts from 1, but LEVEL_EXP list starts from 0, so use level as next_exp_required index
-            next_exp_required = self.setting.LEVEL_EXP[self.level] 
-            if last_exp < next_exp_required and self.exp >= next_exp_required:
-                # level up
-                self.level = min(self.level + 1, self.setting.MAX_LEVEL)
-                # recover status
-                self.recover(self.level)
-                # show level up words
-                self.animation.show_words(
-                    sfg.SpriteStatus.LEVEL_UP_WORDS_FONT.render("LEVEL UP!", True, sfg.SpriteStatus.LEVEL_UP_WORDS_COLOR),
-                    sfg.SpriteStatus.LEVEL_UP_WORDS_SHOW_TIME,
-                    (self.pos.x - sfg.SpriteStatus.LEVEL_UP_WORDS_BLIT_X_OFFSET, self.pos.y * 0.5 - self.setting.HEIGHT - sfg.SpriteStatus.LEVEL_UP_WORDS_BLIT_Y_OFFSET),
-                    sfg.SpriteStatus.LEVEL_UP_WORDS_POS_MOVE_RATE,
-                    True)
+
+        # level starts from 1, LEVEL_EXP list starts from 0
+        new_level = self.level
+        while new_level < self.setting.MAX_LEVEL and self.exp >= self.setting.LEVEL_EXP[new_level]:
+            new_level += 1
+
+        if new_level > self.level:
+            # level up
+            self.level = new_level
+            # recover status
+            self.recover(self.level)
+            # show level up words
+            self.animation.show_words(
+                sfg.SpriteStatus.LEVEL_UP_WORDS_FONT.render("LEVEL UP!", True, sfg.SpriteStatus.LEVEL_UP_WORDS_COLOR),
+                sfg.SpriteStatus.LEVEL_UP_WORDS_SHOW_TIME,
+                (self.pos.x - sfg.SpriteStatus.LEVEL_UP_WORDS_BLIT_X_OFFSET, self.pos.y * 0.5 - self.setting.HEIGHT - sfg.SpriteStatus.LEVEL_UP_WORDS_BLIT_Y_OFFSET),
+                sfg.SpriteStatus.LEVEL_UP_WORDS_POS_MOVE_RATE,
+                True)
 
 
     def draw(self, camera):

@@ -146,6 +146,7 @@ class Renne(object):
     LEVEL_ATK = (10, 12, 14, 16, 20, 24, 28, 32, 38, 44)
     LEVEL_DFS = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     LEVEL_EXP = (0, 100, 300, 700, 1500, 2800, 4600, 7000, 10000, 15000)
+    #LEVEL_EXP = tuple(range(10))
     MAX_LEVEL = len(LEVEL_EXP)
     MAX_EXP = LEVEL_EXP[MAX_LEVEL - 1]
 
