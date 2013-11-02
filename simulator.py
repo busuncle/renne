@@ -226,9 +226,9 @@ class PoisonSet(MagicSkill):
                             {"dps": self.params["damage"], "time_list": range(self.params["damage_time"]),
                             "time_left": self.params["damage_time"]})
 
-            if poison.height > 0 and (not sp.reachable(poison.area)):
-                # this poison will no longer move horizontally
-                poison.key_vec = Vector2(0, 0)
+            #if poison.height > 0 and (not sp.reachable(poison.area)):
+            #    # this poison will no longer move horizontally
+            #    poison.key_vec = Vector2(0, 0)
 
             poison.update(passed_seconds)
             if poison.status == cfg.Magic.STATUS_VANISH:
@@ -1382,6 +1382,15 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
 
         distance_to_target = sp.pos.get_distance_to(target.pos)
         if distance_to_target <= self.attack_range * 5:
+            x = min(sp.pos.x, target.pos.x)
+            y = min(sp.pos.y, target.pos.y)
+            w = abs(sp.pos.x - target.pos.x)
+            h = abs(sp.pos.y - target.pos.y)
+            r = pygame.Rect((x, y, w, h))
+            for obj in sp.static_objects:
+                if obj.setting.IS_BLOCK and obj.area.colliderect(r):
+                    return False
+
             return True
 
         return False

@@ -511,7 +511,7 @@ class GanDie(Enemy):
         "spit_poison": {
             "damage": 5,
             "damage_time": 5,
-            "speed": 500,
+            "speed": 600,
             "fall_acceleration": Physics.GRAVITY_ACCELERATION,
             "life_time": 10,
             "height": 60,
