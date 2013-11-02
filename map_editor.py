@@ -314,25 +314,25 @@ def run(chapter):
                         and put_down_ambush(selected_object, game_world):
                         selected_object = None
 
-                if event.key == K_1:
+                if event.key == sfg.MapEditor.KEY_STATIC_OBJECT:
                     # static object
                     selected_object = selected_object_shift(selected_object, cfg.GameObject.TYPE_STATIC)
-                elif event.key == K_2:
+                elif event.key == sfg.MapEditor.KEY_ENEMY:
                     # enemy
                     selected_object = selected_object_shift(selected_object, cfg.GameObject.TYPE_DYNAMIC)
-                elif event.key == K_3:
+                elif event.key == sfg.MapEditor.KEY_AMBUSH:
                     # ambush
                     selected_object = mouse_ambush_toggle(selected_object)
 
-                if event.key == K_e:
+                if event.key == sfg.MapEditor.KEY_ERASE_SELECTED_OBJECT:
                     selected_object = None
 
-                if event.key == K_t:
+                if event.key == sfg.MapEditor.KEY_TURN_DIRECTION:
                     if isinstance(selected_object, GameSprite):
                         selected_object = turn_sprite_direction(selected_object)
 
                 key_mods = pygame.key.get_mods()
-                if key_mods & KMOD_CTRL and event.key == K_s:
+                if key_mods & KMOD_CTRL and event.key == sfg.MapEditor.KEY_CTRL_SAVE:
                     # ctrl+s to save map setting
                     change_map_setting(map_setting, game_world, game_map)
                     util.save_map_setting(chapter, map_setting)
@@ -341,11 +341,11 @@ def run(chapter):
                 if key_mods & KMOD_ALT:
 
                     # debug draw switch
-                    if event.key == K_p:
+                    if event.key == sfg.MapEditor.KEY_ALT_SWITCH_POS:
                         DEBUG_DRAW["pos"] = not DEBUG_DRAW["pos"]
-                    elif event.key == K_a:
+                    elif event.key == sfg.MapEditor.KEY_ALT_SWITCH_AREA:
                         DEBUG_DRAW["area"] = not DEBUG_DRAW["area"]
-                    elif event.key == K_z:
+                    elif event.key == sfg.MapEditor.KEY_ALT_SWITCH_WAYPOINT:
                         DEBUG_DRAW["waypoints"] = not DEBUG_DRAW["waypoints"]
 
             elif event.type == MOUSEBUTTONDOWN:
@@ -399,7 +399,7 @@ def run(chapter):
 
         for sp in sorted(game_world.yield_all_objects(), key=lambda sp: sp.pos.y):
             if sp.setting.GAME_OBJECT_TYPE == cfg.GameObject.TYPE_DYNAMIC:
-                sp.adjust_rect()
+                sp.animation.adjust_rect()
                 # select current image for corresponding direction
                 sp.animation.image = sp.animation.sprite_image_contoller.get_surface(
                     cfg.SpriteAction.STAND)[sp.direction]

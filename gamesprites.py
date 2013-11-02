@@ -88,6 +88,10 @@ class GameSprite(pygame.sprite.DirtySprite):
                 return v
 
 
+    def adjust_rect(self):
+        self.animation.adjust_rect()
+
+
     def reset_action(self):
         self.action = cfg.SpriteAction.STAND
         self.frame_action = None

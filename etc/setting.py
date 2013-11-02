@@ -1306,6 +1306,15 @@ class EndGame(object):
 
 class MapEditor(object):
     SCREEN_MOVE_SPEED = 400
+    KEY_STATIC_OBJECT = K_1
+    KEY_ENEMY = K_2
+    KEY_AMBUSH = K_3
+    KEY_ERASE_SELECTED_OBJECT = K_e
+    KEY_TURN_DIRECTION = K_t
+    KEY_CTRL_SAVE = K_s
+    KEY_ALT_SWITCH_POS = K_p
+    KEY_ALT_SWITCH_AREA = K_a
+    KEY_ALT_SWITCH_WAYPOINT = K_z
 
 
 
