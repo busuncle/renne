@@ -1047,9 +1047,7 @@ class CastleWarrior(Enemy):
             self.attacker.thump_last_freeze_time_add += passed_seconds
 
         else:
-            self.animation.set_frame_add(cfg.EnemyAction.ATTACK, 0)
-            self.attacker.finish()
-            self.brain.persistent = False
+            self.reset_action(force=True)
 
 
     def attack(self, passed_seconds):

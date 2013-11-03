@@ -281,11 +281,16 @@ class BloodSet(MagicSkill):
 
     def gen_magic_sprites(self):
         sp = self.sprite
-        for img in self.image_list:
-            key_vec = Vector2(random(), random())
+        vec = cfg.Direction.DIRECT_TO_VEC[sp.direction]
+        rand_x_min, rand_x_max = (-100, 100) if vec[0] == 0 else (min(vec[0] * 100, 0), max(vec[0] * 100, 0))
+        rand_y_min, rand_y_max = (-100, 100) if vec[1] == 0 else (min(vec[1] * 100, 0), max(vec[1] * 100, 0))
+
+        for _tmp in xrange(8):
+            img = choice(self.image_list)
+            key_vec = Vector2(randint(rand_x_min, rand_x_max), randint(rand_y_min, rand_y_max))
             key_vec.normalize()
             radius = img.get_width() * 0.5
-            speed = gauss(300, 20)
+            speed = gauss(300, 50)
 
             r_img = transform.rotate(img, randint(-180, 180))
             tf_img = transform.smoothscale(r_img, (r_img.get_width(), r_img.get_height() / 2))
@@ -1049,6 +1054,8 @@ class DeathDomain(MagicSkill):
             if self.init_pos.get_distance_to(target.pos) < self.radius \
                 and self.hit_cds.get(id(target), 0) == 0:
                 target.attacker.handle_under_attack(sp, self.params["damage"], cfg.Attack.METHOD_MAGIC)
+                target.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
+                    {"time": self.params["crick_time"], "old_action": target.action})
                 self.hit_cds[id(target)] = self.params["hit_cd"]
 
         for k in self.hit_cds:
@@ -1113,6 +1120,22 @@ class Attacker(object):
                     return 
 
         sp.status[status_id] = status_object
+
+
+    def is_static_object_block(self, target):
+        sp = self.sprite
+        x_min = min(sp.area.left, target.area.left)
+        y_min = min(sp.area.top, target.area.top)
+        x_max = max(sp.area.right, target.area.right)
+        y_max = max(sp.area.bottom, target.area.bottom)
+        w = x_max - x_min
+        h = y_max - y_min
+        r = pygame.Rect((x_min, y_min, w, h))
+        for obj in sp.static_objects:
+            if obj.setting.IS_BLOCK and obj.area.colliderect(r):
+                return True
+
+        return False
 
 
     def finish(self):
@@ -1452,15 +1475,8 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
 
         distance_to_target = sp.pos.get_distance_to(target.pos)
         if distance_to_target <= self.attack_range * 5:
-            x = min(sp.pos.x, target.pos.x)
-            y = min(sp.pos.y, target.pos.y)
-            w = abs(sp.pos.x - target.pos.x)
-            h = abs(sp.pos.y - target.pos.y)
-            r = pygame.Rect((x, y, w, h))
-            for obj in sp.static_objects:
-                if obj.setting.IS_BLOCK and obj.area.colliderect(r):
-                    return False
-
+            if self.is_static_object_block(target):
+                return False
             return True
 
         return False
@@ -1594,8 +1610,8 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
             direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
             vec_to_target = Vector2.from_points(sp.area.center, target.area.center)
             cos_val = cos_for_vec(direct_vec, vec_to_target)
-            if cos_val >= self.thump_cos_min and \
-                self.sprite.view_sensor.detect(target) is not None:
+            if cos_val >= self.thump_cos_min \
+                and (not self.is_static_object_block(target)):
                 return True
 
         return False
@@ -1619,7 +1635,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
         if self.hit(target, current_frame_add):
             atk = sp.atk
             if self.method == "thump":
-                # thump results in a double attack and fallback
+                # thump results in a double attack and knockback
                 atk *= 2
                 words = sfg.Font.ARIAL_BLACK_24.render("Thump!", True, pygame.Color("gold"))
                 sp.animation.show_words(words, 0.3, 
@@ -1628,12 +1644,11 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
                 blood_set = BloodSet(sp, target.pos, target.setting.HEIGHT)
                 self.magic_list.append(blood_set)
 
-                if target.status.get(cfg.SpriteStatus.UNDER_THUMP) is None:
-                    target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
-                        {"crick_time": self.thump_crick_time, 
-                        "out_speed": self.thump_out_speed, 
-                        "acceleration": self.thump_acceleration,
-                        "key_vec": Vector2.from_points(sp.pos, target.pos)})
+                target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                    {"crick_time": self.thump_crick_time, 
+                    "out_speed": self.thump_out_speed, 
+                    "acceleration": self.thump_acceleration,
+                    "key_vec": Vector2.from_points(sp.pos, target.pos)})
 
             damage = max(0, atk - target.dfs)
             target.attacker.handle_under_attack(sp, damage)
@@ -1685,6 +1700,7 @@ class TwoHeadSkeletonAttacker(EnemyShortAttacker):
         self.fall_thump_crick_time = attacker_params["fall_thump_crick_time"]
         self.fall_thump_acceleration = attacker_params["fall_thump_acceleration"]
         self.fall_thump_out_speed = attacker_params["fall_thump_out_speed"]
+        self.magic_list = []
         self.reset_vars()
 
 
@@ -1744,6 +1760,10 @@ class TwoHeadSkeletonAttacker(EnemyShortAttacker):
                     {"crick_time": self.fall_thump_crick_time, "out_speed": self.fall_thump_out_speed,
                     "acceleration": self.fall_thump_acceleration, 
                     "key_vec": Vector2.from_points(sp.pos, target.pos)})
+
+                blood_set = BloodSet(sp, target.pos, target.setting.HEIGHT)
+                self.magic_list.append(blood_set)
+
                 return True
 
         return False
@@ -1809,6 +1829,7 @@ class SwordRobberAttacker(EnemyShortAttacker):
         self.rotate_rate = whirlwind["rotate_rate"]
         self.rotate_time = whirlwind["rotate_time"]
         self.offset_time = whirlwind["offset_time"]
+        self.crick_time = whirlwind["crick_time"]
         self.move_speed = whirlwind["move_speed"]
         self.self_stun_prob = whirlwind["self_stun_prob"]
         self.self_stun_time = whirlwind["self_stun_time"]
@@ -1822,16 +1843,8 @@ class SwordRobberAttacker(EnemyShortAttacker):
 
 
     def whirlwind_chance(self, target):
-        sp = self.sprite
-        x = min(sp.pos.x, target.pos.x)
-        y = min(sp.pos.y, target.pos.y)
-        w = abs(sp.pos.x - target.pos.x)
-        h = abs(sp.pos.y - target.pos.y)
-        r = pygame.Rect((x, y, w, h))
-        for obj in sp.static_objects:
-            if obj.setting.IS_BLOCK and obj.area.colliderect(r):
-                return False
-
+        if self.is_static_object_block(target):
+            return False
         return True
 
 
@@ -1864,7 +1877,10 @@ class SwordRobberAttacker(EnemyShortAttacker):
 
     def whirlwind_run(self, target):
         if self.whirlwind_hit(target):
-            target.attacker.handle_under_attack(self.sprite, self.sprite.atk)
+            sp = self.sprite
+            target.attacker.handle_under_attack(sp, sp.atk)
+            target.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
+                {"time": self.crick_time, "old_action": target.action})
 
 
     def finish(self):
@@ -1874,6 +1890,11 @@ class SwordRobberAttacker(EnemyShortAttacker):
 
 
 class EnemyImpaleShortAttacker(EnemyShortAttacker):
+    def __init__(self, sprite, attacker_params):
+        super(EnemyImpaleShortAttacker, self).__init__(sprite, attacker_params)
+        self.magic_list = []
+
+
     def run(self, target, current_frame_add):
         if self.hit(target, current_frame_add):
             # regardless of target's dfs
@@ -1888,6 +1909,9 @@ class EnemyImpaleShortAttacker(EnemyShortAttacker):
             # attack rebounce for this enemy
             super(EnemyImpaleShortAttacker, self).handle_under_attack(from_who, cost_hp, attack_method)
             from_who.attacker.handle_under_attack(self.sprite, cost_hp)
+            blood_set = BloodSet(self.sprite, from_who.pos, from_who.setting.HEIGHT)
+            self.magic_list.append(blood_set)
+
         elif attack_method == cfg.Attack.METHOD_MAGIC:
             # but recieve more hp-cost from magic attack
             super(EnemyImpaleShortAttacker, self).handle_under_attack(from_who, cost_hp * 2, attack_method)
@@ -2066,6 +2090,7 @@ class ArmouredShooterAttacker(EnemyLongAttacker):
             return False
 
         if happen(sp.brain.ai.ATTACK_GRENADE_PROB) \
+            and (not self.is_static_object_block(target)) \
             and len(self.magic_list) < self.grenade_params["max_num"]:
             self.method = "grenade"
         else:
@@ -2106,6 +2131,7 @@ class WerwolfAttacker(EnemyShortAttacker):
         self.thump_out_speed = catch["thump_out_speed"]
         self.thump_crick_time = catch["thump_crick_time"]
         self.thump_acceleration = catch["thump_acceleration"]
+        self.magic_list = []
         self.reset_vars()
 
 
@@ -2123,12 +2149,8 @@ class WerwolfAttacker(EnemyShortAttacker):
         if distance_to_target < self.chance_range_min:
             return False
 
-        r = target.area
-        for p in ("topleft", "topright", "bottomleft", "bottomright"):
-            line_seg = LineSegment(getattr(sp.area, p), getattr(target.area, p))
-            for obj in sp.static_objects:
-                if obj.setting.IS_BLOCK and line_segment_intersect_with_rect(line_seg, obj.area):
-                    return False
+        if self.is_static_object_block(target):
+            return False
 
         return True
 
@@ -2161,6 +2183,8 @@ class WerwolfAttacker(EnemyShortAttacker):
 
     def catch_run_a(self, target):
         target.attacker.handle_under_attack(self.sprite, self.damage_a)
+        blood_set = BloodSet(self.sprite, target.pos, target.setting.HEIGHT)
+        self.magic_list.append(blood_set)
 
 
     def catch_run_b(self, target):

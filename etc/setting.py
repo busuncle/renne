@@ -298,10 +298,10 @@ class CastleWarrior(Enemy):
         "thump_pre_freeze_time": 1,
         "thump_last_freeze_time": 0.8,
         "thump_pre_frames": (0, 1, 2),
-        "thump_pre_rate": 8,
+        "thump_pre_rate": 4,
         "thump_frame": 4,
         "thump_slide_time": 0.5,
-        "thump_slide_speed": 120,
+        "thump_slide_speed": 240,
         "thump_cos_min": 0.9,
     }
 
@@ -403,6 +403,7 @@ class LeonHardt(Enemy):
             "sword_up_life_time": 0.2,
             "mana": 200,
             "pull_speed": 120,
+            "crick_time": 0.15,
         }
     }
     WALK_SPEED = 200
@@ -479,6 +480,7 @@ class SwordRobber(Enemy):
             "offset_time": 0.2,
             "self_stun_prob": 0.9,
             "self_stun_time": 3,
+            "crick_time": 0.3,
         }
     }
 
