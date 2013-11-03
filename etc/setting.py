@@ -1386,10 +1386,17 @@ class Effect(object):
     POISON_RECT1 = (0, 32, 96, 32)
     POISON_RECT2 = (0, 192, 128, 64)
     POISON_RECT3 = (128, 128, 128, 128)
-    POISON_DX1 = 8
-    POISON_DY1 = 8
-    POISON_DX2 = 16
-    POISON_DY2 = 16
+
+    BLOOD_IMAGE_KEY = "e9"
+    BLOOD_RECT_LIST = (
+        (0, 32, 32, 32),
+        (32, 32, 32, 32),
+        (64, 32, 32, 32),
+        (64, 192, 32, 32),
+        (64, 224, 32, 32),
+        (96, 224, 32, 32),
+    )
+    BLOOD_LIFE_TIME = 6
 
     BOMB2_IMAGE_KEY = "e5"
 
@@ -1679,4 +1686,5 @@ EFFECT = ("effect", {
     "e6": "e6.png",
     "e7": "e7.png",
     "e8": "e8.png",
+    "e9": "e9.png", 
 })

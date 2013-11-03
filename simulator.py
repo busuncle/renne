@@ -112,8 +112,9 @@ class Bomb(MagicSprite):
 class Poison(MagicSprite):
     def __init__(self, pos, radius, dx, dy, damage, image, height, key_vec, speed, fall_acceleration, 
         life_time):
-        super(Poison, self).__init__(pos, radius, dx, dy, damage, image, None)
+        super(Poison, self).__init__(pos, radius, dx, dy, damage, image)
         self.origin_image_on_floor = None
+        self.origin_dy = self.dy
         self.key_vec = key_vec
         self.speed = speed
         # notice here, if height is positive, fall_acceleration should be negative
@@ -144,6 +145,7 @@ class Poison(MagicSprite):
             self.area.center = self.pos("xy")
             self.height += self.v_y * passed_seconds + 0.5 * self.fall_acceleration * pow(passed_seconds, 2)
             self.v_y += self.fall_acceleration * passed_seconds
+            self.dy = self.origin_dy + self.height
             if self.height <= 0:
                 # the poison is now on the floor, keep an orignal image copy for scale further
                 self.origin_image_on_floor = self.image.copy()
@@ -151,14 +153,6 @@ class Poison(MagicSprite):
 
         if self.life_time_left <= 0:
             self.status = cfg.Magic.STATUS_VANISH
-
-
-    def draw(self, camera):
-        if self.status == cfg.Magic.STATUS_ALIVE:
-            camera.screen.blit(self.image,
-                (self.pos.x - camera.rect.x - self.dx, 
-                self.pos.y * 0.5 - camera.rect.y - self.dy - self.height))
-            #self.draw_area(camera)
 
 
 
@@ -237,6 +231,82 @@ class PoisonSet(MagicSkill):
         if len(self.magic_sprites) == 0:
             self.status = cfg.Magic.STATUS_VANISH
 
+
+
+class Blood(MagicSprite):
+    # handle blood as a MagicSprite
+    def __init__(self, pos, radius, dx, dy, image, height, key_vec, speed, fall_acceleration, life_time):
+        super(Blood, self).__init__(pos, radius, dx, dy, 0, image)
+        self.origin_dy = self.dy
+        self.key_vec = key_vec
+        self.speed = speed
+        self.height = abs(height)
+        self.fall_acceleration = -abs(fall_acceleration)
+        self.v_y = 0
+        self.life_time = life_time
+
+
+    def update(self, passed_seconds):
+        self.life_time -= passed_seconds
+        if self.life_time <= 0:
+            self.status = cfg.Magic.STATUS_VANISH
+            return
+
+        if self.height <= 0:
+            return
+
+        self.pos += self.key_vec * self.speed * passed_seconds
+        self.area.center = self.pos("xy")
+        self.height += self.v_y * passed_seconds + 0.5 * self.fall_acceleration * pow(passed_seconds, 2)
+        self.v_y += self.fall_acceleration * passed_seconds
+        self.dy = self.origin_dy + self.height
+        if self.height <= 0:
+            self.layer = cfg.Magic.LAYER_FLOOR
+
+
+
+class BloodSet(MagicSkill):
+    # handle blood set as a MagicSkill
+    image_list = []
+    img = animation.effect_image_controller.get(sfg.Effect.BLOOD_IMAGE_KEY)
+    for rect in sfg.Effect.BLOOD_RECT_LIST:
+        image_list.append(img.subsurface(rect).convert_alpha())
+
+    def __init__(self, sprite, jet_pos, jet_height):
+        super(BloodSet, self).__init__(sprite, [])
+        self.jet_pos = jet_pos
+        self.jet_height = jet_height
+        self.gen_magic_sprites()
+
+
+    def gen_magic_sprites(self):
+        sp = self.sprite
+        for img in self.image_list:
+            key_vec = Vector2(random(), random())
+            key_vec.normalize()
+            radius = img.get_width() * 0.5
+            speed = gauss(300, 20)
+
+            r_img = transform.rotate(img, randint(-180, 180))
+            tf_img = transform.smoothscale(r_img, (r_img.get_width(), r_img.get_height() / 2))
+            dx = tf_img.get_width() * 0.5
+            dy = tf_img.get_height() * 0.5
+            life_time = gauss(sfg.Effect.BLOOD_LIFE_TIME, 2)
+
+            blood = Blood(self.jet_pos, radius, dx, dy, tf_img, self.jet_height, key_vec, speed,
+                sfg.Physics.GRAVITY_ACCELERATION, life_time)
+            self.magic_sprites.append(blood)
+
+
+    def update(self, passed_seconds):
+        for i, blood in enumerate(self.magic_sprites):
+            blood.update(passed_seconds)
+            if blood.status == cfg.Magic.STATUS_VANISH:
+                self.magic_sprites.pop(i)
+
+        if len(self.magic_sprites) == 0:
+            self.status = cfg.Magic.STATUS_VANISH
+    
 
 
 class SelfDestruction(MagicSkill):
@@ -1506,6 +1576,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
         self.thump_slide_speed = attacker_params["thump_slide_speed"]
         self.thump_slide_range = self.thump_slide_speed * self.thump_slide_time
         self.thump_cos_min = attacker_params["thump_cos_min"]
+        self.magic_list = []
         self.reset_vars()
 
 
@@ -1553,6 +1624,10 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
                 words = sfg.Font.ARIAL_BLACK_24.render("Thump!", True, pygame.Color("gold"))
                 sp.animation.show_words(words, 0.3, 
                     (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
+
+                blood_set = BloodSet(sp, target.pos, target.setting.HEIGHT)
+                self.magic_list.append(blood_set)
+
                 if target.status.get(cfg.SpriteStatus.UNDER_THUMP) is None:
                     target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
                         {"crick_time": self.thump_crick_time, 
