@@ -17,10 +17,11 @@ class BackgroundBox(object):
             # stop current playing before play another one
             self.stop()
 
-        self.box.load(key)
-        self.current_playing = key
-        pygame.mixer.music.set_volume(sfg.Music.BACKGROUND_VOLUME)
-        pygame.mixer.music.play(loops)
+        load_success = self.box.load(key)
+        if load_success:
+            self.current_playing = key
+            pygame.mixer.music.set_volume(sfg.Music.BACKGROUND_VOLUME)
+            pygame.mixer.music.play(loops)
 
 
     def stop(self):

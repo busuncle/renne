@@ -202,8 +202,17 @@ class MusicController(ResourceController):
     def load(self, key):
         # this function is totally for pygame.mixer.music.load
         # it loads music file as stream, it should be called every time when you want to play another music
-        res = self.res_mapping[key]
+        res = self.res_mapping.get(key)
+        if res is None:
+            print "music resource key is None: %s" % key
+            return False
+
+        if not os.path.exists(res):
+            print "music resource not exists: %s" % res
+            return False
+
         self.loader(res)
+        return True
 
 
 
