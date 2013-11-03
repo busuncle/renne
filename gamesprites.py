@@ -182,6 +182,7 @@ class Renne(GameSprite):
 
         self.animation = RenneAnimator(self)
         self.emotion_animation = SpriteEmotionAnimator(self)
+        self.attacker = simulator.RenneAttacker(self, self.setting.ATTACKER_PARAMS)
 
         # represent the sprite area, used for deciding frame layer and collide, attack computing or so
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
@@ -202,7 +203,6 @@ class Renne(GameSprite):
         self.enemies = enemies
         self.static_objects = static_objects
         self.game_map = game_map
-        self.attacker = simulator.RenneAttacker(self, self.setting.ATTACKER_PARAMS)
 
 
     def recover(self, level=1):
@@ -777,6 +777,7 @@ class Enemy(GameSprite):
         if external_event is not None and external_event != cfg.GameStatus.IN_PROGRESS:
             if external_event == cfg.GameStatus.INIT:
                 self.action = cfg.EnemyAction.STAND
+                return
             elif external_event == cfg.GameStatus.HERO_LOSE:
                 self.reset_action(force=False)
                 return

@@ -47,30 +47,40 @@ def main(args):
             enter_chapter(screen, args.chapter, renne)
         return
 
-    i = 0
-    while i < len(sfg.GameMap.CHAPTERS):
-        if i == 0:
-            # chapter 0 means the main menu
-            res = start_game(screen)
-        else:
-            chapter = sfg.GameMap.CHAPTERS[i]
+    res = start_game(screen)
+
+    i = -1
+    while i < len(sfg.Chapter.ALL):
+        status = res["status"]
+
+        if status == cfg.GameControl.NEXT:
             loading_chapter_picture(screen)
+            renne.recover()
+            i += 1
+            chapter = sfg.Chapter.ALL[i]
             res = enter_chapter(screen, chapter, renne)
 
-        bg_box.stop()
+        elif status == cfg.GameControl.SUB_CHAPTER:
+            chapter = res["chapter"]
+            res = enter_chapter(screen, chapter, renne)
 
-        status = res["status"]
-        if status == cfg.GameControl.NEXT:
-            i += 1
-            renne.recover()
         elif status == cfg.GameControl.AGAIN:
             renne.recover()
+            res = enter_chapter(screen, chapter, renne)
+
         elif status == cfg.GameControl.MAIN:
             i = 0
+
         elif status == cfg.GameControl.QUIT:
             return
+
         elif status == cfg.GameControl.CONTINUE:
-            i = res["current_chapter"] + 1
+            i = sfg.Chapter.ALL.index(res["current_chapter"]) + 1
+            if i < len(sfg.Chapter.ALL):
+                loading_chapter_picture(screen)
+                renne.recover()
+                chapter = sfg.Chapter.ALL[i]
+                res = enter_chapter(screen, chapter, renne)
 
     end_game(screen)
 

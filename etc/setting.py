@@ -699,7 +699,7 @@ class GameMap(object):
     TILE_SIZE = 256
     ONE_SCREEN_DISTANCE_WIDTH = TILE_SIZE * 4
     ONE_SCREEN_DISTANCE_HEIGHT = TILE_SIZE * 6
-    CHAPTERS = [0, 1, 2, 3, 4, 5]
+    CHAPTERS = ["1", "2", "3", "4", "5"]
 
 
 
@@ -1270,6 +1270,8 @@ class Chapter(object):
     LOADING_PICTURE_FADE_IN_TIME = 1    # in second unit, show up the picture
     LOADING_WORD = Font.ARIAL_BLACK_28.render("now loading ...", True, pygame.Color("white"))
     LOADING_WORD_BLIT_POS = (760, 700)
+
+    ALL = ("1", "2", "3", "4", "5")
 
     WIN_CONDITION_NONE = 0
     WIN_CONDITION_ALL_ENEMY_DIE = 1
