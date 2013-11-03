@@ -274,7 +274,7 @@ def enter_chapter(screen, chapter, renne):
 if __name__ == "__main__":
     args = util.parse_command_line([
         (["-d", "--debug"], {"dest": "debug", "action": "store_true"}),
-        (["-c", "--chapter"], {"dest": "chapter", "action": "store", "type": int}),
+        (["-c", "--chapter"], {"dest": "chapter", "action": "store"}),
         (["--fps"], {"dest": "fps", "action": "store_true"}),
         (["--waypoints"], {"dest": "waypoints", "action": "store_true"}),
         (["--area"], {"dest": "area", "action": "store_true"}),

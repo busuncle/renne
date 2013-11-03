@@ -341,7 +341,7 @@ def end_game(screen):
 class GameDirector(object):
     def __init__(self, chapter, hero, enemy_list):
         self.chapter = chapter
-        self.win_cond = sfg.Chapter.WIN_CONDITION[self.chapter]
+        self.win_cond = sfg.Chapter.WIN_CONDITION.get(self.chapter, sfg.Chapter.WIN_CONDITION_NONE)
         self.hero = hero
         self.enemy_list = enemy_list
         if self.win_cond == sfg.Chapter.WIN_CONDITION_BOSS_DIE:
@@ -384,7 +384,7 @@ class GameDirector(object):
                 self.status = cfg.GameStatus.HERO_LOSE
                 return
 
-            if len(self.enemy_list) == 0:
+            if self.win_cond != sfg.Chapter.WIN_CONDITION_NONE and len(self.enemy_list) == 0:
                 # all enemies are gone, hero win
                 self.status = cfg.GameStatus.HERO_WIN
                 self.achievement.cal_chapter_score()

@@ -1271,6 +1271,7 @@ class Chapter(object):
     LOADING_WORD = Font.ARIAL_BLACK_28.render("now loading ...", True, pygame.Color("white"))
     LOADING_WORD_BLIT_POS = (760, 700)
 
+    WIN_CONDITION_NONE = 0
     WIN_CONDITION_ALL_ENEMY_DIE = 1
     WIN_CONDITION_BOSS_DIE = 2
 
