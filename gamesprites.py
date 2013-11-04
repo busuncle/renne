@@ -1038,7 +1038,8 @@ class CastleWarrior(Enemy):
         elif self.attacker.thump_slide_time_add < self.attacker.thump_slide_time:
             self.attacker.thump_slide_time_add += passed_seconds
             self.animation.set_frame_add(cfg.EnemyAction.ATTACK, self.attacker.thump_frame)
-            self.move(self.attacker.thump_slide_speed, passed_seconds, check_reachable=True)
+            self.move(self.attacker.thump_slide_speed, passed_seconds, 
+                check_reachable=True, key_vec=self.attacker.key_vec)
             hit_it = self.attacker.run(self.brain.target, self.attacker.thump_frame)
             if hit_it:
                 self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))

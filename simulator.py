@@ -281,7 +281,7 @@ class BloodSet(MagicSkill):
 
     def gen_magic_sprites(self):
         sp = self.sprite
-        vec = cfg.Direction.DIRECT_TO_VEC[sp.direction]
+        vec = cfg.Direction.DIRECT_TO_VEC[(sp.direction + 4) % 8]
         rand_x_min, rand_x_max = (-100, 100) if vec[0] == 0 else (min(vec[0] * 100, 0), max(vec[0] * 100, 0))
         rand_y_min, rand_y_max = (-100, 100) if vec[1] == 0 else (min(vec[1] * 100, 0), max(vec[1] * 100, 0))
 
@@ -290,7 +290,7 @@ class BloodSet(MagicSkill):
             key_vec = Vector2(randint(rand_x_min, rand_x_max), randint(rand_y_min, rand_y_max))
             key_vec.normalize()
             radius = img.get_width() * 0.5
-            speed = gauss(300, 50)
+            speed = gauss(200, 50)
 
             r_img = transform.rotate(img, randint(-180, 180))
             tf_img = transform.smoothscale(r_img, (r_img.get_width(), r_img.get_height() / 2))
@@ -1621,6 +1621,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
         sp = self.sprite
         if happen(sp.brain.ai.ATTACK_THUMP_PROB) and self.thump_chance(target):
             self.method = "thump"
+            self.key_vec = Vector2.from_points(sp.pos, target.pos)
             return True
 
         if super(EnemyThumpShortAttacker, self).chance(target):

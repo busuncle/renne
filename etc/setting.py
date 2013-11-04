@@ -298,7 +298,7 @@ class CastleWarrior(Enemy):
         "thump_pre_freeze_time": 1,
         "thump_last_freeze_time": 0.8,
         "thump_pre_frames": (0, 1, 2),
-        "thump_pre_rate": 4,
+        "thump_pre_rate": 6,
         "thump_frame": 4,
         "thump_slide_time": 0.5,
         "thump_slide_speed": 240,
