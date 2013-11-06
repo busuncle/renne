@@ -48,7 +48,6 @@ def main(args):
         return
 
     res = start_game(screen)
-
     i = -1
     while i < len(sfg.Chapter.ALL):
         status = res["status"]
@@ -69,7 +68,10 @@ def main(args):
             res = enter_chapter(screen, chapter, renne)
 
         elif status == cfg.GameControl.MAIN:
-            i = 0
+            renne.exp = 0
+            renne.recover(level=1)
+            i = -1
+            res = start_game(screen)
 
         elif status == cfg.GameControl.QUIT:
             return
@@ -78,6 +80,7 @@ def main(args):
             i = sfg.Chapter.ALL.index(res["save"]["current_chapter"]) + 1
             if i < len(sfg.Chapter.ALL):
                 loading_chapter_picture(screen)
+                renne.exp = res["save"]["exp"]
                 renne.recover(res["save"]["level"])
                 chapter = sfg.Chapter.ALL[i]
                 res = enter_chapter(screen, chapter, renne)
@@ -174,6 +177,7 @@ def enter_chapter(screen, chapter, renne):
                         dat = util.load_auto_save() or {}
                         dat["current_chapter"] = chapter
                         dat["level"] = renne.level
+                        dat["exp"] = renne.exp
                         util.auto_save(dat)
                         return {"status": cfg.GameControl.NEXT}
                     elif game_director.status == cfg.GameStatus.HERO_LOSE:

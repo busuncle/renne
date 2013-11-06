@@ -194,7 +194,6 @@ class Renne(GameSprite):
         self.attack2_accumulate_power_frame = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_frame"]
         self.attack2_accumulate_power_time = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_time"]
 
-        self.level_title = sfg.Font.ARIAL_BOLD_12.render("LV%s" % self.level, True, pygame.Color("white"))
 
 
     def activate(self, allsprites, enemies, static_objects, game_map):
@@ -203,6 +202,7 @@ class Renne(GameSprite):
         self.enemies = enemies
         self.static_objects = static_objects
         self.game_map = game_map
+        self.level_title = sfg.Font.ARIAL_BOLD_12.render("LV%s" % self.level, True, pygame.Color("white"))
 
 
     def recover(self, level=None):
