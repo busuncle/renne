@@ -174,7 +174,7 @@ def start_game(screen):
                         return {"status": cfg.GameControl.QUIT}
                     elif menu.current_menu() == "LOAD":
                         return {"status": cfg.GameControl.CONTINUE, 
-                            "current_chapter": autosave["current_chapter"]}
+                            "save": autosave}
                 elif event.key == K_ESCAPE:
                     return {"status": cfg.GameControl.QUIT}
 

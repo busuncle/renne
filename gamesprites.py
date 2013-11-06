@@ -205,9 +205,10 @@ class Renne(GameSprite):
         self.game_map = game_map
 
 
-    def recover(self, level=1):
+    def recover(self, level=None):
         # recover renne's whole status, usually when the current chapter pass
-        idx = level - 1
+        self.level = level or self.level
+        idx = self.level - 1
         self.hp = self.setting.HP = self.setting.LEVEL_HP[idx]
         self.mp = self.setting.MP = self.setting.LEVEL_MP[idx]
         self.sp = self.setting.SP = self.setting.LEVEL_SP[idx]
@@ -232,10 +233,8 @@ class Renne(GameSprite):
             new_level += 1
 
         if new_level > self.level:
-            # level up
-            self.level = new_level
-            # recover status
-            self.recover(self.level)
+            # level up and recover status
+            self.recover(new_level)
             # show level up words
             self.animation.show_words(
                 sfg.SpriteStatus.LEVEL_UP_WORDS_FONT.render("LEVEL UP!", True, sfg.SpriteStatus.LEVEL_UP_WORDS_COLOR),
@@ -244,7 +243,7 @@ class Renne(GameSprite):
                 sfg.SpriteStatus.LEVEL_UP_WORDS_POS_MOVE_RATE,
                 True)
             # update level title
-            self.level_title = sfg.Font.ARIAL_BOLD_12.render("LV%s" % self.level, True, pygame.Color("white"))
+            self.level_title = sfg.Font.ARIAL_BOLD_12.render("LV%s" % new_level, True, pygame.Color("white"))
 
 
     def draw(self, camera):
