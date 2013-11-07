@@ -24,10 +24,19 @@ def draw_pos(camera, sprite):
 
 def draw_waypoins(camera, waypoints):
     for x, y in waypoints:
-        ix, iy = map(int, (x, y * 0.5))
+        ix, iy = int(x), int(y * 0.5)
         ix -= camera.rect.left
         iy -= camera.rect.top
         pygame.draw.circle(camera.screen, pygame.Color(*RED_ALPHA_128), (ix, iy), 2)
+
+
+def draw_block_points(camera, block_points):
+    for x, y in block_points:
+        ix, iy = int(x), int(y * 0.5)
+        ix -= camera.rect.left
+        iy -= camera.rect.top
+        pygame.draw.circle(camera.screen, pygame.Color(*RED_ALPHA_128), (ix, iy), 2)
+
 
 
 

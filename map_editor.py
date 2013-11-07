@@ -16,6 +16,7 @@ DEBUG_DRAW = {
     "pos": False,
     "area": False,
     "waypoints": False,
+    "block_points": False,
 }
 
 
@@ -26,10 +27,11 @@ current_selected_object_ids = {
 
 
 
-def gen_chapter_waypoints(map_setting):
+def gen_points(map_setting):
     bounding_box = pygame.Rect(sfg.WayPoint.BOUNDING_BOX_RECT)
     blocks = []
     waypoints = set()
+    block_points = set()
 
     for static_obj_init in map_setting["static_objects"]:
         t, p = static_obj_init["id"], static_obj_init["pos"]
@@ -44,12 +46,16 @@ def gen_chapter_waypoints(map_setting):
 
     for x in xrange(0, map_setting["size"][0], sfg.WayPoint.STEP_WIDTH):
         for y in xrange(0, map_setting["size"][1], sfg.WayPoint.STEP_WIDTH):
-            fx, fy = map(float, (x, y))
+            fx, fy = float(x), float(y)
             bounding_box.center = (fx, fy)
             if bounding_box.collidelist(blocks) == -1:
                 waypoints.add((fx, fy))
+            else:
+                for bk in blocks:
+                    if bk.collidepoint((fx, fy)):
+                        block_points.add((fx, fy))
 
-    return waypoints
+    return {"waypoints": waypoints, "block_points": block_points}
 
 
 
@@ -144,7 +150,9 @@ def put_down_ambush(ambush, game_world):
 
 
 def change_map_setting(map_setting, game_world, game_map):
-    res = {"hero": None, "monsters": [], "static_objects": [], "ambush_list": [], "waypoints": []}
+    res = {"hero": None, "monsters": [], "static_objects": [], "ambush_list": [], 
+        "waypoints": [], "block_points": []}
+
     for sp in game_world.static_objects:
         x, y = map(int, sp.pos)
         res["static_objects"].append({"id": sp.setting.ID, "pos": (x, y)})
@@ -172,9 +180,13 @@ def change_map_setting(map_setting, game_world, game_map):
             res["monsters"].append({"id": sp.setting.ID, "pos": (x, y), "direction": sp.direction})
 
     # a good chance for generating waypoints when saving the map setting
-    game_map.waypoints = gen_chapter_waypoints(map_setting)
+    points_result = gen_points(map_setting)
+    game_map.waypoints = points_result["waypoints"]
+    game_map.block_points = points_result["block_points"]
     for wp in game_map.waypoints:
         res["waypoints"].append(wp)
+    for bp in game_map.block_points:
+        res["block_points"].append(bp)
 
     map_setting.update(res)
 
@@ -347,6 +359,8 @@ def run(chapter):
                         DEBUG_DRAW["area"] = not DEBUG_DRAW["area"]
                     elif event.key == sfg.MapEditor.KEY_ALT_SWITCH_WAYPOINT:
                         DEBUG_DRAW["waypoints"] = not DEBUG_DRAW["waypoints"]
+                    elif event.key == sfg.MapEditor.KEY_ALT_SWITCH_BLOCK_POINT:
+                        DEBUG_DRAW["block_points"] = not DEBUG_DRAW["block_points"]
 
             elif event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -433,6 +447,8 @@ def run(chapter):
 
         if DEBUG_DRAW["waypoints"]:
             debug_tools.draw_waypoins(camera, game_map.waypoints)
+        if DEBUG_DRAW["block_points"]:
+            debug_tools.draw_block_points(camera, game_map.block_points)
 
         pygame.display.flip()
 

@@ -1320,6 +1320,7 @@ class MapEditor(object):
     KEY_ALT_SWITCH_POS = K_p
     KEY_ALT_SWITCH_AREA = K_a
     KEY_ALT_SWITCH_WAYPOINT = K_z
+    KEY_ALT_SWITCH_BLOCK_POINT = K_x
 
 
 
