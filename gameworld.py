@@ -20,6 +20,7 @@ class GameMap(object):
         #self.map_tiles = weakref.WeakValueDictionary()
         self.map_tiles = {}
         self.waypoints = self.init_waypoints(map_setting["waypoints"])
+        self.block_points = self.init_block_points(map_setting["block_points"])
         self.init_map_titles(map_setting["tiles"])
 
 
@@ -27,6 +28,13 @@ class GameMap(object):
         res = set()
         for wp in waypoint_list:
             res.add(wp)
+        return res
+
+
+    def init_block_points(self, block_point_list):
+        res = set()
+        for bp in block_point_list:
+            res.add(bp)
         return res
 
 

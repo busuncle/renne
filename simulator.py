@@ -67,10 +67,24 @@ class MagicSkill(object):
     # it's a member in magic_list
     def __init__(self, sprite, target_list):
         self.sprite = sprite
+        self.block_points = sprite.game_map.block_points
         self.target_list = target_list
         self.status = cfg.Magic.STATUS_ALIVE
         self.has_hits = set()
         self.magic_sprites = []
+
+
+    def reachable(self, p):
+        bps = self.block_points
+        step = sfg.WayPoint.STEP_WIDTH
+        block_cnt = 0
+        x0 = p.x - p.x % step
+        y0 = p.y - p.y % step
+        for p in ((x0, y0), (x0 + step, y0), (x0, y0 + step), (x0 + step, y0 + step)):
+            if p in bps:
+                block_cnt += 1
+
+        return block_cnt < 2
 
 
     def update(self, passed_seconds):
@@ -220,9 +234,9 @@ class PoisonSet(MagicSkill):
                             {"dps": self.params["damage"], "time_list": range(self.params["damage_time"]),
                             "time_left": self.params["damage_time"]})
 
-            #if poison.height > 0 and (not sp.reachable(poison.area)):
-            #    # this poison will no longer move horizontally
-            #    poison.key_vec = Vector2(0, 0)
+            if poison.height > 0 and (not self.reachable(poison.pos)):
+                # this poison will no longer move horizontally
+                poison.key_vec = Vector2(0, 0)
 
             poison.update(passed_seconds)
             if poison.status == cfg.Magic.STATUS_VANISH:
@@ -532,7 +546,7 @@ class EnergyBallSet(MagicSkill):
                     sp.attacker.handle_under_attack(self.sprite, damage, cfg.Attack.METHOD_MAGIC)
                     self.has_hits.add(sp)
 
-            if not self.sprite.reachable(msp.pos):
+            if not self.reachable(msp.pos):
                 msp.status = cfg.Magic.STATUS_VANISH
 
         if vanish_num == len(self.magic_sprites):
@@ -631,7 +645,7 @@ class DestroyBombSet(MagicSkill):
                     self.params["dy"], self.params["damage"], choice(self.destroy_bomb_images),
                     self.params["bomb_life"], self.params["bomb_shake_on_x"], self.params["bomb_shake_on_y"])
 
-                if self.sprite.reachable(bomb.pos):
+                if self.reachable(bomb.pos):
                     self.magic_sprites.append(bomb)
                 else:
                     # this line can be dropped
@@ -816,7 +830,7 @@ class DeathCoilSet(MagicSkill):
                     sp.attacker.handle_under_attack(self.sprite, damage, cfg.Attack.METHOD_MAGIC)
                     self.has_hits.add(sp)
 
-            if not self.sprite.reachable(msp.pos):
+            if not self.reachable(msp.pos):
                 msp.status = cfg.Magic.STATUS_VANISH
 
             # check whether can split
@@ -914,7 +928,7 @@ class HellClawSet(MagicSkill):
                 self.params["claw_damage_cal_time"],
                 self.params["claw_shake_on_x"], self.params["claw_shake_on_y"])
 
-            if self.sprite.reachable(claw.pos):
+            if self.reachable(claw.pos):
                 self.magic_sprites.append(claw)
                 self.img_id = 1 - self.img_id
 
