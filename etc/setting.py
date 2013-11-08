@@ -1013,7 +1013,12 @@ class Wine(Food):
 
 class WayPoint(object):
     STEP_WIDTH = 24
-    BOUNDING_BOX_RECT = (0, 0, 48, 48)
+    BOUNDING_BOX_RECT = (0, 0, STEP_WIDTH * 2, STEP_WIDTH * 2)
+
+
+
+class BlockPoint(object):
+    STEP_WIDTH = 8
 
 
 

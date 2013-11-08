@@ -76,7 +76,7 @@ class MagicSkill(object):
 
     def reachable(self, p):
         bps = self.block_points
-        step = sfg.WayPoint.STEP_WIDTH
+        step = sfg.BlockPoint.STEP_WIDTH
         block_cnt = 0
         x0 = p.x - p.x % step
         y0 = p.y - p.y % step

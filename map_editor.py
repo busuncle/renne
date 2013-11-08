@@ -27,12 +27,8 @@ current_selected_object_ids = {
 
 
 
-def gen_points(map_setting):
-    bounding_box = pygame.Rect(sfg.WayPoint.BOUNDING_BOX_RECT)
+def gen_blocks(map_setting):
     blocks = []
-    waypoints = set()
-    block_points = set()
-
     for static_obj_init in map_setting["static_objects"]:
         t, p = static_obj_init["id"], static_obj_init["pos"]
         static_obj_setting = sfg.STATIC_OBJECT_SETTING_MAPPING[t]
@@ -44,16 +40,28 @@ def gen_points(map_setting):
         rect.center = pos
         blocks.append(rect)
 
+    return blocks
+
+
+def gen_points(map_setting):
+    blocks = gen_blocks(map_setting)
+
+    waypoint_bounding_box = pygame.Rect(sfg.WayPoint.BOUNDING_BOX_RECT)
+    waypoints = set()
     for x in xrange(0, map_setting["size"][0], sfg.WayPoint.STEP_WIDTH):
         for y in xrange(0, map_setting["size"][1], sfg.WayPoint.STEP_WIDTH):
             fx, fy = float(x), float(y)
-            bounding_box.center = (fx, fy)
-            if bounding_box.collidelist(blocks) == -1:
+            waypoint_bounding_box.center = (fx, fy)
+            if waypoint_bounding_box.collidelist(blocks) == -1:
                 waypoints.add((fx, fy))
-            else:
-                for bk in blocks:
-                    if bk.collidepoint((fx, fy)):
-                        block_points.add((fx, fy))
+
+    block_points = set()
+    for x in xrange(0, map_setting["size"][0], sfg.BlockPoint.STEP_WIDTH):
+        for y in xrange(0, map_setting["size"][1], sfg.BlockPoint.STEP_WIDTH):
+            fx, fy = float(x), float(y)
+            for bk in blocks:
+                if bk.collidepoint((fx, fy)):
+                    block_points.add((fx, fy))
 
     return {"waypoints": waypoints, "block_points": block_points}
 
