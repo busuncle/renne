@@ -1012,13 +1012,13 @@ class Wine(Food):
 
 
 class WayPoint(object):
-    STEP_WIDTH = 24
+    STEP_WIDTH = 32
     BOUNDING_BOX_RECT = (0, 0, STEP_WIDTH * 2, STEP_WIDTH * 2)
 
 
 
 class BlockPoint(object):
-    STEP_WIDTH = 8
+    STEP_WIDTH = 32
 
 
 
@@ -1315,7 +1315,9 @@ class EndGame(object):
 
 
 class MapEditor(object):
+    STEP_WIDTH = 16
     SCREEN_MOVE_SPEED = 400
+
     KEY_STATIC_OBJECT = K_1
     KEY_ENEMY = K_2
     KEY_AMBUSH = K_3

@@ -698,6 +698,18 @@ class Enemy(GameSprite):
 
 
     def reachable(self, pos=None):
+        p = pos or self.pos
+        bps = self.game_map.block_points
+        step = sfg.BlockPoint.STEP_WIDTH
+        x0 = p.x - p.x % step
+        y0 = p.y - p.y % step
+        for p in ((x0, y0), (x0 + step, y0), (x0, y0 + step), (x0 + step, y0 + step)):
+            if p in bps:
+                return False
+        return True
+
+
+    def reachable_old(self, pos=None):
         # use waypoints to check whether the current self.pos is reachable
         p = pos or self.pos
         wps = self.brain.waypoints

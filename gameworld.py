@@ -19,8 +19,8 @@ class GameMap(object):
         self.size = map_setting["size"]
         #self.map_tiles = weakref.WeakValueDictionary()
         self.map_tiles = {}
-        self.waypoints = self.init_waypoints(map_setting["waypoints"])
-        self.block_points = self.init_block_points(map_setting["block_points"])
+        self.waypoints = self.init_waypoints(map_setting.get("waypoints", []))
+        self.block_points = self.init_block_points(map_setting.get("block_points", []))
         self.init_map_titles(map_setting["tiles"])
 
 
