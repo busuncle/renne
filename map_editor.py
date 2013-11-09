@@ -105,9 +105,9 @@ def put_down_selected_object(selected_object, game_world):
     if selected_object is None:
         return True
 
-    for sp in game_world.yield_all_objects():
-        if selected_object.area.colliderect(sp.area):
-            return False
+    #for sp in game_world.yield_all_objects():
+    #    if selected_object.area.colliderect(sp.area):
+    #        return False
 
     if isinstance(selected_object, GameSprite):
         # put sprite into ambush if it's *only* in one ambush
