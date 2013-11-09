@@ -201,7 +201,7 @@ def enter_chapter(screen, chapter, renne):
 
                 if event.key in one_pressed_keys and one_pressed_keys[event.key]["cd"] == 0:
                     one_pressed_keys[event.key]["pressed"] = True
-                    one_pressed_keys[event.key]["cd"] = 0.22
+                    one_pressed_keys[event.key]["cd"] = 0.1
 
                 if game_director.status == cfg.GameStatus.PAUSE:
                     game_director.menu.update(event.key)
@@ -276,6 +276,7 @@ def enter_chapter(screen, chapter, renne):
                 renne.hp = renne.setting.HP
                 renne.mp = renne.setting.MP
                 renne.sp = renne.setting.SP
+                renne.status["hp"] = renne.cal_sprite_status(renne.hp, renne.setting.HP)
                 renne.attacker.refresh_skill()
 
         pygame.display.flip()

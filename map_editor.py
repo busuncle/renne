@@ -407,6 +407,8 @@ def run(chapter):
                             and put_down_ambush(selected_object, game_world):
                             selected_object = None
 
+                    change_map_setting(map_setting, game_world, game_map)
+
 
         pressed_keys = pygame.key.get_pressed()
         key_vec.x = key_vec.y = 0.0

@@ -169,6 +169,8 @@ class Renne(object):
             "thump_acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
             "self_crick_time": 0.15,
         },
+        "attack_combo_time_delta": 0.6,
+        "attack_combo_count_max": 2,
         "range": 100,
         "range2": 110,
         "angle": 120,
@@ -181,6 +183,8 @@ class Renne(object):
             "out_speed": 1000,
             "acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
             "self_crick_time": 0.2,
+            "run_speed_ratio": 0.6,
+            "end_frame": 8,
         },
         "destroy_fire": {
             "range": 400,
@@ -1315,7 +1319,7 @@ class EndGame(object):
 
 
 class MapEditor(object):
-    STEP_WIDTH = 16
+    STEP_WIDTH = 8
     SCREEN_MOVE_SPEED = 400
 
     KEY_STATIC_OBJECT = K_1

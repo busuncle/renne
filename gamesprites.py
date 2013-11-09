@@ -74,10 +74,10 @@ class GameSprite(pygame.sprite.DirtySprite):
             return cfg.HpStatus.DIE
 
 
-    def is_collide_map_boundry(self):
-        max_w, max_h = self.game_map.size
-        w, h = self.area.center
-        if w <= 0 or h <= 0 or w >= max_w or h >= max_h:
+    def is_collide_map_boundry(self, pos=None):
+        max_x, max_y = self.game_map.size
+        p = pos or self.pos
+        if p.x < 0 or p.y < 0 or p.x > max_x or p.y > max_y:
             return True
         return False
 
@@ -188,11 +188,14 @@ class Renne(GameSprite):
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
 
         # for regular attack combo
-        self.attack_combo = {"count": 0, "last_time": time(), "time_delta": 0.6, "count_max": 2}
+        self.attack_combo = {"count": 0, "last_time": time(), 
+            "time_delta": self.setting.ATTACKER_PARAMS["attack_combo_time_delta"], 
+            "count_max": self.setting.ATTACKER_PARAMS["attack_combo_count_max"]}
         self.attack1_start_frame = self.setting.ATTACKER_PARAMS["attack1"]["start_frame"]
         self.attack1_end_frame = self.setting.ATTACKER_PARAMS["attack1"]["end_frame"]
         self.attack2_accumulate_power_frame = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_frame"]
         self.attack2_accumulate_power_time = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_time"]
+        self.run_attack_params = self.setting.ATTACKER_PARAMS["run_attack"]
 
 
 
@@ -377,16 +380,6 @@ class Renne(GameSprite):
             self.animation.set_frame_add(cfg.HeroAction.ATTACK, self.attack1_start_frame)
 
         if current_frame_add >= self.attack1_end_frame:
-            # change combo count if this attack has hit some one
-            if len(self.attacker.has_hits) > 0:
-                attack_time = time()
-                if self.attack_combo["count"] == 0 \
-                    or attack_time - self.attack_combo["time_delta"] < self.attack_combo["last_time"]:
-                    self.attack_combo["count"] += 1
-                else:
-                    self.attack_combo["count"] = max(self.attack_combo["count"] - 1, 0)
-
-                self.attack_combo["last_time"] = attack_time
 
             # ends at this frame
             self.attacker.finish()
@@ -399,6 +392,16 @@ class Renne(GameSprite):
                     hit_count += 1
             if hit_count > 0:
                 self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
+
+                # change combo count if this attack has hit some one
+                attack_time = time()
+                if self.attack_combo["count"] == 0 \
+                    or attack_time - self.attack_combo["last_time"] <= self.attack_combo["time_delta"]:
+                    self.attack_combo["count"] += 1
+                else:
+                    self.attack_combo["count"] = max(self.attack_combo["count"] - 1, 0)
+
+                self.attack_combo["last_time"] = attack_time
 
         self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds)
 
@@ -431,13 +434,13 @@ class Renne(GameSprite):
     def run_attack(self, passed_seconds):
         # a special attack type, when hero is running and press attack
         self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds)
-        if self.animation.get_current_frame_add(cfg.HeroAction.ATTACK) > 8:
+        if self.animation.get_current_frame_add(cfg.HeroAction.ATTACK) > self.run_attack_params["end_frame"]:
             # don't full-run the attack frame for better effect
             self.animation.reset_frame_adds()
             self.attacker.finish()
             self.action = cfg.HeroAction.STAND
         else:
-            self.move(self.setting.RUN_SPEED * 0.6, passed_seconds)
+            self.move(self.setting.RUN_SPEED * self.run_attack_params["run_speed_ratio"], passed_seconds)
             hit_count = 0
             for em in self.enemies:
                 hit_it = self.attacker.run_attack(em, self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
@@ -519,7 +522,8 @@ class Renne(GameSprite):
             if self.action == cfg.HeroAction.RUN and self.sp > 0:
                 self.attacker.method = "run_attack"
             else:
-                if self.attack_combo["count"] < self.attack_combo["count_max"]:
+                if self.attack_combo["count"] < self.attack_combo["count_max"] \
+                    or time() - self.attack_combo["last_time"] > self.attack_combo["time_delta"]:
                     self.attacker.method = "regular1"
                 else:
                     self.attacker.method = "regular2"
@@ -698,6 +702,9 @@ class Enemy(GameSprite):
 
 
     def reachable(self, pos=None):
+        if self.is_collide_map_boundry():
+            return False
+
         p = pos or self.pos
         bps = self.game_map.block_points
         step = sfg.BlockPoint.STEP_WIDTH
