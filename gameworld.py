@@ -220,12 +220,6 @@ class GameWorld(pygame.sprite.LayeredDirty):
                         elif msp.layer == cfg.Magic.LAYER_AIR:
                             movings.append(msp)
 
-            if hasattr(sp.attacker, "ammo_list"):
-                movings.extend(sp.attacker.ammo_list)
-                #for ammo in sp.attacker.ammo_list:
-                #    ammo.draw_shadow(camera)
-                
-
         # draw floor objects first
         floor_objects.sort(key=lambda obj: obj.pos.y)
         for obj in floor_objects:

@@ -8,6 +8,7 @@ import simulator
 from animation import SpriteEmotionAnimator, RenneAnimator, EnemyAnimator
 from musicbox import SoundBox
 import controller
+from gameworld import StaticObjectGroup
 from base.util import Timer, happen
 from base import constant as cfg
 from etc import setting as sfg
@@ -94,6 +95,7 @@ class GameSprite(pygame.sprite.DirtySprite):
 
     def reset_action(self):
         self.action = cfg.SpriteAction.STAND
+        self.attacker.finish()
         self.frame_action = None
         self.animation.reset_frame_adds()
 
@@ -334,7 +336,6 @@ class Renne(GameSprite):
         self.frame_action = cfg.HeroAction.ATTACK
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
-            self.attacker.finish()
             self.reset_action()
         else:
             self.attacker.destroy_fire(self.animation.get_current_frame_add(self.frame_action))
@@ -344,7 +345,6 @@ class Renne(GameSprite):
         self.frame_action = cfg.HeroAction.ATTACK
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
-            self.attacker.finish()
             self.reset_action()
         else:
             self.attacker.destroy_bomb(self.animation.get_current_frame_add(self.frame_action))
@@ -354,7 +354,6 @@ class Renne(GameSprite):
         self.frame_action = cfg.HeroAction.SKILL
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
-            self.attacker.finish()
             self.reset_action()
         else:
             self.attacker.destroy_aerolite(self.animation.get_current_frame_add(self.frame_action))
@@ -370,7 +369,6 @@ class Renne(GameSprite):
         if current_frame_add >= self.attack1_end_frame:
 
             # ends at this frame
-            self.attacker.finish()
             self.reset_action()
         else:
             hit_count = 0
@@ -403,7 +401,6 @@ class Renne(GameSprite):
         else:
             is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
             if is_finish:
-                self.attacker.finish()
                 self.reset_action()
                 # clean combo count after an "attack2"
                 self.attack_combo["count"] = 0
@@ -734,8 +731,7 @@ class Enemy(GameSprite):
     def attack(self, passed_seconds):
         is_finish = self.animation.run_sequence_frame(cfg.EnemyAction.ATTACK, passed_seconds)
         if is_finish:
-            self.attacker.finish()
-            self.brain.persistent = False
+            self.reset_action(force=True)
         else:
             hit_it = self.attacker.run(self.brain.target, 
                 self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
@@ -916,7 +912,6 @@ class Leonhardt(Enemy):
 
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
-            self.attacker.finish()
             self.reset_action(force=True)
         else:
             hit_it = self.attacker.run(self.brain.target, 
@@ -932,7 +927,6 @@ class Leonhardt(Enemy):
 
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
-            self.attacker.finish()
             self.reset_action(force=True)
         else:
             self.attacker.death_coil(self.brain.target, 
@@ -961,7 +955,6 @@ class Leonhardt(Enemy):
                 self.animation.get_frame_num(self.frame_action) - 1)
 
         else:
-            ak.finish()
             self.reset_action(force=True)
 
 
@@ -1005,7 +998,6 @@ class Leonhardt(Enemy):
                 self.status.pop(cfg.SpriteStatus.SUPER_BODY)
 
         else:
-            ak.finish()
             self.reset_action(force=True)
 
 
@@ -1231,7 +1223,6 @@ class ArmouredShooter(Enemy):
         self.frame_action = cfg.EnemyAction.SKILL
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
-            self.attacker.finish()
             self.reset_action(force=True)
         else:
             self.attacker.grenade(self.brain.target, 
@@ -1260,7 +1251,6 @@ class Ghost(Enemy):
             self.move(self.setting.WALK_SPEED * 0.8, passed_seconds, check_reachable=True, key_vec=key_vec)
         else:
             self.status[cfg.SpriteStatus.INVISIBLE] = {"time": ak.invisible_time}
-            ak.finish()
             self.reset_action(force=True)
 
 

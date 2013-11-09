@@ -1263,6 +1263,66 @@ class Ammo(pygame.sprite.DirtySprite):
 
 
 
+class Arrow(MagicSprite):
+    """
+    just like a magic sprite
+    """
+    arrow_images = animation.battle_images.get(sfg.Ammo.ARROW_IMAGE_KEY)
+    arrow_image_list = [arrow_images.subsurface(
+        pygame.Rect((0, i * sfg.Ammo.ARROW_HEIGHT), (sfg.Ammo.ARROW_WIDTH, sfg.Ammo.ARROW_HEIGHT))) \
+        for i in xrange(cfg.Direction.TOTAL)]
+
+    def __init__(self, pos, radius, dx, dy, damage, direction, speed, fly_range):
+        super(Arrow, self).__init__(pos, radius, dx, dy, damage, self.arrow_image_list[direction])
+        self.origin_pos = self.pos.copy()
+        self.key_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[direction])
+        self.speed = speed
+        self.fly_range = fly_range
+
+
+    def update(self, passed_seconds):
+        self.pos += self.key_vec * self.speed * passed_seconds
+        self.area.center = self.pos("xy")
+        if self.pos.get_distance_to(self.origin_pos) > self.fly_range:
+            self.status = cfg.Magic.STATUS_VANISH
+
+
+
+class ArrowSet(MagicSkill):
+
+    def __init__(self, sprite, target_list, params):
+        super(ArrowSet, self).__init__(sprite, target_list)
+        # only one arrow right now
+        self.magic_sprites.append(Arrow(sprite.pos, params["arrow_radius"], params["arrow_dx"],
+            params["arrow_dy"], params["arrow_damage"], sprite.direction, params["arrow_speed"], 
+            params["range"]))
+
+
+    def update(self, passed_seconds):
+        vanish_num = 0
+        for msp in self.magic_sprites:
+            if msp.status == cfg.Magic.STATUS_VANISH:
+                vanish_num += 1
+                continue
+
+            msp.update(passed_seconds)
+
+            for sp in self.target_list:
+                if sp in self.has_hits:
+                    continue
+
+                if sp.area.colliderect(msp.area):
+                    sp.attacker.handle_under_attack(self.sprite, msp.damage, cfg.Attack.METHOD_MAGIC)
+                    self.has_hits.add(sp)
+
+            if not self.reachable(msp.pos):
+                msp.status = cfg.Magic.STATUS_VANISH
+
+        if vanish_num == len(self.magic_sprites):
+            self.status = cfg.Magic.STATUS_VANISH
+
+
+
 class RenneAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
         super(RenneAttacker, self).__init__(sprite, 
@@ -2029,60 +2089,38 @@ class ArrowAttacker(EnemyLongAttacker):
     """
     attacker that has ammo sprite to calculate hit and draw
     """
-    arrow_images = animation.battle_images.get(sfg.Ammo.ARROW_IMAGE_KEY)
-    arrow_image_list = [arrow_images.subsurface(
-        pygame.Rect((0, i * sfg.Ammo.ARROW_HEIGHT), (sfg.Ammo.ARROW_WIDTH, sfg.Ammo.ARROW_HEIGHT))) \
-        for i in xrange(cfg.Direction.TOTAL)]
-    shadow = {"image": animation.get_shadow_image(sfg.Ammo.ARROW_SHADOW_INDEX),
-        "dy": sfg.Ammo.ARROW_SHADOW_DY}
     def __init__(self, sprite, attacker_params):
         super(ArrowAttacker, self).__init__(sprite, attacker_params)
-        self.target = None
         self.static_objects = sprite.static_objects
-        self.current_ammo = None
-        self.ammo_list = []
-        self.arrow_radius = attacker_params["arrow_radius"]
-        self.arrow_speed = attacker_params["arrow_speed"]
-        self.arrow_dx = attacker_params["arrow_dx"]
-        self.arrow_dy = attacker_params["arrow_dy"]
-        self.arrow_damage = attacker_params["arrow_damage"]
+        self.params = attacker_params
+        self.current_magic = None
+        self.magic_list = []
+
+
+    def chance(self, target):
+        sp = self.sprite
+        if self.is_static_object_block(target):
+            return False
+        return True
+
+
+    def reset_vars(self):
+        # a lock, only one magic is running in an attack
+        self.method = None
+        self.current_magic = None
 
 
     def run(self, target, current_frame_add):
         sp = self.sprite
-        if self.current_ammo is None and int(current_frame_add) in self.key_frames:
-            # set target_list if it's None
-            if self.target is None:
-                self.target = target
+        if self.current_magic is None and int(current_frame_add) in self.key_frames:
 
             # generate arrow
-            self.current_ammo = Ammo(sp.pos, self.arrow_radius, self.arrow_speed, 
-                cfg.Direction.DIRECT_TO_VEC[sp.direction], self.arrow_dx, self.arrow_dy, self.arrow_damage, 
-                self.arrow_image_list[sp.direction], self.shadow)
-            self.ammo_list.append(self.current_ammo)
-
-
-    def update_ammo(self, passed_seconds):
-        for i, am in enumerate(self.ammo_list):
-            am.update(passed_seconds)
-            if am.area.colliderect(self.target.area):
-                self.target.attacker.handle_under_attack(self.sprite, self.arrow_damage)
-                self.ammo_list.pop(i)
-
-            elif am.pos.get_distance_to(am.origin_pos) > self.attack_range:
-                self.ammo_list.pop(i)
-
-            else:
-                for obj in self.static_objects:
-                    if not obj.setting.IS_ELIMINABLE and \
-                        obj.setting.IS_VIEW_BLOCK and \
-                        am.area.colliderect(obj.area):
-                        self.ammo_list.pop(i)
-                        break
+            self.current_magic = ArrowSet(sp, [target, ], self.params)
+            self.magic_list.append(self.current_magic)
 
 
     def finish(self):
-        self.current_ammo = None
+        self.reset_vars()
 
 
 

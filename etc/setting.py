@@ -328,7 +328,7 @@ class SkeletonArcher(Enemy):
     SHADOW_INDEX = 3
 
     ATTACKER_PARAMS = {
-        "range": 400,
+        "range": 480,
         "angle": 12,
         "key_frames": (4, 5),
         "arrow_radius": 18, 
