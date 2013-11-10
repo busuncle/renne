@@ -182,9 +182,6 @@ class GameWorld(pygame.sprite.LayeredDirty):
                         # and damage calculation among all the sprites 
                         magic.update(passed_seconds)
 
-            if hasattr(sp.attacker, "ammo_list"):
-                sp.attacker.update_ammo(passed_seconds)
-
 
     def draw(self, camera):
         movings = []
@@ -203,10 +200,7 @@ class GameWorld(pygame.sprite.LayeredDirty):
 
             if hasattr(sp.attacker, "magic_list"):
                 for magic in sp.attacker.magic_list:
-                    if hasattr(magic, "image"):
-                        movings.append(magic)
-                    else:
-                        magic.draw(camera)
+                    magic.draw(camera)
 
                     for msp in magic.magic_sprites:
                         if msp.status == cfg.Magic.STATUS_VANISH:
