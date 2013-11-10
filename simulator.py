@@ -161,7 +161,7 @@ class Poison(MagicSprite):
             self.v_y += self.fall_acceleration * passed_seconds
             self.dy = self.origin_dy + self.height
             if self.height <= 0:
-                # the poison is now on the floor, keep an orignal image copy for scale further
+                # the poison is now on the floor, keep an original image copy for scale further
                 self.origin_image_on_floor = self.image.copy()
                 self.layer = cfg.Magic.LAYER_FLOOR
 
@@ -377,42 +377,34 @@ class SelfDestruction(MagicSkill):
 
 
 
-class Grenade(MagicSkill):
-    grenade_image = animation.effect_image_controller.get(
+class Grenade(MagicSprite):
+    g_image = animation.effect_image_controller.get(
         sfg.Effect.GRENADE_IMAGE_KEY).subsurface(sfg.Effect.GRENADE_RECT).convert_alpha()
-    dx = grenade_image.get_width() * 0.5
-    dy = grenade_image.get_height() * 0.5
-    rotate_angle_rate = 360
-    land_height_threshold = 5
-    vy_loss_rate = 0.5
-    vx_loss_rate = 0.8
-    def __init__(self, sprite, target_list, params):
-        super(Grenade, self).__init__(sprite, target_list)
-        self.image = transform.rotate(self.grenade_image.copy(), randint(-180, 180))
-        self.image_mix = self.image.copy()
-        self.pos = Vector2(sprite.pos)
-        self.key_vec = Vector2.from_points(self.pos, target_list[0].pos).normalize()
-        self.area = self.image.get_rect()
-        self.area.center = self.pos
-        self.damage = params["damage"]
-        self.trigger_times = list(params["trigger_times"])
-        self.thump_crick_time = params["thump_crick_time"]
-        self.thump_acceleration = params["thump_acceleration"]
-        self.thump_out_speed = params["thump_out_speed"]
+    land_height_threshold = sfg.Effect.GRENADE_LAND_HEIGHT_THRESHOLD
+    vx_loss_rate = sfg.Effect.GRENADE_VX_LOSS_RATE
+    vy_loss_rate = sfg.Effect.GRENADE_VY_LOSS_RATE
+    def __init__(self, pos, radius, target_list, params):
+        super(Grenade, self).__init__(pos, radius, sfg.Effect.GRENADE_DX, sfg.Effect.GRENADE_DY, 0,
+            transform.rotate(self.g_image, choice((0, 90, 180, 270))))
+        self.origin_image = self.image.copy()
+        self.origin_dy = self.dy
         self.blink = Blink()
         self.passed_seconds = 0
+        self.gen_bomb_num = 0
+        self.phase = "in_air" # in_air, on_floor, disapear
+
+        self.key_vec = Vector2.from_points(self.pos, target_list[0].pos).normalize()
         self.height = params["init_height"]
-        self.vx = self.pos.get_distance_to(target_list[0].pos)
+        self.vx = self.pos.get_distance_to(target_list[0].pos) / self.vx_loss_rate
         self.vy = params["init_vy"]
         # fall_acceleration must be negative against height
         self.fall_acceleration = -abs(params["fall_acceleration"])
-        self.phase = "in_air" # in_air, on_floor, disapear
+        self.trigger_times = list(params["trigger_times"])
 
 
     def update(self, passed_seconds):
         self.passed_seconds += passed_seconds
         if self.phase == "in_air":
-
             # s = v0 * t + 0.5 * a * t^2
             s = self.vy * passed_seconds + 0.5 * self.fall_acceleration * pow(passed_seconds, 2)
             self.height += s  
@@ -433,66 +425,76 @@ class Grenade(MagicSkill):
 
                 self.pos += self.key_vec * self.vx * passed_seconds
 
+            self.dy = self.origin_dy + self.height
+
         elif self.phase == "on_floor":
-            self.image_mix = self.blink.make(self.image, passed_seconds)
+            self.image = self.blink.make(self.origin_image, passed_seconds)
             if self.passed_seconds > self.trigger_times[0]:
                 self.phase = "bomb"
 
         elif self.phase == "bomb":
-            if len(self.trigger_times) > 0 and self.passed_seconds > self.trigger_times[0]:
-                self.trigger_times.pop(0)
-                pos = self.pos.copy()
+            if len(self.trigger_times) > 0:
+                if self.passed_seconds > self.trigger_times[0]:
+                    self.trigger_times.pop(0)
+                    self.gen_bomb_num += 1
+            else:
+                self.status = cfg.Magic.STATUS_VANISH
+
+
+
+class GrenadeBomb(MagicSkill):
+    def __init__(self, sprite, target_list, params):
+        super(GrenadeBomb, self).__init__(sprite, target_list)
+        self.damage = params["damage"]
+        self.thump_crick_time = params["thump_crick_time"]
+        self.thump_acceleration = params["thump_acceleration"]
+        self.thump_out_speed = params["thump_out_speed"]
+        self.grenades = []
+        self.bombs = []
+        # only one grenade right now, and double insertion
+        gr = Grenade(sprite.pos, sfg.Effect.GRENADE_RADIUS, target_list, params)
+        self.grenades.append(gr)
+        self.magic_sprites.append(gr)
+
+
+    def update(self, passed_seconds):
+        for i, gr in enumerate(self.grenades):
+            gr.update(passed_seconds)
+            while gr.gen_bomb_num > 0:
+                gr.gen_bomb_num -= 1
+                pos = gr.pos.copy()
                 pos.x = randint(int(pos.x - 30), int(pos.x + 30))
                 pos.y = randint(int(pos.y - 30), int(pos.y + 30))
                 scale = max(0.9, random() * 2)
                 dx = 32 * scale
                 dy = randint(64, 96)
-                #scale = 1
                 angle = randint(-180, 180)
                 bomb = Bomb(pos, dx, dy, self.damage, angle, scale)
+                self.bombs.append(bomb)
                 self.magic_sprites.append(bomb)
 
-            for i, bomb in enumerate(self.magic_sprites):
-                bomb.update(passed_seconds)
-                if bomb.status == cfg.Magic.STATUS_VANISH:
-                    self.magic_sprites.pop(i)
-                    continue
+            if gr.status == cfg.Magic.STATUS_VANISH:
+                self.grenades.pop(i)
 
-                for sp in self.target_list:
-                    if sp not in self.has_hits and sp.area.colliderect(bomb.area):
-                        self.has_hits.add(sp)
-                        damage = bomb.damage
-                        sp.attacker.handle_under_attack(self.sprite, damage, attack_method=cfg.Attack.METHOD_MAGIC)
-                        sp.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
-                            {"crick_time": self.thump_crick_time, 
-                            "out_speed": self.thump_out_speed, 
-                            "acceleration": self.thump_acceleration,
-                            "key_vec": Vector2.from_points(self.pos, sp.pos)})
+        for i, bomb in enumerate(self.bombs):
+            bomb.update(passed_seconds)
+            if bomb.status == cfg.Magic.STATUS_VANISH:
+                self.bombs.pop(i)
+                continue
 
-            if len(self.trigger_times) == 0 and len(self.magic_sprites) == 0:
-                self.status = cfg.Magic.STATUS_VANISH
+            for sp in self.target_list:
+                if sp not in self.has_hits and sp.area.colliderect(bomb.area):
+                    self.has_hits.add(sp)
+                    damage = bomb.damage
+                    sp.attacker.handle_under_attack(self.sprite, damage, attack_method=cfg.Attack.METHOD_MAGIC)
+                    sp.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                        {"crick_time": self.thump_crick_time, 
+                        "out_speed": self.thump_out_speed, 
+                        "acceleration": self.thump_acceleration,
+                        "key_vec": Vector2.from_points(bomb.pos, sp.pos).normalize()})
 
-
-    def draw(self, camera):
-        if self.phase != "bomb":
-            if self.phase == "in_air":
-                img = self.image
-            else:
-                img = self.image_mix
-            camera.screen.blit(img,
-                (self.pos.x - camera.rect.x - self.dx, 
-                    self.pos.y * 0.5 - camera.rect.y - self.dy - self.height))
-
-        #self.draw_area(camera)
-
-
-    def draw_area(self, camera):
-        # for debug
-        r = pygame.Rect(0, 0, self.area.width, self.area.height * 0.5)
-        r.center = (self.pos.x, self.pos.y * 0.5)
-        r.top -= camera.rect.top
-        r.left -= camera.rect.left
-        pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
+        if len(self.grenades) == 0 and len(self.bombs) == 0:
+            self.status = cfg.Magic.STATUS_VANISH
 
 
 
@@ -680,6 +682,8 @@ class DestroyAerolite(MagicSprite):
     def __init__(self, pos, radius, dx, dy, damage, image, fall_range, acceleration, damage_cal_time,
             life, shake_on_x, shake_on_y):
         super(DestroyAerolite, self).__init__(pos, radius, dx, dy, damage, image, self.shadow)
+        self.origin_image = self.image.copy()
+        self.origin_dy = self.dy
         self.pos.x = randint(int(self.pos.x - shake_on_x), int(self.pos.x + shake_on_x))
         self.pos.y = randint(int(self.pos.y - shake_on_y), int(self.pos.y + shake_on_y))
         self.area.center = self.pos
@@ -695,7 +699,7 @@ class DestroyAerolite(MagicSprite):
 
 
     def update(self, passed_seconds):
-        self.image_mix = self.blink.make(self.image, passed_seconds)
+        self.image = self.blink.make(self.origin_image, passed_seconds)
         if self.fall_s < self.fall_range:
             # s = v0 * t + a * t^2 / 2
             s = self.fall_v * passed_seconds + 0.5 * self.acceleration * pow(passed_seconds, 2)
@@ -703,15 +707,11 @@ class DestroyAerolite(MagicSprite):
             # v = v0 + a * t
             self.fall_v += self.acceleration * passed_seconds
 
+            self.dy = self.origin_dy - self.fall_s
+
         self.alive_time += passed_seconds
         if self.alive_time > self.life:
             self.status = cfg.Magic.STATUS_VANISH
-
-
-    def draw(self, camera):
-        # overwrite for special method
-        camera.screen.blit(self.image_mix,
-            (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy + self.fall_s))
         
 
 
@@ -2155,7 +2155,7 @@ class ArmouredShooterAttacker(EnemyLongAttacker):
     def grenade(self, target, current_frame_add):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.grenade_params["key_frames"]:
-            self.current_magic = Grenade(sp, [target, ], self.grenade_params)
+            self.current_magic = GrenadeBomb(sp, [target, ], self.grenade_params)
             self.magic_list.append(self.current_magic)
 
 
