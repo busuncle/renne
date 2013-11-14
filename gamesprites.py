@@ -93,11 +93,15 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.animation.adjust_rect()
 
 
-    def reset_action(self):
-        self.action = cfg.SpriteAction.STAND
-        self.attacker.finish()
-        self.frame_action = None
-        self.animation.reset_frame_adds()
+    def reset_action(self, force=True):
+        if force:
+            self.action = cfg.SpriteAction.STAND
+            self.attacker.finish()
+            self.frame_action = None
+            self.animation.reset_frame_adds()
+        else:
+            if self.action != cfg.SpriteAction.ATTACK:
+                self.action = cfg.SpriteAction.STAND
 
 
     def set_emotion(self, emotion, force=False):
@@ -161,6 +165,36 @@ class GameSprite(pygame.sprite.DirtySprite):
             if self.status[cfg.SpriteStatus.UNDER_THUMP]["crick_time"] <= 0:
                 self.reset_action()
                 self.status.pop(cfg.SpriteStatus.UNDER_THUMP)
+
+        if self.status.get(cfg.SpriteStatus.POISON) is not None:
+            poison = self.status[cfg.SpriteStatus.POISON]
+            if poison["time_left"] < 0:
+                self.status.pop(cfg.SpriteStatus.POISON)
+            else:
+                poison["time_left"] -= passed_seconds
+                if len(poison["time_list"]) > 0 and poison["time_left"] <= poison["time_list"][-1]:
+                    poison["time_list"].pop()
+                    self.hp -= poison["dps"]
+                    self.status["hp"] = self.cal_sprite_status(self.hp, self.setting.HP)
+                    self.animation.show_cost_hp(poison["dps"])
+
+        if self.status.get(cfg.SpriteStatus.FROZEN) is not None:
+            self.status[cfg.SpriteStatus.FROZEN]["time_left"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.FROZEN]["time_left"] < 0:
+                self.status.pop(cfg.SpriteStatus.FROZEN)
+
+        if self.status.get(cfg.SpriteStatus.WEAK) is not None:
+            self.status[cfg.SpriteStatus.WEAK]["time_left"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.WEAK]["time_left"] < 0:
+                self.status.pop(cfg.SpriteStatus.WEAK)
+                # return normal atk and dfs
+                self.atk = self.setting.ATK
+                self.dfs = self.setting.DFS
+
+        if self.status.get(cfg.SpriteStatus.UNDER_PULL) is not None:
+            speed = self.status[cfg.SpriteStatus.UNDER_PULL]["speed"]
+            key_vec = self.status[cfg.SpriteStatus.UNDER_PULL]["key_vec"]
+            self.move(speed, passed_seconds, key_vec)
 
 
     def update(self, passed_seconds):
@@ -477,13 +511,14 @@ class Renne(GameSprite):
                 self.action = cfg.HeroAction.STAND
                 return
             elif external_event == cfg.GameStatus.HERO_LOSE:
-                if self.action != cfg.HeroAction.ATTACK:
-                    self.action = cfg.HeroAction.STAND
+                self.reset_action(force=False)
                 return 
             elif external_event == cfg.GameStatus.ENTER_AMBUSH:
-                if self.action != cfg.HeroAction.ATTACK:
-                    self.action = cfg.HeroAction.STAND
+                self.reset_action(force=False)
                 return 
+            elif external_event == cfg.GameStatus.STORY:
+                self.reset_action(force=False)
+                return
             elif external_event == cfg.GameStatus.PAUSE:
                 # do nothing
                 return
@@ -601,35 +636,6 @@ class Renne(GameSprite):
         elif self.action == cfg.HeroAction.UNDER_THUMP:
             self.under_thump(passed_seconds)
 
-        if self.status.get(cfg.SpriteStatus.POISON) is not None:
-            poison = self.status[cfg.SpriteStatus.POISON]
-            if poison["time_left"] < 0:
-                self.status.pop(cfg.SpriteStatus.POISON)
-            else:
-                poison["time_left"] -= passed_seconds
-                if len(poison["time_list"]) > 0 and poison["time_left"] <= poison["time_list"][-1]:
-                    poison["time_list"].pop()
-                    self.hp -= poison["dps"]
-                    self.status["hp"] = self.cal_sprite_status(self.hp, self.setting.HP)
-                    self.animation.show_cost_hp(poison["dps"])
-
-        if self.status.get(cfg.SpriteStatus.FROZEN) is not None:
-            self.status[cfg.SpriteStatus.FROZEN]["time_left"] -= passed_seconds
-            if self.status[cfg.SpriteStatus.FROZEN]["time_left"] < 0:
-                self.status.pop(cfg.SpriteStatus.FROZEN)
-
-        if self.status.get(cfg.SpriteStatus.WEAK) is not None:
-            self.status[cfg.SpriteStatus.WEAK]["time_left"] -= passed_seconds
-            if self.status[cfg.SpriteStatus.WEAK]["time_left"] < 0:
-                self.status.pop(cfg.SpriteStatus.WEAK)
-                # return normal atk and dfs
-                self.atk = self.setting.ATK
-                self.dfs = self.setting.DFS
-
-        if self.status.get(cfg.SpriteStatus.UNDER_PULL) is not None:
-            speed = self.status[cfg.SpriteStatus.UNDER_PULL]["speed"]
-            key_vec = self.status[cfg.SpriteStatus.UNDER_PULL]["key_vec"]
-            self.move(speed, passed_seconds, key_vec)
 
         self.animation.update(passed_seconds)
         self.emotion_animation.update(passed_seconds)
@@ -784,6 +790,9 @@ class Enemy(GameSprite):
                 self.reset_action(force=False)
                 return
             elif external_event == cfg.GameStatus.ENTER_AMBUSH:
+                self.reset_action(force=False)
+                return
+            elif external_event == cfg.GameStatus.STORY:
                 self.reset_action(force=False)
                 return
             elif external_event == cfg.GameStatus.PAUSE:

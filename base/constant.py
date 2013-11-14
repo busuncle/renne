@@ -175,6 +175,7 @@ class GameStatus(object):
     HERO_LOSE = 3
     PAUSE = 4
     ENTER_AMBUSH = 5
+    STORY = 6
 
     STATUS_WITH_MASK = (HERO_WIN, HERO_LOSE, PAUSE)
 
