@@ -34,8 +34,8 @@ util.prepare_data_related_folder()
 
 
 def main(args):
-    # a Renne singleton goes through the whole game
-    renne = Renne(sfg.Renne, (0, 0), 0)
+    # a singleton goes through the whole game
+    hero = Renne(sfg.Renne, (0, 0), 0)
 
     if args.chapter is not None:
         # it's for debuging, only run 1 part and return immediately
@@ -44,7 +44,7 @@ def main(args):
         elif args.chapter == -1:
             end_game(screen)
         else:
-            enter_chapter(screen, args.chapter, renne)
+            enter_chapter(screen, args.chapter, hero)
         return
 
     res = start_game(screen)
@@ -54,22 +54,22 @@ def main(args):
 
         if status == cfg.GameControl.NEXT:
             loading_chapter_picture(screen)
-            renne.recover()
+            hero.recover()
             i += 1
             chapter = sfg.Chapter.ALL[i]
-            res = enter_chapter(screen, chapter, renne)
+            res = enter_chapter(screen, chapter, hero)
 
         elif status == cfg.GameControl.SUB_CHAPTER:
             chapter = res["chapter"]
-            res = enter_chapter(screen, chapter, renne)
+            res = enter_chapter(screen, chapter, hero)
 
         elif status == cfg.GameControl.AGAIN:
-            renne.recover()
-            res = enter_chapter(screen, chapter, renne)
+            hero.recover()
+            res = enter_chapter(screen, chapter, hero)
 
         elif status == cfg.GameControl.MAIN:
-            renne.exp = 0
-            renne.recover(level=1)
+            hero.exp = 0
+            hero.recover(level=1)
             i = -1
             res = start_game(screen)
 
@@ -80,16 +80,16 @@ def main(args):
             i = sfg.Chapter.ALL.index(res["save"]["current_chapter"]) + 1
             if i < len(sfg.Chapter.ALL):
                 loading_chapter_picture(screen)
-                renne.exp = res["save"]["exp"]
-                renne.recover(res["save"]["level"])
+                hero.exp = res["save"]["exp"]
+                hero.recover(res["save"]["level"])
                 chapter = sfg.Chapter.ALL[i]
-                res = enter_chapter(screen, chapter, renne)
+                res = enter_chapter(screen, chapter, hero)
 
     end_game(screen)
 
 
 
-def enter_chapter(screen, chapter, renne):
+def enter_chapter(screen, chapter, hero):
     map_setting = util.load_map_setting(chapter)
 
     camera = Camera(screen, map_size=map_setting["size"])
@@ -100,8 +100,8 @@ def enter_chapter(screen, chapter, renne):
     game_map = GameMap(chapter, map_setting)
 
     # load hero
-    renne.place(map_setting["hero"]["pos"], map_setting["hero"]["direction"])
-    renne.activate(allsprites, enemies, static_objects, game_map)
+    hero.place(map_setting["hero"]["pos"], map_setting["hero"]["direction"])
+    hero.activate(allsprites, enemies, static_objects, game_map)
 
     # load monsters
     monster_init_list = map_setting["monsters"]
@@ -111,7 +111,7 @@ def enter_chapter(screen, chapter, renne):
         EnemyClass = ENEMY_CLASS_MAPPING[monster_id]
         monster = EnemyClass(monster_setting, pos, direct)
         monster_ai_setting = ai.AI_MAPPING[monster_id]
-        monster.activate(monster_ai_setting, allsprites, renne, static_objects, game_map)
+        monster.activate(monster_ai_setting, allsprites, hero, static_objects, game_map)
 
         enemies.add(monster)
 
@@ -140,13 +140,13 @@ def enter_chapter(screen, chapter, renne):
         static_obj = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[t], p)
         static_objects.add(static_obj)
 
-    allsprites.add(renne)
+    allsprites.add(hero)
     allsprites.add(enemies)
 
     game_world.batch_add(allsprites)
     game_world.batch_add(static_objects)
 
-    game_director = GameDirector(chapter, renne, enemies)
+    game_director = GameDirector(chapter, hero, enemies)
 
     if COMMAND_DEBUG_MODE:
         # skip the init status in command debug mode
@@ -176,8 +176,8 @@ def enter_chapter(screen, chapter, renne):
                         util.save_chapter_win_screen_image(chapter, camera.screen)
                         dat = util.load_auto_save() or {}
                         dat["current_chapter"] = chapter
-                        dat["level"] = renne.level
-                        dat["exp"] = renne.exp
+                        dat["level"] = hero.level
+                        dat["exp"] = hero.exp
                         util.auto_save(dat)
                         return {"status": cfg.GameControl.NEXT}
                     elif game_director.status == cfg.GameStatus.HERO_LOSE:
@@ -195,9 +195,9 @@ def enter_chapter(screen, chapter, renne):
                     if last_direct_key_up is not None:
                         if event.key == last_direct_key_up[0] \
                             and time() - last_direct_key_up[1] < sfg.UserKey.RUN_THRESHOLD \
-                            and not renne.locked():
+                            and not hero.locked():
                             # adhoc for special key event
-                            renne.action = cfg.HeroAction.RUN
+                            hero.action = cfg.HeroAction.RUN
 
                 if event.key in one_pressed_keys and one_pressed_keys[event.key]["cd"] == 0:
                     one_pressed_keys[event.key]["pressed"] = True
@@ -211,10 +211,10 @@ def enter_chapter(screen, chapter, renne):
                     last_direct_key_up = (event.key, time())
 
         pressed_keys = pygame.key.get_pressed()
-        renne.event_handle(pressed_keys, one_pressed_keys, external_event=game_director.status)
+        hero.event_handle(pressed_keys, one_pressed_keys, external_event=game_director.status)
 
         for enemy in enemies:
-            if enemy_in_one_screen(renne, enemy):
+            if enemy_in_one_screen(hero, enemy):
                 enemy.event_handle(pressed_keys, external_event=game_director.status)
 
         time_passed = clock.tick(sfg.FPS)
@@ -224,10 +224,10 @@ def enter_chapter(screen, chapter, renne):
             one_pressed_keys[k]["pressed"] = False
             one_pressed_keys[k]["cd"] = max(one_pressed_keys[k]["cd"] - passed_seconds, 0)
 
-        # update renne, enemies, game_director in sequence
-        renne.update(passed_seconds, external_event=game_director.status)
+        # update hero, enemies, game_director in sequence
+        hero.update(passed_seconds, external_event=game_director.status)
         for enemy in enemies:
-            if enemy_in_one_screen(renne, enemy):
+            if enemy_in_one_screen(hero, enemy):
                 enemy.update(passed_seconds, external_event=game_director.status)
 
         if game_director.status != cfg.GameStatus.PAUSE:
@@ -242,17 +242,17 @@ def enter_chapter(screen, chapter, renne):
                 game_world.active_ambush = None
         else:
             for ambush in game_world.ambush_list:
-                if ambush.enter(renne):
-                    renne.set_emotion(cfg.SpriteEmotion.ALERT)
+                if ambush.enter(hero):
+                    hero.set_emotion(cfg.SpriteEmotion.ALERT)
                     # only one ambush is active
                     game_director.status = cfg.GameStatus.ENTER_AMBUSH
                     game_world.active_ambush = ambush
                     for monster in ambush:
                         monster_ai_setting = ai.AI_MAPPING[monster.setting.ID]
                         monster.activate(monster_ai_setting, allsprites, 
-                            renne, static_objects, game_map)
+                            hero, static_objects, game_map)
                         # monster in ambush will be in offence state, target at hero right now!
-                        monster.brain.set_target(renne)
+                        monster.brain.set_target(hero)
                         monster.brain.set_active_state(cfg.SpriteState.CHASE)
                         enemies.add(monster)
 
@@ -262,7 +262,7 @@ def enter_chapter(screen, chapter, renne):
 
         game_director.update(passed_seconds)
 
-        camera.screen_follow(renne.pos)
+        camera.screen_follow(hero.pos)
 
         # 3 layers from bottom to top: floor -> sprites in the playground -> game info(player hp, ep etc)
         game_map.draw(camera)
@@ -273,10 +273,10 @@ def enter_chapter(screen, chapter, renne):
             debug_tools.run_debug_by_option_list(COMMAND_DEBUG_OPTIONS,
                 camera, game_world, game_map, clock)
             if COMMAND_DEBUG_OPTIONS["god"]:
-                renne.hp = renne.setting.HP
-                renne.mp = renne.setting.MP
-                renne.sp = renne.setting.SP
-                renne.attacker.refresh_skill()
+                hero.hp = hero.setting.HP
+                hero.mp = hero.setting.MP
+                hero.sp = hero.setting.SP
+                hero.attacker.refresh_skill()
 
         pygame.display.flip()
 

@@ -283,8 +283,8 @@ def run(chapter):
     game_map = GameMap(chapter, map_setting)
 
     # load hero
-    renne = Renne(sfg.Renne, map_setting["hero"]["pos"], map_setting["hero"]["direction"])
-    game_world.add_object(renne)
+    hero = Renne(sfg.Renne, map_setting["hero"]["pos"], map_setting["hero"]["direction"])
+    game_world.add_object(hero)
 
     # load monsters
     monster_init_list = map_setting.get("monsters", [])
