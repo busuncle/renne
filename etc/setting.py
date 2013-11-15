@@ -1071,6 +1071,8 @@ class SpriteStatus(object):
         "hero_sp": Font.ARIAL_BOLD_12.render("SP", True, pygame.Color("white")),
         "hero_exp": Font.ARIAL_BOLD_12.render("EX", True, pygame.Color("white")),
     }
+    LEVEL_TITLE_FONT = Font.ARIAL_BOLD_12
+    LEVEL_TITLE_COLOR = pygame.Color("white")
 
     # health point related
     SPRITE_HP_COLORS = {

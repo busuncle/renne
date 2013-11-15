@@ -565,7 +565,9 @@ class HeroStatus(object):
         camera.screen.blit(sfg.SpriteStatus.WORDS["hero_sp"], sfg.SpriteStatus.HERO_SP_TITLE_BLIT_POS)
         camera.screen.blit(sfg.SpriteStatus.WORDS["hero_exp"], sfg.SpriteStatus.HERO_EXP_TITTLE_BLIT_POS)
         # level title is not a constant, read it from hero
-        camera.screen.blit(self.hero.level_title, sfg.SpriteStatus.HERO_LEVEL_BLIT_POS)
+        level_title = sfg.SpriteStatus.LEVEL_TITLE_FONT.render("LV%s" % self.hero.level, True, 
+            sfg.SpriteStatus.LEVEL_TITLE_COLOR)
+        camera.screen.blit(level_title, sfg.SpriteStatus.HERO_LEVEL_BLIT_POS)
 
         # draw the hp bar for Renne
         self.draw_hero_bar(camera, self.hero.hp, self.hero.setting.HP, self.hero_hp_bar, 

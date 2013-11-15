@@ -234,14 +234,12 @@ class Renne(GameSprite):
         self.run_attack_params = self.setting.ATTACKER_PARAMS["run_attack"]
 
 
-
     def activate(self, allsprites, enemies, static_objects, game_map):
         self.area.center = self.pos("xy")
         self.allsprites = allsprites
         self.enemies = enemies
         self.static_objects = static_objects
         self.game_map = game_map
-        self.level_title = sfg.Font.ARIAL_BOLD_12.render("LV%s" % self.level, True, pygame.Color("white"))
 
 
     def recover(self, level=None):
@@ -281,8 +279,6 @@ class Renne(GameSprite):
                 (self.pos.x - sfg.SpriteStatus.LEVEL_UP_WORDS_BLIT_X_OFFSET, self.pos.y * 0.5 - self.setting.HEIGHT - sfg.SpriteStatus.LEVEL_UP_WORDS_BLIT_Y_OFFSET),
                 sfg.SpriteStatus.LEVEL_UP_WORDS_POS_MOVE_RATE,
                 True)
-            # update level title
-            self.level_title = sfg.Font.ARIAL_BOLD_12.render("LV%s" % new_level, True, pygame.Color("white"))
 
 
     def draw(self, camera):
