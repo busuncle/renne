@@ -169,6 +169,8 @@ class Renne(object):
             "thump_acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
             "self_crick_time": 0.15,
         },
+        "attack_combo_time_delta": 0.6,
+        "attack_combo_count_max": 2,
         "range": 100,
         "range2": 110,
         "angle": 120,
@@ -181,6 +183,8 @@ class Renne(object):
             "out_speed": 1000,
             "acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
             "self_crick_time": 0.2,
+            "run_speed_ratio": 0.6,
+            "end_frame": 8,
         },
         "destroy_fire": {
             "range": 400,
@@ -324,7 +328,7 @@ class SkeletonArcher(Enemy):
     SHADOW_INDEX = 3
 
     ATTACKER_PARAMS = {
-        "range": 400,
+        "range": 480,
         "angle": 12,
         "key_frames": (4, 5),
         "arrow_radius": 18, 
@@ -1012,13 +1016,13 @@ class Wine(Food):
 
 
 class WayPoint(object):
-    STEP_WIDTH = 24
+    STEP_WIDTH = 32
     BOUNDING_BOX_RECT = (0, 0, STEP_WIDTH * 2, STEP_WIDTH * 2)
 
 
 
 class BlockPoint(object):
-    STEP_WIDTH = 8
+    STEP_WIDTH = 32
 
 
 
@@ -1315,7 +1319,9 @@ class EndGame(object):
 
 
 class MapEditor(object):
+    STEP_WIDTH = 8
     SCREEN_MOVE_SPEED = 400
+
     KEY_STATIC_OBJECT = K_1
     KEY_ENEMY = K_2
     KEY_AMBUSH = K_3
@@ -1413,6 +1419,12 @@ class Effect(object):
 
     GRENADE_IMAGE_KEY = "e7"
     GRENADE_RECT = (224, 0, 32, 32)
+    GRENADE_RADIUS = 16
+    GRENADE_DX = 16
+    GRENADE_DY = 16
+    GRENADE_VX_LOSS_RATE = 0.8
+    GRENADE_VY_LOSS_RATE = 0.5
+    GRENADE_LAND_HEIGHT_THRESHOLD = 5
 
     BLINK_RATE = 256
     BLINK_DEPTH_SECTION = (32, 128)

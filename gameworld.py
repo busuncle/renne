@@ -19,8 +19,8 @@ class GameMap(object):
         self.size = map_setting["size"]
         #self.map_tiles = weakref.WeakValueDictionary()
         self.map_tiles = {}
-        self.waypoints = self.init_waypoints(map_setting["waypoints"])
-        self.block_points = self.init_block_points(map_setting["block_points"])
+        self.waypoints = self.init_waypoints(map_setting.get("waypoints", []))
+        self.block_points = self.init_block_points(map_setting.get("block_points", []))
         self.init_map_titles(map_setting["tiles"])
 
 
@@ -182,9 +182,6 @@ class GameWorld(pygame.sprite.LayeredDirty):
                         # and damage calculation among all the sprites 
                         magic.update(passed_seconds)
 
-            if hasattr(sp.attacker, "ammo_list"):
-                sp.attacker.update_ammo(passed_seconds)
-
 
     def draw(self, camera):
         movings = []
@@ -203,10 +200,7 @@ class GameWorld(pygame.sprite.LayeredDirty):
 
             if hasattr(sp.attacker, "magic_list"):
                 for magic in sp.attacker.magic_list:
-                    if hasattr(magic, "image"):
-                        movings.append(magic)
-                    else:
-                        magic.draw(camera)
+                    magic.draw(camera)
 
                     for msp in magic.magic_sprites:
                         if msp.status == cfg.Magic.STATUS_VANISH:
@@ -219,12 +213,6 @@ class GameWorld(pygame.sprite.LayeredDirty):
                             floor_objects.append(msp)
                         elif msp.layer == cfg.Magic.LAYER_AIR:
                             movings.append(msp)
-
-            if hasattr(sp.attacker, "ammo_list"):
-                movings.extend(sp.attacker.ammo_list)
-                #for ammo in sp.attacker.ammo_list:
-                #    ammo.draw_shadow(camera)
-                
 
         # draw floor objects first
         floor_objects.sort(key=lambda obj: obj.pos.y)

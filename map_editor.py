@@ -105,9 +105,9 @@ def put_down_selected_object(selected_object, game_world):
     if selected_object is None:
         return True
 
-    for sp in game_world.yield_all_objects():
-        if selected_object.area.colliderect(sp.area):
-            return False
+    #for sp in game_world.yield_all_objects():
+    #    if selected_object.area.colliderect(sp.area):
+    #        return False
 
     if isinstance(selected_object, GameSprite):
         # put sprite into ambush if it's *only* in one ambush
@@ -201,10 +201,27 @@ def change_map_setting(map_setting, game_world, game_map):
 
 
 def set_selected_object_follow_mouse(map_pos_for_mouse, selected_object):
-    selected_object.area.center = map_pos_for_mouse
-    selected_object.pos.x, selected_object.pos.y = map_pos_for_mouse
+    step = sfg.MapEditor.STEP_WIDTH
+    x = map_pos_for_mouse[0] - map_pos_for_mouse[0] % step
+    y = map_pos_for_mouse[1] - map_pos_for_mouse[1] % step
+    selected_object.area.center = (x, y)
+    selected_object.pos.x, selected_object.pos.y = x, y
     selected_object.adjust_rect()
 
+
+def draw_block_points_for_selected_object(camera, selected_object):
+    step = sfg.BlockPoint.STEP_WIDTH
+    x0 = selected_object.area.x + (step - selected_object.area.x % step)
+    y0 = selected_object.area.y + (step - selected_object.area.y % step)
+    x1 = selected_object.area.right - selected_object.area.right % step
+    y1 = selected_object.area.bottom - selected_object.area.bottom % step
+
+    for x in xrange(x0, x1 + 1, step):
+        for y in xrange(y0, y1 + 1, step):
+            ix, iy = int(x), int(y * 0.5)
+            ix -= camera.rect.x
+            iy -= camera.rect.y
+            pygame.draw.circle(camera.screen, pygame.Color("red"), (ix, iy), 2)
 
 
 def set_ambush_follow_mouse(map_pos_for_mouse, ambush):
@@ -390,6 +407,8 @@ def run(chapter):
                             and put_down_ambush(selected_object, game_world):
                             selected_object = None
 
+                    change_map_setting(map_setting, game_world, game_map)
+
 
         pressed_keys = pygame.key.get_pressed()
         key_vec.x = key_vec.y = 0.0
@@ -441,6 +460,7 @@ def run(chapter):
                     selected_object.animation.image = selected_object.animation.sprite_image_contoller.get_surface(
                         cfg.SpriteAction.STAND)[selected_object.direction]
                 selected_object.draw(camera)
+                draw_block_points_for_selected_object(camera, selected_object)
             
             elif isinstance(selected_object, Ambush):
                 camera.screen.blit(sfg.Font.ARIAL_32.render("Ambush", True, pygame.Color("black")), (5, 5))

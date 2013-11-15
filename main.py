@@ -201,7 +201,7 @@ def enter_chapter(screen, chapter, hero):
 
                 if event.key in one_pressed_keys and one_pressed_keys[event.key]["cd"] == 0:
                     one_pressed_keys[event.key]["pressed"] = True
-                    one_pressed_keys[event.key]["cd"] = 0.22
+                    one_pressed_keys[event.key]["cd"] = 0.1
 
                 if game_director.status == cfg.GameStatus.PAUSE:
                     game_director.menu.update(event.key)
@@ -273,10 +273,18 @@ def enter_chapter(screen, chapter, hero):
             debug_tools.run_debug_by_option_list(COMMAND_DEBUG_OPTIONS,
                 camera, game_world, game_map, clock)
             if COMMAND_DEBUG_OPTIONS["god"]:
+<<<<<<< HEAD
                 hero.hp = hero.setting.HP
                 hero.mp = hero.setting.MP
                 hero.sp = hero.setting.SP
                 hero.attacker.refresh_skill()
+=======
+                renne.hp = renne.setting.HP
+                renne.mp = renne.setting.MP
+                renne.sp = renne.setting.SP
+                renne.status["hp"] = renne.cal_sprite_status(renne.hp, renne.setting.HP)
+                renne.attacker.refresh_skill()
+>>>>>>> e864e65453ec01ca5f3e5fb6a67a76feb5d0fb02
 
         pygame.display.flip()
 

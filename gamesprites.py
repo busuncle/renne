@@ -8,6 +8,7 @@ import simulator
 from animation import SpriteEmotionAnimator, RenneAnimator, EnemyAnimator
 from musicbox import SoundBox
 import controller
+from gameworld import StaticObjectGroup
 from base.util import Timer, happen
 from base import constant as cfg
 from etc import setting as sfg
@@ -74,10 +75,10 @@ class GameSprite(pygame.sprite.DirtySprite):
             return cfg.HpStatus.DIE
 
 
-    def is_collide_map_boundry(self):
-        max_w, max_h = self.game_map.size
-        w, h = self.area.center
-        if w <= 0 or h <= 0 or w >= max_w or h >= max_h:
+    def is_collide_map_boundry(self, pos=None):
+        max_x, max_y = self.game_map.size
+        p = pos or self.pos
+        if p.x < 0 or p.y < 0 or p.x > max_x or p.y > max_y:
             return True
         return False
 
@@ -92,10 +93,15 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.animation.adjust_rect()
 
 
-    def reset_action(self):
-        self.action = cfg.SpriteAction.STAND
-        self.frame_action = None
-        self.animation.reset_frame_adds()
+    def reset_action(self, force=True):
+        if force:
+            self.action = cfg.SpriteAction.STAND
+            self.attacker.finish()
+            self.frame_action = None
+            self.animation.reset_frame_adds()
+        else:
+            if self.action != cfg.SpriteAction.ATTACK:
+                self.action = cfg.SpriteAction.STAND
 
 
     def set_emotion(self, emotion, force=False):
@@ -160,6 +166,36 @@ class GameSprite(pygame.sprite.DirtySprite):
                 self.reset_action()
                 self.status.pop(cfg.SpriteStatus.UNDER_THUMP)
 
+        if self.status.get(cfg.SpriteStatus.POISON) is not None:
+            poison = self.status[cfg.SpriteStatus.POISON]
+            if poison["time_left"] < 0:
+                self.status.pop(cfg.SpriteStatus.POISON)
+            else:
+                poison["time_left"] -= passed_seconds
+                if len(poison["time_list"]) > 0 and poison["time_left"] <= poison["time_list"][-1]:
+                    poison["time_list"].pop()
+                    self.hp -= poison["dps"]
+                    self.status["hp"] = self.cal_sprite_status(self.hp, self.setting.HP)
+                    self.animation.show_cost_hp(poison["dps"])
+
+        if self.status.get(cfg.SpriteStatus.FROZEN) is not None:
+            self.status[cfg.SpriteStatus.FROZEN]["time_left"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.FROZEN]["time_left"] < 0:
+                self.status.pop(cfg.SpriteStatus.FROZEN)
+
+        if self.status.get(cfg.SpriteStatus.WEAK) is not None:
+            self.status[cfg.SpriteStatus.WEAK]["time_left"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.WEAK]["time_left"] < 0:
+                self.status.pop(cfg.SpriteStatus.WEAK)
+                # return normal atk and dfs
+                self.atk = self.setting.ATK
+                self.dfs = self.setting.DFS
+
+        if self.status.get(cfg.SpriteStatus.UNDER_PULL) is not None:
+            speed = self.status[cfg.SpriteStatus.UNDER_PULL]["speed"]
+            key_vec = self.status[cfg.SpriteStatus.UNDER_PULL]["key_vec"]
+            self.move(speed, passed_seconds, key_vec)
+
 
     def update(self, passed_seconds):
         pass
@@ -188,11 +224,14 @@ class Renne(GameSprite):
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
 
         # for regular attack combo
-        self.attack_combo = {"count": 0, "last_time": time(), "time_delta": 0.6, "count_max": 2}
+        self.attack_combo = {"count": 0, "last_time": time(), 
+            "time_delta": self.setting.ATTACKER_PARAMS["attack_combo_time_delta"], 
+            "count_max": self.setting.ATTACKER_PARAMS["attack_combo_count_max"]}
         self.attack1_start_frame = self.setting.ATTACKER_PARAMS["attack1"]["start_frame"]
         self.attack1_end_frame = self.setting.ATTACKER_PARAMS["attack1"]["end_frame"]
         self.attack2_accumulate_power_frame = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_frame"]
         self.attack2_accumulate_power_time = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_time"]
+        self.run_attack_params = self.setting.ATTACKER_PARAMS["run_attack"]
 
 
 
@@ -249,18 +288,6 @@ class Renne(GameSprite):
     def draw(self, camera):
         self.animation.draw(camera)
         self.emotion_animation.draw(camera)
-
-
-    def reachable(self, pos=None):
-        p = pos or self.pos
-        wps = self.game_map.waypoints
-        step = sfg.WayPoint.STEP_WIDTH
-        x0 = p.x - p.x % step
-        y0 = p.y - p.y % step
-        for p in ((x0, y0), (x0 + step, y0), (x0, y0 + step), (x0 + step, y0 + step)):
-            if p not in wps:
-                return False
-        return True
 
 
     def move(self, speed, passed_seconds, key_vec=None):
@@ -343,7 +370,6 @@ class Renne(GameSprite):
         self.frame_action = cfg.HeroAction.ATTACK
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
-            self.attacker.finish()
             self.reset_action()
         else:
             self.attacker.destroy_fire(self.animation.get_current_frame_add(self.frame_action))
@@ -353,7 +379,6 @@ class Renne(GameSprite):
         self.frame_action = cfg.HeroAction.ATTACK
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
-            self.attacker.finish()
             self.reset_action()
         else:
             self.attacker.destroy_bomb(self.animation.get_current_frame_add(self.frame_action))
@@ -363,7 +388,6 @@ class Renne(GameSprite):
         self.frame_action = cfg.HeroAction.SKILL
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
-            self.attacker.finish()
             self.reset_action()
         else:
             self.attacker.destroy_aerolite(self.animation.get_current_frame_add(self.frame_action))
@@ -377,19 +401,8 @@ class Renne(GameSprite):
             self.animation.set_frame_add(cfg.HeroAction.ATTACK, self.attack1_start_frame)
 
         if current_frame_add >= self.attack1_end_frame:
-            # change combo count if this attack has hit some one
-            if len(self.attacker.has_hits) > 0:
-                attack_time = time()
-                if self.attack_combo["count"] == 0 \
-                    or attack_time - self.attack_combo["time_delta"] < self.attack_combo["last_time"]:
-                    self.attack_combo["count"] += 1
-                else:
-                    self.attack_combo["count"] = max(self.attack_combo["count"] - 1, 0)
-
-                self.attack_combo["last_time"] = attack_time
 
             # ends at this frame
-            self.attacker.finish()
             self.reset_action()
         else:
             hit_count = 0
@@ -399,6 +412,16 @@ class Renne(GameSprite):
                     hit_count += 1
             if hit_count > 0:
                 self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
+
+                # change combo count if this attack has hit some one
+                attack_time = time()
+                if self.attack_combo["count"] == 0 \
+                    or attack_time - self.attack_combo["last_time"] <= self.attack_combo["time_delta"]:
+                    self.attack_combo["count"] += 1
+                else:
+                    self.attack_combo["count"] = max(self.attack_combo["count"] - 1, 0)
+
+                self.attack_combo["last_time"] = attack_time
 
         self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds)
 
@@ -412,7 +435,6 @@ class Renne(GameSprite):
         else:
             is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
             if is_finish:
-                self.attacker.finish()
                 self.reset_action()
                 # clean combo count after an "attack2"
                 self.attack_combo["count"] = 0
@@ -431,13 +453,13 @@ class Renne(GameSprite):
     def run_attack(self, passed_seconds):
         # a special attack type, when hero is running and press attack
         self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds)
-        if self.animation.get_current_frame_add(cfg.HeroAction.ATTACK) > 8:
+        if self.animation.get_current_frame_add(cfg.HeroAction.ATTACK) > self.run_attack_params["end_frame"]:
             # don't full-run the attack frame for better effect
             self.animation.reset_frame_adds()
             self.attacker.finish()
             self.action = cfg.HeroAction.STAND
         else:
-            self.move(self.setting.RUN_SPEED * 0.6, passed_seconds)
+            self.move(self.setting.RUN_SPEED * self.run_attack_params["run_speed_ratio"], passed_seconds)
             hit_count = 0
             for em in self.enemies:
                 hit_it = self.attacker.run_attack(em, self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
@@ -489,13 +511,14 @@ class Renne(GameSprite):
                 self.action = cfg.HeroAction.STAND
                 return
             elif external_event == cfg.GameStatus.HERO_LOSE:
-                if self.action != cfg.HeroAction.ATTACK:
-                    self.action = cfg.HeroAction.STAND
+                self.reset_action(force=False)
                 return 
             elif external_event == cfg.GameStatus.ENTER_AMBUSH:
-                if self.action != cfg.HeroAction.ATTACK:
-                    self.action = cfg.HeroAction.STAND
+                self.reset_action(force=False)
                 return 
+            elif external_event == cfg.GameStatus.STORY:
+                self.reset_action(force=False)
+                return
             elif external_event == cfg.GameStatus.PAUSE:
                 # do nothing
                 return
@@ -519,7 +542,8 @@ class Renne(GameSprite):
             if self.action == cfg.HeroAction.RUN and self.sp > 0:
                 self.attacker.method = "run_attack"
             else:
-                if self.attack_combo["count"] < self.attack_combo["count_max"]:
+                if self.attack_combo["count"] < self.attack_combo["count_max"] \
+                    or time() - self.attack_combo["last_time"] > self.attack_combo["time_delta"]:
                     self.attacker.method = "regular1"
                 else:
                     self.attacker.method = "regular2"
@@ -612,35 +636,6 @@ class Renne(GameSprite):
         elif self.action == cfg.HeroAction.UNDER_THUMP:
             self.under_thump(passed_seconds)
 
-        if self.status.get(cfg.SpriteStatus.POISON) is not None:
-            poison = self.status[cfg.SpriteStatus.POISON]
-            if poison["time_left"] < 0:
-                self.status.pop(cfg.SpriteStatus.POISON)
-            else:
-                poison["time_left"] -= passed_seconds
-                if len(poison["time_list"]) > 0 and poison["time_left"] <= poison["time_list"][-1]:
-                    poison["time_list"].pop()
-                    self.hp -= poison["dps"]
-                    self.status["hp"] = self.cal_sprite_status(self.hp, self.setting.HP)
-                    self.animation.show_cost_hp(poison["dps"])
-
-        if self.status.get(cfg.SpriteStatus.FROZEN) is not None:
-            self.status[cfg.SpriteStatus.FROZEN]["time_left"] -= passed_seconds
-            if self.status[cfg.SpriteStatus.FROZEN]["time_left"] < 0:
-                self.status.pop(cfg.SpriteStatus.FROZEN)
-
-        if self.status.get(cfg.SpriteStatus.WEAK) is not None:
-            self.status[cfg.SpriteStatus.WEAK]["time_left"] -= passed_seconds
-            if self.status[cfg.SpriteStatus.WEAK]["time_left"] < 0:
-                self.status.pop(cfg.SpriteStatus.WEAK)
-                # return normal atk and dfs
-                self.atk = self.setting.ATK
-                self.dfs = self.setting.DFS
-
-        if self.status.get(cfg.SpriteStatus.UNDER_PULL) is not None:
-            speed = self.status[cfg.SpriteStatus.UNDER_PULL]["speed"]
-            key_vec = self.status[cfg.SpriteStatus.UNDER_PULL]["key_vec"]
-            self.move(speed, passed_seconds, key_vec)
 
         self.animation.update(passed_seconds)
         self.emotion_animation.update(passed_seconds)
@@ -698,6 +693,21 @@ class Enemy(GameSprite):
 
 
     def reachable(self, pos=None):
+        if self.is_collide_map_boundry():
+            return False
+
+        p = pos or self.pos
+        bps = self.game_map.block_points
+        step = sfg.BlockPoint.STEP_WIDTH
+        x0 = p.x - p.x % step
+        y0 = p.y - p.y % step
+        for p in ((x0, y0), (x0 + step, y0), (x0, y0 + step), (x0 + step, y0 + step)):
+            if p in bps:
+                return False
+        return True
+
+
+    def reachable_old(self, pos=None):
         # use waypoints to check whether the current self.pos is reachable
         p = pos or self.pos
         wps = self.brain.waypoints
@@ -727,8 +737,7 @@ class Enemy(GameSprite):
     def attack(self, passed_seconds):
         is_finish = self.animation.run_sequence_frame(cfg.EnemyAction.ATTACK, passed_seconds)
         if is_finish:
-            self.attacker.finish()
-            self.brain.persistent = False
+            self.reset_action(force=True)
         else:
             hit_it = self.attacker.run(self.brain.target, 
                 self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
@@ -781,6 +790,9 @@ class Enemy(GameSprite):
                 self.reset_action(force=False)
                 return
             elif external_event == cfg.GameStatus.ENTER_AMBUSH:
+                self.reset_action(force=False)
+                return
+            elif external_event == cfg.GameStatus.STORY:
                 self.reset_action(force=False)
                 return
             elif external_event == cfg.GameStatus.PAUSE:
@@ -909,7 +921,6 @@ class Leonhardt(Enemy):
 
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
-            self.attacker.finish()
             self.reset_action(force=True)
         else:
             hit_it = self.attacker.run(self.brain.target, 
@@ -925,7 +936,6 @@ class Leonhardt(Enemy):
 
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
-            self.attacker.finish()
             self.reset_action(force=True)
         else:
             self.attacker.death_coil(self.brain.target, 
@@ -954,7 +964,6 @@ class Leonhardt(Enemy):
                 self.animation.get_frame_num(self.frame_action) - 1)
 
         else:
-            ak.finish()
             self.reset_action(force=True)
 
 
@@ -998,7 +1007,6 @@ class Leonhardt(Enemy):
                 self.status.pop(cfg.SpriteStatus.SUPER_BODY)
 
         else:
-            ak.finish()
             self.reset_action(force=True)
 
 
@@ -1224,7 +1232,6 @@ class ArmouredShooter(Enemy):
         self.frame_action = cfg.EnemyAction.SKILL
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
-            self.attacker.finish()
             self.reset_action(force=True)
         else:
             self.attacker.grenade(self.brain.target, 
@@ -1253,7 +1260,6 @@ class Ghost(Enemy):
             self.move(self.setting.WALK_SPEED * 0.8, passed_seconds, check_reachable=True, key_vec=key_vec)
         else:
             self.status[cfg.SpriteStatus.INVISIBLE] = {"time": ak.invisible_time}
-            ak.finish()
             self.reset_action(force=True)
 
 
