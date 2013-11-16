@@ -1,3 +1,5 @@
+# -*- coding: gbk -*-
+
 import pygame
 from pygame.locals import BLEND_ADD
 from pygame import transform
@@ -1583,7 +1585,7 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
             target.attacker.handle_additional_status(cfg.SpriteStatus.POISON, 
                 {"dps": self.poison_dps, "time_list": range(self.poison_time), 
                 "time_left": self.poison_time})
-            words = sfg.Font.ARIAL_BLACK_24.render("Poison!", True, pygame.Color("green"))
+            words = sfg.Effect.POISON_WORD_FONT.render(u"中毒!", True, pygame.Color("green"))
             sp = self.sprite
             sp.animation.show_words(words, 0.3, 
                 (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
@@ -1614,13 +1616,15 @@ class GhostAttacker(EnemyShortAttacker):
 
     def chance(self, target):
         sp = self.sprite
+        if super(GhostAttacker, self).chance(target):
+            self.method = "regular"
+            return True
+
         if sp.status.get(cfg.SpriteStatus.INVISIBLE) is None \
             and happen(sp.brain.ai.ATTACK_ENTER_INVISIBLE_PROB):
             self.method = "invisible"
             return True
-        if super(GhostAttacker, self).chance(target):
-            self.method = "regular"
-            return True
+
         return False
 
 
@@ -1629,7 +1633,7 @@ class GhostAttacker(EnemyShortAttacker):
         if hit_it and happen(self.leak_prob):
             target.mp = max(0, target.mp - self.leak_mp)
             target.sp = max(0, target.sp - self.leak_sp)
-            words = sfg.Font.ARIAL_BLACK_24.render("Leak!", True, pygame.Color("black"))
+            words = sfg.Effect.MP_SP_LEAK_WORD_FONT.render(u"法力流失!", True, pygame.Color("black"))
             sp = self.sprite
             sp.animation.show_words(words, 0.3, 
                 (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
@@ -1712,7 +1716,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
             if self.method == "thump":
                 # thump results in a double attack and knockback
                 atk *= 2
-                words = sfg.Font.ARIAL_BLACK_24.render("Thump!", True, pygame.Color("gold"))
+                words = sfg.Effect.THUMP_WORD_FONT.render(u"重击!", True, pygame.Color("gold"))
                 sp.animation.show_words(words, 0.3, 
                     (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
 

@@ -18,7 +18,9 @@ class Font(object):
     HOLLOW_FILEPATH = os.path.join("res", "font", "hollow.ttf")
     MSYH_FILEPATH = os.path.join("res", "font", "msyh.ttf")
 
+    MSYH_12= pygame.font.Font(MSYH_FILEPATH, 12)
     MSYH_16 = pygame.font.Font(MSYH_FILEPATH, 16)
+    MSYH_24 = pygame.font.Font(MSYH_FILEPATH, 24)
     MSYH_32 = pygame.font.Font(MSYH_FILEPATH, 32)
     MSYH_48 = pygame.font.Font(MSYH_FILEPATH, 48)
 
@@ -53,7 +55,7 @@ class Menu(object):
         "option_rect": (0, 0, 224, 32),
         "blit_y": 320,
         "font_on": Font.MSYH_32,
-        "font_off": Font.MSYH_16,
+        "font_off": Font.MSYH_24,
         "color_on": pygame.Color("white"),
         "color_off": pygame.Color("gray"),
     }
@@ -66,8 +68,6 @@ class Menu(object):
         ],
         "option_rect": (0, 0, 256, 48),
         "blit_y": 540,
-        #"font_on": Font.ARIAL_BLACK_48,
-        #"font_off": Font.ARIAL_BLACK_32,
         "font_on": Font.MSYH_48,
         "font_off": Font.MSYH_32,
         "color_on": pygame.Color("white"),
@@ -578,8 +578,8 @@ class Ghost(Enemy):
     SHADOW_INDEX = 3
 
     ATTACKER_PARAMS = {
-        "range": 60,
-        "angle": 90,
+        "range": 80,
+        "angle": 80,
         "key_frames": (4, 5),
         "leak_prob": 0.7,
         "leak_mp": 60,
@@ -1467,6 +1467,10 @@ class Effect(object):
 
     BLINK_RATE3 = 1024
     BLINK_DEPTH_SECTION3 = (0, 192)
+
+    THUMP_WORD_FONT = Font.MSYH_24
+    MP_SP_LEAK_WORD_FONT = Font.MSYH_24
+    POISON_WORD_FONT = Font.MSYH_24
 
 
 
