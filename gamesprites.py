@@ -499,9 +499,9 @@ class Renne(GameSprite):
             return True
 
         return False
-        
 
-    def event_handle(self, pressed_keys, one_pressed_keys, external_event=None):
+
+    def event_handle(self, battle_keys, external_event=None):
         if external_event is not None:
             if external_event == cfg.GameStatus.INIT:
                 self.action = cfg.HeroAction.STAND
@@ -524,17 +524,17 @@ class Renne(GameSprite):
 
         # calculate direction
         self.key_vec.x = self.key_vec.y = 0.0
-        if pressed_keys[sfg.UserKey.LEFT]:
+        if battle_keys[sfg.UserKey.LEFT]["pressed"]:
             self.key_vec.x -= 1.0
-        if pressed_keys[sfg.UserKey.RIGHT]:
+        if battle_keys[sfg.UserKey.RIGHT]["pressed"]:
             self.key_vec.x += 1.0
-        if pressed_keys[sfg.UserKey.UP]:
+        if battle_keys[sfg.UserKey.UP]["pressed"]:
             self.key_vec.y -= 1.0
-        if pressed_keys[sfg.UserKey.DOWN]:
+        if battle_keys[sfg.UserKey.DOWN]["pressed"]:
             self.key_vec.y += 1.0
         self.direction = cfg.Direction.VEC_TO_DIRECT.get(self.key_vec.as_tuple(), self.direction)
 
-        if one_pressed_keys[sfg.UserKey.ATTACK]["pressed"]:
+        if battle_keys[sfg.UserKey.ATTACK]["pressed"]:
             if self.action == cfg.HeroAction.RUN and self.sp > 0:
                 self.attacker.method = "run_attack"
             else:
@@ -548,7 +548,7 @@ class Renne(GameSprite):
 
             self.action = cfg.HeroAction.ATTACK
 
-        elif one_pressed_keys[sfg.UserKey.ATTACK_DESTROY_FIRE]["pressed"]:
+        elif battle_keys[sfg.UserKey.MAGIC_SKILL_1]["pressed"]:
             if self.mp > self.attacker.destroy_fire_params["mana"] \
                 and self.attacker.magic_cds["destroy_fire"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
@@ -556,7 +556,7 @@ class Renne(GameSprite):
                 self.action = cfg.HeroAction.ATTACK
                 self.attacker.method = "destroy_fire"
 
-        elif one_pressed_keys[sfg.UserKey.ATTACK_DESTROY_BOMB]["pressed"]:
+        elif battle_keys[sfg.UserKey.MAGIC_SKILL_2]["pressed"]:
             if self.mp > self.attacker.destroy_bomb_params["mana"] \
                 and self.attacker.magic_cds["destroy_bomb"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
@@ -564,7 +564,7 @@ class Renne(GameSprite):
                 self.action = cfg.HeroAction.ATTACK
                 self.attacker.method = "destroy_bomb"
 
-        elif one_pressed_keys[sfg.UserKey.ATTACK_DESTROY_AEROLITE]["pressed"]:
+        elif battle_keys[sfg.UserKey.MAGIC_SKILL_3]["pressed"]:
             if self.mp > self.attacker.destroy_aerolite_params["mana"] \
                 and self.attacker.magic_cds["destroy_aerolite"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
@@ -572,18 +572,26 @@ class Renne(GameSprite):
                 self.action = cfg.HeroAction.SKILL
                 self.attacker.method = "destroy_aerolite"
 
-        elif one_pressed_keys[sfg.UserKey.WIN]["pressed"]:
+        elif battle_keys[sfg.UserKey.MAGIC_SKILL_4]["pressed"]:
             if self.attacker.magic_cds["dizzy"] == 0:
                 self.action = cfg.HeroAction.WIN
                 self.sound_box.play(sfg.Sound.RENNE_WIN)
 
-        elif pressed_keys[sfg.UserKey.REST]:
+        elif battle_keys[sfg.UserKey.REST]["pressed"]:
             self.action = cfg.HeroAction.REST
 
         elif self.key_vec:
             if self.action == cfg.HeroAction.RUN and self.sp > 0:
-                # press run and stamina enough
+                # just keep running
                 self.action = cfg.HeroAction.RUN
+            elif self.direction in sfg.UserKey.DIRECT_TO_DIRECTION_KEY:
+                direct_key = sfg.UserKey.DIRECT_TO_DIRECTION_KEY[self.direction]
+                if direct_key == battle_keys["last_direct_key_up"]["key"] \
+                    and time() - battle_keys["last_direct_key_up"]["time"] < sfg.UserKey.RUN_THRESHOLD \
+                    and self.sp > 0:
+                    self.action = cfg.HeroAction.RUN
+                else:
+                    self.action = cfg.HeroAction.WALK
             else:
                 self.action = cfg.HeroAction.WALK
 
@@ -776,7 +784,7 @@ class Enemy(GameSprite):
             self.brain.set_target(target)
 
 
-    def event_handle(self, pressed_keys=None, external_event=None):
+    def event_handle(self, external_event=None):
         # perception and belief control level
         if external_event is not None and external_event != cfg.GameStatus.IN_PROGRESS:
             if external_event == cfg.GameStatus.INIT:

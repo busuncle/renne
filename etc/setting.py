@@ -66,14 +66,29 @@ class UserKey(object):
     LEFT = K_a
     RIGHT = K_d
     ATTACK = K_j
-    ATTACK_DESTROY_FIRE = K_u
-    ATTACK_DESTROY_BOMB = K_i
-    ATTACK_DESTROY_AEROLITE = K_o
     REST = K_k
-    WIN = K_h
+    MAGIC_SKILL_1 = K_u
+    MAGIC_SKILL_2 = K_i
+    MAGIC_SKILL_3 = K_o
+    MAGIC_SKILL_4 = K_h
 
-    ONE_PRESSED_KEYS = (ATTACK, ATTACK_DESTROY_FIRE, ATTACK_DESTROY_BOMB, ATTACK_DESTROY_AEROLITE, WIN)
+    ONE_PRESSED_KEYS = (ATTACK, MAGIC_SKILL_1, MAGIC_SKILL_2, MAGIC_SKILL_3, MAGIC_SKILL_4)
+    ONE_PRESSED_KEY_CD = 0.1
+
+    CONTINUE_PRESSED_KEYS = (UP, DOWN, LEFT, RIGHT, REST)
+
     DIRECTION_KEYS = (UP, DOWN, LEFT, RIGHT)
+    DIRECTION_KEY_TO_DIRECT = {
+        UP: cfg.Direction.NORTH,
+        DOWN: cfg.Direction.SOUTH,
+        LEFT: cfg.Direction.WEST,
+        RIGHT: cfg.Direction.EAST,
+    }
+    DIRECT_TO_DIRECTION_KEY = dict((v, k) for k, v in DIRECTION_KEY_TO_DIRECT.iteritems())
+
+    PAUSE = K_ESCAPE
+    OK = K_RETURN
+
     # double press some direction key to run, this is the threshold between 2 presses
     RUN_THRESHOLD = 0.2
 

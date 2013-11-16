@@ -154,15 +154,21 @@ def enter_chapter(screen, chapter, hero):
 
     clock = pygame.time.Clock()
     running = True
-    last_direct_key_up = None
-    one_pressed_keys = dict((k, {"pressed": False, "cd": 0}) for k in sfg.UserKey.ONE_PRESSED_KEYS)
+
+    battle_keys= {}
+    for k in sfg.UserKey.ONE_PRESSED_KEYS:
+        battle_keys[k] = {"pressed": False, "cd": 0, "full_cd": sfg.UserKey.ONE_PRESSED_KEY_CD}
+    for k in sfg.UserKey.CONTINUE_PRESSED_KEYS:
+        battle_keys[k] = {"pressed": False}
+    battle_keys["last_direct_key_up"] = {"key": None, "time": None}
+
     while running:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 
                 return {"status": cfg.GameControl.QUIT}
 
             if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
+                if event.key == sfg.UserKey.PAUSE:
                     if game_director.status == cfg.GameStatus.IN_PROGRESS:
                         game_director.status = cfg.GameStatus.PAUSE
                         bg_box.pause()
@@ -171,7 +177,7 @@ def enter_chapter(screen, chapter, hero):
                         game_director.status = cfg.GameStatus.IN_PROGRESS
                         bg_box.unpause()
 
-                if event.key == K_RETURN:
+                if event.key == sfg.UserKey.OK:
                     if game_director.status == cfg.GameStatus.HERO_WIN:
                         util.save_chapter_win_screen_image(chapter, camera.screen)
                         dat = util.load_auto_save() or {}
@@ -191,38 +197,35 @@ def enter_chapter(screen, chapter, hero):
                         elif game_director.menu.current_menu() == "QUIT":
                             return {"status": cfg.GameControl.QUIT}
 
-                if event.key in sfg.UserKey.DIRECTION_KEYS:
-                    if last_direct_key_up is not None:
-                        if event.key == last_direct_key_up[0] \
-                            and time() - last_direct_key_up[1] < sfg.UserKey.RUN_THRESHOLD \
-                            and not hero.locked():
-                            # adhoc for special key event
-                            hero.action = cfg.HeroAction.RUN
-
-                if event.key in one_pressed_keys and one_pressed_keys[event.key]["cd"] == 0:
-                    one_pressed_keys[event.key]["pressed"] = True
-                    one_pressed_keys[event.key]["cd"] = 0.1
+                if event.key in sfg.UserKey.ONE_PRESSED_KEYS and battle_keys[event.key]["cd"] == 0:
+                    battle_keys[event.key]["pressed"] = True
+                    battle_keys[event.key]["cd"] = battle_keys[event.key]["full_cd"]
 
                 if game_director.status == cfg.GameStatus.PAUSE:
                     game_director.menu.update(event.key)
 
             if event.type == KEYUP:
                 if event.key in sfg.UserKey.DIRECTION_KEYS:
-                    last_direct_key_up = (event.key, time())
+                    battle_keys["last_direct_key_up"]["key"] = event.key
+                    battle_keys["last_direct_key_up"]["time"] = time()
 
         pressed_keys = pygame.key.get_pressed()
-        hero.event_handle(pressed_keys, one_pressed_keys, external_event=game_director.status)
+        for k in sfg.UserKey.CONTINUE_PRESSED_KEYS:
+            battle_keys[k]["pressed"] = pressed_keys[k]
 
+        hero.event_handle(battle_keys, external_event=game_director.status)
         for enemy in enemies:
             if enemy_in_one_screen(hero, enemy):
-                enemy.event_handle(pressed_keys, external_event=game_director.status)
+                enemy.event_handle(external_event=game_director.status)
 
         time_passed = clock.tick(sfg.FPS)
         passed_seconds = time_passed * 0.001
 
-        for k in one_pressed_keys:
-            one_pressed_keys[k]["pressed"] = False
-            one_pressed_keys[k]["cd"] = max(one_pressed_keys[k]["cd"] - passed_seconds, 0)
+        for k in sfg.UserKey.ONE_PRESSED_KEYS:
+            battle_keys[k]["pressed"] = False
+            battle_keys[k]["cd"] = max(battle_keys[k]["cd"] - passed_seconds, 0)
+        for k in sfg.UserKey.CONTINUE_PRESSED_KEYS:
+            battle_keys[k]["pressed"] = False
 
         # update hero, enemies, game_director in sequence
         hero.update(passed_seconds, external_event=game_director.status)
