@@ -7,6 +7,8 @@ from etc import setting as sfg
 class AIBase(object):
     # ai event tick, need not change at most time
     TICK = 0.5
+    # view sensor tick, need not change at most time
+    VIEW_SENSOR_TICK = 0.5
     # when hp drops to 0.5 * full-hp, monster gets angry
     ANGRY_HP_RATIO = 0.5
 

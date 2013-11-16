@@ -205,6 +205,7 @@ class SpriteStay(State):
         self.sprite = sprite
         self.ai = ai
         self.enter_timer = Timer()
+        self.view_sensor_timer = Timer(ai.VIEW_SENSOR_TICK)
 
 
     def enter(self, last_state):
@@ -219,7 +220,15 @@ class SpriteStay(State):
 
 
     def send_actions(self):
-        return (cfg.EnemyAction.LOOKOUT, cfg.EnemyAction.STAND)
+        if self.view_sensor_timer.is_begin():
+            if self.view_sensor_timer.exceed():
+                self.view_sensor_timer.begin()
+                return (cfg.EnemyAction.LOOKOUT, cfg.EnemyAction.STAND)
+            else:
+                return (cfg.EnemyAction.STAND, )
+        else:
+            self.view_sensor_timer.begin()
+            return (cfg.EnemyAction.STAND, )
 
 
     def check_conditions(self):
@@ -255,6 +264,7 @@ class SpritePatrol(State):
         self.sprite = sprite
         self.ai = ai
         self.enter_timer = Timer()
+        self.view_sensor_timer = Timer(ai.VIEW_SENSOR_TICK)
 
 
     def choose_a_backside_direction(self, current_direction):
@@ -270,7 +280,15 @@ class SpritePatrol(State):
 
     
     def send_actions(self):
-        return (cfg.EnemyAction.LOOKOUT, cfg.EnemyAction.WALK)
+        if self.view_sensor_timer.is_begin():
+            if self.view_sensor_timer.exceed():
+                self.view_sensor_timer.begin()
+                return (cfg.EnemyAction.LOOKOUT, cfg.EnemyAction.WALK)
+            else:
+                return (cfg.EnemyAction.WALK, )
+        else:
+            self.view_sensor_timer.begin()
+            return (cfg.EnemyAction.WALK, )
 
 
     def check_conditions(self):

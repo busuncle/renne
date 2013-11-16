@@ -2391,7 +2391,6 @@ class ViewSensor(object):
 
     def detect(self, target):
         sp = self.sprite
-
         if manhattan_distance(sp.pos, target.pos) > sp.setting.VIEW_RANGE + target.setting.RADIUS:
             # quick check
             return None
