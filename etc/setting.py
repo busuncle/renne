@@ -1,3 +1,4 @@
+# -*- coding: gbk -*-
 import os
 from base import constant as cfg
 import pygame
@@ -15,6 +16,11 @@ class Font(object):
     ARIAL_BOLD_FILEPATH = os.path.join("res", "font", "arial_bold.ttf")
     ARIAL_BLACK_FILEPATH = os.path.join("res", "font", "arial_black.ttf")
     HOLLOW_FILEPATH = os.path.join("res", "font", "hollow.ttf")
+    MSYH_FILEPATH = os.path.join("res", "font", "msyh.ttf")
+
+    MSYH_16 = pygame.font.Font(MSYH_FILEPATH, 16)
+    MSYH_32 = pygame.font.Font(MSYH_FILEPATH, 32)
+    MSYH_48 = pygame.font.Font(MSYH_FILEPATH, 48)
 
     ARIAL_16 = pygame.font.Font(ARIAL_FILEPATH, 16)
     ARIAL_32 = pygame.font.Font(ARIAL_FILEPATH, 32)
@@ -39,21 +45,31 @@ class Menu(object):
     RENNE_CURSOR_IMAGE_KEY = "head_status"
     RENNE_CURSOR_RECT = (224, 64, 32, 32)
     PAUSE = {
-        "options": ["CONTINUE", "MAIN", "QUIT"],
+        "options": [
+            {"name": u"继续游戏", "mark": "continue", "display": True},
+            {"name": u"主菜单", "mark": "main", "display": True}, 
+            {"name": u"离开游戏", "mark": "quit", "display": True},
+        ],
         "option_rect": (0, 0, 224, 32),
         "blit_y": 320,
-        "font_on": Font.ARIAL_BLACK_32,
-        "font_off": Font.ARIAL_BLACK_28,
+        "font_on": Font.MSYH_32,
+        "font_off": Font.MSYH_16,
         "color_on": pygame.Color("white"),
         "color_off": pygame.Color("gray"),
     }
 
     START_GAME = {
-        "options": ["START", "QUIT"],
+        "options": [
+            {"name": u"读取存档", "mark": "load", "display": False},
+            {"name": u"开始", "mark": "start", "display": True}, 
+            {"name": u"退出", "mark": "quit", "display": True},
+        ],
         "option_rect": (0, 0, 256, 48),
         "blit_y": 540,
-        "font_on": Font.ARIAL_BLACK_48,
-        "font_off": Font.ARIAL_BLACK_32,
+        #"font_on": Font.ARIAL_BLACK_48,
+        #"font_off": Font.ARIAL_BLACK_32,
+        "font_on": Font.MSYH_48,
+        "font_off": Font.MSYH_32,
         "color_on": pygame.Color("white"),
         "color_off": pygame.Color("gray"),
     }

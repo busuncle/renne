@@ -48,7 +48,8 @@ def gen_numbers(images, filekey, number_rect, number_size):
 class Menu(object):
     def __init__(self, menu_setting):
         self.index = 0
-        self.options = menu_setting["options"]
+        self.options = [v["name"] for v in menu_setting["options"] if v["display"]]
+        self.marks = [v["mark"] for v in menu_setting["options"] if v["display"]]
         self.option_rect = pygame.Rect(menu_setting["option_rect"])
         self.blit_y = menu_setting["blit_y"]
         self.font_on = menu_setting["font_on"]
@@ -60,8 +61,8 @@ class Menu(object):
             pygame.Rect(sfg.Menu.RENNE_CURSOR_RECT)).convert_alpha()
 
 
-    def current_menu(self):
-        return self.options[self.index]
+    def get_current_mark(self):
+        return self.marks[self.index]
 
 
     def update(self, key):
@@ -146,8 +147,10 @@ def start_game(screen):
 
     # check whether autosave data exists
     autosave = util.load_auto_save()
-    if autosave is not None and "LOAD" not in sfg.Menu.START_GAME["options"]:
-        sfg.Menu.START_GAME["options"].insert(0, "LOAD")
+    if autosave is not None:
+        for opt in sfg.Menu.START_GAME["options"]:
+            if opt["mark"] == "load":
+                opt["display"] = True
 
     menu = Menu(sfg.Menu.START_GAME)
     while True:
@@ -168,13 +171,13 @@ def start_game(screen):
                 return {"status": cfg.GameControl.QUIT}
             if event.type == KEYDOWN:
                 if event.key == K_RETURN:
-                    if menu.current_menu() == "START":
+                    mark = menu.get_current_mark()
+                    if mark == "load":
+                        return {"status": cfg.GameControl.CONTINUE, "save": autosave}
+                    elif mark == "start":
                         return {"status": cfg.GameControl.NEXT}
-                    elif menu.current_menu() == "QUIT":
+                    elif mark == "quit":
                         return {"status": cfg.GameControl.QUIT}
-                    elif menu.current_menu() == "LOAD":
-                        return {"status": cfg.GameControl.CONTINUE, 
-                            "save": autosave}
                 elif event.key == K_ESCAPE:
                     return {"status": cfg.GameControl.QUIT}
 

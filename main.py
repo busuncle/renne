@@ -189,12 +189,13 @@ def enter_chapter(screen, chapter, hero):
                     elif game_director.status == cfg.GameStatus.HERO_LOSE:
                         return {"status": cfg.GameControl.AGAIN}
                     elif game_director.status == cfg.GameStatus.PAUSE:
-                        if game_director.menu.current_menu() == "CONTINUE":
+                        mark = game_director.menu.get_current_mark()
+                        if mark == "continue":
                             game_director.status = cfg.GameStatus.IN_PROGRESS
                             bg_box.unpause()
-                        elif game_director.menu.current_menu() == "MAIN":
+                        elif mark == "main":
                             return {"status": cfg.GameControl.MAIN}
-                        elif game_director.menu.current_menu() == "QUIT":
+                        elif mark == "quit":
                             return {"status": cfg.GameControl.QUIT}
 
                 if event.key in sfg.UserKey.ONE_PRESSED_KEYS and battle_keys[event.key]["cd"] == 0:
