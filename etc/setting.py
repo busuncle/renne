@@ -552,9 +552,8 @@ class GanDie(Enemy):
             "fall_acceleration": Physics.GRAVITY_ACCELERATION,
             "life_time": 10,
             "height": 60,
-            #"num": 1,
             "num": 10,
-            "max_time": 3,
+            "max_time": 2,
             "ready_time": 0.6,
             "hold_time": 0.5,
         },
@@ -581,9 +580,8 @@ class Ghost(Enemy):
         "range": 80,
         "angle": 80,
         "key_frames": (4, 5),
-        "leak_prob": 0.7,
-        "leak_mp": 60,
-        "leak_sp": 60,
+        "mp_burn_prob": 0.8,
+        "mp_burn": 60,
         "invisible": {
             "pre_enter_time": 0.5,
             "time": 3,
@@ -1469,8 +1467,19 @@ class Effect(object):
     BLINK_DEPTH_SECTION3 = (0, 192)
 
     THUMP_WORD_FONT = Font.MSYH_24
-    MP_SP_LEAK_WORD_FONT = Font.MSYH_24
+    THUMP_WORD_COLOR = pygame.Color("gold")
+    THUMP_WORD_SHOW_TIME = 0.3
+    THUMP_WORD_DY = 50
+
+    MP_BURN_WORD_FONT = Font.MSYH_24
+    MP_BURN_WORD_COLOR = pygame.Color("black")
+    MP_BURN_WORD_SHOW_TIME = 0.3
+    MP_BURN_WORD_DY = 50
+
     POISON_WORD_FONT = Font.MSYH_24
+    POISON_WORD_COLOR = pygame.Color("green")
+    POISON_WORD_SHOW_TIME = 0.3
+    POISON_WORD_DY = 50
 
 
 

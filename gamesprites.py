@@ -1,3 +1,5 @@
+# -*- coding: gbk -*-
+
 import pygame
 from pygame.locals import *
 import random
@@ -739,14 +741,17 @@ class Enemy(GameSprite):
 
 
     def attack(self, passed_seconds):
-        is_finish = self.animation.run_sequence_frame(cfg.EnemyAction.ATTACK, passed_seconds)
-        if is_finish:
+        hit = False
+        finish = self.animation.run_sequence_frame(cfg.EnemyAction.ATTACK, passed_seconds)
+        if finish:
             self.reset_action(force=True)
         else:
-            hit_it = self.attacker.run(self.brain.target, 
+            hit = self.attacker.run(self.brain.target, 
                 self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
-            if hit_it:
+            if hit:
                 self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
+
+        return finish, hit
 
 
     def under_thump(self, passed_seconds):
@@ -1054,6 +1059,11 @@ class CastleWarrior(Enemy):
             hit_it = self.attacker.run(self.brain.target, self.attacker.thump_frame)
             if hit_it:
                 self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
+                words = sfg.Effect.THUMP_WORD_FONT.render(u"重击!", True, 
+                    sfg.Effect.THUMP_WORD_COLOR)
+                self.animation.show_words(words, sfg.Effect.THUMP_WORD_SHOW_TIME, 
+                    (self.pos.x - words.get_width() * 0.5, 
+                    self.pos.y * 0.5 - self.setting.HEIGHT - sfg.Effect.THUMP_WORD_DY))
 
         elif self.attacker.thump_last_freeze_time_add < self.attacker.thump_last_freeze_time:
             # freeze for a short time
@@ -1221,7 +1231,13 @@ class GanDie(Enemy):
     
     def attack(self, passed_seconds):
         if self.attacker.method == "regular":
-            super(GanDie, self).attack(passed_seconds)
+            finish, hit = super(GanDie, self).attack(passed_seconds)
+            if hit and self.attacker.poison_happen:
+                words = sfg.Effect.POISON_WORD_FONT.render(u"九阴白骨抓!", True, 
+                    sfg.Effect.POISON_WORD_COLOR)
+                self.animation.show_words(words, sfg.Effect.POISON_WORD_SHOW_TIME,
+                    (self.pos.x - words.get_width() * 0.5, 
+                    self.pos.y * 0.5 - self.setting.HEIGHT - sfg.Effect.POISON_WORD_DY))
         elif self.attacker.method == "spit_poison":
             self.spit_poison(passed_seconds)
 
@@ -1269,10 +1285,17 @@ class Ghost(Enemy):
 
     def attack(self, passed_seconds):
         if self.attacker.method == "regular":
-            super(Ghost, self).attack(passed_seconds)
+            finish, hit = super(Ghost, self).attack(passed_seconds)
+            if hit and self.attacker.leak_happen:
+                words = sfg.Effect.MP_BURN_WORD_FONT.render(u"法力流失!", True, 
+                    sfg.Effect.MP_BURN_WORD_COLOR)
+                self.animation.show_words(words, sfg.Effect.MP_BURN_WORD_SHOW_TIME, 
+                    (self.pos.x - words.get_width() * 0.5, 
+                    self.pos.y * 0.5 - self.setting.HEIGHT - sfg.Effect.MP_BURN_WORD_DY))
             if self.status.get(cfg.SpriteStatus.INVISIBLE) is not None:
                 # when ghost attack, it will be visible
                 self.status.pop(cfg.SpriteStatus.INVISIBLE)
+
         elif self.attacker.method == "invisible":
             self.invisible(passed_seconds)
         

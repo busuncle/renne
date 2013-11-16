@@ -1542,6 +1542,7 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
         self.current_magic = None
         self.spit_poison_ready_time_add = 0
         self.spit_poison_hold_time_add = 0
+        self.poison_happen = False
 
 
     def spit_poison_chance(self, target):
@@ -1585,10 +1586,7 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
             target.attacker.handle_additional_status(cfg.SpriteStatus.POISON, 
                 {"dps": self.poison_dps, "time_list": range(self.poison_time), 
                 "time_left": self.poison_time})
-            words = sfg.Effect.POISON_WORD_FONT.render(u"中毒!", True, pygame.Color("green"))
-            sp = self.sprite
-            sp.animation.show_words(words, 0.3, 
-                (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
+            self.poison_happen = True
         return hit_it
 
 
@@ -1601,9 +1599,8 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
 class GhostAttacker(EnemyShortAttacker):
     def __init__(self, sprite, attacker_params):
         super(GhostAttacker, self).__init__(sprite, attacker_params)
-        self.leak_prob = attacker_params["leak_prob"]
-        self.leak_mp = attacker_params["leak_mp"]
-        self.leak_sp = attacker_params["leak_sp"]
+        self.mp_burn_prob = attacker_params["mp_burn_prob"]
+        self.mp_burn = attacker_params["mp_burn"]
         self.pre_enter_invisible_time = attacker_params["invisible"]["pre_enter_time"]
         self.invisible_time = attacker_params["invisible"]["time"]
         self.reset_vars()
@@ -1612,6 +1609,7 @@ class GhostAttacker(EnemyShortAttacker):
     def reset_vars(self):
         self.method = None
         self.pre_enter_invisible_time_add = 0
+        self.leak_happen = False
 
 
     def chance(self, target):
@@ -1630,13 +1628,9 @@ class GhostAttacker(EnemyShortAttacker):
 
     def run(self, target, current_frame_add):
         hit_it = super(GhostAttacker, self).run(target, current_frame_add)
-        if hit_it and happen(self.leak_prob):
-            target.mp = max(0, target.mp - self.leak_mp)
-            target.sp = max(0, target.sp - self.leak_sp)
-            words = sfg.Effect.MP_SP_LEAK_WORD_FONT.render(u"法力流失!", True, pygame.Color("black"))
-            sp = self.sprite
-            sp.animation.show_words(words, 0.3, 
-                (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
+        if hit_it and happen(self.mp_burn_prob):
+            self.leak_happen = True
+            target.mp = max(0, target.mp - self.mp_burn)
 
         return hit_it
 
@@ -1716,9 +1710,6 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
             if self.method == "thump":
                 # thump results in a double attack and knockback
                 atk *= 2
-                words = sfg.Effect.THUMP_WORD_FONT.render(u"重击!", True, pygame.Color("gold"))
-                sp.animation.show_words(words, 0.3, 
-                    (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
 
                 blood_set = BloodSet(sp, target.pos, target.setting.HEIGHT)
                 self.magic_list.append(blood_set)
