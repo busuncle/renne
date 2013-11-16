@@ -2398,18 +2398,16 @@ class ViewSensor(object):
         p_sprite = sp.area.center
         direct_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[sp.direction])
 
-        # check 4 corner points and center point of the target's aabb
-        for point_attr in ("center", "topleft", "topright", "bottomleft", "bottomright"):
-            p_target = getattr(target.area, point_attr)
-            vec_to_target = Vector2.from_points(p_sprite, p_target)
-            if cos_for_vec(direct_vec, vec_to_target) >= self.cos_min:
-                # and then check whether the line is blocked by some static objects
-                line_seg = LineSegment(p_sprite, p_target)
-                for obj in sp.static_objects:
-                    if obj.setting.IS_VIEW_BLOCK and line_segment_intersect_with_rect(line_seg, obj.area):
-                        return None
+        p_target = target.area.center
+        vec_to_target = Vector2.from_points(p_sprite, p_target)
+        if cos_for_vec(direct_vec, vec_to_target) >= self.cos_min:
+            # and then check whether the line is blocked by some static objects
+            line_seg = LineSegment(p_sprite, p_target)
+            for obj in sp.static_objects:
+                if obj.setting.IS_VIEW_BLOCK and line_segment_intersect_with_rect(line_seg, obj.area):
+                    return None
 
-                return target
+            return target
 
         return None
 
