@@ -1375,12 +1375,26 @@ class SwordRobber(Enemy):
     def whirlwind(self, passed_seconds):
         ak = self.attacker
         target = self.brain.target
-        if ak.rotate_time_add < ak.rotate_time:
+        if ak.pre_time_add == 0:
+            ak.pre_time_add += passed_seconds
+            words = sfg.Effect.WHIRLWIND_WORD_FONT.render(u"Ðý·çÕ¶!", True,
+                sfg.Effect.WHIRLWIND_WORD_COLOR)
+            self.animation.show_words(words, sfg.Effect.WHIRLWIND_WORD_SHOW_TIME,
+                (self.pos.x - words.get_width() * 0.5, 
+                self.pos.y * 0.5 - self.setting.HEIGHT - sfg.Effect.WHIRLWIND_WORD_DY))
+        elif ak.pre_time_add < ak.pre_time:
+            ak.pre_time_add += passed_seconds
+            self.animation.set_frame_add(cfg.EnemyAction.ATTACK, ak.pre_frame)
+
+        elif ak.rotate_time_add < ak.rotate_time:
             ak.rotate_time_add += passed_seconds
             self.frame_action = cfg.EnemyAction.UNDER_THUMP
             ak.direction_add = (ak.direction_add + ak.rotate_rate * passed_seconds) % cfg.Direction.TOTAL
             self.direction = int(ak.direction_add)
             self.move(ak.move_speed, passed_seconds, check_reachable=False, key_vec=ak.key_vec)
+            if self.pos.get_distance_to(ak.target_pos) < ak.reach_delta:
+                ak.rotate_time_add = ak.rotate_time
+
             ak.offset_time_add += passed_seconds
             if ak.offset_time_add > ak.offset_time:
                 # modify offset_vec, turn a direction

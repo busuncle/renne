@@ -1896,11 +1896,14 @@ class SwordRobberAttacker(EnemyShortAttacker):
     def __init__(self, sprite, attacker_params):
         super(SwordRobberAttacker, self).__init__(sprite, attacker_params)
         whirlwind = attacker_params["whirlwind"]
+        self.pre_frame = whirlwind["pre_frame"]
+        self.pre_time = whirlwind["pre_time"]
         self.rotate_rate = whirlwind["rotate_rate"]
         self.rotate_time = whirlwind["rotate_time"]
         self.offset_time = whirlwind["offset_time"]
         self.crick_time = whirlwind["crick_time"]
         self.move_speed = whirlwind["move_speed"]
+        self.reach_delta = whirlwind["reach_delta"]
         self.self_stun_prob = whirlwind["self_stun_prob"]
         self.self_stun_time = whirlwind["self_stun_time"]
         self.reset_vars()
@@ -1908,6 +1911,7 @@ class SwordRobberAttacker(EnemyShortAttacker):
 
     def reset_vars(self):
         self.offset_vec = Vector2(1, -1)
+        self.pre_time_add = 0
         self.offset_time_add = 0
         self.rotate_time_add = 0
 

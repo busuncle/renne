@@ -509,10 +509,13 @@ class SwordRobber(Enemy):
         "weak_atk": 15,
         "weak_dfs": 5,
         "whirlwind": {
+            "pre_frame": 5,
+            "pre_time": 1,
             "rotate_rate": 36,
             "rotate_time": 3,
             "move_speed": 180,
-            "offset_time": 0.2,
+            "reach_delta": 10,
+            "offset_time": 0.08,
             "self_stun_prob": 0.9,
             "self_stun_time": 3,
             "crick_time": 0.3,
@@ -1480,6 +1483,11 @@ class Effect(object):
     POISON_WORD_COLOR = pygame.Color("green")
     POISON_WORD_SHOW_TIME = 0.3
     POISON_WORD_DY = 50
+
+    WHIRLWIND_WORD_FONT = Font.MSYH_24
+    WHIRLWIND_WORD_COLOR = pygame.Color("blue")
+    WHIRLWIND_WORD_SHOW_TIME = 0.8
+    WHIRLWIND_WORD_DY = 50
 
 
 
