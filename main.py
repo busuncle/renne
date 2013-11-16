@@ -283,7 +283,7 @@ def enter_chapter(screen, chapter, hero):
                 hero.status["hp"] = hero.cal_sprite_status(hero.hp, hero.setting.HP)
                 hero.attacker.refresh_skill()
 
-        pygame.display.flip()
+        pygame.display.update()
 
 
 

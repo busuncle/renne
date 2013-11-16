@@ -293,7 +293,7 @@ def run(chapter):
 
     map_setting = util.load_map_setting(chapter)
 
-    screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
+    screen = pygame.display.set_mode(sfg.Screen.SIZE)
     pygame.display.set_caption("Renne Map Editor")
     camera = Camera(screen, map_size=map_setting["size"])
     game_world = GameWorld()
@@ -478,7 +478,7 @@ def run(chapter):
         if DEBUG_DRAW["block_points"]:
             debug_tools.draw_block_points(camera, game_map.block_points)
 
-        pygame.display.flip()
+        pygame.display.update()
 
 
 

@@ -113,7 +113,7 @@ class UserKey(object):
 class Screen(object):
     SIZE = [1024, 768]
     INNER_SIZE = [SIZE[0] / 4, SIZE[1] / 4]
-    DEFAULT_SCREEN = pygame.display.set_mode(SIZE, HWSURFACE|DOUBLEBUF)
+    DEFAULT_SCREEN = pygame.display.set_mode(SIZE)
     DEFAULT_SURFACE = pygame.Surface(SIZE).convert_alpha()
 
 

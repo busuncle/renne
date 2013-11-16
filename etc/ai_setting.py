@@ -14,7 +14,7 @@ class AIBase(object):
 
     # the probability(between 0 and 1, both sides include) that give rise an emotion on the sprite
     EMOTION_SILENT_PROB = 0.2
-    EMOTION_ANGRY_PROB = 0.9
+    EMOTION_ANGRY_PROB = 0.5
 
     # used in gauss function, MU is the mean, SIGMA is the standard deviation
     STAY_TIME_MU = 1
