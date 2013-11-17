@@ -483,16 +483,16 @@ class HeroStatus(object):
         self.hero_sp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
         self.hero_exp_bar = pygame.Surface(sfg.SpriteStatus.HERO_ALL_BAR_SIZE).convert_alpha()
         # skill icons 
-        self.destroy_fire_icon = gen_panel(effect_image_controller, 
+        self.magic_skill_1_icon = gen_panel(effect_image_controller, 
             sfg.SpriteStatus.DESTROY_FIRE_ICON_IMAGE_KEY, 
             sfg.SpriteStatus.DESTROY_FIRE_ICON_RECT)
-        self.destroy_bomb_icon = gen_panel(effect_image_controller, 
+        self.magic_skill_2_icon = gen_panel(effect_image_controller, 
             sfg.SpriteStatus.DESTROY_BOMB_ICON_IMAGE_KEY, 
             sfg.SpriteStatus.DESTROY_BOMB_ICON_RECT)
-        self.destroy_aerolite_icon = gen_panel(effect_image_controller,
+        self.magic_skill_3_icon = gen_panel(effect_image_controller,
             sfg.SpriteStatus.DESTROY_AEROLITE_ICON_IMAGE_KEY, 
             sfg.SpriteStatus.DESTROY_AEROLITE_ICON_RECT)
-        self.dizzy_icon = gen_panel(effect_image_controller,
+        self.magic_skill_4_icon = gen_panel(effect_image_controller,
             sfg.SpriteStatus.DIZZY_ICON_IMAGE_KEY,
             sfg.SpriteStatus.DIZZY_ICON_RECT)
         self.skill_icon_frame = gen_panel(battle_images, sfg.SpriteStatus.SKILL_ICON_FRAME_IMAGE_KEY,
@@ -567,6 +567,7 @@ class HeroStatus(object):
         camera.screen.blit(sfg.SpriteStatus.WORDS["hero_mp"], sfg.SpriteStatus.HERO_MP_TITLE_BLIT_POS)
         camera.screen.blit(sfg.SpriteStatus.WORDS["hero_sp"], sfg.SpriteStatus.HERO_SP_TITLE_BLIT_POS)
         camera.screen.blit(sfg.SpriteStatus.WORDS["hero_exp"], sfg.SpriteStatus.HERO_EXP_TITTLE_BLIT_POS)
+
         # level title is not a constant, read it from hero
         level_title = sfg.SpriteStatus.LEVEL_TITLE_FONT.render("LV%s" % self.hero.level, True, 
             sfg.SpriteStatus.LEVEL_TITLE_COLOR)
@@ -596,37 +597,36 @@ class HeroStatus(object):
                 sfg.SpriteStatus.HERO_EXP_COLOR, sfg.SpriteStatus.HERO_EXP_BLIT_POS)
 
         # draw skill icons
-        camera.screen.blit(self.destroy_fire_icon, sfg.SpriteStatus.DESTROY_FIRE_ICON_BLIT_POS)
-        camera.screen.blit(self.destroy_bomb_icon, sfg.SpriteStatus.DESTROY_BOMB_ICON_BLIT_POS)
-        camera.screen.blit(self.destroy_aerolite_icon, 
-            sfg.SpriteStatus.DESTROY_AEROLITE_ICON_BLIT_POS)
-        camera.screen.blit(self.dizzy_icon, sfg.SpriteStatus.DIZZY_ICON_BLIT_POS)
+        camera.screen.blit(self.magic_skill_1_icon, sfg.SpriteStatus.MAGIC_SKILL_1_ICON_BLIT_POS)
+        camera.screen.blit(self.magic_skill_2_icon, sfg.SpriteStatus.MAGIC_SKILL_2_ICON_BLIT_POS)
+        camera.screen.blit(self.magic_skill_3_icon, sfg.SpriteStatus.MAGIC_SKILL_3_ICON_BLIT_POS)
+        camera.screen.blit(self.magic_skill_4_icon, sfg.SpriteStatus.MAGIC_SKILL_4_ICON_BLIT_POS)
 
         # draw the frame of skill icons
-        for blit_pos in (sfg.SpriteStatus.DESTROY_FIRE_ICON_BLIT_POS,
-            sfg.SpriteStatus.DESTROY_BOMB_ICON_BLIT_POS, 
-            sfg.SpriteStatus.DESTROY_AEROLITE_ICON_BLIT_POS,
-            sfg.SpriteStatus.DIZZY_ICON_BLIT_POS):
+        for blit_pos in (sfg.SpriteStatus.MAGIC_SKILL_1_ICON_BLIT_POS,
+            sfg.SpriteStatus.MAGIC_SKILL_2_ICON_BLIT_POS, 
+            sfg.SpriteStatus.MAGIC_SKILL_3_ICON_BLIT_POS,
+            sfg.SpriteStatus.MAGIC_SKILL_4_ICON_BLIT_POS):
             camera.screen.blit(self.skill_icon_frame, blit_pos)
 
         # draw skill icon masks, if it is in cd status
         cds = self.hero.attacker.magic_cds
-        if cds["destroy_fire"] > 0:
-            self.draw_skill_icon_mask(camera, self.destroy_fire_icon.get_width(), 
-                sfg.SpriteStatus.DESTROY_FIRE_ICON_BLIT_POS,
-                self.hero.attacker.destroy_fire_params["cd"], cds["destroy_fire"])
-        if cds["destroy_bomb"] > 0:
-            self.draw_skill_icon_mask(camera, self.destroy_bomb_icon.get_width(),
-                sfg.SpriteStatus.DESTROY_BOMB_ICON_BLIT_POS,
-                self.hero.attacker.destroy_bomb_params["cd"], cds["destroy_bomb"])
-        if cds["destroy_aerolite"] > 0:
-            self.draw_skill_icon_mask(camera, self.destroy_aerolite_icon.get_width(),
-                sfg.SpriteStatus.DESTROY_AEROLITE_ICON_BLIT_POS,
-                self.hero.attacker.destroy_aerolite_params["cd"], cds["destroy_aerolite"])
-        if cds["dizzy"] > 0:
-            self.draw_skill_icon_mask(camera, self.dizzy_icon.get_width(),
-                sfg.SpriteStatus.DIZZY_ICON_BLIT_POS,
-                self.hero.attacker.dizzy_params["cd"], cds["dizzy"])
+        if cds["magic_skill_1"] > 0:
+            self.draw_skill_icon_mask(camera, self.magic_skill_1_icon.get_width(), 
+                sfg.SpriteStatus.MAGIC_SKILL_1_ICON_BLIT_POS,
+                self.hero.attacker.destroy_fire_params["cd"], cds["magic_skill_1"])
+        if cds["magic_skill_2"] > 0:
+            self.draw_skill_icon_mask(camera, self.magic_skill_2_icon.get_width(),
+                sfg.SpriteStatus.MAGIC_SKILL_2_ICON_BLIT_POS,
+                self.hero.attacker.destroy_bomb_params["cd"], cds["magic_skill_2"])
+        if cds["magic_skill_3"] > 0:
+            self.draw_skill_icon_mask(camera, self.magic_skill_3_icon.get_width(),
+                sfg.SpriteStatus.MAGIC_SKILL_3_ICON_BLIT_POS,
+                self.hero.attacker.destroy_aerolite_params["cd"], cds["magic_skill_3"])
+        if cds["magic_skill_4"] > 0:
+            self.draw_skill_icon_mask(camera, self.magic_skill_4_icon.get_width(),
+                sfg.SpriteStatus.MAGIC_SKILL_4_ICON_BLIT_POS,
+                self.hero.attacker.dizzy_params["cd"], cds["magic_skill_4"])
 
 
 

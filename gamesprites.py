@@ -252,8 +252,10 @@ class Renne(GameSprite):
         self.mp = self.setting.MP = self.setting.LEVEL_MP[idx]
         self.sp = self.setting.SP = self.setting.LEVEL_SP[idx]
         self.atk = self.setting.ATK = self.setting.LEVEL_ATK[idx]
+        self.magic_skill_damage_ratio = self.setting.MAGIC_SKILL_DAMAGE_RATIO = self.setting.LEVEL_MAGIC_SKILL_DAMAGE_RATIO[idx]
         self.dfs = self.setting.DFS = self.setting.LEVEL_DFS[idx]
         self.attacker.cal_real_attack_damage()
+        self.attacker.refresh_skill()
         self.status = self.gen_sprite_init_status()
 
 
@@ -552,7 +554,7 @@ class Renne(GameSprite):
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_1]["pressed"]:
             if self.mp > self.attacker.destroy_fire_params["mana"] \
-                and self.attacker.magic_cds["destroy_fire"] == 0:
+                and self.attacker.magic_cds["magic_skill_1"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
                 self.sound_box.play(atk_snd)
                 self.action = cfg.HeroAction.ATTACK
@@ -560,7 +562,7 @@ class Renne(GameSprite):
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_2]["pressed"]:
             if self.mp > self.attacker.destroy_bomb_params["mana"] \
-                and self.attacker.magic_cds["destroy_bomb"] == 0:
+                and self.attacker.magic_cds["magic_skill_2"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
                 self.sound_box.play(atk_snd)
                 self.action = cfg.HeroAction.ATTACK
@@ -568,14 +570,14 @@ class Renne(GameSprite):
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_3]["pressed"]:
             if self.mp > self.attacker.destroy_aerolite_params["mana"] \
-                and self.attacker.magic_cds["destroy_aerolite"] == 0:
+                and self.attacker.magic_cds["magic_skill_3"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
                 self.sound_box.play(atk_snd)
                 self.action = cfg.HeroAction.SKILL
                 self.attacker.method = "destroy_aerolite"
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_4]["pressed"]:
-            if self.attacker.magic_cds["dizzy"] == 0:
+            if self.attacker.magic_cds["magic_skill_4"] == 0:
                 self.action = cfg.HeroAction.WIN
                 self.sound_box.play(sfg.Sound.RENNE_WIN)
 

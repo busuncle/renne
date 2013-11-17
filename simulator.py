@@ -527,9 +527,13 @@ class EnergyBallSet(MagicSkill):
     def __init__(self, image, shadow, sprite, target_list, static_objects, params, pos, target_pos):
         super(EnergyBallSet, self).__init__(sprite, target_list)
         self.static_objects = static_objects
+        damage = params["damage"]
+        if hasattr(sprite, "magic_skill_damage_ratio"):
+            damage *= sprite.magic_skill_damage_ratio
         # only one ball right now
-        self.magic_sprites.append(EnergyBall(pos, params["radius"], params["dx"], params["dy"], 
-            params["damage"], image, shadow, target_pos, params["range"], params["speed"]))
+        ball = EnergyBall(pos, params["radius"], params["dx"], params["dy"], 
+            damage, image, shadow, target_pos, params["range"], params["speed"])
+        self.magic_sprites.append(ball)
 
 
     def update(self, passed_seconds):
@@ -541,14 +545,14 @@ class EnergyBallSet(MagicSkill):
 
             msp.update(passed_seconds)
 
-            for sp in self.target_list:
-                if sp in self.has_hits:
+            for target in self.target_list:
+                if target in self.has_hits:
                     continue
 
-                if sp.status.get(cfg.SpriteStatus.IN_AIR) is None and sp.area.colliderect(msp.area):
+                if target.status.get(cfg.SpriteStatus.IN_AIR) is None and target.area.colliderect(msp.area):
                     damage = msp.damage
-                    sp.attacker.handle_under_attack(self.sprite, damage, cfg.Attack.METHOD_MAGIC)
-                    self.has_hits.add(sp)
+                    target.attacker.handle_under_attack(self.sprite, damage, cfg.Attack.METHOD_MAGIC)
+                    self.has_hits.add(target)
 
             if not self.reachable(msp.pos):
                 msp.status = cfg.Magic.STATUS_VANISH
@@ -658,17 +662,17 @@ class DestroyBombSet(MagicSkill):
         if range_over_num == len(self.pos_list):
             self.status = cfg.Magic.STATUS_VANISH
 
-        for sp in self.target_list:
-            if sp in self.has_hits:
+        for target in self.target_list:
+            if target in self.has_hits:
                 continue
 
             for bomb in self.magic_sprites:
-                if sp.status.get(cfg.SpriteStatus.IN_AIR) is None and sp.area.colliderect(bomb.area):
-                    damage = bomb.damage
-                    sp.attacker.handle_under_attack(self.sprite, damage, cfg.Attack.METHOD_MAGIC)
-                    sp.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
-                        {"time": self.params["crick_time"], "old_action": sp.action})
-                    self.has_hits.add(sp)
+                if target.status.get(cfg.SpriteStatus.IN_AIR) is None and target.area.colliderect(bomb.area):
+                    damage = bomb.damage * self.sprite.magic_skill_damage_ratio
+                    target.attacker.handle_under_attack(self.sprite, damage, cfg.Attack.METHOD_MAGIC)
+                    target.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
+                        {"time": self.params["crick_time"], "old_action": target.action})
+                    self.has_hits.add(target)
                     break
 
         for i, bomb in enumerate(self.magic_sprites):
@@ -749,18 +753,18 @@ class DestroyAeroliteSet(MagicSkill):
                 self.magic_sprites.pop(i)
                 continue
 
-            for sp in self.target_list:
-                if sp not in self.has_hits \
-                    and sp.status.get(cfg.SpriteStatus.IN_AIR) is None \
+            for target in self.target_list:
+                if target not in self.has_hits \
+                    and target.status.get(cfg.SpriteStatus.IN_AIR) is None \
                     and aerolite.alive_time > aerolite.damage_cal_time \
-                    and sp.area.colliderect(aerolite.area):
+                    and target.area.colliderect(aerolite.area):
                     # aerolite hit the target
-                    self.has_hits.add(sp)
-                    damage = aerolite.damage
-                    sp.attacker.handle_under_attack(self.sprite, damage, cfg.Attack.METHOD_MAGIC)
-                    sp.attacker.handle_additional_status(cfg.SpriteStatus.STUN, 
+                    self.has_hits.add(target)
+                    damage = aerolite.damage * self.sprite.magic_skill_damage_ratio
+                    target.attacker.handle_under_attack(self.sprite, damage, cfg.Attack.METHOD_MAGIC)
+                    target.attacker.handle_additional_status(cfg.SpriteStatus.STUN, 
                         {"time": self.params["stun_time"]})
-                    sp.set_emotion(cfg.SpriteEmotion.STUN)
+                    target.set_emotion(cfg.SpriteEmotion.STUN)
 
         if len(self.trigger_times) == 0 and len(self.magic_sprites) == 0:
             self.status = cfg.Magic.STATUS_VANISH
@@ -1111,6 +1115,7 @@ class Attacker(object):
 
     def handle_under_attack(self, from_who, cost_hp, attack_method=cfg.Attack.METHOD_REGULAR):
         sp = self.sprite
+        cost_hp = int(cost_hp)
         sp.hp = max(sp.hp - cost_hp, 0)
         sp.status["hp"] = sp.cal_sprite_status(sp.hp, sp.setting.HP)
         sp.status[cfg.SpriteStatus.UNDER_ATTACK] = {"time": sfg.Sprite.UNDER_ATTACK_EFFECT_TIME}
@@ -1340,7 +1345,7 @@ class RenneAttacker(AngleAttacker):
         self.destroy_bomb_params = attacker_params["destroy_bomb"]
         self.destroy_aerolite_params = attacker_params["destroy_aerolite"]
         self.dizzy_params = attacker_params["dizzy"]
-        self.magic_cds = {"destroy_fire": 0, "destroy_bomb": 0, "destroy_aerolite": 0, "dizzy": 0}
+        self.magic_cds = {"magic_skill_1": 0, "magic_skill_2": 0, "magic_skill_3": 0, "magic_skill_4": 0}
         # magic_list has kinds of magics, eg. DestroyBombSet and DestroyAeroliteSet, 
         # every magic has one or more magic sprite(s), eg. DestroyBombSet has many "bombs"
         self.magic_list = []
@@ -1432,7 +1437,7 @@ class RenneAttacker(AngleAttacker):
         direct_vec = cfg.Direction.DIRECT_TO_VEC[sp.direction]
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
             sp.mp -= self.destroy_fire_params["mana"]
-            self.magic_cds["destroy_fire"] = self.destroy_fire_params["cd"]
+            self.magic_cds["magic_skill_1"] = self.destroy_fire_params["cd"]
             self.current_magic = DestroyFire(sp, sp.enemies,
                 sp.static_objects, self.destroy_fire_params, sp.pos, sp.pos + direct_vec)
             self.magic_list.append(self.current_magic)
@@ -1442,7 +1447,7 @@ class RenneAttacker(AngleAttacker):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
             sp.mp -= self.destroy_bomb_params["mana"]
-            self.magic_cds["destroy_bomb"] = self.destroy_bomb_params["cd"]
+            self.magic_cds["magic_skill_2"] = self.destroy_bomb_params["cd"]
             self.current_magic = DestroyBombSet(sp, sp.enemies,
                 sp.static_objects, self.destroy_bomb_params, sp.pos, sp.direction)
             self.magic_list.append(self.current_magic)
@@ -1452,7 +1457,7 @@ class RenneAttacker(AngleAttacker):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.destroy_aerolite_params["key_frames"]:
             sp.mp -= self.destroy_aerolite_params["mana"]
-            self.magic_cds["destroy_aerolite"] = self.destroy_aerolite_params["cd"]
+            self.magic_cds["magic_skill_3"] = self.destroy_aerolite_params["cd"]
             self.current_magic = DestroyAeroliteSet(sp, sp.enemies, 
                 sp.static_objects, self.destroy_aerolite_params, sp.pos)
             self.magic_list.append(self.current_magic)
@@ -1461,7 +1466,7 @@ class RenneAttacker(AngleAttacker):
     def dizzy(self, current_frame_add):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.dizzy_params["key_frames"]:
-            self.magic_cds["dizzy"] = self.dizzy_params["cd"]
+            self.magic_cds["magic_skill_4"] = self.dizzy_params["cd"]
             self.current_magic = RenneDizzy(sp, sp.enemies, self.dizzy_params["range"],
                 self.dizzy_params["time"], self.dizzy_params["effective_time"],
                 self.dizzy_params["prob"])

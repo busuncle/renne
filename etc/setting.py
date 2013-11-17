@@ -10,6 +10,30 @@ FPS = 60
 DEBUG_MODE = False
 
 
+CONFIG = {
+    # some default config, may be overwritten by config.txt
+    "hero": "renne", 
+}
+CONFIG_CONSTRAINT = {
+    # constraint set for config
+    "hero": lambda x: x in ("renne", "joshua"),
+}
+with open("config.txt") as fp:
+    # read config from config.txt file, may be opened to player
+    for line in fp:
+        kv = line.lower().split("=")
+        if len(kv) != 2:
+            continue
+
+        k = kv[0].strip()
+        v = kv[1].strip()
+        if k not in CONFIG_CONSTRAINT or not CONFIG_CONSTRAINT[k](v):
+            continue
+
+        # valid key-value, overwrite the default one
+        CONFIG[k] = v
+
+
 
 class Font(object):
     ARIAL_FILEPATH = os.path.join("res", "font",  "arial.ttf")
@@ -149,6 +173,7 @@ class Renne(object):
     MP = 80
     SP = 60
     ATK = 10
+    MAGIC_SKILL_DAMAGE_RATIO = 1
     DFS = 1
 
     MP_RECOVERY_RATE = 10
@@ -175,6 +200,7 @@ class Renne(object):
     LEVEL_MP = (80, 120, 160, 200, 240, 280, 320, 360, 400, 440)
     LEVEL_SP = (60, 80, 100, 120, 140, 160, 170, 180, 190, 200)
     LEVEL_ATK = (10, 12, 14, 16, 18, 20, 24, 28, 32, 36)
+    LEVEL_MAGIC_SKILL_DAMAGE_RATIO = (1, 1.1, 1.2, 1.5, 1.8, 2.0, 2.2, 2.5, 2.8, 3.0)
     LEVEL_DFS = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     LEVEL_EXP = (0, 100, 300, 700, 1500, 2800, 4600, 7000, 10000, 15000)
     #LEVEL_EXP = tuple(range(0, 28, 3))
@@ -1082,7 +1108,7 @@ class EmotionImage(object):
 
 class SpriteStatus(object):
     HERO_PANEL_IMAGE_KEY = "status"
-    HERO_HEAD_IMAGE_KEY = "renne_head"
+    HERO_HEAD_IMAGE_KEY = "%s_head" % CONFIG["hero"]
 
     HEALTHY_RATIO_FLOOR = 2.0 / 3
     WOUNDED_RATIO_FLOOR = 1.0 / 3
@@ -1140,7 +1166,7 @@ class SpriteStatus(object):
     HERO_PANEL_SCALE_SIZE = (216, 92)
     HERO_PANEL_BLIT_POS = (2, 2)
     HERO_HEAD_SIZE = (128, 128)
-    HERO_HEAD_BLIT_POS = (-20, -38)
+    HERO_HEAD_BLIT_POS = (-20, -39)
 
     # Renne magic skill icons
     DESTROY_FIRE_ICON_IMAGE_KEY = "e4"
@@ -1157,10 +1183,10 @@ class SpriteStatus(object):
     SKILL_ICON_FRAME_RECT = (36, 228, 24, 24)
     SKILL_ICON_SIZE = (32, 32)
 
-    DESTROY_FIRE_ICON_BLIT_POS = (8, 100)
-    DESTROY_BOMB_ICON_BLIT_POS = (58, 100)
-    DESTROY_AEROLITE_ICON_BLIT_POS = (108, 100)
-    DIZZY_ICON_BLIT_POS = (158, 100)
+    MAGIC_SKILL_1_ICON_BLIT_POS = (8, 100)
+    MAGIC_SKILL_2_ICON_BLIT_POS = (58, 100)
+    MAGIC_SKILL_3_ICON_BLIT_POS = (108, 100)
+    MAGIC_SKILL_4_ICON_BLIT_POS = (158, 100)
 
     COST_HP_WORDS_COLOR = pygame.Color("red")
     COST_HP_WORDS_FONT = Font.ARIAL_BLACK_32
@@ -1706,6 +1732,7 @@ BASIC_IMAGES = ("basic", {
 
 BATTLE_IMAGES = ("battle", {
     "renne_head": "renne_head.png",
+    "joshua_head": "joshua_head.png",
     "status": "status.png",
     "status2": "status2.png", 
     "status3": "status3.png", 
