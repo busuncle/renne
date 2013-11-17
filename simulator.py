@@ -670,8 +670,8 @@ class DestroyBombSet(MagicSkill):
                 if target.status.get(cfg.SpriteStatus.IN_AIR) is None and target.area.colliderect(bomb.area):
                     damage = bomb.damage * self.sprite.magic_skill_damage_ratio
                     target.attacker.handle_under_attack(self.sprite, damage, cfg.Attack.METHOD_MAGIC)
-                    target.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
-                        {"time": self.params["crick_time"], "old_action": target.action})
+                    target.attacker.handle_additional_status(cfg.SpriteStatus.BODY_SHAKE, 
+                        {"dx": randint(-5, 5), "dy": randint(-3, 3), "time": self.params["body_shake_time"]})
                     self.has_hits.add(target)
                     break
 

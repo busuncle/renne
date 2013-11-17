@@ -143,6 +143,9 @@ class GameSprite(pygame.sprite.DirtySprite):
         if self.status.get(cfg.SpriteStatus.BODY_SHAKE) is not None:
             self.status[cfg.SpriteStatus.BODY_SHAKE]["dx"] = random.randint(-5, 5)
             self.status[cfg.SpriteStatus.BODY_SHAKE]["dy"] = random.randint(-3, 3)
+            self.status[cfg.SpriteStatus.BODY_SHAKE]["time"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.BODY_SHAKE]["time"] < 0:
+                self.status.pop(cfg.SpriteStatus.BODY_SHAKE)
 
         if self.status.get(cfg.SpriteStatus.INVISIBLE) is not None:
             self.status[cfg.SpriteStatus.INVISIBLE]["time"]-= passed_seconds
@@ -1218,7 +1221,7 @@ class GanDie(Enemy):
             # first time into spit poison, add body shake status
             ak.spit_poison_ready_time_add += passed_seconds
             self.status[cfg.SpriteStatus.BODY_SHAKE] = {"dx": random.randint(-5, 5), 
-                "dy": random.randint(-3, 3)}
+                "dy": random.randint(-3, 3), "time": 999}
 
         elif ak.spit_poison_ready_time_add < ak.spit_poison_ready_time:
             ak.spit_poison_ready_time_add += passed_seconds

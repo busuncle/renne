@@ -263,7 +263,7 @@ class Renne(object):
             "bomb_radius": 18,
             "dx": 32,
             "dy": 52,
-            "crick_time": 0.3,
+            "body_shake_time": 0.25,
             "bombs_direct_num": 5,
             "bomb_shake_on_x": 5,
             "bomb_shake_on_y": 5,
