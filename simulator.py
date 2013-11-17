@@ -779,11 +779,11 @@ class RenneDizzyLeaf(MagicSprite):
     def __init__(self, pos, life, vec, z, vec_z):
         super(RenneDizzyLeaf, self).__init__(pos, self.dx, self.dx, self.dy, 0, 
             transform.rotate(self.leaf_image, choice((0, 90, 180, 270))))
+        self.origin_dy = self.dy
         self.life = life
         self.vec = Vector2(vec)
         self.z = z
         self.vec_z = vec_z
-        self.origin_dy = self.dy
 
 
     def update(self, passed_seconds):
@@ -794,7 +794,6 @@ class RenneDizzyLeaf(MagicSprite):
             self.pos += self.vec * passed_seconds
             self.z += self.vec_z * passed_seconds
             self.dy = self.origin_dy + self.z
-
         
 
 
@@ -826,11 +825,6 @@ class RenneDizzy(MagicSkill):
                         {"time": self.dizzy_time})
                     target.set_emotion(cfg.SpriteEmotion.DIZZY)
 
-        for i, msp in enumerate(self.magic_sprites):
-            msp.update(passed_seconds)
-            if msp.status == cfg.Magic.STATUS_VANISH:
-                self.magic_sprites.pop(i)
-
         self.effective_time -= passed_seconds
         if self.effective_time <= 0:
             if len(self.magic_sprites) == 0:
@@ -845,6 +839,11 @@ class RenneDizzy(MagicSkill):
                 self.magic_sprites.append(leaf)
             else:
                 self.gen_leaf_cd_add = max(self.gen_leaf_cd_add - passed_seconds, 0)
+
+        for i, msp in enumerate(self.magic_sprites):
+            msp.update(passed_seconds)
+            if msp.status == cfg.Magic.STATUS_VANISH:
+                self.magic_sprites.pop(i)
 
 
 

@@ -296,7 +296,7 @@ class Renne(object):
             "time": 15,
             "effective_time": 3,
             "key_frames": (5, 6),
-            "gen_leaf_cd": 0.05,
+            "gen_leaf_cd": 0.08,
             "leaf_life": 2,
             "leaf_z": 100,
             "leaf_vec_z": -30,
