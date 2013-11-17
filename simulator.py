@@ -826,16 +826,6 @@ class RenneDizzy(MagicSkill):
                         {"time": self.dizzy_time})
                     target.set_emotion(cfg.SpriteEmotion.DIZZY)
 
-        if self.gen_leaf_cd_add == 0:
-            self.gen_leaf_cd_add = self.gen_leaf_cd
-            p = sp.pos.copy()
-            p.x += randint(-self.dizzy_range, self.dizzy_range)
-            p.y += randint(-self.dizzy_range, self.dizzy_range)
-            leaf = RenneDizzyLeaf(p, self.leaf_life, Vector2(0, 0), self.leaf_z, self.leaf_vec_z)
-            self.magic_sprites.append(leaf)
-        else:
-            self.gen_leaf_cd_add = max(self.gen_leaf_cd_add - passed_seconds, 0)
-
         for i, msp in enumerate(self.magic_sprites):
             msp.update(passed_seconds)
             if msp.status == cfg.Magic.STATUS_VANISH:
@@ -843,7 +833,18 @@ class RenneDizzy(MagicSkill):
 
         self.effective_time -= passed_seconds
         if self.effective_time <= 0:
-            self.status = cfg.Magic.STATUS_VANISH
+            if len(self.magic_sprites) == 0:
+                self.status = cfg.Magic.STATUS_VANISH
+        else:
+            if self.gen_leaf_cd_add == 0:
+                self.gen_leaf_cd_add = self.gen_leaf_cd
+                p = sp.pos.copy()
+                p.x += randint(-self.dizzy_range, self.dizzy_range)
+                p.y += randint(-self.dizzy_range, self.dizzy_range)
+                leaf = RenneDizzyLeaf(p, self.leaf_life, Vector2(0, 0), self.leaf_z, self.leaf_vec_z)
+                self.magic_sprites.append(leaf)
+            else:
+                self.gen_leaf_cd_add = max(self.gen_leaf_cd_add - passed_seconds, 0)
 
 
 
