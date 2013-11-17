@@ -213,6 +213,7 @@ class Renne(GameSprite):
         super(Renne, self).__init__(setting.NAME, setting.HP, setting.ATK, setting.DFS, pos, direction)
 
         self.setting = setting
+        self.magic_skill_damage_ratio = self.setting.MAGIC_SKILL_DAMAGE_RATIO
         self.mp = self.setting.MP
         self.sp = self.setting.SP
         self.level = 1
@@ -1061,7 +1062,7 @@ class CastleWarrior(Enemy):
             hit_it = self.attacker.run(self.brain.target, self.attacker.thump_frame)
             if hit_it:
                 self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
-                words = sfg.Effect.THUMP_WORD_FONT.render(u"重击!", True, 
+                words = sfg.Effect.THUMP_WORD_FONT.render(sfg.Effect.THUMP_WORD, True, 
                     sfg.Effect.THUMP_WORD_COLOR)
                 self.animation.show_words(words, sfg.Effect.THUMP_WORD_SHOW_TIME, 
                     (self.pos.x - words.get_width() * 0.5, 
@@ -1235,7 +1236,7 @@ class GanDie(Enemy):
         if self.attacker.method == "regular":
             finish, hit = super(GanDie, self).attack(passed_seconds)
             if hit and self.attacker.poison_happen:
-                words = sfg.Effect.POISON_WORD_FONT.render(u"九阴白骨抓!", True, 
+                words = sfg.Effect.POISON_WORD_FONT.render(sfg.Effect.POISON_WORD, True, 
                     sfg.Effect.POISON_WORD_COLOR)
                 self.animation.show_words(words, sfg.Effect.POISON_WORD_SHOW_TIME,
                     (self.pos.x - words.get_width() * 0.5, 
@@ -1289,7 +1290,7 @@ class Ghost(Enemy):
         if self.attacker.method == "regular":
             finish, hit = super(Ghost, self).attack(passed_seconds)
             if hit and self.attacker.leak_happen:
-                words = sfg.Effect.MP_BURN_WORD_FONT.render(u"法力流失!", True, 
+                words = sfg.Effect.MP_BURN_WORD_FONT.render(sfg.Effect.MP_BURN_WORD, True, 
                     sfg.Effect.MP_BURN_WORD_COLOR)
                 self.animation.show_words(words, sfg.Effect.MP_BURN_WORD_SHOW_TIME, 
                     (self.pos.x - words.get_width() * 0.5, 
@@ -1379,7 +1380,7 @@ class SwordRobber(Enemy):
         target = self.brain.target
         if ak.pre_time_add == 0:
             ak.pre_time_add += passed_seconds
-            words = sfg.Effect.WHIRLWIND_WORD_FONT.render(u"旋风斩!", True,
+            words = sfg.Effect.WHIRLWIND_WORD_FONT.render(sfg.Effect.WHIRLWIND_WORD, True,
                 sfg.Effect.WHIRLWIND_WORD_COLOR)
             self.animation.show_words(words, sfg.Effect.WHIRLWIND_WORD_SHOW_TIME,
                 (self.pos.x - words.get_width() * 0.5, 

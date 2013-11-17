@@ -239,7 +239,7 @@ class Renne(object):
             "crick_time": 0.4,
             "out_speed": 1000,
             "acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
-            "self_crick_time": 0.2,
+            "self_crick_time": 0.1,
             "run_speed_ratio": 0.6,
             "end_frame": 8,
         },
@@ -1495,21 +1495,25 @@ class Effect(object):
     BLINK_RATE3 = 1024
     BLINK_DEPTH_SECTION3 = (0, 192)
 
+    THUMP_WORD = u"ÖØ»÷!"
     THUMP_WORD_FONT = Font.MSYH_24
     THUMP_WORD_COLOR = pygame.Color("gold")
     THUMP_WORD_SHOW_TIME = 0.3
     THUMP_WORD_DY = 50
 
+    MP_BURN_WORD = u"·¨Á¦È¼ÉÕ!"
     MP_BURN_WORD_FONT = Font.MSYH_24
     MP_BURN_WORD_COLOR = pygame.Color("black")
     MP_BURN_WORD_SHOW_TIME = 0.3
     MP_BURN_WORD_DY = 50
 
+    POISON_WORD = u"¾ÅÒõ°×¹Ç×¥!"
     POISON_WORD_FONT = Font.MSYH_24
     POISON_WORD_COLOR = pygame.Color("green")
     POISON_WORD_SHOW_TIME = 0.3
     POISON_WORD_DY = 50
 
+    WHIRLWIND_WORD = u"Ðý·çÕ¶!"
     WHIRLWIND_WORD_FONT = Font.MSYH_24
     WHIRLWIND_WORD_COLOR = pygame.Color("blue")
     WHIRLWIND_WORD_SHOW_TIME = 0.8
