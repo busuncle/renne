@@ -771,15 +771,48 @@ class DestroyAeroliteSet(MagicSkill):
 
 
 
+class RenneDizzyLeaf(MagicSprite):
+    leaf_image = animation.effect_image_controller.get(
+        sfg.Effect.RENNE_DIZZY_LEAF_IMAGE_KEY).subsurface(sfg.Effect.RENNE_DIZZY_LEAF_RECT).convert_alpha()
+    dx = leaf_image.get_width() * 0.5
+    dy = leaf_image.get_width() * 0.5
+    def __init__(self, pos, life, vec, z, vec_z):
+        super(RenneDizzyLeaf, self).__init__(pos, self.dx, self.dx, self.dy, 0, 
+            transform.rotate(self.leaf_image, choice((0, 90, 180, 270))))
+        self.life = life
+        self.vec = Vector2(vec)
+        self.z = z
+        self.vec_z = vec_z
+        self.origin_dy = self.dy
+
+
+    def update(self, passed_seconds):
+        self.life -= passed_seconds
+        if self.life < 0:
+            self.status = cfg.Magic.STATUS_VANISH
+        else:
+            self.pos += self.vec * passed_seconds
+            self.z += self.vec_z * passed_seconds
+            self.dy = self.origin_dy + self.z
+
+        
+
+
 class RenneDizzy(MagicSkill):
     # Renne skill
-    def __init__(self, sprite, target_list, dizzy_range, dizzy_time, effective_time, prob):
+    def __init__(self, sprite, target_list, params):
         super(RenneDizzy, self).__init__(sprite, target_list)
-        self.dizzy_range = dizzy_range
-        self.dizzy_time = dizzy_time
-        self.effective_time = effective_time
-        self.prob = prob
+        self.dizzy_range = params["range"]
+        self.dizzy_time = params["time"]
+        self.effective_time = params["effective_time"]
+        self.prob = params["prob"] 
+        self.gen_leaf_cd = params["gen_leaf_cd"]
+        self.gen_leaf_cd_add = 0
+        self.leaf_life = params["leaf_life"]
+        self.leaf_z = params["leaf_z"]
+        self.leaf_vec_z = params["leaf_vec_z"]
         self.dizzy_targets = set()
+        self.magic_sprites = []
 
 
     def update(self, passed_seconds):
@@ -792,6 +825,21 @@ class RenneDizzy(MagicSkill):
                     target.attacker.handle_additional_status(cfg.SpriteStatus.DIZZY, 
                         {"time": self.dizzy_time})
                     target.set_emotion(cfg.SpriteEmotion.DIZZY)
+
+        if self.gen_leaf_cd_add == 0:
+            self.gen_leaf_cd_add = self.gen_leaf_cd
+            p = sp.pos.copy()
+            p.x += randint(-self.dizzy_range, self.dizzy_range)
+            p.y += randint(-self.dizzy_range, self.dizzy_range)
+            leaf = RenneDizzyLeaf(p, self.leaf_life, Vector2(0, 0), self.leaf_z, self.leaf_vec_z)
+            self.magic_sprites.append(leaf)
+        else:
+            self.gen_leaf_cd_add = max(self.gen_leaf_cd_add - passed_seconds, 0)
+
+        for i, msp in enumerate(self.magic_sprites):
+            msp.update(passed_seconds)
+            if msp.status == cfg.Magic.STATUS_VANISH:
+                self.magic_sprites.pop(i)
 
         self.effective_time -= passed_seconds
         if self.effective_time <= 0:
@@ -1466,10 +1514,9 @@ class RenneAttacker(AngleAttacker):
     def dizzy(self, current_frame_add):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.dizzy_params["key_frames"]:
+            sp.mp -= self.dizzy_params["mana"]
             self.magic_cds["magic_skill_4"] = self.dizzy_params["cd"]
-            self.current_magic = RenneDizzy(sp, sp.enemies, self.dizzy_params["range"],
-                self.dizzy_params["time"], self.dizzy_params["effective_time"],
-                self.dizzy_params["prob"])
+            self.current_magic = RenneDizzy(sp, sp.enemies, self.dizzy_params)
             self.magic_list.append(self.current_magic)
 
 

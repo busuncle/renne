@@ -289,12 +289,17 @@ class Renne(object):
             "stun_time": 5,
         },
         "dizzy": {
-            "prob": 0.25,
-            "range": 700,
+            "prob": 0.99,
+            "range": 400,
             "cd": 30,
+            "mana": 80,
             "time": 15,
-            "effective_time": 2,
+            "effective_time": 3,
             "key_frames": (5, 6),
+            "gen_leaf_cd": 0.05,
+            "leaf_life": 2,
+            "leaf_z": 100,
+            "leaf_vec_z": -30,
         },
     }
 
@@ -1433,6 +1438,9 @@ class Effect(object):
     DESTROY_AEROLITE_RECT = (192, 0, 64, 128)
     DESTROY_AEROLITE_SHADOW_INDEX = 3
     DESTROY_AEROLITE_SHADOW_RECT_DELTA_Y = 8
+
+    RENNE_DIZZY_LEAF_IMAGE_KEY = "e8"
+    RENNE_DIZZY_LEAF_RECT = (0, 0, 32, 32)
 
     DEATH_COIL_IMAGE_KEY = "e1"
     DEATH_COIL_RECT = (128, 192, 128, 64)
