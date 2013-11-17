@@ -10,6 +10,9 @@ check animation
 """
 
 screen = pygame.display.set_mode(sfg.Screen.SIZE, HWSURFACE|DOUBLEBUF)
+CONTROL = {
+    "stop": False,
+}
 
 
 def run(args):
@@ -27,8 +30,14 @@ def run(args):
     frame_no = 0
     frame_add = 0.0
     running = True
-    frame_no_max = image.get_rect().height / 8 / 256
-    print "frame_no_max: %s" % frame_no_max
+    if image.get_rect().height %  (8 * 256) == 0:
+        has_direction = True
+        frame_no_max = image.get_rect().height / 8 / 256
+        print "frame_no_max: %s" % frame_no_max
+    else:
+        has_direction = False
+        frame_no_max = image.get_rect().height / 256
+        print "only one direction, frame_no_max: %s" % frame_no_max
 
     while running:
         for event in pygame.event.get(): # User did something
@@ -43,15 +52,29 @@ def run(args):
                     frame_speed += 1
                 elif event.key == K_DOWN:
                     frame_speed = max(0, frame_speed - 1)
+                elif event.key == K_s:
+                    CONTROL["stop"] = not CONTROL["stop"]
+                elif event.key == K_a:
+                    if CONTROL["stop"]:
+                        frame_add -= 1
+                elif event.key == K_d:
+                    if CONTROL["stop"]:
+                        frame_add += 1
 
         screen.fill(pygame.Color(background_color))
 
         time_passed = clock.tick(60)
         time_passed_seconds = time_passed / 1000.0
 
-        frame_add += time_passed_seconds * frame_speed
+        if not CONTROL["stop"]:
+            frame_add += time_passed_seconds * frame_speed
+
         frame_add %= frame_no_max
-        frame_no = direction + int(frame_add) * 8
+
+        if has_direction:
+            frame_no = direction + int(frame_add) * 8
+        else:
+            frame_no = int(frame_add)
 
         blit_image = image.subsurface(pygame.Rect(
             (0, frame_no * animate_size.width, animate_size.width, animate_size.width)

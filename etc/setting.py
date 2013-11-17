@@ -1337,8 +1337,8 @@ class Chapter(object):
     LOADING_PICTURE_IMAGE_KEY = "loading_chapter"
     LOADING_PICTURE_RECT = (0, 0, 640, 480)
     LOADING_PICTURE_FADE_IN_TIME = 1    # in second unit, show up the picture
-    LOADING_WORD = Font.ARIAL_BLACK_28.render("now loading ...", True, pygame.Color("white"))
-    LOADING_WORD_BLIT_POS = (760, 700)
+    LOADING_WORD = Font.MSYH_24.render(u"”Œœ∑º”‘ÿ÷–...", True, pygame.Color("white"))
+    LOADING_WORD_BLIT_POS = (840, 700)
 
     ALL = ("1", "2", "3", "4", "5")
 
