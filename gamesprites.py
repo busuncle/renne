@@ -278,12 +278,14 @@ class Renne(GameSprite):
             # level up and recover status
             self.recover(new_level)
             # show level up words
-            self.animation.show_words(
-                sfg.SpriteStatus.LEVEL_UP_WORDS_FONT.render("LEVEL UP!", True, sfg.SpriteStatus.LEVEL_UP_WORDS_COLOR),
+            level_up_words = sfg.SpriteStatus.LEVEL_UP_WORDS_FONT.render(u"Éý¼¶!", True, sfg.SpriteStatus.LEVEL_UP_WORDS_COLOR)
+            self.animation.show_follow_sprite_words(level_up_words, self.pos, 
                 sfg.SpriteStatus.LEVEL_UP_WORDS_SHOW_TIME,
-                (self.pos.x - sfg.SpriteStatus.LEVEL_UP_WORDS_BLIT_X_OFFSET, self.pos.y * 0.5 - self.setting.HEIGHT - sfg.SpriteStatus.LEVEL_UP_WORDS_BLIT_Y_OFFSET),
-                sfg.SpriteStatus.LEVEL_UP_WORDS_POS_MOVE_RATE,
-                True)
+                self.setting.HEIGHT * 0.5, sfg.SpriteStatus.LEVEL_UP_WORDS_VEC_Z, self)
+            # use recover hp effect to indicate level, dirty and work
+            self.status[cfg.SpriteStatus.RECOVER_HP] = {"time": sfg.Sprite.RECOVER_HP_EFFECT_TIME * 2}
+
+            self.animation.add_level_up_effect()
 
 
     def draw(self, camera):

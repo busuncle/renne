@@ -174,13 +174,19 @@ class GameWorld(pygame.sprite.LayeredDirty):
                 self.dynamic_objects.pop(i)
 
             if hasattr(sp.attacker, "magic_list"):
-                for i, magic in enumerate(sp.attacker.magic_list):
+                for j, magic in enumerate(sp.attacker.magic_list):
                     if magic.status == cfg.Magic.STATUS_VANISH:
-                        sp.attacker.magic_list.pop(i)
+                        sp.attacker.magic_list.pop(j)
                     else:
                         # for every magic, do some status update 
                         # and damage calculation among all the sprites 
                         magic.update(passed_seconds)
+
+            for j, particle in enumerate(sp.animation.particle_list):
+                particle.update(passed_seconds)
+                if particle.life < 0:
+                    sp.animation.particle_list.pop(j)
+
 
 
     def draw(self, camera):
@@ -213,6 +219,9 @@ class GameWorld(pygame.sprite.LayeredDirty):
                             floor_objects.append(msp)
                         elif msp.layer == cfg.Magic.LAYER_AIR:
                             movings.append(msp)
+
+            for particle in sp.animation.particle_list:
+                movings.append(particle)
 
         # draw floor objects first
         floor_objects.sort(key=lambda obj: obj.pos.y)

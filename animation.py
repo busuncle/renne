@@ -1,7 +1,8 @@
 import pygame
 from pygame.locals import BLEND_ADD
 from time import time
-from random import randint
+from random import randint, gauss
+from gameobjects.vector2 import Vector2
 from base.util import ImageController, SpriteImageController, Timer, Blink
 from base import constant as cfg
 from etc import setting as sfg
@@ -57,6 +58,15 @@ class WordsRenderer(object):
         self.blit_list.append(w)
 
 
+    def add_follow_sprite_words(self, words, pos, time_len, z, vec_z, follow_sprite):
+        w = {"words": words, "pos": Vector2(pos), "timer": Timer(time_len), 
+            "z": z, "vec_z": vec_z, "follow_sprite": follow_sprite, 
+            "follow_sprite_pos": follow_sprite.pos.copy(),
+            "words_mix": None, "blink": Blink(sfg.Effect.BLINK_RATE3, sfg.Effect.BLINK_DEPTH_SECTION3),
+        }
+        self.blit_list.append(w)
+
+
     def update(self, passed_seconds):
         for i, bw in enumerate(self.blit_list):
             if bw.get("blink") is not None:
@@ -74,16 +84,81 @@ class WordsRenderer(object):
                     y += mr[1] * passed_seconds
                     bw["rel_pos"] = (x, y)
 
+                z = bw.get("z")
+                if z is not None:
+                    bw["z"] += bw["vec_z"] * passed_seconds
+                    bw["pos"] += bw["follow_sprite"].pos - bw["follow_sprite_pos"]
+                    bw["follow_sprite_pos"] = bw["follow_sprite"].pos.copy()
+
+
 
     def draw(self, camera):
         for bw in self.blit_list:
-            if bw.get("words_mix") is not None:
-                camera.screen.blit(bw["words_mix"], (bw["rel_pos"][0] - camera.rect.left, 
-                    bw["rel_pos"][1] - camera.rect.top))
-            else:
-                camera.screen.blit(bw["words"], (bw["rel_pos"][0] - camera.rect.left, 
-                    bw["rel_pos"][1] - camera.rect.top))
+            words = bw.get("words_mix") or bw.get("words")
+            if bw.get("rel_pos"):
+                camera.screen.blit(words, (bw["rel_pos"][0] - camera.rect.x, bw["rel_pos"][1] - camera.rect.y))
+            elif bw.get("pos"):
+                pos = bw["pos"]
+                z = bw.get("z", 0)
+                camera.screen.blit(words, (pos.x - words.get_width() * 0.5 - camera.rect.x,  
+                    pos.y * 0.5 - camera.rect.y - z))
 
+
+
+class Particle(pygame.sprite.DirtySprite):
+    def __init__(self, image, pos, radius, dx, dy, vec, acc, life, z=0, vec_z=None, acc_z=None, 
+            pre_hide_time=None, follow_sprite=None):
+        super(Particle, self).__init__()
+        self.image = image
+        self.pos = Vector2(pos)
+        self.pos.y += 5 # trick, make sure particle effect appear in front of the sprite
+        self.area = pygame.Rect(0, 0, radius * 2, radius * 2)
+        self.area.center = self.pos
+        self.dx = dx
+        self.dy = dy
+        self.vec = Vector2(vec)
+        self.acc = acc
+        self.life = life
+        self.z = z
+        self.vec_z = vec_z
+        self.acc_z = acc_z
+        self.pre_hide_time = pre_hide_time
+        self.follow_sprite = follow_sprite
+        self.follow_sprite_pos = follow_sprite.pos.copy() if follow_sprite is not None else None
+
+
+    def update(self, passed_seconds):
+        self.pre_hide_time -= passed_seconds
+        self.life -= passed_seconds
+
+        if self.follow_sprite:
+            self.pos += self.follow_sprite.pos - self.follow_sprite_pos
+            self.follow_sprite_pos = self.follow_sprite.pos.copy()
+        else:
+            self.pos += self.vec * passed_seconds
+            self.vec += self.acc * passed_seconds
+
+        if self.vec_z:
+            self.z += self.vec_z * passed_seconds
+            if self.acc_z:
+                self.vec_z += self.acc_z * passed_seconds
+
+
+    def draw(self, camera):
+        if self.pre_hide_time > 0:
+            return 
+
+        camera.screen.blit(self.image,
+            (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy - self.z))
+
+
+    def draw_area(self, camera):
+        # for debug
+        r = pygame.Rect(0, 0, self.area.width, self.area.height * 0.5)
+        r.center = (self.pos.x, self.pos.y * 0.5)
+        r.top -= camera.rect.top
+        r.left -= camera.rect.left
+        pygame.draw.rect(camera.screen, pygame.Color("white"), r, 1)
 
 
 class SpriteAnimator(object):
@@ -103,6 +178,7 @@ class SpriteAnimator(object):
         self.shadow_rect = self.shadow_image.get_rect()
         self.words_renderer = WordsRenderer()
         self.blink = Blink()
+        self.particle_list = []
 
 
     def get_current_frame_add(self, action):
@@ -115,6 +191,10 @@ class SpriteAnimator(object):
 
     def show_words(self, words, show_time, rel_pos, move_rate=None, make_blink=False):
         self.words_renderer.add_blit_words(words, rel_pos, show_time, move_rate, make_blink)
+
+
+    def show_follow_sprite_words(self, words, pos, time_len, z, vec_z, follow_sprite):
+        self.words_renderer.add_follow_sprite_words(words, pos, time_len, z, vec_z, follow_sprite)
         
 
     def show_cost_hp(self, hp):
@@ -349,6 +429,26 @@ class RenneAnimator(SpriteAnimator):
                 return True
 
         return False
+
+
+    def add_level_up_effect(self):
+        white_circle_image = effect_image_controller.get(
+            sfg.Effect.WHITE_CIRCLE_IMAGE_KEY).subsurface(sfg.Effect.WHITE_CIRCLE_RECT).convert_alpha()
+        width = white_circle_image.get_width()
+        pos = self.sprite.pos
+        delta = sfg.Effect.WHITE_CIRCLE_POS_DELTA
+        for i in xrange(sfg.Effect.WHITE_CIRCLE_GEN_NUM):
+            x = randint(int(pos.x - delta), int(pos.x + delta))
+            y = randint(int(pos.y - delta), int(pos.y + delta))
+            circle = Particle(white_circle_image, Vector2(x, y), width * 0.5, width * 0.5, width * 0.5, 
+                Vector2(0, 0), Vector2(0, 0), 
+                gauss(sfg.Effect.WHITE_CIRCLE_LIFE_MEAN, sfg.Effect.WHITE_CIRCLE_LIFE_SIGMA), 
+                gauss(sfg.Effect.WHITE_CIRCLE_Z_MEAN, sfg.Effect.WHITE_CIRCLE_Z_SIGMA), 
+                gauss(sfg.Effect.WHITE_CIRCLE_VEC_Z_MEAN, sfg.Effect.WHITE_CIRCLE_VEC_Z_SIGMA), 
+                None, 
+                gauss(sfg.Effect.WHITE_CIRCLE_PRE_HIDE_TIME_MEAN, sfg.Effect.WHITE_CIRCLE_PRE_HIDE_TIME_SIGMA),
+                self.sprite)
+            self.particle_list.append(circle)
 
 
 
