@@ -559,7 +559,7 @@ class Renne(GameSprite):
             self.action = cfg.HeroAction.ATTACK
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_1]["pressed"]:
-            if self.mp >= self.attacker.destroy_fire_params["mana"] \
+            if self.mp >= self.attacker.magic_skill_1_params["mana"] \
                 and self.attacker.magic_cds["magic_skill_1"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
                 self.sound_box.play(atk_snd)
@@ -567,7 +567,7 @@ class Renne(GameSprite):
                 self.attacker.method = "destroy_fire"
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_2]["pressed"]:
-            if self.mp >= self.attacker.destroy_bomb_params["mana"] \
+            if self.mp >= self.attacker.magic_skill_2_params["mana"] \
                 and self.attacker.magic_cds["magic_skill_2"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
                 self.sound_box.play(atk_snd)
@@ -575,7 +575,7 @@ class Renne(GameSprite):
                 self.attacker.method = "destroy_bomb"
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_3]["pressed"]:
-            if self.mp >= self.attacker.destroy_aerolite_params["mana"] \
+            if self.mp >= self.attacker.magic_skill_3_params["mana"] \
                 and self.attacker.magic_cds["magic_skill_3"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
                 self.sound_box.play(atk_snd)
@@ -583,7 +583,7 @@ class Renne(GameSprite):
                 self.attacker.method = "destroy_aerolite"
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_4]["pressed"]:
-            if self.mp >= self.attacker.dizzy_params["mana"] \
+            if self.mp >= self.attacker.magic_skill_4_params["mana"] \
                 and self.attacker.magic_cds["magic_skill_4"] == 0:
                 self.action = cfg.HeroAction.WIN
                 self.sound_box.play(sfg.Sound.RENNE_WIN)

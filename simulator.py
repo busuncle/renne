@@ -1389,10 +1389,10 @@ class RenneAttacker(AngleAttacker):
         self.attack1_params = attacker_params["attack1"]
         self.attack2_params = attacker_params["attack2"]
         self.run_attack_params = attacker_params["run_attack"]
-        self.destroy_fire_params = attacker_params["destroy_fire"]
-        self.destroy_bomb_params = attacker_params["destroy_bomb"]
-        self.destroy_aerolite_params = attacker_params["destroy_aerolite"]
-        self.dizzy_params = attacker_params["dizzy"]
+        self.magic_skill_1_params = attacker_params["destroy_fire"]
+        self.magic_skill_2_params = attacker_params["destroy_bomb"]
+        self.magic_skill_3_params = attacker_params["destroy_aerolite"]
+        self.magic_skill_4_params = attacker_params["dizzy"]
         self.magic_cds = {"magic_skill_1": 0, "magic_skill_2": 0, "magic_skill_3": 0, "magic_skill_4": 0}
         # magic_list has kinds of magics, eg. DestroyBombSet and DestroyAeroliteSet, 
         # every magic has one or more magic sprite(s), eg. DestroyBombSet has many "bombs"
@@ -1484,39 +1484,39 @@ class RenneAttacker(AngleAttacker):
         sp = self.sprite
         direct_vec = cfg.Direction.DIRECT_TO_VEC[sp.direction]
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
-            sp.mp -= self.destroy_fire_params["mana"]
-            self.magic_cds["magic_skill_1"] = self.destroy_fire_params["cd"]
+            sp.mp -= self.magic_skill_1_params["mana"]
+            self.magic_cds["magic_skill_1"] = self.magic_skill_1_params["cd"]
             self.current_magic = DestroyFire(sp, sp.enemies,
-                sp.static_objects, self.destroy_fire_params, sp.pos, sp.pos + direct_vec)
+                sp.static_objects, self.magic_skill_1_params, sp.pos, sp.pos + direct_vec)
             self.magic_list.append(self.current_magic)
 
 
     def destroy_bomb(self, current_frame_add):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.key_frames:
-            sp.mp -= self.destroy_bomb_params["mana"]
-            self.magic_cds["magic_skill_2"] = self.destroy_bomb_params["cd"]
+            sp.mp -= self.magic_skill_2_params["mana"]
+            self.magic_cds["magic_skill_2"] = self.magic_skill_2_params["cd"]
             self.current_magic = DestroyBombSet(sp, sp.enemies,
-                sp.static_objects, self.destroy_bomb_params, sp.pos, sp.direction)
+                sp.static_objects, self.magic_skill_2_params, sp.pos, sp.direction)
             self.magic_list.append(self.current_magic)
 
 
     def destroy_aerolite(self, current_frame_add):
         sp = self.sprite
-        if self.current_magic is None and int(current_frame_add) in self.destroy_aerolite_params["key_frames"]:
-            sp.mp -= self.destroy_aerolite_params["mana"]
-            self.magic_cds["magic_skill_3"] = self.destroy_aerolite_params["cd"]
+        if self.current_magic is None and int(current_frame_add) in self.magic_skill_3_params["key_frames"]:
+            sp.mp -= self.magic_skill_3_params["mana"]
+            self.magic_cds["magic_skill_3"] = self.magic_skill_3_params["cd"]
             self.current_magic = DestroyAeroliteSet(sp, sp.enemies, 
-                sp.static_objects, self.destroy_aerolite_params, sp.pos)
+                sp.static_objects, self.magic_skill_3_params, sp.pos)
             self.magic_list.append(self.current_magic)
 
 
     def dizzy(self, current_frame_add):
         sp = self.sprite
-        if self.current_magic is None and int(current_frame_add) in self.dizzy_params["key_frames"]:
-            sp.mp -= self.dizzy_params["mana"]
-            self.magic_cds["magic_skill_4"] = self.dizzy_params["cd"]
-            self.current_magic = RenneDizzy(sp, sp.enemies, self.dizzy_params)
+        if self.current_magic is None and int(current_frame_add) in self.magic_skill_4_params["key_frames"]:
+            sp.mp -= self.magic_skill_4_params["mana"]
+            self.magic_cds["magic_skill_4"] = self.magic_skill_4_params["cd"]
+            self.current_magic = RenneDizzy(sp, sp.enemies, self.magic_skill_4_params)
             self.magic_list.append(self.current_magic)
 
 
