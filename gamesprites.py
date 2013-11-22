@@ -211,10 +211,9 @@ class GameSprite(pygame.sprite.DirtySprite):
 
 
 
-class Renne(GameSprite):
+class Hero(GameSprite):
     def __init__(self, setting, pos, direction):
-        super(Renne, self).__init__(setting.NAME, setting.HP, setting.ATK, setting.DFS, pos, direction)
-
+        super(Hero, self).__init__(setting.NAME, setting.HP, setting.ATK, setting.DFS, pos, direction)
         self.setting = setting
         self.magic_skill_damage_ratio = self.setting.MAGIC_SKILL_DAMAGE_RATIO
         self.mp = self.setting.MP
@@ -222,22 +221,10 @@ class Renne(GameSprite):
         self.level = 1
         self.exp = 0
 
-        self.animation = RenneAnimator(self)
         self.emotion_animation = SpriteEmotionAnimator(self)
-        self.attacker = simulator.RenneAttacker(self, self.setting.ATTACKER_PARAMS)
 
         # represent the sprite area, used for deciding frame layer and collide, attack computing or so
         self.area = pygame.Rect(0, 0, self.setting.RADIUS * 2, self.setting.RADIUS * 2)
-
-        # for regular attack combo
-        self.attack_combo = {"count": 0, "last_time": time(), 
-            "time_delta": self.setting.ATTACKER_PARAMS["attack_combo_time_delta"], 
-            "count_max": self.setting.ATTACKER_PARAMS["attack_combo_count_max"]}
-        self.attack1_start_frame = self.setting.ATTACKER_PARAMS["attack1"]["start_frame"]
-        self.attack1_end_frame = self.setting.ATTACKER_PARAMS["attack1"]["end_frame"]
-        self.attack2_accumulate_power_frame = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_frame"]
-        self.attack2_accumulate_power_time = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_time"]
-        self.run_attack_params = self.setting.ATTACKER_PARAMS["run_attack"]
 
 
     def activate(self, allsprites, enemies, static_objects, game_map):
@@ -359,6 +346,68 @@ class Renne(GameSprite):
         self.animation.run_circle_frame(cfg.HeroAction.RUN, passed_seconds)
 
 
+    def under_thump(self, passed_seconds):
+        self.move(self.status[cfg.SpriteStatus.UNDER_THUMP]["out_speed"], passed_seconds, 
+            self.status[cfg.SpriteStatus.UNDER_THUMP]["key_vec"])
+        self.animation.run_circle_frame(cfg.HeroAction.UNDER_THUMP, passed_seconds)
+
+
+    def attack(self, passed_seconds):
+        pass
+
+
+    def run_attack(self, passed_seconds):
+        pass
+
+
+    def locked(self):
+        # check whether hero is locked, if so, and lock him without handling any event from user input
+        if self.action in (cfg.HeroAction.ATTACK, cfg.HeroAction.RUN_ATTACK, 
+            cfg.HeroAction.SKILL):
+            # attacking, return directly
+            return True
+
+        if self.action == cfg.HeroAction.WIN:
+            # painted egg, return directly
+            return True
+
+        if self.action == cfg.SpriteAction.UNCONTROLLED:
+            return True
+
+        if cfg.SpriteStatus.CRICK in self.status \
+            or cfg.SpriteStatus.UNDER_THUMP in self.status:
+            return True
+
+        return False
+
+
+    def event_handle(self, battle_keys, external_event):
+        pass
+
+
+    def update(self, passed_seconds, external_event):
+        pass
+
+
+
+class Renne(Hero):
+    def __init__(self, setting, pos, direction):
+        super(Renne, self).__init__(setting, pos, direction)
+
+        self.animation = RenneAnimator(self)
+        self.attacker = simulator.RenneAttacker(self, self.setting.ATTACKER_PARAMS)
+
+        # for regular attack combo
+        self.attack_combo = {"count": 0, "last_time": time(), 
+            "time_delta": self.setting.ATTACKER_PARAMS["attack_combo_time_delta"], 
+            "count_max": self.setting.ATTACKER_PARAMS["attack_combo_count_max"]}
+        self.attack1_start_frame = self.setting.ATTACKER_PARAMS["attack1"]["start_frame"]
+        self.attack1_end_frame = self.setting.ATTACKER_PARAMS["attack1"]["end_frame"]
+        self.attack2_accumulate_power_frame = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_frame"]
+        self.attack2_accumulate_power_time = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_time"]
+        self.run_attack_params = self.setting.ATTACKER_PARAMS["run_attack"]
+
+
     def attack(self, passed_seconds):
         if self.attacker.method == "regular1":
             self.attack1(passed_seconds)
@@ -407,7 +456,6 @@ class Renne(GameSprite):
             self.animation.set_frame_add(cfg.HeroAction.ATTACK, self.attack1_start_frame)
 
         if current_frame_add >= self.attack1_end_frame:
-
             # ends at this frame
             self.reset_action()
         else:
@@ -488,27 +536,6 @@ class Renne(GameSprite):
             self.action = cfg.HeroAction.STAND
         else:
             self.attacker.dizzy(self.animation.get_current_frame_add(cfg.HeroAction.WIN))
-
-
-    def locked(self):
-        # check whether renne is locked, if so, and lock her without handling any event from user input
-        if self.action in (cfg.HeroAction.ATTACK, cfg.HeroAction.RUN_ATTACK, 
-            cfg.HeroAction.SKILL):
-            # attacking, return directly
-            return True
-
-        if self.action == cfg.HeroAction.WIN:
-            # painted egg, return directly
-            return True
-
-        if self.action == cfg.SpriteAction.UNCONTROLLED:
-            return True
-
-        if cfg.SpriteStatus.CRICK in self.status \
-            or cfg.SpriteStatus.UNDER_THUMP in self.status:
-            return True
-
-        return False
 
 
     def event_handle(self, battle_keys, external_event=None):
@@ -608,12 +635,6 @@ class Renne(GameSprite):
 
         else:
             self.action = cfg.HeroAction.STAND
-
-
-    def under_thump(self, passed_seconds):
-        self.move(self.status[cfg.SpriteStatus.UNDER_THUMP]["out_speed"], passed_seconds, 
-            self.status[cfg.SpriteStatus.UNDER_THUMP]["key_vec"])
-        self.animation.run_circle_frame(cfg.HeroAction.UNDER_THUMP, passed_seconds)
 
 
     def update(self, passed_seconds, external_event=None):
