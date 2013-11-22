@@ -196,8 +196,8 @@ class Renne(object):
     RUN_SPEED = 200
 
     # values for every level
-    LEVEL_HP = (150, 200, 250, 300, 350, 400, 450, 500, 550, 600)
-    LEVEL_MP = (80, 120, 160, 200, 240, 280, 320, 360, 400, 440)
+    LEVEL_HP = (150, 200, 250, 300, 350, 400, 480, 560, 640, 720)
+    LEVEL_MP = (80, 120, 160, 220, 280, 360, 440, 520, 600, 680)
     LEVEL_SP = (60, 80, 100, 120, 140, 160, 170, 180, 190, 200)
     LEVEL_ATK = (10, 12, 14, 16, 18, 20, 24, 28, 32, 36)
     LEVEL_MAGIC_SKILL_DAMAGE_RATIO = (1, 1.1, 1.2, 1.5, 1.8, 2.0, 2.2, 2.5, 2.8, 3.0)
@@ -301,6 +301,54 @@ class Renne(object):
             "leaf_z": 100,
             "leaf_vec_z": -30,
         },
+    }
+
+
+
+class Joshua(object):
+    NAME = "Joshua"
+    ROLE = cfg.SpriteRole.HERO
+
+    HP = 200
+    MP = 60
+    SP = 100
+    ATK = 12
+    MAGIC_SKILL_DAMAGE_RATIO = 1
+    DFS = 2
+
+    MP_RECOVERY_RATE = 10
+    SP_COST_RATE = 12
+    SP_RECOVERY_RATE = 15
+
+    # sprite radius
+    RADIUS = 18 
+    HEIGHT = 80
+    WEIGHT = 100
+
+    # distance from coord to sprite foot
+    POS_RECT_DELTA_Y = 40
+
+    SHADOW_RECT_DELTA_Y = 50
+    SHADOW_INDEX = 1
+
+    # move speed, in pixel unit
+    WALK_SPEED = 120
+    RUN_SPEED = 240
+
+    # values for every level
+    LEVEL_HP = (200, 250, 300, 360, 450, 550, 650, 750, 850, 1000)
+    LEVEL_MP = (60, 80, 120, 160, 200, 240, 280, 320, 360, 400)
+    LEVEL_SP = (100, 120, 140, 160, 200, 240, 280, 320, 360, 400)
+    LEVEL_ATK = (12, 15, 18, 20, 25, 30, 35, 40, 45, 50)
+    LEVEL_MAGIC_SKILL_DAMAGE_RATIO = (1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 2.0)
+    LEVEL_DFS = (2, 3, 5, 8, 10, 12, 15, 18, 20, 22)
+    LEVEL_EXP = (0, 100, 300, 700, 1500, 2800, 4600, 7000, 10000, 15000)
+    #LEVEL_EXP = tuple(range(0, 28, 3))
+    MAX_LEVEL = len(LEVEL_EXP)
+    MAX_EXP = LEVEL_EXP[MAX_LEVEL - 1]
+
+    ATTACKER_PARAMS = {
+
     }
 
 
