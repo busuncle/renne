@@ -404,7 +404,7 @@ class RenneAnimator(SpriteAnimator):
         sp = self.sprite
         action = sp.frame_action or sp.action
         if action in self.frame_adds:
-            if action == cfg.HeroAction.WIN:
+            if action == cfg.RenneAction.WIN:
                 self.image = self.sprite_image_contoller.get_surface(
                     action)[int(self.frame_adds[action])]
             else:
@@ -414,7 +414,7 @@ class RenneAnimator(SpriteAnimator):
 
     def _run_renne_win_frame(self, passed_seconds):
         # a fancy egg for Renne, ^o^
-        action = cfg.HeroAction.WIN
+        action = cfg.RenneAction.WIN
         self.frame_adds[action] += passed_seconds * self.frame_rates[action]
         if self.frame_adds[action] >= self.frame_nums[action] or self.win_frame_delay_add > 0:
             self.frame_adds[action] = self.frame_nums[action] - 1

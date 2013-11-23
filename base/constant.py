@@ -79,29 +79,40 @@ class SpriteAction(object):
 
 
 
-class HeroAction(SpriteAction):
-    SKILL = 16
-    RUN_ATTACK = 17
-    REST = 18
-    WIN = 19
+class RenneAction(SpriteAction):
+    SKILL = 11
+    RUN_ATTACK = 12
+    REST = 13
+    WIN = 14
+
+
+
+class JoshuaAction(SpriteAction):
+    ATTACK2 = 21
+    ATTACK3 = 22
+    BIG_SKILL = 23
+    KNEEL = 24
+    REST = 25
+    ROAR = 26
+    WIN = 27
 
 
 
 class EnemyAction(SpriteAction):
-    UNDER_ATTACK = 21
-    DIE = 22
-    LOOKOUT = 23
-    PATHFINDING = 24
-    STEER = 25
-    SKILL = 26
-    BACKWARD = 27
+    UNDER_ATTACK = 101
+    DIE = 102
+    LOOKOUT = 103
+    PATHFINDING = 104
+    STEER = 105
+    SKILL = 106
+    BACKWARD = 107
 
 
 
 class LeonHardtAction(EnemyAction):
-    ATTACK2 = 41
-    SKILL1 = 42
-    SKILL2 = 43
+    ATTACK2 = 111
+    SKILL1 = 112
+    SKILL2 = 113
 
 
 

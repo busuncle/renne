@@ -1380,10 +1380,10 @@ class ArrowSet(MagicSkill):
 
 class RenneAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
-        super(RenneAttacker, self).__init__(sprite, 
-            attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
-        self.attack_range2 = attacker_params["range2"]
-        self.cos_min2 = cos(radians(attacker_params["angle2"] * 0.5))
+        super(RenneAttacker, self).__init__(sprite, attacker_params["attack1"]["range"], 
+            attacker_params["attack1"]["angle"], attacker_params["key_frames"])
+        self.attack_range2 = attacker_params["attack2"]["range"]
+        self.cos_min2 = cos(radians(attacker_params["attack2"]["angle"] * 0.5))
         self.hit_record = []
         self.kill_record = []
         self.attack1_params = attacker_params["attack1"]

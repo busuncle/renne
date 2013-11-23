@@ -315,13 +315,13 @@ class Hero(GameSprite):
         if self.status["hp"] != cfg.HpStatus.DIE:
             self.sp = min(self.setting.SP, self.sp + self.setting.SP_RECOVERY_RATE * passed_seconds)
             self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
-        self.animation.run_circle_frame(cfg.HeroAction.STAND, passed_seconds)
+        self.animation.run_circle_frame(cfg.SpriteAction.STAND, passed_seconds)
 
 
     def rest(self, passed_seconds):
         self.sp = min(self.setting.SP, self.sp + self.setting.SP_RECOVERY_RATE * 2 * passed_seconds)
         self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * 2 * passed_seconds)
-        self.animation.run_circle_frame(cfg.HeroAction.REST, passed_seconds)
+        self.animation.run_circle_frame(cfg.RenneAction.REST, passed_seconds)
 
 
     def walk(self, passed_seconds):
@@ -331,7 +331,7 @@ class Hero(GameSprite):
                 passed_seconds)
         else:
             self.move(self.setting.WALK_SPEED, passed_seconds)
-        self.animation.run_circle_frame(cfg.HeroAction.WALK, passed_seconds)
+        self.animation.run_circle_frame(cfg.SpriteAction.WALK, passed_seconds)
 
 
     def run(self, passed_seconds):
@@ -343,13 +343,13 @@ class Hero(GameSprite):
                 passed_seconds)
         else:
             self.move(self.setting.RUN_SPEED, passed_seconds)
-        self.animation.run_circle_frame(cfg.HeroAction.RUN, passed_seconds)
+        self.animation.run_circle_frame(cfg.SpriteAction.RUN, passed_seconds)
 
 
     def under_thump(self, passed_seconds):
         self.move(self.status[cfg.SpriteStatus.UNDER_THUMP]["out_speed"], passed_seconds, 
             self.status[cfg.SpriteStatus.UNDER_THUMP]["key_vec"])
-        self.animation.run_circle_frame(cfg.HeroAction.UNDER_THUMP, passed_seconds)
+        self.animation.run_circle_frame(cfg.SpriteAction.UNDER_THUMP, passed_seconds)
 
 
     def attack(self, passed_seconds):
@@ -358,27 +358,6 @@ class Hero(GameSprite):
 
     def run_attack(self, passed_seconds):
         pass
-
-
-    def locked(self):
-        # check whether hero is locked, if so, and lock him without handling any event from user input
-        if self.action in (cfg.HeroAction.ATTACK, cfg.HeroAction.RUN_ATTACK, 
-            cfg.HeroAction.SKILL):
-            # attacking, return directly
-            return True
-
-        if self.action == cfg.HeroAction.WIN:
-            # painted egg, return directly
-            return True
-
-        if self.action == cfg.SpriteAction.UNCONTROLLED:
-            return True
-
-        if cfg.SpriteStatus.CRICK in self.status \
-            or cfg.SpriteStatus.UNDER_THUMP in self.status:
-            return True
-
-        return False
 
 
     def event_handle(self, battle_keys, external_event):
@@ -422,7 +401,7 @@ class Renne(Hero):
 
 
     def destroy_fire(self, passed_seconds):
-        self.frame_action = cfg.HeroAction.ATTACK
+        self.frame_action = cfg.SpriteAction.ATTACK
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
             self.reset_action()
@@ -431,7 +410,7 @@ class Renne(Hero):
 
 
     def destroy_bomb(self, passed_seconds):
-        self.frame_action = cfg.HeroAction.ATTACK
+        self.frame_action = cfg.SpriteAction.ATTACK
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
             self.reset_action()
@@ -440,7 +419,7 @@ class Renne(Hero):
 
 
     def destroy_aerolite(self, passed_seconds):
-        self.frame_action = cfg.HeroAction.SKILL
+        self.frame_action = cfg.RenneAction.SKILL
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:
             self.reset_action()
@@ -449,11 +428,11 @@ class Renne(Hero):
 
 
     def attack1(self, passed_seconds):
-        self.frame_action = cfg.HeroAction.ATTACK
-        current_frame_add = self.animation.get_current_frame_add(cfg.HeroAction.ATTACK)
+        self.frame_action = cfg.SpriteAction.ATTACK
+        current_frame_add = self.animation.get_current_frame_add(cfg.SpriteAction.ATTACK)
         if current_frame_add < self.attack1_start_frame:
             # short attack starts
-            self.animation.set_frame_add(cfg.HeroAction.ATTACK, self.attack1_start_frame)
+            self.animation.set_frame_add(cfg.SpriteAction.ATTACK, self.attack1_start_frame)
 
         if current_frame_add >= self.attack1_end_frame:
             # ends at this frame
@@ -477,11 +456,11 @@ class Renne(Hero):
 
                 self.attack_combo["last_time"] = attack_time
 
-        self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds)
+        self.animation.run_sequence_frame(cfg.SpriteAction.ATTACK, passed_seconds)
 
 
     def attack2(self, passed_seconds):
-        self.frame_action = cfg.HeroAction.ATTACK
+        self.frame_action = cfg.SpriteAction.ATTACK
         current_frame_add = self.animation.get_current_frame_add(self.frame_action)
         if int(current_frame_add) == self.attack2_accumulate_power_frame \
             and self.attack2_accumulate_power_time > 0:
@@ -506,17 +485,17 @@ class Renne(Hero):
 
     def run_attack(self, passed_seconds):
         # a special attack type, when hero is running and press attack
-        self.animation.run_sequence_frame(cfg.HeroAction.ATTACK, passed_seconds)
-        if self.animation.get_current_frame_add(cfg.HeroAction.ATTACK) > self.run_attack_params["end_frame"]:
+        self.animation.run_sequence_frame(cfg.SpriteAction.ATTACK, passed_seconds)
+        if self.animation.get_current_frame_add(cfg.SpriteAction.ATTACK) > self.run_attack_params["end_frame"]:
             # don't full-run the attack frame for better effect
             self.animation.reset_frame_adds()
             self.attacker.finish()
-            self.action = cfg.HeroAction.STAND
+            self.action = cfg.SpriteAction.STAND
         else:
             self.move(self.setting.RUN_SPEED * self.run_attack_params["run_speed_ratio"], passed_seconds)
             hit_count = 0
             for em in self.enemies:
-                hit_it = self.attacker.run_attack(em, self.animation.get_current_frame_add(cfg.HeroAction.ATTACK))
+                hit_it = self.attacker.run_attack(em, self.animation.get_current_frame_add(cfg.SpriteAction.ATTACK))
                 if hit_it:
                     hit_count += 1
 
@@ -533,15 +512,36 @@ class Renne(Hero):
         is_finish = self.animation._run_renne_win_frame(passed_seconds)
         if is_finish:
             self.attacker.finish()
-            self.action = cfg.HeroAction.STAND
+            self.action = cfg.SpriteAction.STAND
         else:
-            self.attacker.dizzy(self.animation.get_current_frame_add(cfg.HeroAction.WIN))
+            self.attacker.dizzy(self.animation.get_current_frame_add(cfg.RenneAction.WIN))
+
+
+    def locked(self):
+        # check whether hero is locked, if so, and lock him without handling any event from user input
+        if self.action in (cfg.SpriteAction.ATTACK, cfg.RenneAction.RUN_ATTACK, 
+            cfg.RenneAction.SKILL):
+            # attacking, return directly
+            return True
+
+        if self.action == cfg.RenneAction.WIN:
+            # painted egg, return directly
+            return True
+
+        if self.action == cfg.SpriteAction.UNCONTROLLED:
+            return True
+
+        if cfg.SpriteStatus.CRICK in self.status \
+            or cfg.SpriteStatus.UNDER_THUMP in self.status:
+            return True
+
+        return False
 
 
     def event_handle(self, battle_keys, external_event=None):
         if external_event is not None:
             if external_event == cfg.GameStatus.INIT:
-                self.action = cfg.HeroAction.STAND
+                self.action = cfg.SpriteAction.STAND
                 return
             elif external_event == cfg.GameStatus.HERO_LOSE:
                 self.reset_action(force=False)
@@ -572,7 +572,7 @@ class Renne(Hero):
         self.direction = cfg.Direction.VEC_TO_DIRECT.get(self.key_vec.as_tuple(), self.direction)
 
         if battle_keys[sfg.UserKey.ATTACK]["pressed"]:
-            if self.action == cfg.HeroAction.RUN and self.sp > 0:
+            if self.action == cfg.SpriteAction.RUN and self.sp > 0:
                 self.attacker.method = "run_attack"
             else:
                 if self.attack_combo["count"] < self.attack_combo["count_max"] \
@@ -583,14 +583,14 @@ class Renne(Hero):
                     atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS)
                     self.sound_box.play(atk_snd)
 
-            self.action = cfg.HeroAction.ATTACK
+            self.action = cfg.SpriteAction.ATTACK
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_1]["pressed"]:
             if self.mp >= self.attacker.magic_skill_1_params["mana"] \
                 and self.attacker.magic_cds["magic_skill_1"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
                 self.sound_box.play(atk_snd)
-                self.action = cfg.HeroAction.ATTACK
+                self.action = cfg.SpriteAction.ATTACK
                 self.attacker.method = "destroy_fire"
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_2]["pressed"]:
@@ -598,7 +598,7 @@ class Renne(Hero):
                 and self.attacker.magic_cds["magic_skill_2"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
                 self.sound_box.play(atk_snd)
-                self.action = cfg.HeroAction.ATTACK
+                self.action = cfg.SpriteAction.ATTACK
                 self.attacker.method = "destroy_bomb"
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_3]["pressed"]:
@@ -606,35 +606,35 @@ class Renne(Hero):
                 and self.attacker.magic_cds["magic_skill_3"] == 0:
                 atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
                 self.sound_box.play(atk_snd)
-                self.action = cfg.HeroAction.SKILL
+                self.action = cfg.RenneAction.SKILL
                 self.attacker.method = "destroy_aerolite"
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_4]["pressed"]:
             if self.mp >= self.attacker.magic_skill_4_params["mana"] \
                 and self.attacker.magic_cds["magic_skill_4"] == 0:
-                self.action = cfg.HeroAction.WIN
+                self.action = cfg.RenneAction.WIN
                 self.sound_box.play(sfg.Sound.RENNE_WIN)
 
         elif battle_keys[sfg.UserKey.REST]["pressed"]:
-            self.action = cfg.HeroAction.REST
+            self.action = cfg.RenneAction.REST
 
         elif self.key_vec:
-            if self.action == cfg.HeroAction.RUN and self.sp > 0:
+            if self.action == cfg.SpriteAction.RUN and self.sp > 0:
                 # just keep running
-                self.action = cfg.HeroAction.RUN
+                self.action = cfg.SpriteAction.RUN
             elif self.direction in sfg.UserKey.DIRECT_TO_DIRECTION_KEY:
                 direct_key = sfg.UserKey.DIRECT_TO_DIRECTION_KEY[self.direction]
                 if direct_key == battle_keys["last_direct_key_up"]["key"] \
                     and time() - battle_keys["last_direct_key_up"]["time"] < sfg.UserKey.RUN_THRESHOLD \
                     and self.sp > 0:
-                    self.action = cfg.HeroAction.RUN
+                    self.action = cfg.SpriteAction.RUN
                 else:
-                    self.action = cfg.HeroAction.WALK
+                    self.action = cfg.SpriteAction.WALK
             else:
-                self.action = cfg.HeroAction.WALK
+                self.action = cfg.SpriteAction.WALK
 
         else:
-            self.action = cfg.HeroAction.STAND
+            self.action = cfg.SpriteAction.STAND
 
 
     def update(self, passed_seconds, external_event=None):
@@ -645,31 +645,31 @@ class Renne(Hero):
 
         self.update_status(passed_seconds)
 
-        if self.action == cfg.HeroAction.ATTACK:
+        if self.action == cfg.SpriteAction.ATTACK:
             if self.attacker.method == "run_attack":
                 self.run_attack(passed_seconds)
             else:
                 self.attack(passed_seconds)
 
-        elif self.action == cfg.HeroAction.SKILL:
+        elif self.action == cfg.RenneAction.SKILL:
             self.attack(passed_seconds)
 
-        elif self.action == cfg.HeroAction.RUN:
+        elif self.action == cfg.SpriteAction.RUN:
             self.run(passed_seconds)
 
-        elif self.action == cfg.HeroAction.WALK:
+        elif self.action == cfg.SpriteAction.WALK:
             self.walk(passed_seconds)
 
-        elif self.action == cfg.HeroAction.WIN:
+        elif self.action == cfg.RenneAction.WIN:
             self.win(passed_seconds)
 
-        elif self.action == cfg.HeroAction.REST:
+        elif self.action == cfg.RenneAction.REST:
             self.rest(passed_seconds)
 
-        elif self.action == cfg.HeroAction.STAND:
+        elif self.action == cfg.SpriteAction.STAND:
             self.stand(passed_seconds)
 
-        elif self.action == cfg.HeroAction.UNDER_THUMP:
+        elif self.action == cfg.SpriteAction.UNDER_THUMP:
             self.under_thump(passed_seconds)
 
 

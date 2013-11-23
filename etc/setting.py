@@ -209,6 +209,8 @@ class Renne(object):
 
     ATTACKER_PARAMS = {
         "attack1":{
+            "range": 100,
+            "angle": 120,
             "atk_ratio": 1,
             "damage": ATK,
             "crick_time": 0.2,
@@ -217,6 +219,8 @@ class Renne(object):
             "self_crick_time": 0.08,
         },
         "attack2": {
+            "range": 110, 
+            "angle": 160,
             "atk_ratio": 1.5,
             "damage": ATK,
             "accumulate_power_frame": 2,
@@ -228,10 +232,6 @@ class Renne(object):
         },
         "attack_combo_time_delta": 0.6,
         "attack_combo_count_max": 2,
-        "range": 100,
-        "range2": 110,
-        "angle": 120,
-        "angle2": 160,
         "key_frames": (4, 5),
         "run_attack": {
             "atk_ratio": 1.8,
@@ -348,7 +348,40 @@ class Joshua(object):
     MAX_EXP = LEVEL_EXP[MAX_LEVEL - 1]
 
     ATTACKER_PARAMS = {
+        "attack1": {
+            "range": 80,
+            "angle": 60,
+            "atk_ratio": 1.0,
+            "damage": ATK, 
+        },
+        "attack2": {
+            "range": 90,
+            "angle": 60,
+            "atk_ratio": 1.2,
+            "damage": ATK, 
+        },
+        "attack3": {
+            "range": 115,
+            "angle": 160,
+            "atk_ratio": 1.5,
+            "damage": ATK, 
+        },
+        "run_attack": {
+            "atk_ratio": 1.8,
+            "damage": ATK, 
+        },
+        "x1": {
 
+        },
+        "x2": {
+
+        },
+        "x3": {
+
+        },
+        "x4": {
+
+        },
     }
 
 
@@ -1658,6 +1691,8 @@ STATIC_OBJECT_SETTING_LIST = [
 # set attribute "ID" for all objects, start from 1, Renne is special for 0
 Renne.ID = 0
 Renne.GAME_OBJECT_TYPE = cfg.GameObject.TYPE_DYNAMIC
+Joshua.ID = 1024
+Joshua.GAME_OBJECT_TYPE = cfg.GameObject.TYPE_DYNAMIC
 for i, cls in enumerate(SPRITE_SETTING_LIST):
     cls.ID = i + 1
     cls.GAME_OBJECT_TYPE = cfg.GameObject.TYPE_DYNAMIC
@@ -1677,14 +1712,28 @@ RENNE_IMAGE_FILENAME = "renne.png"
 SPRITE_FRAMES = {
     # {sprite_id: (folder, {sprite_action: (image_filename, frame_num, frame_rate), ...}), ...}
     Renne.ID: ("renne", {
-        cfg.HeroAction.STAND: ("stand_8.png", 8, 12),
-        cfg.HeroAction.WALK: ("walk_8.png", 8, 14),
-        cfg.HeroAction.RUN: ("run_8.png", 8, 16),
-        cfg.HeroAction.ATTACK: ("attack_14.png", 14, 16),
-        cfg.HeroAction.WIN: ("win_31.png", 31, 14),
-        cfg.HeroAction.REST: ("rest_4.png", 4, 8),
-        cfg.HeroAction.SKILL: ("skill_2.png", 2, 2),
-        cfg.HeroAction.UNDER_THUMP: ("under_thump.png", 1, 0),
+        cfg.RenneAction.STAND: ("stand_8.png", 8, 12),
+        cfg.RenneAction.WALK: ("walk_8.png", 8, 14),
+        cfg.RenneAction.RUN: ("run_8.png", 8, 16),
+        cfg.RenneAction.ATTACK: ("attack_14.png", 14, 16),
+        cfg.RenneAction.WIN: ("win_31.png", 31, 14),
+        cfg.RenneAction.REST: ("rest_4.png", 4, 8),
+        cfg.RenneAction.SKILL: ("skill_2.png", 2, 2),
+        cfg.RenneAction.UNDER_THUMP: ("under_thump.png", 1, 0),
+    }),
+    Joshua.ID: ("joshua", {
+        cfg.JoshuaAction.STAND: ("stand_8.png", 8, 12),
+        cfg.JoshuaAction.WALK: ("run_8.png", 8, 14),
+        cfg.JoshuaAction.RUN: ("run_8.png", 8, 16),
+        cfg.JoshuaAction.ATTACK: ("attack1_13.png", 13, 16),
+        cfg.JoshuaAction.ATTACK2: ("attack2_14.png", 14, 16),
+        cfg.JoshuaAction.ATTACK3: ("attack3_10.png", 10, 16),
+        cfg.JoshuaAction.BIG_SKILL: ("big_skill_38.png", 38, 16),
+        cfg.JoshuaAction.KNEEL: ("kneel_4.png", 4, 10),
+        cfg.JoshuaAction.REST: ("rest_4.png", 4, 8),
+        cfg.JoshuaAction.ROAR: ("roar_2.png", 2, 2),
+        cfg.JoshuaAction.UNDER_THUMP: ("under_thump.png", 1, 0),
+        cfg.JoshuaAction.WIN: ("win_34", 34, 14),
     }),
     SkeletonWarrior.ID: ("skeleton_warrior", {
         cfg.EnemyAction.STAND: ("stand_8.png", 8, 12),
