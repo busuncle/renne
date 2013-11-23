@@ -303,6 +303,9 @@ class Renne(object):
         },
     }
 
+    # very special setting for a win frame delay effect
+    WIN_FRAME_DELAY = 1
+
 
 
 class Joshua(object):
@@ -392,6 +395,8 @@ class Joshua(object):
 
         },
     }
+
+    WIN_FRAME_DELAY = 1
 
 
                 

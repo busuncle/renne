@@ -180,6 +180,9 @@ class SpriteAnimator(object):
         self.blink = Blink()
         self.particle_list = []
 
+        # frame_action that only has one direction(facing the player, eg. renne's win action)
+        self.one_direction_frame_actions = set()
+
 
     def get_current_frame_add(self, action):
         return self.frame_adds[action]
@@ -294,8 +297,15 @@ class SpriteAnimator(object):
 
 
     def update_image(self):
-        # different sprite use its own update image method
-        pass
+        sp = self.sprite
+        action = sp.frame_action or sp.action
+        if action in self.frame_adds:
+            if action in self.one_direction_frame_actions:
+                self.image = self.sprite_image_contoller.get_surface(
+                    action)[int(self.frame_adds[action])]
+            else:
+                self.image = self.sprite_image_contoller.get_subsurface(action,
+                    sp.direction, self.frame_adds[action])
 
 
     def update_image_mix(self, passed_seconds):
@@ -393,42 +403,9 @@ class SpriteAnimator(object):
 
 
 
-class RenneAnimator(SpriteAnimator):
+class HeroAnimator(SpriteAnimator):
     def __init__(self, sprite):
-        super(RenneAnimator, self).__init__(sprite)
-        self.win_frame_delay_add = 0
-        self.win_frame_delay = 1
-
-
-    def update_image(self):
-        sp = self.sprite
-        action = sp.frame_action or sp.action
-        if action in self.frame_adds:
-            if action == cfg.RenneAction.WIN:
-                self.image = self.sprite_image_contoller.get_surface(
-                    action)[int(self.frame_adds[action])]
-            else:
-                self.image = self.sprite_image_contoller.get_subsurface(action,
-                    sp.direction, self.frame_adds[action])
-
-
-    def _run_renne_win_frame(self, passed_seconds):
-        # a fancy egg for Renne, ^o^
-        action = cfg.RenneAction.WIN
-        self.frame_adds[action] += passed_seconds * self.frame_rates[action]
-        if self.frame_adds[action] >= self.frame_nums[action] or self.win_frame_delay_add > 0:
-            self.frame_adds[action] = self.frame_nums[action] - 1
-            self.win_frame_delay_add += passed_seconds
-            if self.win_frame_delay_add < self.win_frame_delay:
-                # delay for better effect
-                return False
-            else:
-                self.win_frame_delay_add = 0
-                self.frame_adds[action] = 0
-                self.sprite.direction = cfg.Direction.SOUTH
-                return True
-
-        return False
+        super(HeroAnimator, self).__init__(sprite)
 
 
     def add_level_up_effect(self):
@@ -452,20 +429,47 @@ class RenneAnimator(SpriteAnimator):
 
 
 
+class RenneAnimator(HeroAnimator):
+    def __init__(self, sprite):
+        super(RenneAnimator, self).__init__(sprite)
+        self.one_direction_frame_actions.add(cfg.RenneAction.WIN)
+        self.win_frame_delay_add = 0
+        self.win_frame_delay = sfg.Renne.WIN_FRAME_DELAY
+
+
+    def _run_renne_win_frame(self, passed_seconds):
+        # a fancy egg for Renne, ^o^
+        action = cfg.RenneAction.WIN
+        self.frame_adds[action] += passed_seconds * self.frame_rates[action]
+        if self.frame_adds[action] >= self.frame_nums[action] or self.win_frame_delay_add > 0:
+            self.frame_adds[action] = self.frame_nums[action] - 1
+            self.win_frame_delay_add += passed_seconds
+            if self.win_frame_delay_add < self.win_frame_delay:
+                # delay for better effect
+                return False
+            else:
+                self.win_frame_delay_add = 0
+                self.frame_adds[action] = 0
+                self.sprite.direction = cfg.Direction.SOUTH
+                return True
+
+        return False
+
+
+
+class JoshuaAnimator(HeroAnimator):
+    def __init__(self, sprite):
+        super(JoshuaAnimator, self).__init__(sprite)
+        self.one_direction_frame_actions.add(cfg.JoshuaAction.WIN, cfg.JoshuaAction.BIG_SKILL)
+
+
+
 class EnemyAnimator(SpriteAnimator):
     def __init__(self, sprite):
         super(EnemyAnimator, self).__init__(sprite)
         self.die_image = None
         self.dead_timer = Timer(sfg.Enemy.DEAD_TICK)
         self.hp_bar = pygame.Surface(sfg.SpriteStatus.ENEMY_HP_BAR_SIZE).convert_alpha()
-
-
-    def update_image(self):
-        sp = self.sprite
-        action = sp.frame_action or sp.action
-        if action in self.frame_adds:
-            self.image = self.sprite_image_contoller.get_subsurface(action,
-                sp.direction, self.frame_adds[action])
 
 
     def dead_tick(self):
