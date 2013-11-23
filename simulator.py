@@ -1242,9 +1242,10 @@ class AngleAttacker(Attacker):
         return False
 
 
-    def in_hit_condition(self, target, current_frame_add):
+    def in_hit_condition(self, target, current_frame_add, key_frames=None):
         sp = self.sprite
-        if int(current_frame_add) not in self.key_frames:
+        real_key_frames = key_frames or self.key_frames
+        if int(current_frame_add) not in real_key_frames:
             return False
 
         if target in self.has_hits:
@@ -1267,6 +1268,17 @@ class AngleAttacker(Attacker):
         # check whether target in angle scope
         if self.in_angle_scope(target, self.attack_range, self.cos_min):
             # add target to has_hits by the way
+            self.has_hits.add(target)
+            return True
+
+        return False
+
+
+    def hit_with_many_params(self, target, current_frame_add, key_frames, attack_range, cos_min):
+        if not self.in_hit_condition(target, current_frame_add, key_frames):
+            return False
+
+        if self.in_angle_scope(target, attack_range, cos_min):
             self.has_hits.add(target)
             return True
 
@@ -1382,12 +1394,15 @@ class RenneAttacker(AngleAttacker):
     def __init__(self, sprite, attacker_params):
         super(RenneAttacker, self).__init__(sprite, attacker_params["attack1"]["range"], 
             attacker_params["attack1"]["angle"], attacker_params["key_frames"])
-        self.attack_range2 = attacker_params["attack2"]["range"]
-        self.cos_min2 = cos(radians(attacker_params["attack2"]["angle"] * 0.5))
         self.hit_record = []
         self.kill_record = []
         self.attack1_params = attacker_params["attack1"]
         self.attack2_params = attacker_params["attack2"]
+
+        # calculate cos_min first
+        self.attack1_params["cos_min"] = cos(radians(self.attack1_params["angle"] * 0.5))
+        self.attack2_params["cos_min"] = cos(radians(self.attack2_params["angle"] * 0.5))
+
         self.run_attack_params = attacker_params["run_attack"]
         self.magic_skill_1_params = attacker_params["destroy_fire"]
         self.magic_skill_2_params = attacker_params["destroy_bomb"]
@@ -1423,57 +1438,45 @@ class RenneAttacker(AngleAttacker):
                 self.magic_cds[key] = 0
 
 
-    def hit2(self, target, current_frame_add):
-        # for attack2, a bigger angle attack scope
-        if not self.in_hit_condition(target, current_frame_add):
-            return False
-
-        # check whether target in angle scope
-        if self.in_angle_scope(target, self.attack_range2, self.cos_min2):
-            # add target to has_hits by the way
-            self.has_hits.add(target)
-            return True
-
-        return False
-
-
-    def regular1(self, enemy, current_frame_add):
-        if self.hit(enemy, current_frame_add):
-            damage = max(0, self.attack1_params["damage"] - enemy.dfs)
-            enemy.attacker.handle_under_attack(self.sprite, damage)
-            enemy.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
-                {"time": self.attack1_params["crick_time"], "old_action": enemy.action})
+    def regular1(self, target, current_frame_add):
+        if self.hit_with_many_params(target, current_frame_add, self.key_frames,
+                self.attack1_params["range"], self.attack1_params["cos_min"]):
+            damage = max(0, self.attack1_params["damage"] - target.dfs)
+            target.attacker.handle_under_attack(self.sprite, damage)
+            target.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
+                {"time": self.attack1_params["crick_time"], "old_action": target.action})
             self.handle_additional_status(cfg.SpriteStatus.CRICK,
                 {"time": self.attack1_params["self_crick_time"], "old_action": self.sprite.action})
             return True
         return False
 
 
-    def regular2(self, enemy, current_frame_add):
-        if self.hit2(enemy, current_frame_add):
-            damage = int(max(0, self.attack2_params["damage"] - enemy.dfs))
-            enemy.attacker.handle_under_attack(self.sprite, damage)
-            enemy.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+    def regular2(self, target, current_frame_add):
+        if self.hit_with_many_params(target, current_frame_add, self.key_frames, 
+                self.attack2_params["range"], self.attack2_params["cos_min"]):
+            damage = int(max(0, self.attack2_params["damage"] - target.dfs))
+            target.attacker.handle_under_attack(self.sprite, damage)
+            target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
                 {"crick_time": self.attack2_params["thump_crick_time"], 
                 "out_speed": self.attack2_params["thump_out_speed"], 
                 "acceleration": self.attack2_params["thump_acceleration"],
-                "key_vec": Vector2.from_points(self.sprite.pos, enemy.pos)})
+                "key_vec": Vector2.from_points(self.sprite.pos, target.pos)})
             self.handle_additional_status(cfg.SpriteStatus.CRICK,
                 {"time": self.attack2_params["self_crick_time"], "old_action": self.sprite.action})
             return True
         return False
 
 
-    def run_attack(self, enemy, current_frame_add):
-        if self.hit(enemy, current_frame_add):
-            damage = max(0, self.run_attack_params["damage"] - enemy.dfs)
-            enemy.attacker.handle_under_attack(self.sprite, damage)
-            enemy.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+    def run_attack(self, target, current_frame_add):
+        if self.hit(target, current_frame_add):
+            damage = max(0, self.run_attack_params["damage"] - target.dfs)
+            target.attacker.handle_under_attack(self.sprite, damage)
+            target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
                 {"crick_time": self.run_attack_params["crick_time"],
                 "out_speed": self.run_attack_params["out_speed"], 
                 "acceleration": self.run_attack_params["acceleration"],
                 "from_who": self.sprite,
-                "key_vec": Vector2.from_points(self.sprite.pos, enemy.pos)})
+                "key_vec": Vector2.from_points(self.sprite.pos, target.pos)})
             self.handle_additional_status(cfg.SpriteStatus.CRICK,
                 {"time": self.run_attack_params["self_crick_time"], "old_action": self.sprite.action})
             return True
@@ -1528,6 +1531,93 @@ class RenneAttacker(AngleAttacker):
                     self.kill_record.append({"time": time()})
             self.has_hits.clear()
 
+        self.reset_vars()
+
+
+
+class JoshuaAttacker(AngleAttacker):
+    def __init__(self, sprite, attacker_params):
+        super(JoshuaAttacker, self).__init__(sprite, attacker_params["attack1"]["range"],
+            attacker_params["attack1"]["angle"], attacker_params["attack1"]["key_frames"])
+        self.hit_record = []
+        self.kill_record = []
+        self.attack1_params = attacker_params["attack1"]
+        self.attack2_params = attacker_params["attack2"]
+        self.attack3_params = attacker_params["attack3"]
+
+        # calculate cos_min first
+        self.attack1_params["cos_min"] = cos(radians(self.attack1_params["angle"] * 0.5))
+        self.attack2_params["cos_min"] = cos(radians(self.attack2_params["angle"] * 0.5))
+        self.attack3_params["cos_min"] = cos(radians(self.attack3_params["angle"] * 0.5))
+
+        self.run_attack_params = attacker_params["run_attack"]
+        self.magic_skill_1_params = attacker_params["x1"]
+        self.magic_skill_2_params = attacker_params["x2"]
+        self.magic_skill_3_params = attacker_params["x3"]
+        self.magic_skill_4_params = attacker_params["x4"]
+        self.magic_cds = {"magic_skill_1": 0, "magic_skill_2": 0, "magic_skill_3": 0, "magic_skill_4": 0}
+        self.magic_list = []
+        self.reset_vars()
+        self.cal_real_attack_damage()
+
+
+    def cal_real_attack_damage(self):
+        sp = self.sprite
+        atk = sp.setting.ATK
+        self.attack1_params["damage"] = int(atk * self.attack1_params["atk_ratio"])
+        self.attack2_params["damage"] = int(atk * self.attack2_params["atk_ratio"])
+        self.attack3_params["damage"] = int(atk * self.attack3_params["atk_ratio"])
+        self.run_attack_params["damage"] = int(atk * self.run_attack_params["atk_ratio"])
+
+
+    def refresh_skill(self, skill_key=None):
+        if skill_key is not None:
+            self.magic_cds[skill_key] = 0
+        else:
+            for key in self.magic_cds:
+                self.magic_cds[key] = 0
+
+
+    def reset_vars(self):
+        # a lock, only one magic is running in an attack
+        self.method = None
+        self.current_magic = None
+
+
+    def regular1(self, target, current_frame_add):
+        pass
+
+
+    def regular2(self, target, current_frame_add):
+        pass
+
+
+    def regular3(self, target, current_frame_add):
+        pass
+
+
+    def run_attack(self, target, current_frame_add):
+        pass
+
+
+    def x1(self, current_frame_add):
+        pass
+
+
+    def x2(self, current_frame_add):
+        pass
+
+
+    def x3(self, current_frame_add):
+        pass
+
+
+    def x4(self, current_frame_add):
+        pass
+
+
+    def finish(self):
+        self.has_hits.clear()
         self.reset_vars()
 
 
