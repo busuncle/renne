@@ -1438,8 +1438,8 @@ class RenneAttacker(AngleAttacker):
                 self.magic_cds[key] = 0
 
 
-    def regular1(self, target, current_frame_add):
-        if self.hit_with_many_params(target, current_frame_add, self.key_frames,
+    def attack1(self, target, current_frame_add):
+        if self.hit_with_many_params(target, current_frame_add, self.attack1_params["key_frames"],
                 self.attack1_params["range"], self.attack1_params["cos_min"]):
             damage = max(0, self.attack1_params["damage"] - target.dfs)
             target.attacker.handle_under_attack(self.sprite, damage)
@@ -1451,8 +1451,8 @@ class RenneAttacker(AngleAttacker):
         return False
 
 
-    def regular2(self, target, current_frame_add):
-        if self.hit_with_many_params(target, current_frame_add, self.key_frames, 
+    def attack2(self, target, current_frame_add):
+        if self.hit_with_many_params(target, current_frame_add, self.attack2_params["key_frames"], 
                 self.attack2_params["range"], self.attack2_params["cos_min"]):
             damage = int(max(0, self.attack2_params["damage"] - target.dfs))
             target.attacker.handle_under_attack(self.sprite, damage)
@@ -1584,15 +1584,15 @@ class JoshuaAttacker(AngleAttacker):
         self.current_magic = None
 
 
-    def regular1(self, target, current_frame_add):
+    def attack1(self, target, current_frame_add):
         pass
 
 
-    def regular2(self, target, current_frame_add):
+    def attack2(self, target, current_frame_add):
         pass
 
 
-    def regular3(self, target, current_frame_add):
+    def attack3(self, target, current_frame_add):
         pass
 
 

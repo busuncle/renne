@@ -377,7 +377,10 @@ class Renne(Hero):
         self.attacker = simulator.RenneAttacker(self, self.setting.ATTACKER_PARAMS)
 
         # for regular attack combo
-        self.attack_combo = {"count": 0, "last_time": time(), 
+        self.attack_combo = {
+            "combo_list": ("attack1", "attack1", "attack2"),
+            "current_attack": 0,
+            "last_time": time(), 
             "time_delta": self.setting.ATTACKER_PARAMS["attack_combo_time_delta"], 
             "count_max": self.setting.ATTACKER_PARAMS["attack_combo_count_max"]}
         self.attack1_start_frame = self.setting.ATTACKER_PARAMS["attack1"]["start_frame"]
@@ -387,10 +390,15 @@ class Renne(Hero):
         self.run_attack_params = self.setting.ATTACKER_PARAMS["run_attack"]
 
 
+    def play_related_sound(self):
+        if self.attacker.method == "attack2":
+            self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACKS))
+
+
     def attack(self, passed_seconds):
-        if self.attacker.method == "regular1":
+        if self.attacker.method == "attack1":
             self.attack1(passed_seconds)
-        elif self.attacker.method == "regular2":
+        elif self.attacker.method == "attack2":
             self.attack2(passed_seconds)
         elif self.attacker.method == "destroy_fire":
             self.destroy_fire(passed_seconds)
@@ -435,26 +443,21 @@ class Renne(Hero):
             self.animation.set_frame_add(cfg.SpriteAction.ATTACK, self.attack1_start_frame)
 
         if current_frame_add >= self.attack1_end_frame:
+            if len(self.attacker.has_hits) > 0:
+                self.attack_combo["current_attack"] += 1
             # ends at this frame
             self.reset_action()
         else:
             hit_count = 0
             for em in self.enemies:
-                hit_it = self.attacker.regular1(em, current_frame_add)
+                hit_it = self.attacker.attack1(em, current_frame_add)
                 if hit_it:
                     hit_count += 1
             if hit_count > 0:
                 self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
 
                 # change combo count if this attack has hit some one
-                attack_time = time()
-                if self.attack_combo["count"] == 0 \
-                    or attack_time - self.attack_combo["last_time"] <= self.attack_combo["time_delta"]:
-                    self.attack_combo["count"] += 1
-                else:
-                    self.attack_combo["count"] = max(self.attack_combo["count"] - 1, 0)
-
-                self.attack_combo["last_time"] = attack_time
+                self.attack_combo["last_time"] = time()
 
         self.animation.run_sequence_frame(cfg.SpriteAction.ATTACK, passed_seconds)
 
@@ -470,12 +473,12 @@ class Renne(Hero):
             if is_finish:
                 self.reset_action()
                 # clean combo count after an "attack2"
-                self.attack_combo["count"] = 0
+                self.attack_combo["current_attack"] = 0
                 self.attack2_accumulate_power_time = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_time"]
             else:
                 hit_count = 0
                 for em in self.enemies:
-                    hit_it = self.attacker.regular2(em, self.animation.get_current_frame_add(self.frame_action))
+                    hit_it = self.attacker.attack2(em, self.animation.get_current_frame_add(self.frame_action))
                     if hit_it:
                         hit_count += 1
 
@@ -575,13 +578,14 @@ class Renne(Hero):
             if self.action == cfg.SpriteAction.RUN and self.sp > 0:
                 self.attacker.method = "run_attack"
             else:
-                if self.attack_combo["count"] < self.attack_combo["count_max"] \
-                    or time() - self.attack_combo["last_time"] > self.attack_combo["time_delta"]:
-                    self.attacker.method = "regular1"
+                if time() - self.attack_combo["last_time"] > self.attack_combo["time_delta"]:
+                    self.attacker.method = self.attack_combo["combo_list"][0]
+                    self.attack_combo["current_attack"] = 0
                 else:
-                    self.attacker.method = "regular2"
-                    atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS)
-                    self.sound_box.play(atk_snd)
+                    self.attacker.method = self.attack_combo["combo_list"][
+                        self.attack_combo["current_attack"]]
+
+                self.play_related_sound()
 
             self.action = cfg.SpriteAction.ATTACK
 
@@ -680,6 +684,40 @@ class Renne(Hero):
         for magic_name in self.attacker.magic_cds:
             self.attacker.magic_cds[magic_name] = max(0, 
                 self.attacker.magic_cds[magic_name] - passed_seconds)
+
+
+
+class Joshua(Hero):
+    def __init__(self, setting, pos, direction):
+        super(Joshua, self).__init__(setting, pos, direction)
+        self.animation = JoshuaAnimator(self)
+        self.attacker = simulator.JoshuaAttacker(self, setting.ATTACKER_PARAMS)
+
+        # for regular attack combo
+        self.attack_combo = {
+            "combo_list": ("attack1", "attack1", "attack2", "attack3"),
+            "time_delta": self.setting.ATTACKER_PARAMS["attack_combo_time_delta"],
+        }
+
+        self.attack1_start_frame = self.setting.ATTACKER_PARAMS["attack1"]["start_frame"]
+        self.attack1_end_frame = self.setting.ATTACKER_PARAMS["attack1"]["end_frame"]
+        self.attack2_start_frame = self.setting.ATTACKER_PARAMS["attack2"]["start_frame"]
+        self.attack2_end_frame = self.setting.ATTACKER_PARAMS["attack2"]["end_frame"]
+        self.attack3_start_frame = self.setting.ATTACKER_PARAMS["attack3"]["start_frame"]
+        self.attack3_end_frame = self.setting.ATTACKER_PARAMS["attack3"]["end_frame"]
+
+
+    def attack(self, passed_seconds):
+        if self.attacker.method == "attack1":
+            self.attack1(passed_seconds)
+        elif self.attacker.method == "attack2":
+            self.attack2(passed_seconds)
+        if self.attacker.method == "attack3":
+            self.attack3(passed_seconds)
+
+
+    def attack1(self, passed_seconds):
+        pass
 
 
 

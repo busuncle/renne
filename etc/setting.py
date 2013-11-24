@@ -214,6 +214,7 @@ class Renne(object):
             "atk_ratio": 1,
             "damage": ATK,
             "crick_time": 0.2,
+            "key_frames": (4, ),
             "start_frame": 4,
             "end_frame": 7,
             "self_crick_time": 0.08,
@@ -223,6 +224,7 @@ class Renne(object):
             "angle": 160,
             "atk_ratio": 1.5,
             "damage": ATK,
+            "key_frames": (4, 5),
             "accumulate_power_frame": 2,
             "accumulate_power_time": 0.08,
             "thump_crick_time": 0.3,
@@ -378,6 +380,7 @@ class Joshua(object):
             "start_frame": 0,
             "end_frame": 13,
         },
+        "attack_combo_time_delta": 0.6,
         "run_attack": {
             "atk_ratio": 1.8,
             "damage": ATK, 
@@ -1505,8 +1508,7 @@ class Music(object):
 
 
 class Sound(object):
-    RENNE_ATTACKS = ("renne_attack", "renne_attack2", "renne_attack3", 
-        "attack0", "attack0", "attack0")
+    RENNE_ATTACKS = ("renne_attack", "renne_attack2", "renne_attack3", "attack0")
     RENNE_ATTACKS2 = ("renne_attack", "renne_attack2", "renne_attack3")
     RENNE_ATTACK_HITS = ("attack_hit", "attack_hit2")
     RENNE_WIN = "renne_win"
