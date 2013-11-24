@@ -1560,6 +1560,8 @@ class JoshuaAttacker(AngleAttacker):
         self.reset_vars()
         self.cal_real_attack_damage()
 
+        self.attack3_delay_hits = set()
+
 
     def cal_real_attack_damage(self):
         sp = self.sprite
@@ -1585,15 +1587,49 @@ class JoshuaAttacker(AngleAttacker):
 
 
     def attack1(self, target, current_frame_add):
-        pass
+        if self.hit_with_many_params(target, current_frame_add, self.attack1_params["key_frames"],
+                self.attack1_params["range"], self.attack1_params["cos_min"]):
+            damage = max(0, self.attack1_params["damage"] - target.dfs)
+            target.attacker.handle_under_attack(self.sprite, damage)
+            target.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
+                {"time": self.attack1_params["crick_time"], "old_action": target.action})
+            self.handle_additional_status(cfg.SpriteStatus.CRICK,
+                {"time": self.attack1_params["self_crick_time"], "old_action": self.sprite.action})
+            return True
+        return False
 
 
     def attack2(self, target, current_frame_add):
-        pass
+        if self.hit_with_many_params(target, current_frame_add, self.attack2_params["key_frames"],
+                self.attack2_params["range"], self.attack2_params["cos_min"]):
+            damage = max(0, self.attack2_params["damage"] - target.dfs)
+            target.attacker.handle_under_attack(self.sprite, damage)
+            target.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
+                {"time": self.attack2_params["crick_time"], "old_action": target.action})
+            self.handle_additional_status(cfg.SpriteStatus.CRICK,
+                {"time": self.attack2_params["self_crick_time"], "old_action": self.sprite.action})
+            return True
+        return False
 
 
     def attack3(self, target, current_frame_add):
-        pass
+        if self.hit_with_many_params(target, current_frame_add, self.attack3_params["key_frames"], 
+                self.attack3_params["range"], self.attack3_params["cos_min"]):
+            target.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
+                {"time": self.attack3_params["crick_time"], "old_action": target.action})
+
+        if int(current_frame_add) == self.attack3_params["end_frame"]:
+            if target in self.has_hits and target not in self.attack3_delay_hits:
+                self.attack3_delay_hits.add(target)
+                damage = max(0, self.attack3_params["damage"] - target.dfs)
+                target.attacker.handle_under_attack(self.sprite, damage)
+                target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                    {"crick_time": self.attack3_params["thump_crick_time"], 
+                    "out_speed": self.attack3_params["thump_out_speed"], 
+                    "acceleration": self.attack3_params["thump_acceleration"],
+                    "key_vec": Vector2.from_points(self.sprite.pos, target.pos)})
+                return True
+        return False 
 
 
     def run_attack(self, target, current_frame_add):
@@ -1618,6 +1654,7 @@ class JoshuaAttacker(AngleAttacker):
 
     def finish(self):
         self.has_hits.clear()
+        self.attack3_delay_hits.clear()
         self.reset_vars()
 
 

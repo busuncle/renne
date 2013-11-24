@@ -382,7 +382,7 @@ class Renne(Hero):
             "current_attack": 0,
             "last_time": time(), 
             "time_delta": self.setting.ATTACKER_PARAMS["attack_combo_time_delta"], 
-            "count_max": self.setting.ATTACKER_PARAMS["attack_combo_count_max"]}
+        }
         self.attack1_start_frame = self.setting.ATTACKER_PARAMS["attack1"]["start_frame"]
         self.attack1_end_frame = self.setting.ATTACKER_PARAMS["attack1"]["end_frame"]
         self.attack2_accumulate_power_frame = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_frame"]
@@ -406,33 +406,6 @@ class Renne(Hero):
             self.destroy_bomb(passed_seconds)
         elif self.attacker.method == "destroy_aerolite":
             self.destroy_aerolite(passed_seconds)
-
-
-    def destroy_fire(self, passed_seconds):
-        self.frame_action = cfg.SpriteAction.ATTACK
-        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
-        if is_finish:
-            self.reset_action()
-        else:
-            self.attacker.destroy_fire(self.animation.get_current_frame_add(self.frame_action))
-
-
-    def destroy_bomb(self, passed_seconds):
-        self.frame_action = cfg.SpriteAction.ATTACK
-        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
-        if is_finish:
-            self.reset_action()
-        else:
-            self.attacker.destroy_bomb(self.animation.get_current_frame_add(self.frame_action))
-
-
-    def destroy_aerolite(self, passed_seconds):
-        self.frame_action = cfg.RenneAction.SKILL
-        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
-        if is_finish:
-            self.reset_action()
-        else:
-            self.attacker.destroy_aerolite(self.animation.get_current_frame_add(self.frame_action))
 
 
     def attack1(self, passed_seconds):
@@ -504,6 +477,33 @@ class Renne(Hero):
 
             if hit_count > 0:
                 self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
+
+
+    def destroy_fire(self, passed_seconds):
+        self.frame_action = cfg.SpriteAction.ATTACK
+        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+        if is_finish:
+            self.reset_action()
+        else:
+            self.attacker.destroy_fire(self.animation.get_current_frame_add(self.frame_action))
+
+
+    def destroy_bomb(self, passed_seconds):
+        self.frame_action = cfg.SpriteAction.ATTACK
+        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+        if is_finish:
+            self.reset_action()
+        else:
+            self.attacker.destroy_bomb(self.animation.get_current_frame_add(self.frame_action))
+
+
+    def destroy_aerolite(self, passed_seconds):
+        self.frame_action = cfg.RenneAction.SKILL
+        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+        if is_finish:
+            self.reset_action()
+        else:
+            self.attacker.destroy_aerolite(self.animation.get_current_frame_add(self.frame_action))
 
 
     def win(self, passed_seconds):
@@ -696,6 +696,8 @@ class Joshua(Hero):
         # for regular attack combo
         self.attack_combo = {
             "combo_list": ("attack1", "attack1", "attack2", "attack3"),
+            "current_attack": 0,
+            "last_time": time(),
             "time_delta": self.setting.ATTACKER_PARAMS["attack_combo_time_delta"],
         }
 
@@ -717,7 +719,8 @@ class Joshua(Hero):
 
 
     def attack1(self, passed_seconds):
-        pass
+        self.frame_action = cfg.JoshuaAction.ATTACK
+        current_frame_add = self.animation.get_current_frame_add(self.frame_action)
 
 
 

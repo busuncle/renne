@@ -213,7 +213,7 @@ class Renne(object):
             "angle": 120,
             "atk_ratio": 1,
             "damage": ATK,
-            "crick_time": 0.2,
+            "crick_time": 0.25,
             "key_frames": (4, ),
             "start_frame": 4,
             "end_frame": 7,
@@ -233,7 +233,6 @@ class Renne(object):
             "self_crick_time": 0.15,
         },
         "attack_combo_time_delta": 0.6,
-        "attack_combo_count_max": 2,
         "key_frames": (4, 5),
         "run_attack": {
             "atk_ratio": 1.8,
@@ -361,6 +360,7 @@ class Joshua(object):
             "key_frames": (4, ),
             "start_frame": 0,
             "end_frame": 4,
+            "crick_time": 0.2,
         },
         "attack2": {
             "range": 90,
@@ -370,6 +370,7 @@ class Joshua(object):
             "key_frames": (6, 7),
             "start_frame": 5, 
             "end_frame": 12,
+            "crick_time": 0.2,
         },
         "attack3": {
             "range": 115,
@@ -379,6 +380,10 @@ class Joshua(object):
             "key_frame": 6,
             "start_frame": 0,
             "end_frame": 13,
+            "crick_time": 1,
+            "thump_crick_time": 0.4,
+            "thump_out_speed": 1000,
+            "thump_acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
         },
         "attack_combo_time_delta": 0.6,
         "run_attack": {
@@ -1743,7 +1748,7 @@ SPRITE_FRAMES = {
         cfg.JoshuaAction.RUN: ("run_8.png", 8, 16),
         cfg.JoshuaAction.ATTACK: ("attack1_13.png", 13, 16),
         cfg.JoshuaAction.ATTACK2: ("attack2_14.png", 14, 16),
-        cfg.JoshuaAction.ATTACK3: ("attack3_10.png", 10, 16),
+        cfg.JoshuaAction.SKILL: ("skill_10.png", 10, 16),
         cfg.JoshuaAction.BIG_SKILL: ("big_skill_38.png", 38, 16),
         cfg.JoshuaAction.KNEEL: ("kneel_4.png", 4, 10),
         cfg.JoshuaAction.REST: ("rest_4.png", 4, 8),

@@ -89,7 +89,7 @@ class RenneAction(SpriteAction):
 
 class JoshuaAction(SpriteAction):
     ATTACK2 = 21
-    ATTACK3 = 22
+    SKILL = 22
     BIG_SKILL = 23
     KNEEL = 24
     REST = 25
