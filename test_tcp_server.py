@@ -53,7 +53,12 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
-    conn.close()
+    try:
+        run()
+    except Exception, ex:
+        print ex
+    finally:
+        conn.close()
+
     pygame.quit()
 

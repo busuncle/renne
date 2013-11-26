@@ -41,4 +41,9 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    try:
+        run()
+    except Exception, ex:
+        print ex
+    finally:
+        s.close()
