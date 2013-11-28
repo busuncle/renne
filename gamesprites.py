@@ -427,7 +427,7 @@ class Renne(Hero):
                 if hit_it:
                     hit_count += 1
             if hit_count > 0:
-                self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
+                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
 
                 # change combo count if this attack has hit some one
                 self.attack_combo["last_time"] = time()
@@ -456,7 +456,7 @@ class Renne(Hero):
                         hit_count += 1
 
                 if hit_count > 0:
-                    self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
+                    self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
 
 
     def run_attack(self, passed_seconds):
@@ -476,7 +476,7 @@ class Renne(Hero):
                     hit_count += 1
 
             if hit_count > 0:
-                self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACK_HITS))
+                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
 
 
     def destroy_fire(self, passed_seconds):
@@ -709,18 +709,88 @@ class Joshua(Hero):
         self.attack3_end_frame = self.setting.ATTACKER_PARAMS["attack3"]["end_frame"]
 
 
+    def play_related_sound(self):
+        if self.attacker.method == "attack2":
+            self.sound_box.play(sfg.Sound.JOSHUA_ATTACKS[0])
+        elif self.attacker.method == "attack3":
+            self.sound_box.play(sfg.Sound.JOSHUA_ATTACKS[1])
+
+
     def attack(self, passed_seconds):
         if self.attacker.method == "attack1":
             self.attack1(passed_seconds)
         elif self.attacker.method == "attack2":
             self.attack2(passed_seconds)
-        if self.attacker.method == "attack3":
+        elif self.attacker.method == "attack3":
             self.attack3(passed_seconds)
 
 
     def attack1(self, passed_seconds):
         self.frame_action = cfg.JoshuaAction.ATTACK
         current_frame_add = self.animation.get_current_frame_add(self.frame_action)
+
+        if current_frame_add >= self.attack1_end_frame:
+            if len(self.attacker.has_hits) > 0:
+                self.attack_combo["current_attack"] += 1
+            # ends at this frame
+            self.reset_action()
+        else:
+            hit_count = 0
+            for em in self.enemies:
+                hit_it = self.attacker.attack1(em, current_frame_add)
+                if hit_it:
+                    hit_count += 1
+            if hit_count > 0:
+                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
+
+                # change combo count if this attack has hit some one
+                self.attack_combo["last_time"] = time()
+
+        self.animation.run_sequence_frame(cfg.SpriteAction.ATTACK, passed_seconds)
+
+
+    def attack2(self, passed_seconds):
+        self.frame_action = cfg.JoshuaAction.ATTACK
+        current_frame_add = self.animation.get_current_frame_add(self.frame_action)
+
+        if current_frame_add < self.attack2_start_frame:
+            self.animation.set_frame_add(cfg.JoshuaAction.ATTACK, self.attack2_start_frame)
+
+        else:
+            is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+            if is_finish:
+                if len(self.attacker.has_hits) > 0:
+                    self.attack_combo["current_attack"] += 1
+                self.reset_action()
+            else:
+                hit_count = 0
+                for em in self.enemies:
+                    hit_it = self.attacker.attack2(em, self.animation.get_current_frame_add(self.frame_action))
+                    if hit_it:
+                        hit_count += 1
+
+                if hit_count > 0:
+                    self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
+
+
+    def attack3(self, passed_seconds):
+        self.frame_action = cfg.JoshuaAction.ATTACK2
+        current_frame_add = self.animation.get_current_frame_add(self.frame_action)
+
+        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+        if is_finish:
+            self.reset_action()
+            self.attack_combo["current_attack"] = 0
+            self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
+        else:
+            hit_count = 0
+            for em in self.enemies:
+                hit_it = self.attacker.attack3(em, self.animation.get_current_frame_add(self.frame_action))
+                if hit_it:
+                    hit_count += 1
+
+            if hit_count > 0:
+                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
 
 
 

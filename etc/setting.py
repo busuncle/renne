@@ -1517,8 +1517,11 @@ class Music(object):
 class Sound(object):
     RENNE_ATTACKS = ("renne_attack", "renne_attack2", "renne_attack3", "attack0")
     RENNE_ATTACKS2 = ("renne_attack", "renne_attack2", "renne_attack3")
-    RENNE_ATTACK_HITS = ("attack_hit", "attack_hit2")
     RENNE_WIN = "renne_win"
+
+    JOSHUA_ATTACKS = ("joshua_attack1", "joshua_attack2")
+
+    SWORD_HITS = ("attack_hit", "attack_hit2")
 
     ENEMY_ATTACK_HITS = ("attack_hit", "attack_hit2", "attack_hit3")
 
@@ -1913,6 +1916,8 @@ SOUND_EFFECT = ("sound", {
     "renne_attack": "renne_attack.wav",
     "renne_attack2": "renne_attack2.wav",
     "renne_attack3": "renne_attack3.wav",
+    "joshua_attack1": "joshua_attack1.wav",
+    "joshua_attack2": "joshua_attack2.wav",
     "renne_under_attack": "renne_under_attack.wav",
     "renne_win": "renne_win.wav",
     "attack_hit": "attack_hit.wav",

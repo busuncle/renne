@@ -1623,6 +1623,8 @@ class JoshuaAttacker(AngleAttacker):
                 self.attack3_delay_hits.add(target)
                 damage = max(0, self.attack3_params["damage"] - target.dfs)
                 target.attacker.handle_under_attack(self.sprite, damage)
+                # remove crick status and add under_thump status
+                cfg.SpriteStatus.CRICK in target.status and target.status.pop(cfg.SpriteStatus.CRICK)
                 target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
                     {"crick_time": self.attack3_params["thump_crick_time"], 
                     "out_speed": self.attack3_params["thump_out_speed"], 
