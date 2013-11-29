@@ -1707,12 +1707,11 @@ class EnemyShortAttacker(EnemyAngleAttacker):
 class EnemyPoisonShortAttacker(EnemyShortAttacker):
     def __init__(self, sprite, attacker_params):
         super(EnemyPoisonShortAttacker, self).__init__(sprite, attacker_params)
+        self.params = attacker_params
         self.poison_dps = attacker_params["poison_damage_per_second"]
         self.poison_time = attacker_params["poison_persist_time"]
         self.poison_prob = attacker_params["poison_prob"]
         self.spit_poison_params = attacker_params["spit_poison"]
-        self.spit_poison_ready_time = self.spit_poison_params["ready_time"]
-        self.spit_poison_hold_time = self.spit_poison_params["hold_time"]
         self.spit_poison_max_time = self.spit_poison_params["max_time"]
         self.magic_list = []
         self.reset_vars()
@@ -1721,8 +1720,6 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
     def reset_vars(self):
         self.method = None
         self.current_magic = None
-        self.spit_poison_ready_time_add = 0
-        self.spit_poison_hold_time_add = 0
         self.poison_happen = False
 
 
@@ -1780,16 +1777,14 @@ class EnemyPoisonShortAttacker(EnemyShortAttacker):
 class GhostAttacker(EnemyShortAttacker):
     def __init__(self, sprite, attacker_params):
         super(GhostAttacker, self).__init__(sprite, attacker_params)
+        self.params = attacker_params
         self.mp_burn_prob = attacker_params["mp_burn_prob"]
         self.mp_burn = attacker_params["mp_burn"]
-        self.pre_enter_invisible_time = attacker_params["invisible"]["pre_enter_time"]
-        self.invisible_time = attacker_params["invisible"]["time"]
         self.reset_vars()
 
 
     def reset_vars(self):
         self.method = None
-        self.pre_enter_invisible_time_add = 0
         self.leak_happen = False
 
 
@@ -2423,6 +2418,7 @@ class LeonhardtAttacker(EnemyAngleAttacker):
     def __init__(self, sprite, attacker_params):
         super(LeonhardtAttacker, self).__init__(sprite, 
             attacker_params["range"], attacker_params["angle"], attacker_params["key_frames"])
+        self.params = attacker_params
         self.death_coil_params = attacker_params["death_coil"]
         self.hell_claw_params = attacker_params["hell_claw"]
         self.death_domain_params = attacker_params["death_domain"]
@@ -2433,10 +2429,6 @@ class LeonhardtAttacker(EnemyAngleAttacker):
 
 
     def reset_vars(self):
-        self.hell_claw_last_freeze_time_add = 0
-        self.death_domain_pre_run_time_add = 0
-        self.death_domain_run_time_add = 0
-        self.death_domain_post_run_time_add = 0
         self.method = None
         self.current_magic = None
 
@@ -2485,7 +2477,7 @@ class LeonhardtAttacker(EnemyAngleAttacker):
         if happen(sp.brain.ai.ATTACK_DEATH_DOMAIN_PROB) \
             and self.skill_used_count["death_domain"] < self.skill_continuously_use_max \
             and sp.mp > self.death_domain_params["mana"]:
-            self.direction_add = sp.direction
+            sp.death_domain_direction_add = sp.direction
             self.method = "death_domain"
             return True
 

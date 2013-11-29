@@ -1624,19 +1624,19 @@ class Effect(object):
     THUMP_WORD = u"ÖØ»÷!"
     THUMP_WORD_FONT = Font.MSYH_24
     THUMP_WORD_COLOR = pygame.Color("gold")
-    THUMP_WORD_SHOW_TIME = 0.3
+    THUMP_WORD_SHOW_TIME = 0.5
     THUMP_WORD_DY = 50
 
     MP_BURN_WORD = u"·¨Á¦È¼ÉÕ!"
     MP_BURN_WORD_FONT = Font.MSYH_24
     MP_BURN_WORD_COLOR = pygame.Color("black")
-    MP_BURN_WORD_SHOW_TIME = 0.3
+    MP_BURN_WORD_SHOW_TIME = 0.5
     MP_BURN_WORD_DY = 50
 
     POISON_WORD = u"¾ÅÒõ°×¹Ç×¥!"
     POISON_WORD_FONT = Font.MSYH_24
     POISON_WORD_COLOR = pygame.Color("green")
-    POISON_WORD_SHOW_TIME = 0.3
+    POISON_WORD_SHOW_TIME = 0.5
     POISON_WORD_DY = 50
 
     WHIRLWIND_WORD = u"Ðý·çÕ¶!"

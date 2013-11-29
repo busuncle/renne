@@ -1059,6 +1059,22 @@ class Leonhardt(Enemy):
         super(Leonhardt, self).__init__(setting, pos, direction)
         self.mp = self.setting.MP
 
+        self.hell_claw_last_freeze_time = self.attacker.params["hell_claw"]["last_freeze_time"]
+        self.death_domain_pre_run_time = self.attacker.params["death_domain"]["pre_run_time"]
+        self.death_domain_run_time = self.attacker.params["death_domain"]["run_time"]
+        self.death_domain_post_run_time = self.attacker.params["death_domain"]["post_run_time"]
+        self.death_domain_rotate_rate = self.attacker.params["death_domain"]["rotate_rate"]
+
+        self.reset_vars()
+
+
+    def reset_vars(self):
+        self.hell_claw_last_freeze_time_add = 0
+        self.death_domain_pre_run_time_add = 0
+        self.death_domain_run_time_add = 0
+        self.death_domain_post_run_time_add = 0
+        self.death_domain_direction_add = self.direction
+
 
     def stand(self, passed_seconds):
         super(Leonhardt, self).stand(passed_seconds)
@@ -1104,19 +1120,18 @@ class Leonhardt(Enemy):
             self.sound_box.play(sfg.Sound.LEONHARDT_ATTACKS[2])
             self.frame_action = cfg.LeonHardtAction.SKILL2
 
-        ak = self.attacker
-        if ak.hell_claw_last_freeze_time_add == 0:
+        if self.hell_claw_last_freeze_time_add == 0:
             is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
             if is_finish:
-                ak.hell_claw_last_freeze_time_add += passed_seconds
+                self.hell_claw_last_freeze_time_add += passed_seconds
                 self.animation.set_frame_add(self.frame_action, 
                     self.animation.get_frame_num(self.frame_action) - 1)
             else:
-                ak.hell_claw(self.brain.target, 
+                self.attacker.hell_claw(self.brain.target, 
                     self.animation.get_current_frame_add(self.frame_action))
 
-        elif ak.hell_claw_last_freeze_time_add < ak.hell_claw_params["last_freeze_time"]:
-            ak.hell_claw_last_freeze_time_add += passed_seconds
+        elif self.hell_claw_last_freeze_time_add < self.hell_claw_last_freeze_time:
+            self.hell_claw_last_freeze_time_add += passed_seconds
             self.animation.set_frame_add(self.frame_action, 
                 self.animation.get_frame_num(self.frame_action) - 1)
 
@@ -1129,32 +1144,33 @@ class Leonhardt(Enemy):
             self.sound_box.play(sfg.Sound.LEONHARDT_ATTACKS[3])
             self.frame_action = cfg.LeonHardtAction.SKILL2
 
-        ak = self.attacker
-        if ak.death_domain_pre_run_time_add == 0:
+        if self.death_domain_pre_run_time_add == 0:
             is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
             if is_finish:
-                ak.death_domain_pre_run_time_add += passed_seconds
+                self.death_domain_pre_run_time_add += passed_seconds
                 self.animation.set_frame_add(self.frame_action,
                     self.animation.get_frame_num(self.frame_action) - 1)
                 # timing! fire the skill!
-                ak.death_domain(self.brain.target, self.animation.get_current_frame_add(self.frame_action))
+                self.attacker.death_domain(self.brain.target, 
+                    self.animation.get_current_frame_add(self.frame_action))
 
-        elif ak.death_domain_pre_run_time_add < ak.death_domain_params["pre_run_time"]: 
+        elif self.death_domain_pre_run_time_add < self.death_domain_pre_run_time: 
             self.animation.set_frame_add(self.frame_action,
                 self.animation.get_frame_num(self.frame_action) - 1)
-            ak.death_domain_pre_run_time_add += passed_seconds
+            self.death_domain_pre_run_time_add += passed_seconds
 
             # set super body in pre_run_time
             if cfg.SpriteStatus.SUPER_BODY not in self.status:
                 self.status[cfg.SpriteStatus.SUPER_BODY] = True
 
-        elif ak.death_domain_run_time_add < ak.death_domain_params["run_time"]:
-            ak.death_domain_run_time_add += passed_seconds 
-            ak.direction_add = (ak.direction_add + ak.death_domain_params["rotate_rate"] * passed_seconds) % cfg.Direction.TOTAL
-            self.direction = int(ak.direction_add)
+        elif self.death_domain_run_time_add < self.death_domain_run_time:
+            self.death_domain_run_time_add += passed_seconds 
+            self.death_domain_direction_add = \
+                (self.death_domain_direction_add + self.death_domain_rotate_rate * passed_seconds) % cfg.Direction.TOTAL
+            self.direction = int(self.death_domain_direction_add)
 
-        elif ak.death_domain_post_run_time_add < ak.death_domain_params["post_run_time"]:
-            ak.death_domain_post_run_time_add += passed_seconds
+        elif self.death_domain_post_run_time_add < self.death_domain_post_run_time:
+            self.death_domain_post_run_time_add += passed_seconds
             if self.brain.target.status.get(cfg.SpriteStatus.UNDER_PULL) is not None:
                 # clean pull status 
                 self.brain.target.status.pop(cfg.SpriteStatus.UNDER_PULL)
@@ -1385,26 +1401,33 @@ class Robot(Enemy):
 class GanDie(Enemy):
     def __init__(self, setting, pos, direction):
         super(GanDie, self).__init__(setting, pos, direction)
+        self.spit_poison_ready_time = self.attacker.params["spit_poison"]["ready_time"]
+        self.spit_poison_hold_time = self.attacker.params["spit_poison"]["hold_time"]
+        self.reset_vars()
+
+
+    def reset_vars(self):
+        self.spit_poison_ready_time_add = 0
+        self.spit_poison_hold_time_add = 0
 
 
     def spit_poison(self, passed_seconds):
-        ak = self.attacker
-        if ak.spit_poison_ready_time_add == 0:
+        if self.spit_poison_ready_time_add == 0:
             # first time into spit poison, add body shake status
-            ak.spit_poison_ready_time_add += passed_seconds
+            self.spit_poison_ready_time_add += passed_seconds
             self.status[cfg.SpriteStatus.BODY_SHAKE] = {"dx": random.randint(-5, 5), 
                 "dy": random.randint(-3, 3), "time": 999}
 
-        elif ak.spit_poison_ready_time_add < ak.spit_poison_ready_time:
-            ak.spit_poison_ready_time_add += passed_seconds
+        elif self.spit_poison_ready_time_add < self.spit_poison_ready_time:
+            self.spit_poison_ready_time_add += passed_seconds
             self.frame_action = cfg.EnemyAction.UNDER_THUMP
-            if ak.spit_poison_ready_time_add >= ak.spit_poison_ready_time:
+            if self.spit_poison_ready_time_add >= self.spit_poison_ready_time:
                 self.status.pop(cfg.SpriteStatus.BODY_SHAKE)
 
-        elif ak.spit_poison_hold_time_add < ak.spit_poison_hold_time:
-            ak.spit_poison_hold_time_add += passed_seconds
+        elif self.spit_poison_hold_time_add < self.spit_poison_hold_time:
+            self.spit_poison_hold_time_add += passed_seconds
             self.frame_action = cfg.EnemyAction.STAND
-            ak.spit_poison(self.brain.target)
+            self.attacker.spit_poison(self.brain.target)
 
         else:
             self.reset_action(force=True)
@@ -1450,17 +1473,23 @@ class ArmouredShooter(Enemy):
 class Ghost(Enemy):
     def __init__(self, setting, pos, direction):
         super(Ghost, self).__init__(setting, pos, direction)
+        self.pre_enter_invisible_time = self.attacker.params["invisible"]["pre_enter_time"]
+        self.invisible_time = self.attacker.params["invisible"]["time"]
+        self.reset_vars()
+
+
+    def reset_vars(self):
+        self.pre_enter_invisible_time_add = 0
 
 
     def invisible(self, passed_seconds):
-        ak = self.attacker
-        if ak.pre_enter_invisible_time_add < ak.pre_enter_invisible_time:
-            ak.pre_enter_invisible_time_add += passed_seconds
+        if self.pre_enter_invisible_time_add < self.pre_enter_invisible_time:
+            self.pre_enter_invisible_time_add += passed_seconds
             self.frame_action = cfg.EnemyAction.STAND
             key_vec = Vector2.from_points(self.pos, self.brain.target.pos)
             self.move(self.setting.WALK_SPEED * 0.8, passed_seconds, check_reachable=True, key_vec=key_vec)
         else:
-            self.status[cfg.SpriteStatus.INVISIBLE] = {"time": ak.invisible_time}
+            self.status[cfg.SpriteStatus.INVISIBLE] = {"time": self.invisible_time}
             self.reset_action(force=True)
 
 
