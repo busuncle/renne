@@ -101,6 +101,7 @@ class GameSprite(pygame.sprite.DirtySprite):
             self.attacker.finish()
             self.frame_action = None
             self.animation.reset_frame_adds()
+            self.reset_vars()
         else:
             if self.action != cfg.SpriteAction.ATTACK:
                 self.action = cfg.SpriteAction.STAND
@@ -207,6 +208,11 @@ class GameSprite(pygame.sprite.DirtySprite):
 
 
     def draw(self, camera):
+        pass
+
+
+    def reset_vars(self):
+        # reset some custom variables
         pass
 
 
@@ -910,6 +916,7 @@ class Enemy(GameSprite):
             self.action = cfg.EnemyAction.STAND
             self.animation.reset_frame_adds()
             self.frame_action = None
+            self.reset_vars()
             if self.status.get(cfg.SpriteStatus.BODY_SHAKE) is not None:
                 self.status.pop(cfg.SpriteStatus.BODY_SHAKE)
         else:
