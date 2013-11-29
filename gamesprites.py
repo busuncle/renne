@@ -805,6 +805,9 @@ class Enemy(GameSprite):
         super(Enemy, self).__init__(setting.NAME, setting.HP, setting.ATK, setting.DFS, pos, direction)
         self.setting = setting
         self.emotion_animation = SpriteEmotionAnimator(self)
+        self.attacker = simulator.ENEMY_ATTACKER_MAPPING[self.setting.ID](
+            self, self.setting.ATTACKER_PARAMS)
+        self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
 
         self.animation = EnemyAnimator(self)
 
@@ -819,9 +822,6 @@ class Enemy(GameSprite):
         self.allsprites = allsprites
         self.hero = hero
         self.static_objects = static_objects
-        self.attacker = simulator.ENEMY_ATTACKER_MAPPING[self.setting.ID](
-            self, self.setting.ATTACKER_PARAMS)
-        self.view_sensor = simulator.ViewSensor(self, angle=self.setting.VIEW_ANGLE)
         self.brain = controller.SpriteBrain(self, ai, game_map.waypoints)
 
 
@@ -1182,29 +1182,44 @@ class Leonhardt(Enemy):
 class CastleWarrior(Enemy):
     def __init__(self, setting, pos, direction):
         super(CastleWarrior, self).__init__(setting, pos, direction)
+        self.thump_pre_freeze_time = self.attacker.params["thump_pre_freeze_time"]
+        self.thump_last_freeze_time = self.attacker.params["thump_last_freeze_time"]
+        self.thump_pre_frames = self.attacker.params["thump_pre_frames"]
+        self.thump_pre_rate = self.attacker.params["thump_pre_rate"]
+        self.thump_frame = self.attacker.params["thump_frame"]
+        self.thump_slide_time = self.attacker.params["thump_slide_time"]
+        self.thump_slide_speed = self.attacker.params["thump_slide_speed"]
+
+        self.reset_vars()
+
+
+    def reset_vars(self):
+        self.thump_pre_freeze_time_add = 0
+        self.thump_slide_time_add = 0
+        self.thump_last_freeze_time_add = 0
 
 
     def thump(self, passed_seconds):
-        if self.attacker.thump_pre_freeze_time_add == 0:
+        if self.thump_pre_freeze_time_add == 0:
             self.animation.run_sequence_frame(cfg.EnemyAction.ATTACK, passed_seconds, 
-                self.attacker.thump_pre_rate)
+                self.thump_pre_rate)
             if self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK) \
-                > self.attacker.thump_pre_frames[-1]:
+                > self.thump_pre_frames[-1]:
                 # pre -> pre_freeze
-                self.animation.set_frame_add(cfg.EnemyAction, self.attacker.thump_pre_frames[-1]) 
-                self.attacker.thump_pre_freeze_time_add += passed_seconds
+                self.animation.set_frame_add(cfg.EnemyAction, self.thump_pre_frames[-1]) 
+                self.thump_pre_freeze_time_add += passed_seconds
 
-        elif self.attacker.thump_pre_freeze_time_add < self.attacker.thump_pre_freeze_time:
+        elif self.thump_pre_freeze_time_add < self.thump_pre_freeze_time:
             self.animation.set_frame_add(cfg.EnemyAction.ATTACK, 
-                self.attacker.thump_pre_frames[-1]) 
-            self.attacker.thump_pre_freeze_time_add += passed_seconds
+                self.thump_pre_frames[-1]) 
+            self.thump_pre_freeze_time_add += passed_seconds
                 
-        elif self.attacker.thump_slide_time_add < self.attacker.thump_slide_time:
-            self.attacker.thump_slide_time_add += passed_seconds
-            self.animation.set_frame_add(cfg.EnemyAction.ATTACK, self.attacker.thump_frame)
-            self.move(self.attacker.thump_slide_speed, passed_seconds, 
+        elif self.thump_slide_time_add < self.thump_slide_time:
+            self.thump_slide_time_add += passed_seconds
+            self.animation.set_frame_add(cfg.EnemyAction.ATTACK, self.thump_frame)
+            self.move(self.thump_slide_speed, passed_seconds, 
                 check_reachable=True, key_vec=self.attacker.key_vec)
-            hit_it = self.attacker.run(self.brain.target, self.attacker.thump_frame)
+            hit_it = self.attacker.run(self.brain.target, self.thump_frame)
             if hit_it:
                 self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
                 words = sfg.Effect.THUMP_WORD_FONT.render(sfg.Effect.THUMP_WORD, True, 
@@ -1213,9 +1228,9 @@ class CastleWarrior(Enemy):
                     (self.pos.x - words.get_width() * 0.5, 
                     self.pos.y * 0.5 - self.setting.HEIGHT - sfg.Effect.THUMP_WORD_DY))
 
-        elif self.attacker.thump_last_freeze_time_add < self.attacker.thump_last_freeze_time:
+        elif self.thump_last_freeze_time_add < self.thump_last_freeze_time:
             # freeze for a short time
-            self.attacker.thump_last_freeze_time_add += passed_seconds
+            self.thump_last_freeze_time_add += passed_seconds
 
         else:
             self.reset_action(force=True)
@@ -1232,62 +1247,80 @@ class CastleWarrior(Enemy):
 class TwoHeadSkeleton(Enemy):
     def __init__(self, setting, pos, direction):
         super(TwoHeadSkeleton, self).__init__(setting, pos, direction)
+        self.fall_run_up_time = self.attacker.params["fall_run_up_time"]
+        self.fall_run_up_rate = self.attacker.params["fall_run_up_rate"]
+        self.fall_kneel_time = self.attacker.params["fall_kneel_time"]
+        self.fall_acceleration = self.attacker.params["fall_acceleration"]
+        self.fall_v0_y = self.attacker.params["fall_v0_y"]
+        self.fall_back_v0_y = self.attacker.params["fall_back_v0_y"]
+        self.fall_in_air_time = self.attacker.params["fall_in_air_time"]
+        self.fall_back_in_air_time = self.attacker.params["fall_back_in_air_time"]
+        self.reset_vars()
+
+
+    def reset_vars(self):
+        self.fall_run_up_time_add = 0
+        self.fall_kneel_time_add = 0
+        self.fall_in_air_time_add = 0
+        self.fall_back_in_air_time_add = 0
+        self.fall_in_air_height = 0
+        self.fall_in_air_v_x = None
+        self.fall_in_air_speed_x = None
 
 
     def fall(self, passed_seconds):
-        ak = self.attacker
-        if ak.fall_run_up_time_add < ak.fall_run_up_time:
-            ak.fall_run_up_time_add += passed_seconds
+        if self.fall_run_up_time_add < self.fall_run_up_time:
+            self.fall_run_up_time_add += passed_seconds
             self.frame_action = cfg.EnemyAction.WALK
-            self.animation.run_circle_frame(cfg.EnemyAction.WALK, passed_seconds, ak.fall_run_up_rate)
+            self.animation.run_circle_frame(cfg.EnemyAction.WALK, passed_seconds, self.fall_run_up_rate)
 
-        elif ak.fall_kneel_time_add < ak.fall_kneel_time:
+        elif self.fall_kneel_time_add < self.fall_kneel_time:
             self.frame_action = cfg.EnemyAction.KNEEL
             self.animation.run_circle_frame(cfg.EnemyAction.KNEEL, passed_seconds)
-            ak.fall_kneel_time_add += passed_seconds
-            if ak.fall_kneel_time_add >= ak.fall_kneel_time:
+            self.fall_kneel_time_add += passed_seconds
+            if self.fall_kneel_time_add >= self.fall_kneel_time:
                 # a timing for setting vector and speed for x axis
-                ak.fall_in_air_v_x = Vector2.from_points(self.pos, self.brain.target.pos)
-                ak.fall_in_air_v_x *= 0.9
-                ak.fall_in_air_speed_x = ak.fall_in_air_v_x.get_length() / ak.fall_in_air_time
+                self.fall_in_air_v_x = Vector2.from_points(self.pos, self.brain.target.pos)
+                self.fall_in_air_v_x *= 0.9
+                self.fall_in_air_speed_x = self.fall_in_air_v_x.get_length() / self.fall_in_air_time
                 self.status[cfg.SpriteStatus.IN_AIR] = {"height": 0}
 
-        elif ak.fall_in_air_time_add < ak.fall_in_air_time:
-            ak.fall_in_air_time_add += passed_seconds
+        elif self.fall_in_air_time_add < self.fall_in_air_time:
+            self.fall_in_air_time_add += passed_seconds
 
             self.frame_action = cfg.EnemyAction.STAND
             self.animation.set_frame_add(cfg.EnemyAction.STAND, 0)
 
-            ak.fall_in_air_height = ak.fall_v0_y * ak.fall_in_air_time_add \
-                + 0.5 * ak.fall_acceleration * pow(ak.fall_in_air_time_add, 2)
-            self.status[cfg.SpriteStatus.IN_AIR]["height"] = ak.fall_in_air_height
+            self.fall_in_air_height = self.fall_v0_y * self.fall_in_air_time_add \
+                + 0.5 * self.fall_acceleration * pow(self.fall_in_air_time_add, 2)
+            self.status[cfg.SpriteStatus.IN_AIR]["height"] = self.fall_in_air_height
 
-            self.move(ak.fall_in_air_speed_x, passed_seconds, check_reachable=False, 
-                key_vec=ak.fall_in_air_v_x)
+            self.move(self.fall_in_air_speed_x, passed_seconds, check_reachable=False, 
+                key_vec=self.fall_in_air_v_x)
 
-            if ak.fall_in_air_time_add >= ak.fall_in_air_time:
+            if self.fall_in_air_time_add >= self.fall_in_air_time:
                 # timing for attack calculation
-                hit_it = ak.run(self.brain.target, None)
+                hit_it = self.attacker.run(self.brain.target, None)
                 if hit_it:
                     self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
 
                 # fall back in air
-                ak.fall_in_air_v_x.x = - ak.fall_in_air_v_x.x
-                ak.fall_in_air_v_x.y = - ak.fall_in_air_v_x.y
-                ak.fall_in_air_speed_x *= 0.25
+                self.fall_in_air_v_x.x = - self.fall_in_air_v_x.x
+                self.fall_in_air_v_x.y = - self.fall_in_air_v_x.y
+                self.fall_in_air_speed_x *= 0.25
 
-        elif ak.fall_back_in_air_time_add < ak.fall_back_in_air_time:
-            ak.fall_back_in_air_time_add += passed_seconds
+        elif self.fall_back_in_air_time_add < self.fall_back_in_air_time:
+            self.fall_back_in_air_time_add += passed_seconds
 
             self.frame_action = cfg.EnemyAction.WALK
-            self.animation.run_sequence_frame(cfg.EnemyAction.WALK, passed_seconds, ak.fall_run_up_rate)
+            self.animation.run_sequence_frame(cfg.EnemyAction.WALK, passed_seconds, self.fall_run_up_rate)
 
-            ak.fall_in_air_height = ak.fall_back_v0_y * ak.fall_back_in_air_time_add \
-                + 0.5 * ak.fall_acceleration * pow(ak.fall_back_in_air_time_add, 2)
-            self.status[cfg.SpriteStatus.IN_AIR]["height"] = ak.fall_in_air_height
+            self.fall_in_air_height = self.fall_back_v0_y * self.fall_back_in_air_time_add \
+                + 0.5 * self.fall_acceleration * pow(self.fall_back_in_air_time_add, 2)
+            self.status[cfg.SpriteStatus.IN_AIR]["height"] = self.fall_in_air_height
 
-            self.move(ak.fall_in_air_speed_x, passed_seconds, check_reachable=True, 
-                key_vec=ak.fall_in_air_v_x)
+            self.move(self.fall_in_air_speed_x, passed_seconds, check_reachable=True, 
+                key_vec=self.fall_in_air_v_x)
 
         else:
             self.status.pop(cfg.SpriteStatus.IN_AIR)

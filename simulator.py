@@ -1833,17 +1833,12 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
     # thump target, make it back a distance
     def __init__(self, sprite, attacker_params):
         super(EnemyThumpShortAttacker, self).__init__(sprite, attacker_params)
+        self.params = attacker_params
         self.thump_crick_time = attacker_params["thump_crick_time"]
         self.thump_out_speed = attacker_params["thump_out_speed"]
         self.thump_acceleration = attacker_params["thump_acceleration"]
-        self.thump_pre_freeze_time = attacker_params["thump_pre_freeze_time"]
-        self.thump_last_freeze_time = attacker_params["thump_last_freeze_time"]
-        self.thump_pre_frames = attacker_params["thump_pre_frames"]
-        self.thump_pre_rate = attacker_params["thump_pre_rate"]
-        self.thump_frame = attacker_params["thump_frame"]
-        self.thump_slide_time = attacker_params["thump_slide_time"]
-        self.thump_slide_speed = attacker_params["thump_slide_speed"]
-        self.thump_slide_range = self.thump_slide_speed * self.thump_slide_time
+        self.thump_slide_range = attacker_params["thump_slide_speed"] * attacker_params["thump_slide_time"]
+
         self.thump_cos_min = attacker_params["thump_cos_min"]
         self.magic_list = []
         self.reset_vars()
@@ -1851,9 +1846,6 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
 
     def reset_vars(self):
         self.method = None
-        self.thump_slide_time_add = 0
-        self.thump_pre_freeze_time_add = 0
-        self.thump_last_freeze_time_add = 0
 
 
     def thump_chance(self, target):
@@ -1938,39 +1930,32 @@ class EnemyBloodShortAttacker(EnemyShortAttacker):
 class TwoHeadSkeletonAttacker(EnemyShortAttacker):
     def __init__(self, sprite, attacker_params):
         super(TwoHeadSkeletonAttacker, self).__init__(sprite, attacker_params)
+        self.params = attacker_params
         self.fall_range = attacker_params["fall_range"]
-        self.fall_run_up_time = attacker_params["fall_run_up_time"]
-        self.fall_run_up_rate = attacker_params["fall_run_up_rate"]
-        self.fall_kneel_time = attacker_params["fall_kneel_time"]
-        self.fall_acceleration = attacker_params["fall_acceleration"]
-        self.fall_v0_y = attacker_params["fall_v0_y"]
-        self.fall_back_v0_y = attacker_params["fall_back_v0_y"]
-        self.fall_in_air_time = (-self.fall_v0_y * 2.0) / self.fall_acceleration
-        self.fall_back_in_air_time = (-self.fall_back_v0_y * 2.0) / self.fall_acceleration
         self.fall_damage = attacker_params["fall_damage"]
         self.fall_thump_crick_time = attacker_params["fall_thump_crick_time"]
         self.fall_thump_acceleration = attacker_params["fall_thump_acceleration"]
         self.fall_thump_out_speed = attacker_params["fall_thump_out_speed"]
+
+        # some calculation for value not decided in setting
+        self.params["fall_in_air_time"] = \
+            (-attacker_params["fall_v0_y"] * 2.0) / attacker_params["fall_acceleration"]
+        self.params["fall_back_in_air_time"] = \
+            (-attacker_params["fall_back_v0_y"] * 2.0) / attacker_params["fall_acceleration"]
+
         self.magic_list = []
         self.reset_vars()
 
 
     def reset_vars(self):
         self.method = None
-        self.fall_run_up_time_add = 0
-        self.fall_kneel_time_add = 0
-        self.fall_in_air_time_add = 0
-        self.fall_back_in_air_time_add = 0
-        self.fall_in_air_height = 0
-        self.fall_in_air_v_x = None
-        self.fall_in_air_speed_x = None
 
 
     def fall_chance(self, target):
         sp = self.sprite
         distance_to_target = sp.pos.get_distance_to(target.pos)
         if self.fall_range[0] <= distance_to_target <= self.fall_range[1]:
-            self.fall_in_air_v_x = float(distance_to_target) / self.fall_in_air_time
+            sp.fall_in_air_v_x = float(distance_to_target) / self.params["fall_in_air_time"]
             return True
         return False
 
@@ -2271,7 +2256,6 @@ class ArrowAttacker(EnemyLongAttacker):
     """
     def __init__(self, sprite, attacker_params):
         super(ArrowAttacker, self).__init__(sprite, attacker_params)
-        self.static_objects = sprite.static_objects
         self.params = attacker_params
         self.current_magic = None
         self.magic_list = []
