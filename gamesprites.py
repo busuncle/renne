@@ -1354,47 +1354,57 @@ class TwoHeadSkeleton(Enemy):
 class Robot(Enemy):
     def __init__(self, setting, pos, direction):
         super(Robot, self).__init__(setting, pos, direction)
+        self.bomb_run_up_time = self.attacker.params["bomb_run_up_time"]
+        self.bomb_acceleration = self.attacker.params["bomb_acceleration"]
+        self.bomb_lock_distance = self.attacker.params["bomb_lock_distance"]
+        self.final_bomb_time = None
+        self.rush_speed = self.setting.WALK_SPEED
+
+        self.reset_vars()
+
+
+    def reset_vars(self):
+        self.bomb_run_up_time_add = 0
 
 
     def attack(self, passed_seconds):
-        ak = self.attacker
-        if ak.bomb_run_up_time_add < ak.bomb_run_up_time:
-            ak.bomb_run_up_time_add += passed_seconds
+        if self.bomb_run_up_time_add < self.bomb_run_up_time:
+            self.bomb_run_up_time_add += passed_seconds
             self.animation.run_circle_frame(cfg.EnemyAction.ATTACK, passed_seconds)
         else:
-            if ak.bomb_begin:
+            if self.attacker.bomb_begin:
                 self.frame_action = cfg.EnemyAction.KNEEL
             else:
                 self.animation.run_circle_frame(cfg.EnemyAction.ATTACK, passed_seconds)
-                if ak.final_bomb_time is None:
+                if self.final_bomb_time is None:
                     distance_to_target = self.pos.get_distance_to(self.brain.target.pos)
-                    if distance_to_target <= ak.bomb_lock_distance:
+                    if distance_to_target <= self.bomb_lock_distance:
                         # root formula 
                         # 0.5 * a * t^2 + v0 * t - s = 0
                         # we want to get "t", then use this formula:
                         # -b +- sqrt(b^2 - 4ac) / 2a 
                         # here "a" is "0.5 * a", "b" is "v0", "c" is "-s", we discard the negative root,
                         # only use the positive root
-                        v0 = ak.speed
-                        a = ak.bomb_acceleration
+                        v0 = self.rush_speed
+                        a = self.bomb_acceleration
                         s = distance_to_target
                         t = (math.sqrt(pow(v0, 2) + 2 * a * s) - v0) / a
-                        ak.final_bomb_time = t
+                        self.final_bomb_time = t
                     else:
                         # if not reaching the lock distance, calculate key_vec every time
-                        ak.key_vec = Vector2.from_points(self.pos, self.brain.target.pos)
+                        self.key_vec = Vector2.from_points(self.pos, self.brain.target.pos)
 
                 else:
-                    ak.final_bomb_time -= passed_seconds
-                    if ak.final_bomb_time <= 0:
-                        ak.set_self_destruction(self.brain.target)
+                    self.final_bomb_time -= passed_seconds
+                    if self.final_bomb_time <= 0:
+                        self.attacker.set_self_destruction(self.brain.target)
 
-                self.move(ak.speed, passed_seconds, check_reachable=True, key_vec=ak.key_vec)
+                self.move(self.rush_speed, passed_seconds, check_reachable=True)
                 if self.brain.interrupt:
                     # collide some blocks when move! self destruction at once
-                    ak.set_self_destruction(self.brain.target)
+                    self.attacker.set_self_destruction(self.brain.target)
                 else:
-                    ak.speed += ak.bomb_acceleration * passed_seconds
+                    self.rush_speed += self.bomb_acceleration * passed_seconds
 
 
 
