@@ -773,6 +773,8 @@ class Joshua(Hero):
     def attack3(self, passed_seconds):
         self.frame_action = cfg.JoshuaAction.ATTACK2
         current_frame_add = self.animation.get_current_frame_add(self.frame_action)
+        if current_frame_add < self.attack3_start_frame:
+            self.animation.set_frame_add(self.frame_action, self.attack3_start_frame)
 
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
         if is_finish:

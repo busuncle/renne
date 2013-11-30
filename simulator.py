@@ -288,8 +288,9 @@ class BloodSet(MagicSkill):
     for rect in sfg.Effect.BLOOD_RECT_LIST:
         image_list.append(img.subsurface(rect).convert_alpha())
 
-    def __init__(self, sprite, jet_pos, jet_height):
+    def __init__(self, sprite, jet_pos, jet_height, blood_num=8):
         super(BloodSet, self).__init__(sprite, [])
+        self.blood_num = blood_num
         self.jet_pos = jet_pos
         self.jet_height = jet_height
         self.gen_magic_sprites()
@@ -301,7 +302,7 @@ class BloodSet(MagicSkill):
         rand_x_min, rand_x_max = (-100, 100) if vec[0] == 0 else (min(vec[0] * 100, 0), max(vec[0] * 100, 0))
         rand_y_min, rand_y_max = (-100, 100) if vec[1] == 0 else (min(vec[1] * 100, 0), max(vec[1] * 100, 0))
 
-        for _tmp in xrange(8):
+        for _tmp in xrange(self.blood_num):
             img = choice(self.image_list)
             key_vec = Vector2(randint(rand_x_min, rand_x_max), randint(rand_y_min, rand_y_max))
             key_vec.normalize()
@@ -1636,7 +1637,7 @@ class JoshuaAttacker(AngleAttacker):
                     "out_speed": self.attack3_params["thump_out_speed"], 
                     "acceleration": self.attack3_params["thump_acceleration"],
                     "key_vec": Vector2.from_points(self.sprite.pos, target.pos)})
-                blood_set = BloodSet(self.sprite, target.pos, target.setting.HEIGHT)
+                blood_set = BloodSet(self.sprite, target.pos, target.setting.HEIGHT, 4)
                 self.magic_list.append(blood_set)
                 return True
         return False 
