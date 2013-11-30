@@ -358,7 +358,7 @@ class Joshua(object):
             "damage": ATK, 
             "key_frames": (4, ),
             "start_frame": 0,
-            "end_frame": 4.8,
+            "end_frame": 4.5,
             "crick_time": 0.3,
             "self_crick_time": 0.05,
         },
@@ -1527,7 +1527,7 @@ class Sound(object):
     RENNE_ATTACKS2 = ("renne_attack", "renne_attack2", "renne_attack3")
     RENNE_WIN = "renne_win"
 
-    JOSHUA_ATTACKS = ("joshua_attack1", "joshua_attack2")
+    JOSHUA_ATTACKS = ("joshua_attack1", "joshua_attack2", "joshua_attack3")
 
     SWORD_HITS = ("attack_hit", "attack_hit2")
 
@@ -1926,6 +1926,7 @@ SOUND_EFFECT = ("sound", {
     "renne_attack3": "renne_attack3.wav",
     "joshua_attack1": "joshua_attack1.wav",
     "joshua_attack2": "joshua_attack2.wav",
+    "joshua_attack3": "joshua_attack3.wav",
     "renne_under_attack": "renne_under_attack.wav",
     "renne_win": "renne_win.wav",
     "attack_hit": "attack_hit.wav",

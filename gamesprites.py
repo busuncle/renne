@@ -422,8 +422,7 @@ class Hero(GameSprite):
                     self.attacker.method = self.attack_combo["combo_list"][
                         self.attack_combo["current_attack"]]
 
-                self.play_related_sound()
-
+            self.play_related_sound()
             self.action = cfg.HeroAction.ATTACK
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_1]["pressed"]:
@@ -544,6 +543,8 @@ class Renne(Hero):
 
     def play_related_sound(self):
         if self.attacker.method == "attack2":
+            self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACKS))
+        elif self.attacker.method == "run_attack":
             self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACKS))
         elif self.attacker.method in ("magic_skill_1", "magic_skill_2", "magic_skill_3"):
             self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACKS2))
@@ -715,6 +716,8 @@ class Joshua(Hero):
             self.sound_box.play(sfg.Sound.JOSHUA_ATTACKS[0])
         elif self.attacker.method == "attack3":
             self.sound_box.play(sfg.Sound.JOSHUA_ATTACKS[1])
+        elif self.attacker.method == "run_attack":
+            self.sound_box.play(sfg.Sound.JOSHUA_ATTACKS[2])
 
 
     def attack(self, passed_seconds):
