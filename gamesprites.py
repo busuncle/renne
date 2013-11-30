@@ -438,28 +438,28 @@ class Hero(GameSprite):
             if self.mp >= self.attacker.magic_skill_1_params["mana"] \
                 and self.attacker.magic_cds["magic_skill_1"] == 0:
                 self.action = cfg.HeroAction.ATTACK
-                self.attacker.method = "destroy_fire"
+                self.attacker.method = "magic_skill_1"
                 self.play_related_sound()
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_2]["pressed"]:
             if self.mp >= self.attacker.magic_skill_2_params["mana"] \
                 and self.attacker.magic_cds["magic_skill_2"] == 0:
                 self.action = cfg.HeroAction.ATTACK
-                self.attacker.method = "destroy_bomb"
+                self.attacker.method = "magic_skill_2"
                 self.play_related_sound()
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_3]["pressed"]:
             if self.mp >= self.attacker.magic_skill_3_params["mana"] \
                 and self.attacker.magic_cds["magic_skill_3"] == 0:
                 self.action = cfg.HeroAction.ATTACK
-                self.attacker.method = "destroy_aerolite"
+                self.attacker.method = "magic_skill_3"
                 self.play_related_sound()
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_4]["pressed"]:
             if self.mp >= self.attacker.magic_skill_4_params["mana"] \
                 and self.attacker.magic_cds["magic_skill_4"] == 0:
-                self.action = cfg.HeroAction.WIN
-                self.attacker.method = "dizzy"
+                self.action = cfg.HeroAction.ATTACK
+                self.attacker.method = "magic_skill_4"
                 self.play_related_sound()
 
         elif battle_keys[sfg.UserKey.REST]["pressed"]:
@@ -513,9 +513,9 @@ class Renne(Hero):
     def play_related_sound(self):
         if self.attacker.method == "attack2":
             self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACKS))
-        elif self.attacker.method in ("destroy_fire", "destroy_bomb", "destroy_aerolite"):
+        elif self.attacker.method in ("magic_skill_1", "magic_skill_2", "magic_skill_3"):
             self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACKS2))
-        elif self.attacker.method == "dizzy":
+        elif self.attacker.method == "magic_skill_4":
             self.sound_box.play(sfg.Sound.RENNE_WIN)
 
 
@@ -526,12 +526,14 @@ class Renne(Hero):
             self.attack2(passed_seconds)
         elif self.attacker.method == "run_attack":
             self.run_attack(passed_seconds)
-        elif self.attacker.method == "destroy_fire":
+        elif self.attacker.method == "magic_skill_1":
             self.destroy_fire(passed_seconds)
-        elif self.attacker.method == "destroy_bomb":
+        elif self.attacker.method == "magic_skill_2":
             self.destroy_bomb(passed_seconds)
-        elif self.attacker.method == "destroy_aerolite":
+        elif self.attacker.method == "magic_skill_3":
             self.destroy_aerolite(passed_seconds)
+        elif self.attacker.method == "magic_skill_4":
+            self.dizzy(passed_seconds)
 
 
     def attack1(self, passed_seconds):
@@ -632,16 +634,16 @@ class Renne(Hero):
             self.attacker.destroy_aerolite(self.animation.get_current_frame_add(self.frame_action))
 
 
-    def win(self, passed_seconds):
+    def dizzy(self, passed_seconds):
         # win will dispel some bad status
         for status in cfg.SpriteStatus.BAD_STATUS_LIST:
             if self.status.get(status) is not None:
                 self.status.pop(status)
 
+        self.frame_action = cfg.RenneAction.WIN
         is_finish = self.animation._run_renne_win_frame(passed_seconds)
         if is_finish:
-            self.attacker.finish()
-            self.action = cfg.SpriteAction.STAND
+            self.reset_action()
         else:
             self.attacker.dizzy(self.animation.get_current_frame_add(cfg.RenneAction.WIN))
 
@@ -654,27 +656,26 @@ class Renne(Hero):
 
         self.update_status(passed_seconds)
 
-        if self.action == cfg.SpriteAction.ATTACK:
+        if self.action == cfg.HeroAction.ATTACK:
             self.attack(passed_seconds)
 
-        elif self.action == cfg.SpriteAction.RUN:
+        elif self.action == cfg.HeroAction.RUN:
             self.run(passed_seconds)
 
-        elif self.action == cfg.SpriteAction.WALK:
+        elif self.action == cfg.HeroAction.WALK:
             self.walk(passed_seconds)
 
-        elif self.action == cfg.RenneAction.WIN:
+        elif self.action == cfg.HeroAction.WIN:
             self.win(passed_seconds)
 
-        elif self.action == cfg.RenneAction.REST:
+        elif self.action == cfg.HeroAction.REST:
             self.rest(passed_seconds)
 
-        elif self.action == cfg.SpriteAction.STAND:
+        elif self.action == cfg.HeroAction.STAND:
             self.stand(passed_seconds)
 
-        elif self.action == cfg.SpriteAction.UNDER_THUMP:
+        elif self.action == cfg.HeroAction.UNDER_THUMP:
             self.under_thump(passed_seconds)
-
 
         self.animation.update(passed_seconds)
         self.emotion_animation.update(passed_seconds)
