@@ -733,13 +733,19 @@ class DestroyAeroliteSet(MagicSkill):
         self.passed_seconds = 0
         self.trigger_times = list(params["trigger_times"])
 
+        # do some modification for trigger_pos
+        delta_vec = self.sprite.key_vec.copy()
+        delta_vec.x *= self.params["fall_range"]
+        delta_vec.y *= self.params["fall_range"]
+        self.trigger_pos = self.sprite.pos + delta_vec
+
 
     def update(self, passed_seconds):
         self.passed_seconds += passed_seconds
         if len(self.trigger_times) > 0 and self.passed_seconds > self.trigger_times[0]:
             # trigger a aerolite
             self.trigger_times.pop(0)
-            aerolite = DestroyAerolite(self.sprite.pos, self.params["aerolite_radius"], self.params["dx"],
+            aerolite = DestroyAerolite(self.trigger_pos, self.params["aerolite_radius"], self.params["dx"],
                 self.params["dy"], self.params["damage"], self.destroy_aerolite_image, 
                 self.params["fall_range"], self.params["acceleration"], 
                 self.params["aerolite_damage_cal_time"], self.params["aerolite_life"],
