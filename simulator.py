@@ -2056,25 +2056,8 @@ class EnemyWeakShortAttacker(EnemyShortAttacker):
 class SwordRobberAttacker(EnemyShortAttacker):
     def __init__(self, sprite, attacker_params):
         super(SwordRobberAttacker, self).__init__(sprite, attacker_params)
-        whirlwind = attacker_params["whirlwind"]
-        self.pre_frame = whirlwind["pre_frame"]
-        self.pre_time = whirlwind["pre_time"]
-        self.rotate_rate = whirlwind["rotate_rate"]
-        self.rotate_time = whirlwind["rotate_time"]
-        self.offset_time = whirlwind["offset_time"]
-        self.crick_time = whirlwind["crick_time"]
-        self.move_speed = whirlwind["move_speed"]
-        self.reach_delta = whirlwind["reach_delta"]
-        self.self_stun_prob = whirlwind["self_stun_prob"]
-        self.self_stun_time = whirlwind["self_stun_time"]
-        self.reset_vars()
-
-
-    def reset_vars(self):
-        self.offset_vec = Vector2(1, -1)
-        self.pre_time_add = 0
-        self.offset_time_add = 0
-        self.rotate_time_add = 0
+        self.params = attacker_params
+        self.crick_time = attacker_params["whirlwind"]["crick_time"]
 
 
     def whirlwind_chance(self, target):
@@ -2086,10 +2069,6 @@ class SwordRobberAttacker(EnemyShortAttacker):
     def chance(self, target):
         sp = self.sprite
         if happen(sp.brain.ai.ATTACK_WHIRLWIND_PROB) and self.whirlwind_chance(target):
-            self.target_pos = target.pos.copy()
-            v = Vector2.from_points(sp.pos, self.target_pos)
-            self.key_vec = (v + v * self.offset_vec).normalize()
-            self.direction_add = sp.direction
             self.method = "whirlwind"
             return True
 
@@ -2120,7 +2099,6 @@ class SwordRobberAttacker(EnemyShortAttacker):
 
     def finish(self):
         super(SwordRobberAttacker, self).finish()
-        self.reset_vars()
 
 
 
@@ -2312,19 +2290,12 @@ class ArmouredShooterAttacker(EnemyLongAttacker):
 class WerwolfAttacker(EnemyShortAttacker):
     def __init__(self, sprite, attacker_params):
         super(WerwolfAttacker, self).__init__(sprite, attacker_params)
+        self.params = attacker_params
         catch = attacker_params["catch"]
         self.chance_range_min = catch["chance_range_min"]
-        self.ready_time = catch["ready_time"]
-        self.run_speed = self.sprite.setting.WALK_SPEED * catch["run_speed_scale"]
-        self.run_frame_rate = catch["run_frame_rate"]
-        self.hold_time_a = catch["hold_time_a"]
-        self.hold_time_b = catch["hold_time_b"]
-        self.friction = catch["friction"]
-        self.crick_time = catch["crick_time"]
+        #self.crick_time = catch["crick_time"]
         self.damage_a = catch["damage_a"]
         self.damage_b = catch["damage_b"]
-        self.key_frame_a = catch["key_frame_a"]
-        self.key_frame_b = catch["key_frame_b"]
         self.thump_out_speed = catch["thump_out_speed"]
         self.thump_crick_time = catch["thump_crick_time"]
         self.thump_acceleration = catch["thump_acceleration"]
@@ -2334,10 +2305,6 @@ class WerwolfAttacker(EnemyShortAttacker):
 
     def reset_vars(self):
         self.method = None
-        self.ready_time_add = 0
-        self.hold_time_a_add = 0
-        self.hold_time_b_add = 0
-        self.speed = self.run_speed
 
 
     def catch_chance(self, target):
@@ -2355,8 +2322,6 @@ class WerwolfAttacker(EnemyShortAttacker):
     def chance(self, target):
         sp = self.sprite
         if happen(sp.brain.ai.ATTACK_CATCH_PROB) and self.catch_chance(target):
-            self.target_pos = target.pos.copy()
-            self.key_vec = Vector2.from_points(sp.pos, self.target_pos)
             self.method = "catch"
             return True
 
@@ -2390,7 +2355,7 @@ class WerwolfAttacker(EnemyShortAttacker):
         target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
             {"crick_time": self.thump_crick_time, "out_speed": self.thump_out_speed,
             "acceleration": self.thump_acceleration, 
-            "key_vec": -self.key_vec})
+            "key_vec": -sp.key_vec})
 
 
     def finish(self):

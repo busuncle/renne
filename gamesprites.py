@@ -1524,56 +1524,76 @@ class Ghost(Enemy):
 class Werwolf(Enemy):
     def __init__(self, setting, pos, direction):
         super(Werwolf, self).__init__(setting, pos, direction)
+        self.ready_time = self.attacker.params["catch"]["ready_time"]
+        self.run_speed_max = self.attacker.params["catch"]["run_speed_max"]
+        self.run_frame_rate = self.attacker.params["catch"]["run_frame_rate"]
+        self.hold_time_a = self.attacker.params["catch"]["hold_time_a"]
+        self.hold_time_b = self.attacker.params["catch"]["hold_time_b"]
+        self.slide_friction = self.attacker.params["catch"]["friction"]
+        self.catch_key_frame_a = self.attacker.params["catch"]["key_frame_a"]
+        self.catch_key_frame_b = self.attacker.params["catch"]["key_frame_b"]
+
+        self.reset_vars()
+
+    def reset_vars(self):
+        self.run_speed = self.run_speed_max
+        self.ready_time_add = 0
+        self.hold_time_a_add = 0
+        self.hold_time_b_add = 0
+        self.catch_target_pos = None
 
 
     def catch(self, passed_seconds):
-        ak = self.attacker
         target = self.brain.target
-        if ak.ready_time_add < ak.ready_time:
-            ak.ready_time_add += passed_seconds
+        if self.ready_time_add < self.ready_time:
+            if self.catch_target_pos is None:
+                self.catch_target_pos = target.pos.copy()
+                self.key_vec = Vector2.from_points(self.pos, self.catch_target_pos)
+
+            self.ready_time_add += passed_seconds
             self.frame_action = cfg.EnemyAction.UNDER_THUMP
             self.animation.run_circle_frame(cfg.EnemyAction.UNDER_THUMP, passed_seconds) 
 
-        elif ak.hold_time_a_add < ak.hold_time_a:
-            if ak.catch_hit(target):
+        elif self.hold_time_a_add < self.hold_time_a:
+            if self.attacker.catch_hit(target):
                 self.frame_action = cfg.EnemyAction.ATTACK
-                self.animation.set_frame_add(cfg.EnemyAction.ATTACK, ak.key_frame_a)
+                self.animation.set_frame_add(cfg.EnemyAction.ATTACK, self.catch_key_frame_a)
                 target.action = cfg.SpriteAction.UNCONTROLLED
                 target.frame_action = cfg.SpriteAction.UNDER_THUMP
                 target.direction = (self.direction + 4) % cfg.Direction.TOTAL
-                ak.catch_run_a(target)
-                ak.speed = 0
+                self.attacker.catch_run_a(target)
+                self.run_speed = 0
 
-            if ak.speed == 0:
-                if len(ak.has_hits) == 0:
+            if self.run_speed == 0:
+                if len(self.attacker.has_hits) == 0:
                     # no one hit, reset action
                     self.reset_action(force=True)
                 else:
-                    ak.hold_time_a_add += passed_seconds
-                    if ak.hold_time_a_add >= ak.hold_time_a:
+                    self.hold_time_a_add += passed_seconds
+                    if self.hold_time_a_add >= self.hold_time_a:
                         # give a thump!
-                        ak.catch_run_b(target)
+                        self.attacker.catch_run_b(target)
                         target.direction = (target.direction + 4) % cfg.Direction.TOTAL
             else:
-                if ak.speed < ak.run_speed \
-                    or self.pos.get_distance_to(ak.target_pos) < ak.attack_range:
+                if self.run_speed < self.run_speed_max \
+                    or self.pos.get_distance_to(self.catch_target_pos) < self.attacker.attack_range:
                     # change a pose and speed down
                     self.frame_action = cfg.EnemyAction.ATTACK
-                    self.animation.set_frame_add(cfg.EnemyAction.ATTACK, ak.key_frame_a)
-                    ak.speed = max(ak.speed + ak.friction * passed_seconds, 0)
-                    if ak.speed > 0:
-                        self.move(ak.speed, passed_seconds, check_reachable=True, key_vec=ak.key_vec)
+                    self.animation.set_frame_add(cfg.EnemyAction.ATTACK, self.catch_key_frame_a)
+                    self.run_speed = max(self.run_speed + self.slide_friction * passed_seconds, 0)
+                    if self.run_speed > 0:
+                        self.move(self.run_speed, passed_seconds, check_reachable=True)
                 else:
                     self.frame_action = cfg.EnemyAction.WALK
-                    self.animation.run_circle_frame(cfg.EnemyAction.WALK, passed_seconds, ak.run_frame_rate)
-                    self.move(ak.speed, passed_seconds, check_reachable=False, key_vec=ak.key_vec)
+                    self.animation.run_circle_frame(cfg.EnemyAction.WALK, passed_seconds, self.run_frame_rate)
+                    self.move(self.run_speed, passed_seconds, check_reachable=False)
                     if self.brain.interrupt:
                         self.reset_action(force=True)
 
-        elif ak.hold_time_b_add < ak.hold_time_b:
-            ak.hold_time_b_add += passed_seconds
+        elif self.hold_time_b_add < self.hold_time_b:
+            self.hold_time_b_add += passed_seconds
             self.frame_action = cfg.EnemyAction.ATTACK
-            self.animation.set_frame_add(cfg.EnemyAction.ATTACK, ak.key_frame_b)
+            self.animation.set_frame_add(cfg.EnemyAction.ATTACK, self.catch_key_frame_b)
 
         else:
             self.reset_action(force=True)
@@ -1590,45 +1610,68 @@ class Werwolf(Enemy):
 class SwordRobber(Enemy):
     def __init__(self, setting, pos, direction):
         super(SwordRobber, self).__init__(setting, pos, direction)
+        self.whirlwind_pre_frame = self.attacker.params["whirlwind"]["pre_frame"]
+        self.whirlwind_pre_time = self.attacker.params["whirlwind"]["pre_time"]
+        self.whirlwind_rotate_rate = self.attacker.params["whirlwind"]["rotate_rate"]
+        self.whirlwind_rotate_time = self.attacker.params["whirlwind"]["rotate_time"]
+        self.whirlwind_offset_time = self.attacker.params["whirlwind"]["offset_time"]
+        self.whirlwind_move_speed = self.attacker.params["whirlwind"]["move_speed"]
+        self.whirlwind_reach_delta = self.attacker.params["whirlwind"]["reach_delta"]
+        self.whirlwind_self_stun_prob = self.attacker.params["whirlwind"]["self_stun_prob"]
+        self.whirlwind_self_stun_time = self.attacker.params["whirlwind"]["self_stun_time"]
+
+        self.reset_vars()
+
+
+    def reset_vars(self):
+        self.whirlwind_pre_time_add = 0
+        self.whirlwind_offset_time_add = 0
+        self.whirlwind_rotate_time_add = 0
+        self.whirlwind_offset_vec = Vector2(1, -1)
+        self.whirlwind_direction_add = self.direction
+        self.whirlwind_target_pos = None
 
 
     def whirlwind(self, passed_seconds):
-        ak = self.attacker
         target = self.brain.target
-        if ak.pre_time_add == 0:
-            ak.pre_time_add += passed_seconds
+        if self.whirlwind_pre_time_add == 0:
+            if self.whirlwind_target_pos is None:
+                self.whirlwind_target_pos = target.pos.copy()
+
+            self.whirlwind_pre_time_add += passed_seconds
             words = sfg.Effect.WHIRLWIND_WORD_FONT.render(sfg.Effect.WHIRLWIND_WORD, True,
                 sfg.Effect.WHIRLWIND_WORD_COLOR)
             self.animation.show_words(words, sfg.Effect.WHIRLWIND_WORD_SHOW_TIME,
                 (self.pos.x - words.get_width() * 0.5, 
                 self.pos.y * 0.5 - self.setting.HEIGHT - sfg.Effect.WHIRLWIND_WORD_DY))
-        elif ak.pre_time_add < ak.pre_time:
-            ak.pre_time_add += passed_seconds
-            self.animation.set_frame_add(cfg.EnemyAction.ATTACK, ak.pre_frame)
+        elif self.whirlwind_pre_time_add < self.whirlwind_pre_time:
+            self.whirlwind_pre_time_add += passed_seconds
+            self.animation.set_frame_add(cfg.EnemyAction.ATTACK, self.whirlwind_pre_frame)
 
-        elif ak.rotate_time_add < ak.rotate_time:
-            ak.rotate_time_add += passed_seconds
+        elif self.whirlwind_rotate_time_add < self.whirlwind_rotate_time:
+            self.whirlwind_rotate_time_add += passed_seconds
             self.frame_action = cfg.EnemyAction.UNDER_THUMP
-            ak.direction_add = (ak.direction_add + ak.rotate_rate * passed_seconds) % cfg.Direction.TOTAL
-            self.direction = int(ak.direction_add)
-            self.move(ak.move_speed, passed_seconds, check_reachable=False, key_vec=ak.key_vec)
-            if self.pos.get_distance_to(ak.target_pos) < ak.reach_delta:
-                ak.rotate_time_add = ak.rotate_time
+            self.whirlwind_direction_add = (self.whirlwind_direction_add + self.whirlwind_rotate_rate * passed_seconds) % cfg.Direction.TOTAL
+            self.direction = int(self.whirlwind_direction_add)
+            self.move(self.whirlwind_move_speed, passed_seconds, check_reachable=False)
+            if self.pos.get_distance_to(self.whirlwind_target_pos) < self.whirlwind_reach_delta:
+                self.whirlwind_rotate_time_add = self.whirlwind_rotate_time
 
-            ak.offset_time_add += passed_seconds
-            if ak.offset_time_add > ak.offset_time:
+            self.whirlwind_offset_time_add += passed_seconds
+            if self.whirlwind_offset_time_add > self.whirlwind_offset_time:
                 # modify offset_vec, turn a direction
-                ak.offset_time_add = 0
-                ak.offset_vec = -ak.offset_vec
-                v = Vector2.from_points(self.pos, ak.target_pos)
-                ak.key_vec = (v + v * ak.offset_vec).normalize()
+                self.whirlwind_offset_time_add = 0
+                self.whirlwind_offset_vec = -self.whirlwind_offset_vec
+                v = Vector2.from_points(self.pos, self.whirlwind_target_pos)
+                self.key_vec = (v + v * self.whirlwind_offset_vec).normalize()
             if self.brain.interrupt:
                 self.reset_action(force=True)
-            ak.whirlwind_run(target)
+            self.attacker.whirlwind_run(target)
         else:
             self.reset_action(force=True)
-            if happen(ak.self_stun_prob):
-                ak.handle_additional_status(cfg.SpriteStatus.STUN, {"time": ak.self_stun_time})
+            if happen(self.whirlwind_self_stun_prob):
+                self.attacker.handle_additional_status(cfg.SpriteStatus.STUN, 
+                    {"time": self.whirlwind_self_stun_time})
                 self.set_emotion(cfg.SpriteEmotion.STUN)
 
     
@@ -1637,6 +1680,7 @@ class SwordRobber(Enemy):
             super(SwordRobber, self).attack(passed_seconds)
         elif self.attacker.method == "whirlwind":
             self.whirlwind(passed_seconds)
+
 
 
 ######## sprite group subclass ########
