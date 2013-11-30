@@ -1551,13 +1551,14 @@ class JoshuaAttacker(AngleAttacker):
         self.attack1_params = attacker_params["attack1"]
         self.attack2_params = attacker_params["attack2"]
         self.attack3_params = attacker_params["attack3"]
+        self.run_attack_params = attacker_params["run_attack"]
 
         # calculate cos_min first
         self.attack1_params["cos_min"] = cos(radians(self.attack1_params["angle"] * 0.5))
         self.attack2_params["cos_min"] = cos(radians(self.attack2_params["angle"] * 0.5))
         self.attack3_params["cos_min"] = cos(radians(self.attack3_params["angle"] * 0.5))
+        self.run_attack_params["cos_min"] = cos(radians(self.run_attack_params["angle"] * 0.5))
 
-        self.run_attack_params = attacker_params["run_attack"]
         self.magic_skill_1_params = attacker_params["x1"]
         self.magic_skill_2_params = attacker_params["x2"]
         self.magic_skill_3_params = attacker_params["x3"]
@@ -1644,7 +1645,27 @@ class JoshuaAttacker(AngleAttacker):
 
 
     def run_attack(self, target, current_frame_add):
-        pass
+        if self.hit_with_many_params(target, current_frame_add, self.run_attack_params["key_frames"], 
+                self.run_attack_params["range"], self.run_attack_params["cos_min"]):
+
+            damage = max(0, self.run_attack_params["damage"] - target.dfs)
+            target.attacker.handle_under_attack(self.sprite, damage)
+
+            target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                {"crick_time": self.run_attack_params["crick_time"],
+                "out_speed": self.run_attack_params["out_speed"], 
+                "acceleration": self.run_attack_params["acceleration"],
+                "from_who": self.sprite,
+                "key_vec": Vector2.from_points(self.sprite.pos, target.pos)})
+
+            blood_set = BloodSet(self.sprite, target.pos, target.setting.HEIGHT, 4)
+            self.magic_list.append(blood_set)
+
+            self.handle_additional_status(cfg.SpriteStatus.CRICK,
+                {"time": self.run_attack_params["self_crick_time"], "old_action": self.sprite.action})
+
+            return True
+        return False
 
 
     def x1(self, current_frame_add):

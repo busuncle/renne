@@ -239,9 +239,8 @@ class Renne(object):
             "damage": ATK,
             "crick_time": 0.4,
             "out_speed": 1000,
-            "acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
+            "acceleration": -400,
             "self_crick_time": 0.1,
-            "run_speed_ratio": 0.6,
             "end_frame": 8,
         },
         "destroy_fire": {
@@ -389,8 +388,17 @@ class Joshua(object):
         },
         "attack_combo_time_delta": 0.6,
         "run_attack": {
+            "range": 120,
+            "angle": 160,
             "atk_ratio": 1.8,
             "damage": ATK, 
+            "key_frames": (6, ),
+            "start_frame": 0,
+            "end_frame": 12,
+            "acceleration": -400,
+            "crick_time": 0.5,
+            "out_speed": 1200,
+            "self_crick_time": 0.1,
         },
         "x1": {
 

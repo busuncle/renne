@@ -543,6 +543,12 @@ class Renne(Hero):
         self.attack2_accumulate_power_time = self.setting.ATTACKER_PARAMS["attack2"]["accumulate_power_time"]
         self.run_attack_params = self.setting.ATTACKER_PARAMS["run_attack"]
 
+        self.reset_vars()
+
+
+    def reset_vars(self):
+        self.run_attack_speed = self.setting.RUN_SPEED * 1.5
+
 
     def play_related_sound(self):
         if self.attacker.method == "attack2":
@@ -625,11 +631,12 @@ class Renne(Hero):
         self.animation.run_sequence_frame(cfg.SpriteAction.ATTACK, passed_seconds)
         if self.animation.get_current_frame_add(cfg.SpriteAction.ATTACK) > self.run_attack_params["end_frame"]:
             # don't full-run the attack frame for better effect
-            self.animation.reset_frame_adds()
-            self.attacker.finish()
-            self.action = cfg.SpriteAction.STAND
+            self.reset_action()
         else:
-            self.move(self.setting.RUN_SPEED * self.run_attack_params["run_speed_ratio"], passed_seconds)
+            self.run_attack_speed = max(0, 
+                self.run_attack_speed + self.run_attack_params["acceleration"] * passed_seconds)
+            #self.move(self.setting.RUN_SPEED * self.run_attack_params["run_speed_ratio"], passed_seconds)
+            self.move(self.run_attack_speed, passed_seconds)
             hit_count = 0
             for em in self.enemies:
                 hit_it = self.attacker.run_attack(em, self.animation.get_current_frame_add(cfg.SpriteAction.ATTACK))
@@ -702,6 +709,13 @@ class Joshua(Hero):
         self.attack2_end_frame = self.setting.ATTACKER_PARAMS["attack2"]["end_frame"]
         self.attack3_start_frame = self.setting.ATTACKER_PARAMS["attack3"]["start_frame"]
         self.attack3_end_frame = self.setting.ATTACKER_PARAMS["attack3"]["end_frame"]
+        self.run_attack_params = self.setting.ATTACKER_PARAMS["run_attack"]
+
+        self.reset_vars()
+
+
+    def reset_vars(self):
+        self.run_attack_speed = self.setting.RUN_SPEED * 1.5
 
 
     def play_related_sound(self):
@@ -718,6 +732,8 @@ class Joshua(Hero):
             self.attack2(passed_seconds)
         elif self.attacker.method == "attack3":
             self.attack3(passed_seconds)
+        elif self.attacker.method == "run_attack":
+            self.run_attack(passed_seconds)
 
 
     def attack1(self, passed_seconds):
@@ -791,6 +807,25 @@ class Joshua(Hero):
             if hit_count > 0:
                 self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
 
+
+    def run_attack(self, passed_seconds):
+        self.frame_action = cfg.JoshuaAction.ATTACK2
+        self.animation.run_sequence_frame(cfg.JoshuaAction.ATTACK2, passed_seconds)
+        if self.animation.get_current_frame_add(cfg.JoshuaAction.ATTACK2) > self.run_attack_params["end_frame"]:
+            self.reset_action()
+        else:
+            self.run_attack_speed = max(0, 
+                self.run_attack_speed + self.run_attack_params["acceleration"] * passed_seconds)
+            self.move(self.run_attack_speed, passed_seconds)
+            hit_count = 0
+            for em in self.enemies:
+                hit_it = self.attacker.run_attack(em, self.animation.get_current_frame_add(cfg.JoshuaAction.ATTACK2))
+                if hit_it:
+                    hit_count += 1
+
+            if hit_count > 0:
+                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
+        
 
 
 class Enemy(GameSprite):
