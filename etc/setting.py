@@ -404,7 +404,12 @@ class Joshua(object):
 
         },
         "x2": {
-
+            "mana": 30,
+            "damage": 30,
+            "trigger_times": (0.2, 0.5, 0.8),
+            "trigger_ranges": (100, 150, 200),
+            "cd": 20,
+            "duration_time": 10,
         },
         "x3": {
 
@@ -1948,4 +1953,5 @@ EFFECT = ("effect", {
     "e7": "e7.png",
     "e8": "e8.png",
     "e9": "e9.png", 
+    "e10": "e10.png", 
 })
