@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from time import time
-from gamesprites import Renne, GameSpritesGroup, enemy_in_one_screen, ENEMY_CLASS_MAPPING, Ambush
+from gamesprites import Renne, Joshua, GameSpritesGroup, enemy_in_one_screen, ENEMY_CLASS_MAPPING, Ambush
 from base import constant as cfg
 from etc import setting as sfg
 from etc import ai_setting as ai
@@ -35,7 +35,10 @@ util.prepare_data_related_folder()
 
 def main(args):
     # a singleton goes through the whole game
-    hero = Renne(sfg.Renne, (0, 0), 0)
+    if sfg.CONFIG["hero"] == "renne":
+        hero = Renne(sfg.Renne, (0, 0), 0)
+    else:
+        hero = Joshua(sfg.Joshua, (0, 0), 0)
 
     if args.chapter is not None:
         # it's for debuging, only run 1 part and return immediately

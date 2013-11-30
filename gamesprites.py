@@ -7,7 +7,7 @@ from time import time
 import math
 from gameobjects.vector2 import Vector2
 import simulator
-from animation import SpriteEmotionAnimator, RenneAnimator, EnemyAnimator
+from animation import SpriteEmotionAnimator, RenneAnimator, JoshuaAnimator, EnemyAnimator
 from musicbox import SoundBox
 import controller
 from gameworld import StaticObjectGroup
@@ -484,8 +484,42 @@ class Hero(GameSprite):
             self.action = cfg.HeroAction.STAND
 
 
-    def update(self, passed_seconds, external_event):
-        pass
+    def update(self, passed_seconds, external_event=None):
+        if external_event is not None:
+            if external_event == cfg.GameStatus.PAUSE:
+                # user pause the game, don't update animation
+                return
+
+        self.update_status(passed_seconds)
+
+        if self.action == cfg.HeroAction.ATTACK:
+            self.attack(passed_seconds)
+
+        elif self.action == cfg.HeroAction.RUN:
+            self.run(passed_seconds)
+
+        elif self.action == cfg.HeroAction.WALK:
+            self.walk(passed_seconds)
+
+        elif self.action == cfg.HeroAction.WIN:
+            self.win(passed_seconds)
+
+        elif self.action == cfg.HeroAction.REST:
+            self.rest(passed_seconds)
+
+        elif self.action == cfg.HeroAction.STAND:
+            self.stand(passed_seconds)
+
+        elif self.action == cfg.HeroAction.UNDER_THUMP:
+            self.under_thump(passed_seconds)
+
+        self.animation.update(passed_seconds)
+        self.emotion_animation.update(passed_seconds)
+
+        # update magic cd
+        for magic_name in self.attacker.magic_cds:
+            self.attacker.magic_cds[magic_name] = max(0, 
+                self.attacker.magic_cds[magic_name] - passed_seconds)
 
 
 
@@ -555,10 +589,9 @@ class Renne(Hero):
                 if hit_it:
                     hit_count += 1
             if hit_count > 0:
-                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
-
                 # change combo count if this attack has hit some one
                 self.attack_combo["last_time"] = time()
+                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
 
         self.animation.run_sequence_frame(cfg.SpriteAction.ATTACK, passed_seconds)
 
@@ -648,44 +681,6 @@ class Renne(Hero):
             self.attacker.dizzy(self.animation.get_current_frame_add(cfg.RenneAction.WIN))
 
 
-    def update(self, passed_seconds, external_event=None):
-        if external_event is not None:
-            if external_event == cfg.GameStatus.PAUSE:
-                # user pause the game, don't update animation
-                return
-
-        self.update_status(passed_seconds)
-
-        if self.action == cfg.HeroAction.ATTACK:
-            self.attack(passed_seconds)
-
-        elif self.action == cfg.HeroAction.RUN:
-            self.run(passed_seconds)
-
-        elif self.action == cfg.HeroAction.WALK:
-            self.walk(passed_seconds)
-
-        elif self.action == cfg.HeroAction.WIN:
-            self.win(passed_seconds)
-
-        elif self.action == cfg.HeroAction.REST:
-            self.rest(passed_seconds)
-
-        elif self.action == cfg.HeroAction.STAND:
-            self.stand(passed_seconds)
-
-        elif self.action == cfg.HeroAction.UNDER_THUMP:
-            self.under_thump(passed_seconds)
-
-        self.animation.update(passed_seconds)
-        self.emotion_animation.update(passed_seconds)
-
-        # update magic cd
-        for magic_name in self.attacker.magic_cds:
-            self.attacker.magic_cds[magic_name] = max(0, 
-                self.attacker.magic_cds[magic_name] - passed_seconds)
-
-
 
 class Joshua(Hero):
     def __init__(self, setting, pos, direction):
@@ -734,17 +729,18 @@ class Joshua(Hero):
                 self.attack_combo["current_attack"] += 1
             # ends at this frame
             self.reset_action()
+
         else:
             hit_count = 0
             for em in self.enemies:
                 hit_it = self.attacker.attack1(em, current_frame_add)
                 if hit_it:
                     hit_count += 1
-            if hit_count > 0:
-                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
 
+            if hit_count > 0:
                 # change combo count if this attack has hit some one
                 self.attack_combo["last_time"] = time()
+                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
 
         self.animation.run_sequence_frame(cfg.SpriteAction.ATTACK, passed_seconds)
 
@@ -756,21 +752,22 @@ class Joshua(Hero):
         if current_frame_add < self.attack2_start_frame:
             self.animation.set_frame_add(cfg.JoshuaAction.ATTACK, self.attack2_start_frame)
 
+        if current_frame_add >= self.attack2_end_frame:
+            if len(self.attacker.has_hits) > 0:
+                self.attack_combo["current_attack"] += 1
+            self.reset_action()
         else:
-            is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
-            if is_finish:
-                if len(self.attacker.has_hits) > 0:
-                    self.attack_combo["current_attack"] += 1
-                self.reset_action()
-            else:
-                hit_count = 0
-                for em in self.enemies:
-                    hit_it = self.attacker.attack2(em, self.animation.get_current_frame_add(self.frame_action))
-                    if hit_it:
-                        hit_count += 1
+            hit_count = 0
+            for em in self.enemies:
+                hit_it = self.attacker.attack2(em, self.animation.get_current_frame_add(self.frame_action))
+                if hit_it:
+                    hit_count += 1
 
-                if hit_count > 0:
-                    self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
+            if hit_count > 0:
+                self.attack_combo["last_time"] = time()
+                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
+
+        self.animation.run_sequence_frame(cfg.JoshuaAction.ATTACK, passed_seconds)
 
 
     def attack3(self, passed_seconds):

@@ -1592,17 +1592,6 @@ class JoshuaAttacker(AngleAttacker):
         self.current_magic = None
 
 
-    def attack(self, passed_seconds):
-        if self.attacker.method == "attack1":
-            self.attack1(passed_seconds)
-        elif self.attacker.method == "attack2":
-            self.attack2(passed_seconds)
-        elif self.attacker.method == "attack3":
-            self.attack3(passed_seconds)
-        elif self.attacker.method == "x1":
-            self.x1(passed_seconds)
-
-
     def attack1(self, target, current_frame_add):
         if self.hit_with_many_params(target, current_frame_add, self.attack1_params["key_frames"],
                 self.attack1_params["range"], self.attack1_params["cos_min"]):
@@ -1647,6 +1636,8 @@ class JoshuaAttacker(AngleAttacker):
                     "out_speed": self.attack3_params["thump_out_speed"], 
                     "acceleration": self.attack3_params["thump_acceleration"],
                     "key_vec": Vector2.from_points(self.sprite.pos, target.pos)})
+                blood_set = BloodSet(self.sprite, target.pos, target.setting.HEIGHT)
+                self.magic_list.append(blood_set)
                 return True
         return False 
 

@@ -460,7 +460,8 @@ class RenneAnimator(HeroAnimator):
 class JoshuaAnimator(HeroAnimator):
     def __init__(self, sprite):
         super(JoshuaAnimator, self).__init__(sprite)
-        self.one_direction_frame_actions.add(cfg.JoshuaAction.WIN, cfg.JoshuaAction.BIG_SKILL)
+        self.one_direction_frame_actions.add(cfg.JoshuaAction.WIN)
+        self.one_direction_frame_actions.add(cfg.JoshuaAction.BIG_SKILL)
 
 
 
