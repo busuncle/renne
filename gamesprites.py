@@ -366,8 +366,122 @@ class Hero(GameSprite):
         pass
 
 
-    def event_handle(self, battle_keys, external_event):
-        pass
+    def locked(self):
+        # check whether hero is locked, if so, and lock him without handling any event from user input
+        if self.action == cfg.HeroAction.ATTACK:
+            # attacking, return directly
+            return True
+
+        if self.action == cfg.HeroAction.WIN:
+            # painted egg, return directly
+            return True
+
+        if self.action == cfg.HeroAction.UNCONTROLLED:
+            return True
+
+        if cfg.SpriteStatus.CRICK in self.status \
+            or cfg.SpriteStatus.UNDER_THUMP in self.status:
+            return True
+
+        return False
+
+
+    def event_handle(self, battle_keys, external_event=None):
+        if external_event is not None:
+            if external_event == cfg.GameStatus.INIT:
+                self.action = cfg.HeroAction.STAND
+                return
+            elif external_event == cfg.GameStatus.HERO_LOSE:
+                self.reset_action(force=False)
+                return 
+            elif external_event == cfg.GameStatus.ENTER_AMBUSH:
+                self.reset_action(force=False)
+                return 
+            elif external_event == cfg.GameStatus.STORY:
+                self.reset_action(force=False)
+                return
+            elif external_event == cfg.GameStatus.PAUSE:
+                # do nothing
+                return
+
+        if self.locked():
+            return
+
+        # calculate direction
+        self.key_vec.x = self.key_vec.y = 0.0
+        if battle_keys[sfg.UserKey.LEFT]["pressed"]:
+            self.key_vec.x -= 1.0
+        if battle_keys[sfg.UserKey.RIGHT]["pressed"]:
+            self.key_vec.x += 1.0
+        if battle_keys[sfg.UserKey.UP]["pressed"]:
+            self.key_vec.y -= 1.0
+        if battle_keys[sfg.UserKey.DOWN]["pressed"]:
+            self.key_vec.y += 1.0
+        self.direction = cfg.Direction.VEC_TO_DIRECT.get(self.key_vec.as_tuple(), self.direction)
+
+        if battle_keys[sfg.UserKey.ATTACK]["pressed"]:
+            if self.action == cfg.HeroAction.RUN and self.sp > 0:
+                self.attacker.method = "run_attack"
+            else:
+                if time() - self.attack_combo["last_time"] > self.attack_combo["time_delta"]:
+                    self.attacker.method = self.attack_combo["combo_list"][0]
+                    self.attack_combo["current_attack"] = 0
+                else:
+                    self.attacker.method = self.attack_combo["combo_list"][
+                        self.attack_combo["current_attack"]]
+
+                self.play_related_sound()
+
+            self.action = cfg.HeroAction.ATTACK
+
+        elif battle_keys[sfg.UserKey.MAGIC_SKILL_1]["pressed"]:
+            if self.mp >= self.attacker.magic_skill_1_params["mana"] \
+                and self.attacker.magic_cds["magic_skill_1"] == 0:
+                self.action = cfg.HeroAction.ATTACK
+                self.attacker.method = "destroy_fire"
+                self.play_related_sound()
+
+        elif battle_keys[sfg.UserKey.MAGIC_SKILL_2]["pressed"]:
+            if self.mp >= self.attacker.magic_skill_2_params["mana"] \
+                and self.attacker.magic_cds["magic_skill_2"] == 0:
+                self.action = cfg.HeroAction.ATTACK
+                self.attacker.method = "destroy_bomb"
+                self.play_related_sound()
+
+        elif battle_keys[sfg.UserKey.MAGIC_SKILL_3]["pressed"]:
+            if self.mp >= self.attacker.magic_skill_3_params["mana"] \
+                and self.attacker.magic_cds["magic_skill_3"] == 0:
+                self.action = cfg.HeroAction.ATTACK
+                self.attacker.method = "destroy_aerolite"
+                self.play_related_sound()
+
+        elif battle_keys[sfg.UserKey.MAGIC_SKILL_4]["pressed"]:
+            if self.mp >= self.attacker.magic_skill_4_params["mana"] \
+                and self.attacker.magic_cds["magic_skill_4"] == 0:
+                self.action = cfg.HeroAction.WIN
+                self.attacker.method = "dizzy"
+                self.play_related_sound()
+
+        elif battle_keys[sfg.UserKey.REST]["pressed"]:
+            self.action = cfg.HeroAction.REST
+
+        elif self.key_vec:
+            if self.action == cfg.HeroAction.RUN and self.sp > 0:
+                # just keep running
+                self.action = cfg.HeroAction.RUN
+            elif self.direction in sfg.UserKey.DIRECT_TO_DIRECTION_KEY:
+                direct_key = sfg.UserKey.DIRECT_TO_DIRECTION_KEY[self.direction]
+                if direct_key == battle_keys["last_direct_key_up"]["key"] \
+                    and time() - battle_keys["last_direct_key_up"]["time"] < sfg.UserKey.RUN_THRESHOLD \
+                    and self.sp > 0:
+                    self.action = cfg.HeroAction.RUN
+                else:
+                    self.action = cfg.HeroAction.WALK
+            else:
+                self.action = cfg.HeroAction.WALK
+
+        else:
+            self.action = cfg.HeroAction.STAND
 
 
     def update(self, passed_seconds, external_event):
@@ -399,6 +513,10 @@ class Renne(Hero):
     def play_related_sound(self):
         if self.attacker.method == "attack2":
             self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACKS))
+        elif self.attacker.method in ("destroy_fire", "destroy_bomb", "destroy_aerolite"):
+            self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACKS2))
+        elif self.attacker.method == "dizzy":
+            self.sound_box.play(sfg.Sound.RENNE_WIN)
 
 
     def attack(self, passed_seconds):
@@ -406,6 +524,8 @@ class Renne(Hero):
             self.attack1(passed_seconds)
         elif self.attacker.method == "attack2":
             self.attack2(passed_seconds)
+        elif self.attacker.method == "run_attack":
+            self.run_attack(passed_seconds)
         elif self.attacker.method == "destroy_fire":
             self.destroy_fire(passed_seconds)
         elif self.attacker.method == "destroy_bomb":
@@ -526,127 +646,6 @@ class Renne(Hero):
             self.attacker.dizzy(self.animation.get_current_frame_add(cfg.RenneAction.WIN))
 
 
-    def locked(self):
-        # check whether hero is locked, if so, and lock him without handling any event from user input
-        if self.action in (cfg.SpriteAction.ATTACK, cfg.RenneAction.RUN_ATTACK, 
-            cfg.RenneAction.SKILL):
-            # attacking, return directly
-            return True
-
-        if self.action == cfg.RenneAction.WIN:
-            # painted egg, return directly
-            return True
-
-        if self.action == cfg.SpriteAction.UNCONTROLLED:
-            return True
-
-        if cfg.SpriteStatus.CRICK in self.status \
-            or cfg.SpriteStatus.UNDER_THUMP in self.status:
-            return True
-
-        return False
-
-
-    def event_handle(self, battle_keys, external_event=None):
-        if external_event is not None:
-            if external_event == cfg.GameStatus.INIT:
-                self.action = cfg.SpriteAction.STAND
-                return
-            elif external_event == cfg.GameStatus.HERO_LOSE:
-                self.reset_action(force=False)
-                return 
-            elif external_event == cfg.GameStatus.ENTER_AMBUSH:
-                self.reset_action(force=False)
-                return 
-            elif external_event == cfg.GameStatus.STORY:
-                self.reset_action(force=False)
-                return
-            elif external_event == cfg.GameStatus.PAUSE:
-                # do nothing
-                return
-
-        if self.locked():
-            return
-
-        # calculate direction
-        self.key_vec.x = self.key_vec.y = 0.0
-        if battle_keys[sfg.UserKey.LEFT]["pressed"]:
-            self.key_vec.x -= 1.0
-        if battle_keys[sfg.UserKey.RIGHT]["pressed"]:
-            self.key_vec.x += 1.0
-        if battle_keys[sfg.UserKey.UP]["pressed"]:
-            self.key_vec.y -= 1.0
-        if battle_keys[sfg.UserKey.DOWN]["pressed"]:
-            self.key_vec.y += 1.0
-        self.direction = cfg.Direction.VEC_TO_DIRECT.get(self.key_vec.as_tuple(), self.direction)
-
-        if battle_keys[sfg.UserKey.ATTACK]["pressed"]:
-            if self.action == cfg.SpriteAction.RUN and self.sp > 0:
-                self.attacker.method = "run_attack"
-            else:
-                if time() - self.attack_combo["last_time"] > self.attack_combo["time_delta"]:
-                    self.attacker.method = self.attack_combo["combo_list"][0]
-                    self.attack_combo["current_attack"] = 0
-                else:
-                    self.attacker.method = self.attack_combo["combo_list"][
-                        self.attack_combo["current_attack"]]
-
-                self.play_related_sound()
-
-            self.action = cfg.SpriteAction.ATTACK
-
-        elif battle_keys[sfg.UserKey.MAGIC_SKILL_1]["pressed"]:
-            if self.mp >= self.attacker.magic_skill_1_params["mana"] \
-                and self.attacker.magic_cds["magic_skill_1"] == 0:
-                atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
-                self.sound_box.play(atk_snd)
-                self.action = cfg.SpriteAction.ATTACK
-                self.attacker.method = "destroy_fire"
-
-        elif battle_keys[sfg.UserKey.MAGIC_SKILL_2]["pressed"]:
-            if self.mp >= self.attacker.magic_skill_2_params["mana"] \
-                and self.attacker.magic_cds["magic_skill_2"] == 0:
-                atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
-                self.sound_box.play(atk_snd)
-                self.action = cfg.SpriteAction.ATTACK
-                self.attacker.method = "destroy_bomb"
-
-        elif battle_keys[sfg.UserKey.MAGIC_SKILL_3]["pressed"]:
-            if self.mp >= self.attacker.magic_skill_3_params["mana"] \
-                and self.attacker.magic_cds["magic_skill_3"] == 0:
-                atk_snd = random.choice(sfg.Sound.RENNE_ATTACKS2)
-                self.sound_box.play(atk_snd)
-                self.action = cfg.RenneAction.SKILL
-                self.attacker.method = "destroy_aerolite"
-
-        elif battle_keys[sfg.UserKey.MAGIC_SKILL_4]["pressed"]:
-            if self.mp >= self.attacker.magic_skill_4_params["mana"] \
-                and self.attacker.magic_cds["magic_skill_4"] == 0:
-                self.action = cfg.RenneAction.WIN
-                self.sound_box.play(sfg.Sound.RENNE_WIN)
-
-        elif battle_keys[sfg.UserKey.REST]["pressed"]:
-            self.action = cfg.RenneAction.REST
-
-        elif self.key_vec:
-            if self.action == cfg.SpriteAction.RUN and self.sp > 0:
-                # just keep running
-                self.action = cfg.SpriteAction.RUN
-            elif self.direction in sfg.UserKey.DIRECT_TO_DIRECTION_KEY:
-                direct_key = sfg.UserKey.DIRECT_TO_DIRECTION_KEY[self.direction]
-                if direct_key == battle_keys["last_direct_key_up"]["key"] \
-                    and time() - battle_keys["last_direct_key_up"]["time"] < sfg.UserKey.RUN_THRESHOLD \
-                    and self.sp > 0:
-                    self.action = cfg.SpriteAction.RUN
-                else:
-                    self.action = cfg.SpriteAction.WALK
-            else:
-                self.action = cfg.SpriteAction.WALK
-
-        else:
-            self.action = cfg.SpriteAction.STAND
-
-
     def update(self, passed_seconds, external_event=None):
         if external_event is not None:
             if external_event == cfg.GameStatus.PAUSE:
@@ -656,12 +655,6 @@ class Renne(Hero):
         self.update_status(passed_seconds)
 
         if self.action == cfg.SpriteAction.ATTACK:
-            if self.attacker.method == "run_attack":
-                self.run_attack(passed_seconds)
-            else:
-                self.attack(passed_seconds)
-
-        elif self.action == cfg.RenneAction.SKILL:
             self.attack(passed_seconds)
 
         elif self.action == cfg.SpriteAction.RUN:

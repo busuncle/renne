@@ -273,7 +273,7 @@ class Renne(object):
         },
         "destroy_aerolite": {
             "key_frames": (1, ),
-            "fall_range": 128,
+            "fall_range": 160,
             "damage": 100,
             "acceleration": Physics.GRAVITY_ACCELERATION,
             "mana": 60,
@@ -285,8 +285,8 @@ class Renne(object):
             "aerolite_radius": 18,
             "aerolite_damage_cal_time": 0.4,
             "aerolite_life": 1.5,
-            "aerolite_shake_on_x": 150,
-            "aerolite_shake_on_y": 150,
+            "aerolite_shake_on_x": 100,
+            "aerolite_shake_on_y": 100,
             "stun_time": 5,
         },
         "dizzy": {
@@ -295,7 +295,7 @@ class Renne(object):
             "cd": 30,
             "mana": 80,
             "time": 15,
-            "effective_time": 3,
+            "effective_time": 1.2,
             "key_frames": (5, 6),
             "gen_leaf_cd": 0.08,
             "leaf_life": 2,

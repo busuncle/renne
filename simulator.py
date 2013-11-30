@@ -734,7 +734,7 @@ class DestroyAeroliteSet(MagicSkill):
         self.trigger_times = list(params["trigger_times"])
 
         # do some modification for trigger_pos
-        delta_vec = self.sprite.key_vec.copy()
+        delta_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[self.sprite.direction])
         delta_vec.x *= self.params["fall_range"]
         delta_vec.y *= self.params["fall_range"]
         self.trigger_pos = self.sprite.pos + delta_vec
@@ -1590,6 +1590,17 @@ class JoshuaAttacker(AngleAttacker):
         # a lock, only one magic is running in an attack
         self.method = None
         self.current_magic = None
+
+
+    def attack(self, passed_seconds):
+        if self.attacker.method == "attack1":
+            self.attack1(passed_seconds)
+        elif self.attacker.method == "attack2":
+            self.attack2(passed_seconds)
+        elif self.attacker.method == "attack3":
+            self.attack3(passed_seconds)
+        elif self.attacker.method == "x1":
+            self.x1(passed_seconds)
 
 
     def attack1(self, target, current_frame_add):

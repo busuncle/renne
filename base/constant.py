@@ -79,22 +79,22 @@ class SpriteAction(object):
 
 
 
-class RenneAction(SpriteAction):
-    SKILL = 11
-    RUN_ATTACK = 12
-    REST = 13
-    WIN = 14
+class HeroAction(SpriteAction):
+    REST = 7
+    WIN = 8
+    SKILL = 9
 
 
 
-class JoshuaAction(SpriteAction):
+class RenneAction(HeroAction):
+    pass
+
+
+
+class JoshuaAction(HeroAction):
     ATTACK2 = 21
-    SKILL = 22
-    BIG_SKILL = 23
-    KNEEL = 24
-    REST = 25
-    ROAR = 26
-    WIN = 27
+    BIG_SKILL = 22
+    ROAR = 23
 
 
 
