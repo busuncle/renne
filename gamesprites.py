@@ -332,11 +332,7 @@ class Hero(GameSprite):
 
     def walk(self, passed_seconds):
         self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
-        if self.status.get(cfg.SpriteStatus.FROZEN) is not None:
-            self.move(self.setting.WALK_SPEED * self.status[cfg.SpriteStatus.FROZEN]["action_rate_scale"], 
-                passed_seconds)
-        else:
-            self.move(self.setting.WALK_SPEED, passed_seconds)
+        self.move(self.setting.WALK_SPEED, passed_seconds)
         self.animation.run_circle_frame(cfg.SpriteAction.WALK, passed_seconds)
 
 
@@ -344,11 +340,7 @@ class Hero(GameSprite):
         # cost some stamina when running
         self.sp = max(0, self.sp - self.setting.SP_COST_RATE * passed_seconds)
         self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
-        if self.status.get(cfg.SpriteStatus.FROZEN) is not None:
-            self.move(self.setting.RUN_SPEED * self.status[cfg.SpriteStatus.FROZEN]["action_rate_scale"], 
-                passed_seconds)
-        else:
-            self.move(self.setting.RUN_SPEED, passed_seconds)
+        self.move(self.setting.RUN_SPEED, passed_seconds)
         self.animation.run_circle_frame(cfg.SpriteAction.RUN, passed_seconds)
 
 

@@ -261,22 +261,14 @@ class SpriteAnimator(object):
         # animation will be running in a circle way
         sp = self.sprite
         rate = frame_rate or self.frame_rates[action]
-        if sp.status.get(cfg.SpriteStatus.FROZEN) is not None:
-            self.frame_adds[action] += passed_seconds * rate \
-                * sp.status[cfg.SpriteStatus.FROZEN]["action_rate_scale"]
-        else:
-            self.frame_adds[action] += passed_seconds * rate
+        self.frame_adds[action] += passed_seconds * rate
         self.frame_adds[action] %= self.frame_nums[action]
 
 
     def run_circle_frame_backward(self, action, passed_seconds):
         # run circle frame in backward way
         sp = self.sprite
-        if sp.status.get(cfg.SpriteStatus.FROZEN) is not None:
-            self.frame_adds[action] -= passed_seconds * self.frame_rates[action] \
-                * sp.status[cfg.SpriteStatus.FROZEN]["action_rate_scale"]
-        else:
-            self.frame_adds[action] -= passed_seconds * self.frame_rates[action]
+        self.frame_adds[action] -= passed_seconds * self.frame_rates[action]
         self.frame_adds[action] %= self.frame_nums[action]
 
 
@@ -285,14 +277,12 @@ class SpriteAnimator(object):
         # return True is a sequence frames is finish else False
         sp = self.sprite
         rate = frame_rate or self.frame_rates[action]
-        if sp.status.get(cfg.SpriteStatus.FROZEN) is not None:
-            self.frame_adds[action] += passed_seconds * rate * \
-                sp.status[cfg.SpriteStatus.FROZEN]["action_rate_scale"]
-        else:
-            self.frame_adds[action] += passed_seconds * rate
+        self.frame_adds[action] += passed_seconds * rate
+
         if self.frame_adds[action] >= self.frame_nums[action]:
             self.frame_adds[action] = 0
             return True
+
         return False
 
 
