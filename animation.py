@@ -107,7 +107,7 @@ class WordsRenderer(object):
 
 class Particle(pygame.sprite.DirtySprite):
     def __init__(self, image, pos, radius, dx, dy, vec, acc, life, z=0, vec_z=None, acc_z=None, 
-            pre_hide_time=None, follow_sprite=None):
+            pre_hide_time=0, follow_sprite=None):
         super(Particle, self).__init__()
         self.image = image
         self.pos = Vector2(pos)
@@ -261,6 +261,8 @@ class SpriteAnimator(object):
         # animation will be running in a circle way
         sp = self.sprite
         rate = frame_rate or self.frame_rates[action]
+        if sp.status.get(cfg.SpriteStatus.ACTION_RATE_SCALE) is not None:
+            rate *= sp.status[cfg.SpriteStatus.ACTION_RATE_SCALE]["ratio"]
         self.frame_adds[action] += passed_seconds * rate
         self.frame_adds[action] %= self.frame_nums[action]
 
@@ -277,6 +279,8 @@ class SpriteAnimator(object):
         # return True is a sequence frames is finish else False
         sp = self.sprite
         rate = frame_rate or self.frame_rates[action]
+        if sp.status.get(cfg.SpriteStatus.ACTION_RATE_SCALE) is not None:
+            rate *= sp.status[cfg.SpriteStatus.ACTION_RATE_SCALE]["ratio"]
         self.frame_adds[action] += passed_seconds * rate
 
         if self.frame_adds[action] >= self.frame_nums[action]:
@@ -304,10 +308,6 @@ class SpriteAnimator(object):
         if sp.status.get(cfg.SpriteStatus.POISON) is not None:
             self.image_mix = self.blink.make(self.image, passed_seconds)
             self.image_mix.fill(sfg.SpriteStatus.DEBUFF_POISON_MIX_COLOR, special_flags=BLEND_ADD)
-
-        if sp.status.get(cfg.SpriteStatus.FROZEN) is not None:
-            self.image_mix = self.blink.make(self.image, passed_seconds)
-            self.image_mix.fill(sfg.SpriteStatus.DEBUFF_FROZON_MIX_COLOR, special_flags=BLEND_ADD)
 
         if sp.status.get(cfg.SpriteStatus.WEAK) is not None:
             sp.status[cfg.SpriteStatus.WEAK]["y"] += sfg.SpriteStatus.DEBUFF_WEAK_Y_MOVE_RATE * passed_seconds

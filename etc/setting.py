@@ -404,12 +404,21 @@ class Joshua(object):
 
         },
         "x2": {
+            "key_frames": (1, ),
             "mana": 30,
-            "damage": 30,
-            "trigger_times": (0.2, 0.5, 0.8),
-            "trigger_ranges": (100, 150, 200),
-            "cd": 20,
-            "duration_time": 10,
+            "trigger_times": (0.1, 0.2, 0.3),
+            "trigger_ranges": (80, 120, 160),
+            "cd": 10,
+            "frozen_time": 3,
+            "ice_column_damage": 30,
+            "ice_column_life": 0.8,
+            "action_rate_scale_ratio": 0.2,
+            "ice_block_gen_num": 6,
+            "ice_block_pos_shake_x": 30,
+            "ice_fog_per_column_gen_num": 3,
+            "ice_fog_pos_shake_x": 30,
+            "ice_fog_vec_z": 10,
+            "ice_fog_life": 1,
         },
         "x3": {
 
@@ -1532,7 +1541,7 @@ class Sound(object):
     RENNE_ATTACKS2 = ("renne_attack", "renne_attack2", "renne_attack3")
     RENNE_WIN = "renne_win"
 
-    JOSHUA_ATTACKS = ("joshua_attack1", "joshua_attack2", "joshua_attack3")
+    JOSHUA_ATTACKS = ("joshua_attack1", "joshua_attack2", "joshua_attack3", "joshua_attack4")
 
     SWORD_HITS = ("attack_hit", "attack_hit2")
 
@@ -1566,6 +1575,21 @@ class Effect(object):
     DEATH_COIL_RECT = (128, 192, 128, 64)
     DEATH_COIL_SHADOW_INDEX = 0
     DEATH_COIL_SHADOW_RECT_DELTA_Y = 20
+
+    ICE_IMAGE_KEY = "e10"
+    ICE_FOG1_RECT = (0, 0, 64, 64)
+    ICE_FOG2_RECT = (64, 0, 64, 64)
+    ICE_FOG_RADIUS = 32
+    ICE_FOG_DX = 32
+    ICE_FOG_DY = 32
+    ICE_BLOCK1_RECT = (128, 0, 64, 64)
+    ICE_BLOCK1_RADIUS = 32
+    ICE_BLOCK1_DX = 32
+    ICE_BLOCK1_DY = 32
+    ICE_COLUMN_RECT = (192, 0, 64, 128)
+    ICE_COLUMN_RADIUS = 32
+    ICE_COLUMN_DX = 32
+    ICE_COLUMN_DY = 106
 
     HELL_CLAW_IMAGE_KEY = "e1"
     HELL_CLAW_RECT = (0, 184, 128, 72)
@@ -1770,7 +1794,7 @@ SPRITE_FRAMES = {
         cfg.JoshuaAction.BIG_SKILL: ("big_skill_38.png", 38, 16),
         cfg.JoshuaAction.KNEEL: ("kneel_4.png", 4, 10),
         cfg.JoshuaAction.REST: ("rest_4.png", 4, 8),
-        cfg.JoshuaAction.ROAR: ("roar_2.png", 2, 2),
+        cfg.JoshuaAction.ROAR: ("roar_2.png", 2, 4),
         cfg.JoshuaAction.UNDER_THUMP: ("under_thump.png", 1, 0),
         cfg.JoshuaAction.WIN: ("win_34.png", 34, 14),
     }),
@@ -1932,6 +1956,7 @@ SOUND_EFFECT = ("sound", {
     "joshua_attack1": "joshua_attack1.wav",
     "joshua_attack2": "joshua_attack2.wav",
     "joshua_attack3": "joshua_attack3.wav",
+    "joshua_attack4": "joshua_attack4.wav",
     "renne_under_attack": "renne_under_attack.wav",
     "renne_win": "renne_win.wav",
     "attack_hit": "attack_hit.wav",

@@ -185,9 +185,14 @@ class GameSprite(pygame.sprite.DirtySprite):
                     self.animation.show_cost_hp(poison["dps"])
 
         if self.status.get(cfg.SpriteStatus.FROZEN) is not None:
-            self.status[cfg.SpriteStatus.FROZEN]["time_left"] -= passed_seconds
-            if self.status[cfg.SpriteStatus.FROZEN]["time_left"] < 0:
+            self.status[cfg.SpriteStatus.FROZEN]["time"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.FROZEN]["time"] < 0:
                 self.status.pop(cfg.SpriteStatus.FROZEN)
+
+        if self.status.get(cfg.SpriteStatus.ACTION_RATE_SCALE) is not None:
+            self.status[cfg.SpriteStatus.ACTION_RATE_SCALE]["time"] -= passed_seconds
+            if self.status[cfg.SpriteStatus.ACTION_RATE_SCALE]["time"] < 0:
+                self.status.pop(cfg.SpriteStatus.ACTION_RATE_SCALE)
 
         if self.status.get(cfg.SpriteStatus.WEAK) is not None:
             self.status[cfg.SpriteStatus.WEAK]["time_left"] -= passed_seconds
@@ -718,6 +723,8 @@ class Joshua(Hero):
             self.sound_box.play(sfg.Sound.JOSHUA_ATTACKS[1])
         elif self.attacker.method == "run_attack":
             self.sound_box.play(sfg.Sound.JOSHUA_ATTACKS[2])
+        elif self.attacker.method == "magic_skill_2":
+            self.sound_box.play(sfg.Sound.JOSHUA_ATTACKS[3])
 
 
     def attack(self, passed_seconds):
@@ -729,6 +736,14 @@ class Joshua(Hero):
             self.attack3(passed_seconds)
         elif self.attacker.method == "run_attack":
             self.run_attack(passed_seconds)
+        elif self.attacker.method == "magic_skill_1":
+            self.x1(passed_seconds)
+        elif self.attacker.method == "magic_skill_2":
+            self.x2(passed_seconds)
+        elif self.attacker.method == "magic_skill_3":
+            self.x3(passed_seconds)
+        elif self.attacker.method == "magic_skill_4":
+            self.x4(passed_seconds)
 
 
     def attack1(self, passed_seconds):
@@ -820,7 +835,28 @@ class Joshua(Hero):
 
             if hit_count > 0:
                 self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
+
+
+    def x1(self, passed_seconds):
+        pass
         
+
+    def x2(self,  passed_seconds):
+        self.frame_action = cfg.JoshuaAction.ROAR
+        is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+        if is_finish:
+            self.reset_action()
+        else:
+            self.attacker.x2(self.animation.get_current_frame_add(self.frame_action))
+
+
+    def x3(self, passed_seconds):
+        pass
+
+
+    def x4(self, passed_seconds):
+        pass
+
 
 
 class Enemy(GameSprite):
@@ -860,6 +896,10 @@ class Enemy(GameSprite):
         k_vec = key_vec or self.key_vec
         k_vec.normalize()
         old_pos = self.pos.copy()
+
+        if self.status.get(cfg.SpriteStatus.ACTION_RATE_SCALE) is not None:
+            speed *= self.status[cfg.SpriteStatus.ACTION_RATE_SCALE]["ratio"]
+
         self.pos += k_vec * speed * passed_seconds
         self.area.center = self.pos("xy")
         if check_reachable and not self.reachable():
@@ -901,7 +941,8 @@ class Enemy(GameSprite):
 
 
     def walk(self, passed_seconds, check_reachable=False):
-        self.move(self.setting.WALK_SPEED, passed_seconds, check_reachable)
+        spd = self.setting.WALK_SPEED
+        self.move(spd, passed_seconds, check_reachable)
         self.animation.run_circle_frame(cfg.EnemyAction.WALK, passed_seconds)
 
 

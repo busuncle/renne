@@ -98,6 +98,22 @@ class MagicSkill(object):
 
 
 
+class IceColumn(MagicSprite):
+    ice_column_image = animation.effect_image_controller.get(
+        sfg.Effect.ICE_IMAGE_KEY).subsurface(sfg.Effect.ICE_COLUMN_RECT).convert_alpha()
+    def __init__(self, pos, damage, life):
+        super(IceColumn, self).__init__(pos, sfg.Effect.ICE_COLUMN_RADIUS, 
+            sfg.Effect.ICE_COLUMN_DX, sfg.Effect.ICE_COLUMN_DY, damage, self.ice_column_image)
+        self.life = life
+
+
+    def update(self, passed_seconds):
+        self.life -= passed_seconds
+        if self.life < 0:
+            self.status = cfg.Magic.STATUS_VANISH
+
+
+
 class Bomb(MagicSprite):
     bombs_image = animation.effect_image_controller.get(
         sfg.Effect.BOMB_IMAGE_KEY).subsurface(sfg.Effect.BOMB_RECT).convert_alpha()
@@ -735,7 +751,7 @@ class DestroyAeroliteSet(MagicSkill):
         self.trigger_times = list(params["trigger_times"])
 
         # do some modification for trigger_pos
-        delta_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[self.sprite.direction])
+        delta_vec = Vector2(cfg.Direction.DIRECT_TO_VEC[self.sprite.direction]).normalize()
         delta_vec.x *= self.params["fall_range"]
         delta_vec.y *= self.params["fall_range"]
         self.trigger_pos = self.sprite.pos + delta_vec
@@ -1146,6 +1162,88 @@ class DeathDomain(MagicSkill):
         r.center = self.init_pos("xy")
         r.centery *= 0.5
         camera.screen.blit(self.tips_area_mix, (r.x - camera.rect.x, r.y - camera.rect.y))
+
+
+
+class IceColumnBomb(MagicSkill):
+    ice_block1_image = animation.effect_image_controller.get(
+        sfg.Effect.ICE_IMAGE_KEY).subsurface(sfg.Effect.ICE_BLOCK1_RECT).convert_alpha()
+    ice_fog_images = []
+    for r in (sfg.Effect.ICE_FOG1_RECT, sfg.Effect.ICE_FOG2_RECT):
+        ice_fog_images.append(animation.effect_image_controller.get(
+            sfg.Effect.ICE_IMAGE_KEY).subsurface(r).convert_alpha())
+
+    def __init__(self, sprite, target_list, params):
+        super(IceColumnBomb, self).__init__(sprite, target_list)
+        self.init_pos = sprite.pos.copy()
+        self.center_rect = sprite.area.copy()
+        self.trigger_times = list(params["trigger_times"])
+        self.trigger_ranges = list(params["trigger_ranges"])
+        self.ice_column_damage = params["ice_column_damage"]
+        self.ice_column_life = params["ice_column_life"]
+        self.frozen_time = params["frozen_time"]
+        self.action_rate_scale_ratio = params["action_rate_scale_ratio"]
+        self.ice_block_gen_num = params["ice_block_gen_num"]
+        self.ice_block_pos_shake_x = params["ice_block_pos_shake_x"]
+        self.ice_fog_per_column_gen_num = params["ice_fog_per_column_gen_num"]
+        self.ice_fog_pos_shake_x = params["ice_fog_pos_shake_x"]
+        self.ice_fog_vec_z = params["ice_fog_vec_z"]
+        self.ice_fog_life = params["ice_fog_life"]
+        self.passed_seconds = 0
+
+
+    def update(self, passed_seconds):
+        self.passed_seconds += passed_seconds
+        if len(self.trigger_times) > 0 and self.passed_seconds > self.trigger_times[0]:
+            self.trigger_times.pop(0)
+            rng = self.trigger_ranges.pop(0)
+            for vec in cfg.Direction.VEC_ALL:
+                delta_vec = Vector2(vec).normalize()
+                delta_vec.x *= rng
+                delta_vec.y *= rng
+                pos = self.init_pos + delta_vec
+                ice_column = IceColumn(pos, self.ice_column_damage, self.ice_column_life)
+                self.magic_sprites.append(ice_column)
+                for _i in xrange(self.ice_fog_per_column_gen_num):
+                    x = randint(int(pos.x - self.ice_fog_pos_shake_x),
+                            int(pos.x + self.ice_fog_pos_shake_x))
+                    y = pos.y
+                    img = transform.rotate(choice(self.ice_fog_images), choice((90, 180, 270)))
+                    self.sprite.animation.particle_list.append(animation.Particle(
+                        img, Vector2(x, y), sfg.Effect.ICE_FOG_RADIUS,
+                        sfg.Effect.ICE_FOG_DX, sfg.Effect.ICE_FOG_DY, Vector2(0, 0), Vector2(0, 0),
+                        self.ice_fog_life, 
+                        randint(0, sfg.Effect.ICE_FOG_RADIUS),
+                        self.ice_fog_vec_z, pre_hide_time=random()))
+
+        for _i, ice_column in enumerate(self.magic_sprites):
+            for target in self.target_list:
+                if target not in self.has_hits and \
+                    (ice_column.area.colliderect(target.area) or self.center_rect.colliderect(target.area)):
+                    self.has_hits.add(target)
+                    target.attacker.handle_under_attack(self.sprite, self.ice_column_damage, 
+                        cfg.Attack.METHOD_MAGIC)
+                    target.attacker.handle_additional_status(cfg.SpriteStatus.ACTION_RATE_SCALE,
+                        {"ratio": self.action_rate_scale_ratio, "time": self.frozen_time})
+                    for _j in xrange(self.ice_block_gen_num):
+                        x = randint(int(target.pos.x - self.ice_block_pos_shake_x), 
+                                int(target.pos.x + self.ice_block_pos_shake_x))
+                        y = target.pos.y
+                        img = transform.rotate(self.ice_block1_image, choice((90, 180, 270)))
+                        target.animation.particle_list.append(animation.Particle(
+                            img, Vector2(x, y), sfg.Effect.ICE_BLOCK1_RADIUS,
+                            sfg.Effect.ICE_BLOCK1_DX, sfg.Effect.ICE_BLOCK1_DY, Vector2(0, 0), Vector2(0, 0),
+                            self.frozen_time,
+                            randint(0, target.setting.HEIGHT),
+                            follow_sprite=target))
+
+        for i, ice_column in enumerate(self.magic_sprites):
+            ice_column.update(passed_seconds)
+            if ice_column.status == cfg.Magic.STATUS_VANISH:
+                self.magic_sprites.pop(i)
+
+        if len(self.trigger_times) == 0 and len(self.magic_sprites) == 0:
+            self.status = cfg.Magic.STATUS_VANISH
 
 
 
@@ -1673,7 +1771,14 @@ class JoshuaAttacker(AngleAttacker):
 
 
     def x2(self, current_frame_add):
-        pass
+        sp = self.sprite
+        if self.current_magic is None and int(current_frame_add) in self.magic_skill_2_params["key_frames"]:
+            sp.mp -= self.magic_skill_2_params["mana"]
+            self.magic_cds["magic_skill_2"] = self.magic_skill_2_params["cd"]
+            self.current_magic = IceColumnBomb(sp, sp.enemies, self.magic_skill_2_params)
+            self.magic_list.append(self.current_magic)
+            # change mana into sp the same time
+            sp.sp = min(sp.sp + self.magic_skill_2_params["mana"] * 2, sp.setting.SP)
 
 
     def x3(self, current_frame_add):
@@ -2049,7 +2154,7 @@ class EnemyFrozenShortAttacker(EnemyShortAttacker):
         hit_it = super(EnemyFrozenShortAttacker, self).run(target, current_frame_add)
         if hit_it and happen(self.frozen_prob):
             target.attacker.handle_additional_status(cfg.SpriteStatus.FROZEN, 
-                {"time_left": self.frozen_time, "action_rate_scale": self.action_rate_scale})
+                {"time": self.frozen_time, "action_rate_scale": self.action_rate_scale})
             words = sfg.Font.ARIAL_BLACK_24.render("Frozen!", True, pygame.Color("cyan"))
             sp = self.sprite
             sp.animation.show_words(words, 0.3, 
