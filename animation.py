@@ -305,9 +305,6 @@ class SpriteAnimator(object):
     def update_image_mix(self, passed_seconds):
         sp = self.sprite
         self.image_mix = None
-        if sp.status.get(cfg.SpriteStatus.POISON) is not None:
-            self.image_mix = self.blink.make(self.image, passed_seconds)
-            self.image_mix.fill(sfg.SpriteStatus.DEBUFF_POISON_MIX_COLOR, special_flags=BLEND_ADD)
 
         if sp.status.get(cfg.SpriteStatus.WEAK) is not None:
             sp.status[cfg.SpriteStatus.WEAK]["y"] += sfg.SpriteStatus.DEBUFF_WEAK_Y_MOVE_RATE * passed_seconds

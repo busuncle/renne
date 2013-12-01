@@ -1788,7 +1788,7 @@ SPRITE_FRAMES = {
         cfg.JoshuaAction.STAND: ("stand_8.png", 8, 12),
         cfg.JoshuaAction.WALK: ("run_8.png", 8, 14),
         cfg.JoshuaAction.RUN: ("run_8.png", 8, 16),
-        cfg.JoshuaAction.ATTACK: ("attack1_13.png", 13, 18),
+        cfg.JoshuaAction.ATTACK: ("attack1_13.png", 13, 20),
         cfg.JoshuaAction.ATTACK2: ("attack2_14.png", 14, 22),
         cfg.JoshuaAction.SKILL: ("skill_10.png", 10, 16),
         cfg.JoshuaAction.BIG_SKILL: ("big_skill_38.png", 38, 16),

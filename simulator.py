@@ -247,10 +247,10 @@ class PoisonSet(MagicSkill):
                 if target not in self.has_hits \
                     and poison.area.colliderect(target.area):
                     self.has_hits.add(target)
-                    if target.status.get(cfg.SpriteStatus.POISON) is None:
-                        target.attacker.handle_additional_status(cfg.SpriteStatus.POISON,
-                            {"dps": self.params["damage"], "time_list": range(self.params["damage_time"]),
-                            "time_left": self.params["damage_time"]})
+                    target.attacker.handle_additional_status(cfg.SpriteStatus.POISON,
+                        {"dps": self.params["damage"], "time_list": range(self.params["damage_time"]),
+                        "time_left": self.params["damage_time"]})
+                    target.status[cfg.SpriteStatus.UNDER_ATTACK] = {"time": sfg.Sprite.UNDER_ATTACK_EFFECT_TIME}
 
             if poison.height > 0 and (not self.reachable(poison.pos)):
                 # this poison will no longer move horizontally

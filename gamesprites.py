@@ -2,12 +2,13 @@
 
 import pygame
 from pygame.locals import *
-import random
+from pygame import transform
+from random import gauss, randint, choice, random, sample, uniform
 from time import time
 import math
 from gameobjects.vector2 import Vector2
 import simulator
-from animation import SpriteEmotionAnimator, RenneAnimator, JoshuaAnimator, EnemyAnimator
+from animation import SpriteEmotionAnimator, RenneAnimator, JoshuaAnimator, EnemyAnimator, Particle
 from musicbox import SoundBox
 import controller
 from gameworld import StaticObjectGroup
@@ -142,8 +143,8 @@ class GameSprite(pygame.sprite.DirtySprite):
                 self.set_emotion(cfg.SpriteEmotion.NORMAL, force=True)
 
         if self.status.get(cfg.SpriteStatus.BODY_SHAKE) is not None:
-            self.status[cfg.SpriteStatus.BODY_SHAKE]["dx"] = random.randint(-5, 5)
-            self.status[cfg.SpriteStatus.BODY_SHAKE]["dy"] = random.randint(-3, 3)
+            self.status[cfg.SpriteStatus.BODY_SHAKE]["dx"] = randint(-5, 5)
+            self.status[cfg.SpriteStatus.BODY_SHAKE]["dy"] = randint(-3, 3)
             self.status[cfg.SpriteStatus.BODY_SHAKE]["time"] -= passed_seconds
             if self.status[cfg.SpriteStatus.BODY_SHAKE]["time"] < 0:
                 self.status.pop(cfg.SpriteStatus.BODY_SHAKE)
@@ -182,7 +183,20 @@ class GameSprite(pygame.sprite.DirtySprite):
                     poison["time_list"].pop()
                     self.hp -= poison["dps"]
                     self.status["hp"] = self.cal_sprite_status(self.hp, self.setting.HP)
+                    self.status[cfg.SpriteStatus.UNDER_ATTACK] = {"time": sfg.Sprite.UNDER_ATTACK_EFFECT_TIME}
                     self.animation.show_cost_hp(poison["dps"])
+                    pil = simulator.PoisonSet.poison_image_list
+                    for _i in xrange(6):
+                        img = transform.rotate(pil[2], choice((90, 180, 270)))
+                        x = randint(int(self.pos.x - self.setting.RADIUS), 
+                            int(self.pos.x + self.setting.RADIUS))
+                        y = self.pos.y
+                        self.animation.particle_list.append(Particle(
+                            img, Vector2(x, y), img.get_width() * 0.5, 
+                            img.get_width() * 0.5, img.get_height() * 0.5,
+                            Vector2(0, 0), Vector2(0, 0), random() + 0.5, 
+                            randint(self.setting.HEIGHT * 0.3, self.setting.HEIGHT * 0.6),
+                            15, 0, random(), self))
 
         if self.status.get(cfg.SpriteStatus.FROZEN) is not None:
             self.status[cfg.SpriteStatus.FROZEN]["time"] -= passed_seconds
@@ -548,11 +562,11 @@ class Renne(Hero):
 
     def play_related_sound(self):
         if self.attacker.method == "attack2":
-            self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACKS))
+            self.sound_box.play(choice(sfg.Sound.RENNE_ATTACKS))
         elif self.attacker.method == "run_attack":
-            self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACKS))
+            self.sound_box.play(choice(sfg.Sound.RENNE_ATTACKS))
         elif self.attacker.method in ("magic_skill_1", "magic_skill_2", "magic_skill_3"):
-            self.sound_box.play(random.choice(sfg.Sound.RENNE_ATTACKS2))
+            self.sound_box.play(choice(sfg.Sound.RENNE_ATTACKS2))
         elif self.attacker.method == "magic_skill_4":
             self.sound_box.play(sfg.Sound.RENNE_WIN)
 
@@ -595,7 +609,7 @@ class Renne(Hero):
             if hit_count > 0:
                 # change combo count if this attack has hit some one
                 self.attack_combo["last_time"] = time()
-                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
+                self.sound_box.play(choice(sfg.Sound.SWORD_HITS))
 
         self.animation.run_sequence_frame(cfg.SpriteAction.ATTACK, passed_seconds)
 
@@ -621,7 +635,7 @@ class Renne(Hero):
                         hit_count += 1
 
                 if hit_count > 0:
-                    self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
+                    self.sound_box.play(choice(sfg.Sound.SWORD_HITS))
 
 
     def run_attack(self, passed_seconds):
@@ -642,7 +656,7 @@ class Renne(Hero):
                     hit_count += 1
 
             if hit_count > 0:
-                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
+                self.sound_box.play(choice(sfg.Sound.SWORD_HITS))
 
 
     def destroy_fire(self, passed_seconds):
@@ -766,7 +780,7 @@ class Joshua(Hero):
             if hit_count > 0:
                 # change combo count if this attack has hit some one
                 self.attack_combo["last_time"] = time()
-                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
+                self.sound_box.play(choice(sfg.Sound.SWORD_HITS))
 
         self.animation.run_sequence_frame(cfg.SpriteAction.ATTACK, passed_seconds)
 
@@ -791,7 +805,7 @@ class Joshua(Hero):
 
             if hit_count > 0:
                 self.attack_combo["last_time"] = time()
-                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
+                self.sound_box.play(choice(sfg.Sound.SWORD_HITS))
 
         self.animation.run_sequence_frame(cfg.JoshuaAction.ATTACK, passed_seconds)
 
@@ -806,7 +820,7 @@ class Joshua(Hero):
         if is_finish:
             self.reset_action()
             self.attack_combo["current_attack"] = 0
-            self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
+            self.sound_box.play(choice(sfg.Sound.SWORD_HITS))
         else:
             hit_count = 0
             for em in self.enemies:
@@ -815,7 +829,7 @@ class Joshua(Hero):
                     hit_count += 1
 
             if hit_count > 0:
-                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
+                self.sound_box.play(choice(sfg.Sound.SWORD_HITS))
 
 
     def run_attack(self, passed_seconds):
@@ -834,7 +848,7 @@ class Joshua(Hero):
                     hit_count += 1
 
             if hit_count > 0:
-                self.sound_box.play(random.choice(sfg.Sound.SWORD_HITS))
+                self.sound_box.play(choice(sfg.Sound.SWORD_HITS))
 
 
     def x1(self, passed_seconds):
@@ -960,7 +974,7 @@ class Enemy(GameSprite):
             hit = self.attacker.run(self.brain.target, 
                 self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK))
             if hit:
-                self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
+                self.sound_box.play(choice(sfg.Sound.ENEMY_ATTACK_HITS))
 
         return finish, hit
 
@@ -1153,7 +1167,7 @@ class Leonhardt(Enemy):
     def regular(self, passed_seconds):
         if self.frame_action is None or self.frame_action == cfg.EnemyAction.STAND:
             self.sound_box.play(sfg.Sound.LEONHARDT_ATTACKS[0])
-            self.frame_action = random.choice(
+            self.frame_action = choice(
                 (cfg.LeonHardtAction.ATTACK, cfg.LeonHardtAction.ATTACK2))
 
         is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
@@ -1163,7 +1177,7 @@ class Leonhardt(Enemy):
             hit_it = self.attacker.run(self.brain.target, 
                 self.animation.get_current_frame_add(self.frame_action))
             if hit_it:
-                self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
+                self.sound_box.play(choice(sfg.Sound.ENEMY_ATTACK_HITS))
 
 
     def death_coil(self, passed_seconds):
@@ -1301,7 +1315,7 @@ class CastleWarrior(Enemy):
                 check_reachable=True, key_vec=self.attacker.key_vec)
             hit_it = self.attacker.run(self.brain.target, self.thump_frame)
             if hit_it:
-                self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
+                self.sound_box.play(choice(sfg.Sound.ENEMY_ATTACK_HITS))
                 words = sfg.Effect.THUMP_WORD_FONT.render(sfg.Effect.THUMP_WORD, True, 
                     sfg.Effect.THUMP_WORD_COLOR)
                 self.animation.show_words(words, sfg.Effect.THUMP_WORD_SHOW_TIME, 
@@ -1382,7 +1396,7 @@ class TwoHeadSkeleton(Enemy):
                 # timing for attack calculation
                 hit_it = self.attacker.run(self.brain.target, None)
                 if hit_it:
-                    self.sound_box.play(random.choice(sfg.Sound.ENEMY_ATTACK_HITS))
+                    self.sound_box.play(choice(sfg.Sound.ENEMY_ATTACK_HITS))
 
                 # fall back in air
                 self.fall_in_air_v_x.x = - self.fall_in_air_v_x.x
@@ -1489,8 +1503,8 @@ class GanDie(Enemy):
         if self.spit_poison_ready_time_add == 0:
             # first time into spit poison, add body shake status
             self.spit_poison_ready_time_add += passed_seconds
-            self.status[cfg.SpriteStatus.BODY_SHAKE] = {"dx": random.randint(-5, 5), 
-                "dy": random.randint(-3, 3), "time": 999}
+            self.status[cfg.SpriteStatus.BODY_SHAKE] = {"dx": randint(-5, 5), 
+                "dy": randint(-3, 3), "time": 999}
 
         elif self.spit_poison_ready_time_add < self.spit_poison_ready_time:
             self.spit_poison_ready_time_add += passed_seconds
@@ -1791,10 +1805,10 @@ class Ambush(pygame.sprite.LayeredDirty):
         for sp in self.sprites():
             if self.appear_type == cfg.Ambush.APPEAR_TYPE_TOP_DOWN:
                 sp.status[cfg.SpriteStatus.AMBUSH] = {"type": self.appear_type, 
-                    "height": random.randint(*sfg.Ambush.APPEAR_TYPE_TOP_DOWN_HEIGHT_RAND_RANGE),
+                    "height": randint(*sfg.Ambush.APPEAR_TYPE_TOP_DOWN_HEIGHT_RAND_RANGE),
                     "speed": 0,
                     "acceleration": sfg.Physics.GRAVITY_ACCELERATION,
-                    "init_delay": random.uniform(*sfg.Ambush.APPEAR_TYPE_TOP_DOWN_INIT_DELAY_RAND_RANGE),
+                    "init_delay": uniform(*sfg.Ambush.APPEAR_TYPE_TOP_DOWN_INIT_DELAY_RAND_RANGE),
                     "status": cfg.Ambush.STATUS_INIT}
 
 
