@@ -1615,6 +1615,11 @@ class Effect(object):
     POISON_RECT2 = (0, 192, 128, 64)
     POISON_RECT3 = (128, 128, 128, 128)
 
+    POISON_FOG_IMAGE_KEY = "e7"
+    POISON_FOG_RECT = (160, 32, 32, 32)
+    POISON_FOG_GEN_NUM = 8
+    POISON_FOG_VEC_Z = 15
+
     BLOOD_IMAGE_KEY = "e9"
     BLOOD_RECT_LIST = (
         (0, 32, 32, 32),

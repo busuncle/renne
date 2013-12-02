@@ -9,6 +9,7 @@ import math
 from gameobjects.vector2 import Vector2
 import simulator
 from animation import SpriteEmotionAnimator, RenneAnimator, JoshuaAnimator, EnemyAnimator, Particle
+from animation import effect_image_controller
 from musicbox import SoundBox
 import controller
 from gameworld import StaticObjectGroup
@@ -185,18 +186,20 @@ class GameSprite(pygame.sprite.DirtySprite):
                     self.status["hp"] = self.cal_sprite_status(self.hp, self.setting.HP)
                     self.status[cfg.SpriteStatus.UNDER_ATTACK] = {"time": sfg.Sprite.UNDER_ATTACK_EFFECT_TIME}
                     self.animation.show_cost_hp(poison["dps"])
-                    pil = simulator.PoisonSet.poison_image_list
-                    for _i in xrange(6):
-                        img = transform.rotate(pil[2], choice((90, 180, 270)))
-                        x = randint(int(self.pos.x - self.setting.RADIUS), 
-                            int(self.pos.x + self.setting.RADIUS))
+                    
+                    poison_fog = effect_image_controller.get(sfg.Effect.POISON_FOG_IMAGE_KEY).subsurface(
+                        sfg.Effect.POISON_FOG_RECT).convert_alpha()
+                    for _i in xrange(sfg.Effect.POISON_FOG_GEN_NUM):
+                        img = transform.rotate(poison_fog, choice((90, 180, 270)))
+                        x = randint(int(self.pos.x - self.setting.RADIUS * 1.5), 
+                            int(self.pos.x + self.setting.RADIUS * 1.5))
                         y = self.pos.y
                         self.animation.particle_list.append(Particle(
                             img, Vector2(x, y), img.get_width() * 0.5, 
                             img.get_width() * 0.5, img.get_height() * 0.5,
                             Vector2(0, 0), Vector2(0, 0), random() + 0.5, 
-                            randint(self.setting.HEIGHT * 0.3, self.setting.HEIGHT * 0.6),
-                            15, 0, random(), self))
+                            randint(self.setting.HEIGHT * 0.4, self.setting.HEIGHT * 0.6),
+                            sfg.Effect.POISON_FOG_VEC_Z, 0, random(), self))
 
         if self.status.get(cfg.SpriteStatus.FROZEN) is not None:
             self.status[cfg.SpriteStatus.FROZEN]["time"] -= passed_seconds
