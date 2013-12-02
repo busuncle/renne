@@ -717,6 +717,7 @@ class Joshua(Hero):
 
         self.attack1_start_frame = self.setting.ATTACKER_PARAMS["attack1"]["start_frame"]
         self.attack1_end_frame = self.setting.ATTACKER_PARAMS["attack1"]["end_frame"]
+        self.attack1_start_frame2 = self.setting.ATTACKER_PARAMS["attack1"]["start_frame2"]
         self.attack2_start_frame = self.setting.ATTACKER_PARAMS["attack2"]["start_frame"]
         self.attack2_end_frame = self.setting.ATTACKER_PARAMS["attack2"]["end_frame"]
         self.attack3_start_frame = self.setting.ATTACKER_PARAMS["attack3"]["start_frame"]
@@ -763,6 +764,9 @@ class Joshua(Hero):
     def attack1(self, passed_seconds):
         self.frame_action = cfg.JoshuaAction.ATTACK
         current_frame_add = self.animation.get_current_frame_add(self.frame_action)
+
+        if self.attack_combo["current_attack"] == 1 and current_frame_add < self.attack1_start_frame2:
+            current_frame_add = self.attack1_start_frame2
 
         if current_frame_add >= self.attack1_end_frame:
             if len(self.attacker.has_hits) > 0:
