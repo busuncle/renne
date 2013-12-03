@@ -155,6 +155,7 @@ class Poison(MagicSprite):
         self.v_y = 0
         self.life_time_left = life_time
         self.fade_out_list = [{"life_time_left": i * life_time, "scale_ratio": i} for i in [0.7, 0.5]]
+        self.effective = True
 
 
     def update(self, passed_seconds):
@@ -170,6 +171,8 @@ class Poison(MagicSprite):
                 self.area.width *= scale_ratio
                 self.area.height *= scale_ratio
                 self.area.center = self.pos("xy") # reassign area center
+                if len(self.fade_out_list) == 0:
+                    self.effective = False
 
         else:
             # in the air
@@ -245,6 +248,7 @@ class PoisonSet(MagicSkill):
         for i, poison in enumerate(self.magic_sprites):
             for target in self.target_list:
                 if target not in self.has_hits \
+                    and poison.effective \
                     and poison.area.colliderect(target.area):
                     self.has_hits.add(target)
                     target.attacker.handle_additional_status(cfg.SpriteStatus.POISON,
