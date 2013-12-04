@@ -382,7 +382,7 @@ class GameDirector(object):
 
     def update(self, passed_seconds):
         if self.status == cfg.GameStatus.IN_PROGRESS:
-            if self.hero.status["hp"] == cfg.HpStatus.DIE:
+            if self.hero.hp_status == cfg.HpStatus.DIE:
                 # hero is dead, game over
                 self.status = cfg.GameStatus.HERO_LOSE
                 return
@@ -397,18 +397,18 @@ class GameDirector(object):
             self.achievement.chapter_score.update(passed_seconds)
 
         if self.win_cond == sfg.Chapter.WIN_CONDITION_BOSS_DIE \
-            and self.boss.status["hp"] == cfg.HpStatus.DIE:
+            and self.boss.hp_status == cfg.HpStatus.DIE:
             # in an chapter that boss die you win, kill all enemy when boss die
             for em in self.enemy_list:
                 if em.hp > 0:
                     em.hp = 0
-                    em.status["hp"] = cfg.HpStatus.DIE
+                    em.hp_status = cfg.HpStatus.DIE
 
         for em in self.enemy_list:
-            if em.status["hp"] == cfg.HpStatus.DIE:
+            if em.hp_status == cfg.HpStatus.DIE:
                 can_be_removed = em.animation.dead_tick()
                 if can_be_removed:
-                    em.status["hp"] = cfg.HpStatus.VANISH
+                    em.hp_status = cfg.HpStatus.VANISH
                     # kill the sprite from sprite groups containing it, but not chaning its internal status
                     em.kill()
 
@@ -560,7 +560,7 @@ class HeroStatus(object):
         camera.screen.blit(self.status_panel, sfg.SpriteStatus.HERO_PANEL_BLIT_POS)
 
         # Renne's head, showing her status
-        camera.screen.blit(self.get_current_head(self.hero.status["hp"]), sfg.SpriteStatus.HERO_HEAD_BLIT_POS)
+        camera.screen.blit(self.get_current_head(self.hero.hp_status), sfg.SpriteStatus.HERO_HEAD_BLIT_POS)
 
         # hp, mp, sp words
         camera.screen.blit(sfg.SpriteStatus.WORDS["hero_hp"], sfg.SpriteStatus.HERO_HP_TITLE_BLIT_POS)
@@ -575,7 +575,7 @@ class HeroStatus(object):
 
         # draw the hp bar for Renne
         self.draw_hero_bar(camera, self.hero.hp, self.hero.setting.HP, self.hero_hp_bar, 
-            sfg.SpriteStatus.SPRITE_HP_COLORS[self.hero.status["hp"]], 
+            sfg.SpriteStatus.SPRITE_HP_COLORS[self.hero.hp_status], 
             sfg.SpriteStatus.HERO_HP_BLIT_POS)
 
         # draw the mp bar for Renne

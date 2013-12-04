@@ -1450,10 +1450,10 @@ class GameStatus(object):
     CHAPTER_SCORE_FONT = Font.HOLLOW_48
     CHAPTER_SCORE_COLOR = pygame.Color("white")
 
-    CHAPTER_NEXT = Font.ARIAL_BLACK_32.render("press enter to continue", True, pygame.Color("gray"))
+    CHAPTER_NEXT = Font.MSYH_32.render(u"请按 回车 继续", True, pygame.Color("gray"))
     CHAPTER_NEXT_BLIT_Y = 500
 
-    CHAPTER_AGAIN = Font.ARIAL_BLACK_32.render("press enter to play again", True, pygame.Color("gray"))
+    CHAPTER_AGAIN = Font.MSYH_32.render(u"请按 回车 重来", True, pygame.Color("gray"))
     CHAPTER_AGAIN_BLIT_Y = 460
 
     CHAPTER_SCORE = {
@@ -1532,8 +1532,8 @@ class Music(object):
     START_GAME_KEY = "start_game"
     END_GAME_KEY = "end_game"
     CHAPTER_KEY_PREFIX = "chapter_"
-    HERO_WIN_KEY = "hero_win"
-    HERO_LOSE_KEY = "hero_lose"
+    HERO_WIN_KEY = "%s_win" % CONFIG["hero"]
+    HERO_LOSE_KEY = "%s_lose" % CONFIG["hero"]
 
 
 
@@ -1950,8 +1950,10 @@ BACKGROUND_MUSICS = ("background", {
     "chapter_5": "chapter_5.ogg",
     "chapter_998": "chapter_5.ogg",
     "chapter_999": "chapter_5.ogg",
-    "hero_win": "hero_win.wav",
-    "hero_lose": "hero_lose.wav",
+    "renne_win": "renne_win.wav",
+    "renne_lose": "renne_lose.wav",
+    "joshua_win": "joshua_win.wav",
+    "joshua_lose": "joshua_lose.wav",
 })
 
 SOUND_EFFECT = ("sound", {

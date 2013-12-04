@@ -441,7 +441,7 @@ class SpriteDefence(State):
         self.enter_timer.begin(gauss(self.ai.DEFENCE_TIME_MU, self.ai.DEFENCE_TIME_SIGMA))
         sp = self.sprite
         sp.direction = cal_face_direct(sp.pos.as_tuple(), sp.brain.target.pos.as_tuple())
-        #if sp.status["hp"] == cfg.HpStatus.DANGER and happen(self.ai.DEFENCE_BACKWARD_PROB):
+        #if sp.hp_status == cfg.HpStatus.DANGER and happen(self.ai.DEFENCE_BACKWARD_PROB):
         #    self.action_to_do = cfg.EnemyAction.BACKWARD
         #else:
         #    self.action_to_do = cfg.EnemyAction.STAND

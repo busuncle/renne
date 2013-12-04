@@ -50,7 +50,9 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.hp = hp
         self.atk = atk
         self.dfs = dfs
-        self.status = self.gen_sprite_init_status()
+        self.status = {}
+        self.hp_status = cfg.HpStatus.HEALTHY
+        self.emotion = cfg.SpriteEmotion.NORMAL
         self.buff = {}
         self.sound_box = SoundBox()
         self.pos = Vector2(pos)
@@ -59,12 +61,6 @@ class GameSprite(pygame.sprite.DirtySprite):
         self.action = cfg.SpriteAction.STAND
         self.frame_action = None
         self.key_vec = Vector2() # a normal vector represents the direction
-
-
-    def gen_sprite_init_status(self):
-        # a common value set a sprite,
-        # a chaos dict that holding many kinds of status, i don't want many attributes, so i use it
-        return {"hp": cfg.HpStatus.HEALTHY, "emotion": cfg.SpriteEmotion.NORMAL}
         
 
     def cal_sprite_status(self, current_hp, full_hp):
@@ -110,11 +106,11 @@ class GameSprite(pygame.sprite.DirtySprite):
 
 
     def set_emotion(self, emotion, force=False):
-        if not force and self.status["emotion"] in (cfg.SpriteEmotion.STUN, cfg.SpriteEmotion.DIZZY):
+        if not force and self.emotion in (cfg.SpriteEmotion.STUN, cfg.SpriteEmotion.DIZZY):
             return
 
-        self.emotion_animation.reset_frame(self.status["emotion"])
-        self.status["emotion"] = emotion
+        self.emotion_animation.reset_frame(self.emotion)
+        self.emotion = emotion
 
 
     def update_status(self, passed_seconds):
@@ -183,7 +179,7 @@ class GameSprite(pygame.sprite.DirtySprite):
                 if len(poison["time_list"]) > 0 and poison["time_left"] <= poison["time_list"][-1]:
                     poison["time_list"].pop()
                     self.hp -= poison["dps"]
-                    self.status["hp"] = self.cal_sprite_status(self.hp, self.setting.HP)
+                    self.hp_status = self.cal_sprite_status(self.hp, self.setting.HP)
                     self.status[cfg.SpriteStatus.UNDER_ATTACK] = {"time": sfg.Sprite.UNDER_ATTACK_EFFECT_TIME}
                     self.animation.show_cost_hp(poison["dps"])
                     
@@ -275,7 +271,7 @@ class Hero(GameSprite):
         self.dfs = self.setting.DFS = self.setting.LEVEL_DFS[idx]
         self.attacker.cal_real_attack_damage()
         self.attacker.refresh_skill()
-        self.status = self.gen_sprite_init_status()
+        self.status = {}
 
 
     def place(self, pos, direction):
@@ -332,7 +328,7 @@ class Hero(GameSprite):
                     real_recover_hp = min(self.setting.HP - self.hp, 
                         collided_obj.setting.RECOVER_HP)
                     self.hp += real_recover_hp
-                    self.status["hp"] = self.cal_sprite_status(self.hp, self.setting.HP)
+                    self.hp_status = self.cal_sprite_status(self.hp, self.setting.HP)
                     self.status[cfg.SpriteStatus.RECOVER_HP] = {"time": sfg.Sprite.RECOVER_HP_EFFECT_TIME}
                     self.animation.show_recover_hp(real_recover_hp)
                     collided_obj.status = cfg.StaticObject.STATUS_VANISH
@@ -340,7 +336,7 @@ class Hero(GameSprite):
 
 
     def stand(self, passed_seconds):
-        if self.status["hp"] != cfg.HpStatus.DIE:
+        if self.hp_status != cfg.HpStatus.DIE:
             self.sp = min(self.setting.SP, self.sp + self.setting.SP_RECOVERY_RATE * passed_seconds)
             self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * passed_seconds)
         self.animation.run_circle_frame(cfg.SpriteAction.STAND, passed_seconds)
@@ -907,7 +903,7 @@ class Enemy(GameSprite):
 
     def draw(self, camera):
         self.animation.draw(camera)
-        if self.status["hp"] == cfg.HpStatus.DIE:
+        if self.hp_status == cfg.HpStatus.DIE:
             return
 
         self.emotion_animation.draw(camera)
@@ -1041,7 +1037,7 @@ class Enemy(GameSprite):
                 # do nothing
                 return
 
-        if self.status["hp"] == cfg.HpStatus.DIE:
+        if self.hp_status == cfg.HpStatus.DIE:
             return
 
         if self.status.get(cfg.SpriteStatus.STUN) is not None \
@@ -1114,7 +1110,7 @@ class Enemy(GameSprite):
 
         self.update_status(passed_seconds)
 
-        if self.status["hp"] != cfg.HpStatus.DIE \
+        if self.hp_status != cfg.HpStatus.DIE \
             and self.status.get(cfg.SpriteStatus.STUN) is None \
             and self.status.get(cfg.SpriteStatus.DIZZY) is None:
 

@@ -1274,7 +1274,7 @@ class Attacker(object):
         sp = self.sprite
         cost_hp = int(cost_hp)
         sp.hp = max(sp.hp - cost_hp, 0)
-        sp.status["hp"] = sp.cal_sprite_status(sp.hp, sp.setting.HP)
+        sp.hp_status = sp.cal_sprite_status(sp.hp, sp.setting.HP)
         sp.status[cfg.SpriteStatus.UNDER_ATTACK] = {"time": sfg.Sprite.UNDER_ATTACK_EFFECT_TIME}
         sp.animation.show_cost_hp(cost_hp)
 
@@ -1360,7 +1360,7 @@ class AngleAttacker(Attacker):
         if target in self.has_hits:
             return False
 
-        if target.status["hp"] not in cfg.HpStatus.ALIVE:
+        if target.hp_status not in cfg.HpStatus.ALIVE:
             return False
 
         if target.status.get(cfg.SpriteStatus.IN_AIR) is not None \
@@ -1636,7 +1636,7 @@ class RenneAttacker(AngleAttacker):
         if len(self.has_hits) > 0:
             self.hit_record.append({"time": time(), "n_hit": len(self.has_hits)})
             for sp in self.has_hits:
-                if sp.status["hp"] == cfg.HpStatus.DIE:
+                if sp.hp_status == cfg.HpStatus.DIE:
                     self.kill_record.append({"time": time()})
             self.has_hits.clear()
 
@@ -1803,14 +1803,14 @@ class JoshuaAttacker(AngleAttacker):
 class EnemyAngleAttacker(AngleAttacker):
     def handle_under_attack(self, from_who, cost_hp, attack_method=cfg.Attack.METHOD_REGULAR):
         sp = self.sprite
-        if sp.status["hp"] not in cfg.HpStatus.ALIVE:
+        if sp.hp_status not in cfg.HpStatus.ALIVE:
             return
 
         super(EnemyAngleAttacker, self).handle_under_attack(from_who, cost_hp, attack_method=attack_method)
         sp.cal_angry(cost_hp)
         sp.set_target(from_who)
         # add exp to hero if this enemy is die
-        if sp.status["hp"] == cfg.HpStatus.DIE:
+        if sp.hp_status == cfg.HpStatus.DIE:
             from_who.add_exp(sp.setting.EXP)
 
 
@@ -2052,7 +2052,7 @@ class EnemyBloodShortAttacker(EnemyShortAttacker):
         if hit_it:
             sp = self.sprite
             sp.hp = min(sp.hp + self.suck_blood_ratio * sp.setting.ATK, sp.setting.HP)
-            sp.status["hp"] = sp.cal_sprite_status(sp.hp, sp.setting.HP)
+            sp.hp_status = sp.cal_sprite_status(sp.hp, sp.setting.HP)
             words = sfg.Font.ARIAL_BLACK_24.render("Blood!", True, pygame.Color("darkred"))
             sp.animation.show_words(words, 0.3,
                 (sp.pos.x - words.get_width() * 0.5, sp.pos.y * 0.5 - sp.setting.HEIGHT - 50))
@@ -2309,7 +2309,7 @@ class EnemySelfDestructionAttacker(EnemyShortAttacker):
             self.bomb_thump_crick_time, self.bomb_thump_acceleration, self.bomb_thump_out_speed)
         self.magic_list.append(self_destruction)
         self.bomb_begin = True
-        self.sprite.status["hp"] = cfg.HpStatus.DIE
+        self.sprite.hp_status = cfg.HpStatus.DIE
 
 
 

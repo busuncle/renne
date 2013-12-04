@@ -310,7 +310,7 @@ class SpriteAnimator(object):
             sp.status[cfg.SpriteStatus.WEAK]["y"] += sfg.SpriteStatus.DEBUFF_WEAK_Y_MOVE_RATE * passed_seconds
             sp.status[cfg.SpriteStatus.WEAK]["y"] %= sfg.SpriteStatus.DEBUFF_WEAK_Y_MAX
 
-        if sp.status["hp"] != cfg.HpStatus.DIE \
+        if sp.hp_status != cfg.HpStatus.DIE \
             and sp.status.get(cfg.SpriteStatus.UNDER_ATTACK) is not None:
             self.image_mix = self.image.copy()
             self.image_mix.fill(sfg.Sprite.UNDER_ATTACK_MIX_COLOR, special_flags=BLEND_ADD)
@@ -385,7 +385,7 @@ class SpriteAnimator(object):
                 sp.pos.y * 0.5 - camera.rect.y - sp.setting.HEIGHT - \
                     sfg.SpriteStatus.DEBUFF_WEAK_BLIT_HEIGHT_DELTA + dy))
 
-        if self.sprite.status["hp"] != cfg.HpStatus.VANISH:
+        if self.sprite.hp_status != cfg.HpStatus.VANISH:
             self.words_renderer.draw(camera)
 
 
@@ -487,7 +487,7 @@ class EnemyAnimator(SpriteAnimator):
         self.hp_bar.fill(sfg.SpriteStatus.SPRITE_BAR_BG_COLOR)
         r = self.hp_bar.get_rect()
         r.width *= float(sp.hp) / sp.setting.HP
-        hp_color = sfg.SpriteStatus.SPRITE_HP_COLORS[sp.status["hp"]]
+        hp_color = sfg.SpriteStatus.SPRITE_HP_COLORS[sp.hp_status]
         self.hp_bar.fill(hp_color, r)
 
         # adjust hp_bar position relative to screen
@@ -524,7 +524,7 @@ class EnemyAnimator(SpriteAnimator):
             return
 
         super(EnemyAnimator, self).draw(camera)
-        if sp.status["hp"] in cfg.HpStatus.ALIVE:
+        if sp.hp_status in cfg.HpStatus.ALIVE:
             self.draw_hp_bar(camera)
 
 
@@ -580,13 +580,13 @@ class SpriteEmotionAnimator(object):
 
     def update(self, passed_seconds):
         sp = self.sprite
-        if sp.status["emotion"] != cfg.SpriteEmotion.NORMAL:
-            if sp.status["emotion"] in (cfg.SpriteEmotion.STUN, cfg.SpriteEmotion.DIZZY):
-                self.run_circle_frame(sp.status["emotion"], passed_seconds)        
+        if sp.emotion != cfg.SpriteEmotion.NORMAL:
+            if sp.emotion in (cfg.SpriteEmotion.STUN, cfg.SpriteEmotion.DIZZY):
+                self.run_circle_frame(sp.emotion, passed_seconds)        
             else:
-                is_finish = self.run_sequence_frame(sp.status["emotion"], passed_seconds)
+                is_finish = self.run_sequence_frame(sp.emotion, passed_seconds)
                 if is_finish:
-                    sp.status["emotion"] = cfg.SpriteEmotion.NORMAL
+                    sp.emotion = cfg.SpriteEmotion.NORMAL
 
 
     def draw(self, camera):

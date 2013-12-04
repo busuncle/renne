@@ -170,7 +170,7 @@ class GameWorld(pygame.sprite.LayeredDirty):
                 self.static_objects.pop(i)
 
         for i, sp in enumerate(self.dynamic_objects):
-            if sp.status["hp"] == cfg.HpStatus.VANISH:
+            if sp.hp_status == cfg.HpStatus.VANISH:
                 self.dynamic_objects.pop(i)
 
             if hasattr(sp.attacker, "magic_list"):
