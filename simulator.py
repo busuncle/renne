@@ -693,6 +693,24 @@ class DestroyBombSet(MagicSkill):
                     target.attacker.handle_under_attack(self.sprite, damage, cfg.Attack.METHOD_MAGIC)
                     target.attacker.handle_additional_status(cfg.SpriteStatus.BODY_SHAKE, 
                         {"dx": randint(-5, 5), "dy": randint(-3, 3), "time": self.params["body_shake_time"]})
+                    target.attacker.handle_additional_status(cfg.SpriteStatus.ACTION_RATE_SCALE,
+                        {"ratio": self.params["action_rate_scale_ratio"], 
+                        "time": self.params["action_rate_scale_time"]})
+
+                    effect_delta = 0.5
+                    exist_time = 0.08
+                    for i in xrange(int(self.params["action_rate_scale_time"] / effect_delta)):
+                        x = randint(int(target.pos.x - target.setting.RADIUS), 
+                            int(target.pos.x + target.setting.RADIUS))
+                        y = target.pos.y
+                        img = choice(self.destroy_bomb_images)
+                        r = img.get_width() * 0.5
+                        target.animation.particle_list.append(animation.Particle(
+                            img, Vector2(x, y), r, r, r, Vector2(0, 0), Vector2(0, 0),
+                            i * effect_delta,
+                            randint(int(target.setting.HEIGHT * 0.3), int(target.setting.HEIGHT * 0.6)),
+                            0, 0, i * (effect_delta - exist_time), target))
+
                     self.has_hits.add(target)
                     break
 
@@ -1218,7 +1236,7 @@ class IceColumnBomb(MagicSkill):
                         sfg.Effect.ICE_FOG_DX, sfg.Effect.ICE_FOG_DY, Vector2(0, 0), Vector2(0, 0),
                         self.ice_fog_life, 
                         randint(0, sfg.Effect.ICE_FOG_RADIUS),
-                        self.ice_fog_vec_z, pre_hide_time=random()))
+                        self.ice_fog_vec_z, 0, pre_hide_time=random()))
 
         for _i, ice_column in enumerate(self.magic_sprites):
             for target in self.target_list:
