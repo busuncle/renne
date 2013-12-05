@@ -638,6 +638,8 @@ class DestroyBombSet(MagicSkill):
         for j in xrange(2):
             destroy_bomb_images.append(destroy_bombs_image.subsurface((i * 64, j * 64, 64, 64)))
 
+    bomb_over_effect_id_list = (4, 5)
+
     def __init__(self, sprite, target_list, static_objects, params, pos, direction):
         super(DestroyBombSet, self).__init__(sprite, target_list)
         self.static_objects = static_objects
@@ -700,10 +702,13 @@ class DestroyBombSet(MagicSkill):
                     effect_delta = 0.5
                     exist_time = 0.08
                     for i in xrange(int(self.params["action_rate_scale_time"] / effect_delta)):
-                        x = randint(int(target.pos.x - target.setting.RADIUS), 
-                            int(target.pos.x + target.setting.RADIUS))
+                        x = randint(int(target.pos.x - target.setting.RADIUS * 1.5), 
+                            int(target.pos.x + target.setting.RADIUS * 1.5))
                         y = target.pos.y
-                        img = choice(self.destroy_bomb_images)
+                        img = transform.rotate(
+                            self.destroy_bomb_images[choice(self.bomb_over_effect_id_list)],
+                            choice((90, 180, 270))
+                        )
                         r = img.get_width() * 0.5
                         target.animation.particle_list.append(animation.Particle(
                             img, Vector2(x, y), r, r, r, Vector2(0, 0), Vector2(0, 0),
