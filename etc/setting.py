@@ -252,7 +252,7 @@ class Renne(object):
             "dx": 32,
             "dy": 48,
             "mana": 20,
-            "cd": 2,
+            "cd": 1,
         },
         "destroy_bomb": {
             "range": 360,
