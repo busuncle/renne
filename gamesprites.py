@@ -12,7 +12,6 @@ from animation import SpriteEmotionAnimator, RenneAnimator, JoshuaAnimator, Enem
 from animation import effect_image_controller
 from musicbox import SoundBox
 import controller
-from gameworld import StaticObjectGroup
 from base.util import Timer, happen
 from base import constant as cfg
 from etc import setting as sfg
