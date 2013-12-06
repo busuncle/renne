@@ -1246,6 +1246,7 @@ class IceColumnBomb(MagicSkill):
         for _i, ice_column in enumerate(self.magic_sprites):
             for target in self.target_list:
                 if target not in self.has_hits and \
+                    target.status.get(cfg.SpriteStatus.IN_AIR) is None and \
                     (ice_column.area.colliderect(target.area) or self.center_rect.colliderect(target.area)):
                     self.has_hits.add(target)
                     target.attacker.handle_under_attack(self.sprite, self.ice_column_damage, 

@@ -148,8 +148,11 @@ class Particle(pygame.sprite.DirtySprite):
         if self.pre_hide_time > 0:
             return 
 
+        z = self.z
+        if self.follow_sprite and self.follow_sprite.status.get(cfg.SpriteStatus.IN_AIR):
+            z += self.follow_sprite.status[cfg.SpriteStatus.IN_AIR]["height"]
         camera.screen.blit(self.image,
-            (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy - self.z))
+            (self.pos.x - camera.rect.x - self.dx, self.pos.y * 0.5 - camera.rect.y - self.dy - z))
 
 
     def draw_area(self, camera):
