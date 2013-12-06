@@ -6,8 +6,10 @@ from gameobjects.vector2 import Vector2
 from pygame.transform import smoothscale
 from base.util import ImageController, Blink
 from animation import get_shadow_image
+from gamesprites import ENEMY_CLASS_MAPPING, Ambush
 from base import constant as cfg
 from etc import setting as sfg
+from etc import ai_setting as ai
 
 
 
@@ -130,6 +132,25 @@ class GameWorld(pygame.sprite.LayeredDirty):
         super(GameWorld, self).__init__()
         self.static_objects = []
         self.dynamic_objects = []
+        self.ambush_list = []
+        self.active_ambush = None
+
+
+    def init_ambush_list(self, ambush_init_list):
+        for ambush_init in ambush_init_list:
+            # only add monsters to ambush, when hero enter ambush, add it to enemy group
+            ambush = Ambush(ambush_init["ambush"]["pos"], sfg.Ambush.SURROUND_AREA_WIDTH,
+                sfg.Ambush.ENTER_AREA_WIDTH, ambush_init["ambush"]["type"])
+
+            for monster_init in ambush_init["monsters"]:
+                monster_id, pos, direct = monster_init["id"], monster_init["pos"], monster_init["direction"]
+                monster_setting = sfg.SPRITE_SETTING_MAPPING[monster_id]
+                EnemyClass = ENEMY_CLASS_MAPPING[monster_id]
+                monster = EnemyClass(monster_setting, pos, direct)
+                ambush.add(monster)
+
+            ambush.init_sprite_status()
+            self.ambush_list.append(ambush)
 
 
     def yield_all_objects(self):
@@ -162,7 +183,44 @@ class GameWorld(pygame.sprite.LayeredDirty):
         self.static_objects.sort(key=lambda obj: obj.pos.y)
 
 
-    def update(self, passed_seconds):
+    def update_ambush(self, passed_seconds, game_director, hero, allsprites, enemies, 
+            static_objects, game_map):
+
+        if game_director.status == cfg.GameStatus.PAUSE:
+            return
+
+        # check ambush status, only one ambush can be enter in one time
+        if game_director.status == cfg.GameStatus.ENTER_AMBUSH:
+            self.active_ambush.update(passed_seconds)
+            if self.active_ambush.status == cfg.Ambush.STATUS_FINISH:
+                game_director.status = cfg.GameStatus.IN_PROGRESS
+                self.ambush_list.remove(self.active_ambush)
+                self.active_ambush = None
+        else:
+            for ambush in self.ambush_list:
+                if ambush.enter(hero):
+                    hero.set_emotion(cfg.SpriteEmotion.ALERT)
+                    # only one ambush is active
+                    game_director.status = cfg.GameStatus.ENTER_AMBUSH
+                    self.active_ambush = ambush
+                    for monster in ambush:
+                        monster_ai_setting = ai.AI_MAPPING[monster.setting.ID]
+                        monster.activate(monster_ai_setting, allsprites, 
+                            hero, static_objects, game_map)
+                        # monster in ambush will be in offence state, target at hero right now!
+                        monster.brain.set_target(hero)
+                        monster.brain.set_active_state(cfg.SpriteState.CHASE)
+                        enemies.add(monster)
+
+                    allsprites.add(enemies)
+                    self.batch_add(ambush)
+                    break
+
+
+    def update(self, passed_seconds, external_event):
+        if external_event == cfg.GameStatus.PAUSE:
+            return
+
         for i, obj in enumerate(self.static_objects):
             if obj.setting.IS_ELIMINABLE:
                 obj.update(passed_seconds)

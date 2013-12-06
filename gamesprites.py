@@ -16,6 +16,7 @@ from gameworld import StaticObjectGroup
 from base.util import Timer, happen
 from base import constant as cfg
 from etc import setting as sfg
+from etc import ai_setting as ai
 
 
 
@@ -1057,7 +1058,7 @@ class Enemy(GameSprite):
             elif action == cfg.EnemyAction.STEER:
                 self.action = cfg.EnemyAction.WALK
                 self.check_reachable = False
-                self.allsprites.notify_nearby_alliance_for_target(self, self.brain.target)
+                #self.allsprites.notify_nearby_alliance_for_target(self, self.brain.target)
 
             elif action == cfg.EnemyAction.LOOKOUT:
                 # tell its brain the current target found(or None if no target in view scope)
@@ -1773,6 +1774,22 @@ class GameSpritesGroup(pygame.sprite.LayeredDirty):
     def update(self, passed_seconds):
         for v in self.sprites():
             v.update(passed_seconds)
+            
+
+
+class EnemyGroup(pygame.sprite.LayeredDirty):
+    def __init__(self, monster_init_list, allsprites, hero, static_objects, game_map):
+        super(EnemyGroup, self).__init__()
+        # load monsters
+        for monster_init in monster_init_list:
+            monster_id, pos, direct = monster_init["id"], monster_init["pos"], monster_init["direction"]
+            monster_setting = sfg.SPRITE_SETTING_MAPPING[monster_id]
+            EnemyClass = ENEMY_CLASS_MAPPING[monster_id]
+            monster = EnemyClass(monster_setting, pos, direct)
+            monster_ai_setting = ai.AI_MAPPING[monster_id]
+            monster.activate(monster_ai_setting, allsprites, hero, static_objects, game_map)
+
+            self.add(monster)
 
 
     def notify_nearby_alliance_for_target(self, sprite, target):

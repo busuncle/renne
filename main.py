@@ -1,7 +1,8 @@
 import pygame
 from pygame.locals import *
 from time import time
-from gamesprites import Renne, Joshua, GameSpritesGroup, enemy_in_one_screen, ENEMY_CLASS_MAPPING, Ambush
+from gamesprites import Renne, Joshua, GameSpritesGroup, enemy_in_one_screen
+from gamesprites import EnemyGroup
 from base import constant as cfg
 from etc import setting as sfg
 from etc import ai_setting as ai
@@ -96,45 +97,18 @@ def enter_chapter(screen, chapter, hero):
     map_setting = util.load_map_setting(chapter)
 
     camera = Camera(screen, map_size=map_setting["size"])
-    game_world = GameWorld()
-    allsprites = GameSpritesGroup()
-    enemies = GameSpritesGroup()
-    static_objects = StaticObjectGroup()
     game_map = GameMap(chapter, map_setting)
+    static_objects = StaticObjectGroup()
+    allsprites = GameSpritesGroup()
+    enemies = EnemyGroup(map_setting["monsters"], allsprites, hero, static_objects, game_map)
+    game_world = GameWorld()
 
     # load hero
     hero.place(map_setting["hero"]["pos"], map_setting["hero"]["direction"])
     hero.activate(allsprites, enemies, static_objects, game_map)
 
-    # load monsters
-    monster_init_list = map_setting["monsters"]
-    for monster_init in monster_init_list:
-        monster_id, pos, direct = monster_init["id"], monster_init["pos"], monster_init["direction"]
-        monster_setting = sfg.SPRITE_SETTING_MAPPING[monster_id]
-        EnemyClass = ENEMY_CLASS_MAPPING[monster_id]
-        monster = EnemyClass(monster_setting, pos, direct)
-        monster_ai_setting = ai.AI_MAPPING[monster_id]
-        monster.activate(monster_ai_setting, allsprites, hero, static_objects, game_map)
-
-        enemies.add(monster)
-
     # load ambush
-    game_world.ambush_list = []
-    ambush_init_list = map_setting.get("ambush_list", [])
-    for ambush_init in ambush_init_list:
-        # only add monsters to ambush, when hero enter ambush, add it to enemy group
-        ambush = Ambush(ambush_init["ambush"]["pos"], sfg.Ambush.SURROUND_AREA_WIDTH,
-            sfg.Ambush.ENTER_AREA_WIDTH, ambush_init["ambush"]["type"])
-
-        for monster_init in ambush_init["monsters"]:
-            monster_id, pos, direct = monster_init["id"], monster_init["pos"], monster_init["direction"]
-            monster_setting = sfg.SPRITE_SETTING_MAPPING[monster_id]
-            EnemyClass = ENEMY_CLASS_MAPPING[monster_id]
-            monster = EnemyClass(monster_setting, pos, direct)
-            ambush.add(monster)
-
-        ambush.init_sprite_status()
-        game_world.ambush_list.append(ambush)
+    game_world.init_ambush_list(map_setting.get("ambush_list", []))
 
     # load static objects
     chapter_static_objects = map_setting["static_objects"]
@@ -237,35 +211,9 @@ def enter_chapter(screen, chapter, hero):
             if enemy_in_one_screen(hero, enemy):
                 enemy.update(passed_seconds, external_event=game_director.status)
 
-        if game_director.status != cfg.GameStatus.PAUSE:
-            game_world.update(passed_seconds)
-
-        # check ambush status, only one ambush can be enter in one time
-        if game_director.status == cfg.GameStatus.ENTER_AMBUSH:
-            game_world.active_ambush.update(passed_seconds)
-            if game_world.active_ambush.status == cfg.Ambush.STATUS_FINISH:
-                game_director.status = cfg.GameStatus.IN_PROGRESS
-                game_world.ambush_list.remove(game_world.active_ambush)
-                game_world.active_ambush = None
-        else:
-            for ambush in game_world.ambush_list:
-                if ambush.enter(hero):
-                    hero.set_emotion(cfg.SpriteEmotion.ALERT)
-                    # only one ambush is active
-                    game_director.status = cfg.GameStatus.ENTER_AMBUSH
-                    game_world.active_ambush = ambush
-                    for monster in ambush:
-                        monster_ai_setting = ai.AI_MAPPING[monster.setting.ID]
-                        monster.activate(monster_ai_setting, allsprites, 
-                            hero, static_objects, game_map)
-                        # monster in ambush will be in offence state, target at hero right now!
-                        monster.brain.set_target(hero)
-                        monster.brain.set_active_state(cfg.SpriteState.CHASE)
-                        enemies.add(monster)
-
-                    allsprites.add(enemies)
-                    game_world.batch_add(ambush)
-                    break
+        game_world.update(passed_seconds, game_director.status)
+        game_world.update_ambush(passed_seconds, game_director, hero, allsprites, enemies,
+            static_objects, game_map)
 
         game_director.update(passed_seconds)
 
