@@ -728,6 +728,7 @@ class Joshua(Hero):
 
     def reset_vars(self):
         self.run_attack_speed = self.setting.RUN_SPEED * 1.5
+        self.x1_slide_time = self.attacker.magic_skill_1_params["slide_time"]
 
 
     def play_related_sound(self):
@@ -855,8 +856,23 @@ class Joshua(Hero):
 
 
     def x1(self, passed_seconds):
-        pass
-        
+        self.frame_action = cfg.JoshuaAction.SKILL
+        current_frame_add = self.animation.get_current_frame_add(self.frame_action)
+        if current_frame_add < self.attacker.magic_skill_1_params["key_frames"][0]:
+            self.animation.run_sequence_frame(self.frame_action, passed_seconds) 
+        else:
+            self.move(self.attacker.magic_skill_1_params["slide_speed"], passed_seconds, 
+                Vector2(cfg.Direction.DIRECT_TO_VEC[self.direction]))
+            hit_count = self.attacker.x1(current_frame_add)
+            if hit_count > 0:
+                self.sound_box.play(choice(sfg.Sound.SWORD_HITS))
+
+            self.x1_slide_time -= passed_seconds
+            if self.x1_slide_time <= 0:
+                is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+                if is_finish:
+                    self.reset_action()
+
 
     def x2(self,  passed_seconds):
         self.frame_action = cfg.JoshuaAction.ROAR
@@ -1110,9 +1126,7 @@ class Enemy(GameSprite):
 
         self.update_status(passed_seconds)
 
-        if self.hp_status != cfg.HpStatus.DIE \
-            and self.status.get(cfg.SpriteStatus.STUN) is None \
-            and self.status.get(cfg.SpriteStatus.DIZZY) is None:
+        if self.hp_status != cfg.HpStatus.DIE:
 
             if self.action == cfg.EnemyAction.ATTACK:
                 self.attack(passed_seconds)

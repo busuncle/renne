@@ -404,7 +404,17 @@ class Joshua(object):
             "self_crick_time": 0.1,
         },
         "x1": {
-
+            "key_frames": (8, ),
+            "mana": 30,
+            "cd": 10,
+            "end_frame": 9,
+            "stun_time": 5,
+            "damage": 50,
+            "slide_time": 0.08,
+            "slide_speed": 800,
+            "thump_out_speed": 1200,
+            "thump_crick_time": 0.4,
+            "thump_acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
         },
         "x2": {
             "key_frames": (1, ),

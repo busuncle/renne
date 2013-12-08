@@ -11,6 +11,7 @@ from math import pow, radians, sqrt, tan, cos
 from time import time
 from gameobjects.vector2 import Vector2
 import animation
+from controller import cal_face_direct
 from base import constant as cfg
 from etc import setting as sfg
 
@@ -1311,12 +1312,14 @@ class Attacker(object):
                 if sp.status.get(reject_status) is not None:
                     return
 
-        if status_id == cfg.SpriteStatus.CRICK:
+            sp.direction = cal_face_direct(sp.pos + status_object["key_vec"], sp.pos)
+
+        elif status_id == cfg.SpriteStatus.CRICK:
             for reject_status in cfg.SpriteStatus.REJECT_CRICK_STATUS_LIST:
                 if sp.status.get(reject_status) is not None:
                     return
 
-        if status_id == cfg.SpriteStatus.DIZZY:
+        elif status_id == cfg.SpriteStatus.DIZZY:
             for reject_status in cfg.SpriteStatus.REJECT_DIZZY_STATUS_LIST:
                 if sp.status.get(reject_status) is not None:
                     return 
@@ -1795,7 +1798,32 @@ class JoshuaAttacker(AngleAttacker):
 
 
     def x1(self, current_frame_add):
-        pass
+        sp = self.sprite
+        if self.current_magic is None:
+            sp.mp -= self.magic_skill_1_params["mana"]
+            self.current_magic = "x1"
+
+        hit_count = 0
+        for target in sp.enemies:
+            if self.hit_with_many_params(target, current_frame_add, 
+                self.magic_skill_1_params["key_frames"], self.attack3_params["range"],
+                self.attack3_params["cos_min"]):
+                
+                damage = self.magic_skill_1_params["damage"]
+                target.attacker.handle_under_attack(sp, damage)
+                target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                    {"crick_time": self.magic_skill_1_params["thump_crick_time"],
+                    "out_speed": self.magic_skill_1_params["thump_out_speed"],
+                    "acceleration": self.magic_skill_1_params["thump_acceleration"],
+                    "key_vec": Vector2.from_points(sp.pos, target.pos)})
+
+                target.attacker.handle_additional_status(cfg.SpriteStatus.STUN,
+                    {"time": self.magic_skill_1_params["stun_time"]})
+                target.set_emotion(cfg.SpriteEmotion.STUN)
+
+                hit_count += 1
+
+
 
 
     def x2(self, current_frame_add):
