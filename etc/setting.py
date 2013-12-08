@@ -1546,7 +1546,7 @@ class Sound(object):
 
     JOSHUA_ATTACKS = ("joshua_attack1", "joshua_attack2", "joshua_attack3", "joshua_attack4")
 
-    SWORD_HITS = ("attack_hit", "attack_hit2")
+    SWORD_HITS = ("attack_hit", "attack_hit2", "attack_hit5")
 
     ENEMY_ATTACK_HITS = ("attack_hit", "attack_hit2", "attack_hit3")
 
@@ -1886,107 +1886,30 @@ SPRITE_FRAMES = {
     }),
 }
 
-# (folder, {image_key: image_filename, ...})
-STATIC_OBJECT_IMAGES = ("static_object", {
-    "s1": "s1.png",
-    "s2": "s2.png", 
-    #"s3": "s3.png",
-    "s4": "s4.png",
-    "s5": "s5.png",
-    "s6": "s6.png", 
-    "s7": "s7.png", 
-    "s8": "s8.png",
-    "s9": "s9.png",
-    "s10": "s10.png",
-    "s11": "s11.png",
-    "food": "food.png",
-})
+
+def gen_res_mapping(filedir):
+    res = {}
+    for filename in os.listdir(filedir):
+        if filename.startswith("."):
+            continue
+        k = filename.split(".")[0]
+        res[k] = filename
+
+    return res
 
 # (folder, {image_key: image_filename, ...})
-TILE_IMAGES = ("tiles", {
-    1: "1.png", 
-    2: "2.png",
-    3: "3.png", 
-    4: "4.png", 
-    5: "5.png", 
-    6: "6.png", 
-    #7: "7.png", 
-    8: "8.png", 
-})
+STATIC_OBJECT_IMAGES = ("static_object", gen_res_mapping(os.path.join("res", "image", "static_object")))
 
-# (folder, {image_key: image_filename, ...})
-BASIC_IMAGES = ("basic", {
-    "sprite_shadow": "sprite_shadow.png",
-    "emotion": "sprite_emotion.png",
-    "head_status": "head_status.png",
-})
+TILE_IMAGES = ("tiles", gen_res_mapping(os.path.join("res", "image", "tiles")))
 
-BATTLE_IMAGES = ("battle", {
-    "renne_head": "renne_head.png",
-    "joshua_head": "joshua_head.png",
-    "status": "status.png",
-    "status2": "status2.png", 
-    "status3": "status3.png", 
-    "status4": "status4.png", 
-    "status5": "status5.png",
-    "status6": "status6.png",
-    #"icon1": "icon1.png",
-    "arrow": "arrow.png",
-})
+BASIC_IMAGES = ("basic", gen_res_mapping(os.path.join("res", "image", "basic")))
 
-CG_IMAGES = ("cg", {
-    "start_game": "1.png",
-    #"loading_chapter": "2.png", 
-    "loading_chapter": "3.png", 
-    "the_end": "4.png",
-})
+BATTLE_IMAGES = ("battle", gen_res_mapping(os.path.join("res", "image", "battle")))
 
+CG_IMAGES = ("cg", gen_res_mapping(os.path.join("res", "image", "cg")))
 
-BACKGROUND_MUSICS = ("background", {
-    "start_game": "start_game.ogg", 
-    "end_game": "ZARD - Kitto wasurenai.mp3", 
-    "chapter_1": "chapter_1.ogg",
-    "chapter_2": "chapter_2.ogg",
-    "chapter_3": "chapter_3.ogg",
-    "chapter_4": "chapter_4.ogg",
-    "chapter_5": "chapter_5.ogg",
-    "chapter_998": "chapter_5.ogg",
-    "chapter_999": "chapter_5.ogg",
-    "renne_win": "renne_win.wav",
-    "renne_lose": "renne_lose.wav",
-    "joshua_win": "joshua_win.wav",
-    "joshua_lose": "joshua_lose.wav",
-})
+BACKGROUND_MUSICS = ("background", gen_res_mapping(os.path.join("res", "music", "background")))
 
-SOUND_EFFECT = ("sound", {
-    "attack0": "attack0.wav",
-    "renne_attack": "renne_attack.wav",
-    "renne_attack2": "renne_attack2.wav",
-    "renne_attack3": "renne_attack3.wav",
-    "joshua_attack1": "joshua_attack1.wav",
-    "joshua_attack2": "joshua_attack2.wav",
-    "joshua_attack3": "joshua_attack3.wav",
-    "joshua_attack4": "joshua_attack4.wav",
-    "renne_under_attack": "renne_under_attack.wav",
-    "renne_win": "renne_win.wav",
-    "attack_hit": "attack_hit.wav",
-    "attack_hit2": "attack_hit2.wav",
-    "attack_hit3": "attack_hit3.wav",
-    "leonhardt_attack": "leonhardt_attack.wav",
-    "leonhardt_attack2": "leonhardt_attack2.wav",
-    "leonhardt_attack3": "leonhardt_attack3.wav",
-    "leonhardt_attack4": "leonhardt_attack4.wav",
-})
+SOUND_EFFECT = ("sound", gen_res_mapping(os.path.join("res", "music", "sound")))
 
-EFFECT = ("effect", {
-    "e1": "e1.png",
-    "e2": "e2.png",
-    "e3": "e3.png",
-    "e4": "e4.png",
-    "e5": "e5.png",
-    "e6": "e6.png",
-    "e7": "e7.png",
-    "e8": "e8.png",
-    "e9": "e9.png", 
-    "e10": "e10.png", 
-})
+EFFECT = ("effect", gen_res_mapping(os.path.join("res", "image", "effect")))

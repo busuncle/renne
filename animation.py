@@ -533,7 +533,7 @@ class EnemyAnimator(SpriteAnimator):
 
 
 class SpriteEmotionAnimator(object):
-    image_src = basic_image_controller.get("emotion").convert_alpha()
+    image_src = basic_image_controller.get("sprite_emotion").convert_alpha()
     frame_mapping = {}
     frame_nums = {}
     frame_rates = {}

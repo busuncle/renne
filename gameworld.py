@@ -44,6 +44,7 @@ class GameMap(object):
         tile_cache = weakref.WeakValueDictionary()
         for y, tile_row in enumerate(map_tile_setting): 
             for x, tile_id in enumerate(tile_row):
+                tile_id = str(tile_id)
                 tile = tile_cache.get(tile_id)
                 if not tile:
                     tile = self.tile_images.get(tile_id).convert_alpha()
