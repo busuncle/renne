@@ -86,7 +86,7 @@ section img {
 }
 
 div #renne2 {
-    background: url("../images/renne2.png") 0 0;
+    /*background: url("../images/renne2.png") 0 0;*/
     width: 640px;
     height: 480px;
 }
