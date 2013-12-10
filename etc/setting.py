@@ -460,7 +460,7 @@ class Enemy(object):
 
 class SkeletonWarrior(Enemy):
     NAME = "SkeletonWarrior"
-    HP = 300
+    HP = 200
     ATK = 35
     DFS = 2
     EXP = 20
@@ -484,7 +484,7 @@ class SkeletonWarrior(Enemy):
 
 class CastleWarrior(Enemy):
     NAME = "CastleWarrior" 
-    HP = 550
+    HP = 350
     ATK = 45
     DFS = 4
     EXP = 50
@@ -519,7 +519,7 @@ class CastleWarrior(Enemy):
 
 class SkeletonArcher(Enemy):
     NAME = "SkeletonArcher"
-    HP = 300
+    HP = 180
     ATK = 35
     DFS = 2
     EXP = 25
@@ -620,7 +620,7 @@ class LeonHardt(Enemy):
 
 class ArmouredShooter(Enemy):
     NAME = "ArmouredShooter"
-    HP = 400
+    HP = 300
     ATK = 38
     DFS = 4
     EXP = 30
@@ -661,7 +661,7 @@ class ArmouredShooter(Enemy):
 
 class SwordRobber(Enemy):
     NAME = "SwordRobber"
-    HP = 500
+    HP = 400
     ATK = 45
     DFS = 4
     EXP = 40
@@ -703,7 +703,7 @@ class SwordRobber(Enemy):
 
 class GanDie(Enemy):
     NAME = "GanDie"
-    HP = 350
+    HP = 250
     ATK = 30
     DFS = 2
     EXP = 35
@@ -742,7 +742,7 @@ class GanDie(Enemy):
 
 class Ghost(Enemy):
     NAME = "Ghost"
-    HP = 600
+    HP = 300
     ATK = 45
     DFS = 3
     EXP = 40
@@ -851,7 +851,7 @@ class Werwolf(Enemy):
 
 class SilverTentacle(Enemy):
     NAME = "SilverTentacle"
-    HP = 400
+    HP = 300
     ATK = 40
     DFS = 4
     EXP = 40
