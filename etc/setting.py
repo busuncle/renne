@@ -463,7 +463,7 @@ class SkeletonWarrior(Enemy):
     HP = 200
     ATK = 35
     DFS = 2
-    EXP = 20
+    EXP = 30
 
     RADIUS = 24
     HEIGHT = 80
@@ -522,7 +522,7 @@ class SkeletonArcher(Enemy):
     HP = 180
     ATK = 35
     DFS = 2
-    EXP = 25
+    EXP = 35
 
     RADIUS = 24
     HEIGHT = 65
