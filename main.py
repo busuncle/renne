@@ -55,8 +55,9 @@ def main(args):
             loading_chapter_picture(screen)
             hero.recover()
             i += 1
-            chapter = sfg.Chapter.ALL[i]
-            res = enter_chapter(screen, chapter, hero)
+            if i < len(sfg.Chapter.ALL):
+                chapter = sfg.Chapter.ALL[i]
+                res = enter_chapter(screen, chapter, hero)
 
         elif status == cfg.GameControl.SUB_CHAPTER:
             chapter = res["chapter"]
