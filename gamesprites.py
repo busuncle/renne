@@ -1036,6 +1036,14 @@ class Enemy(GameSprite):
             self.brain.set_target(target)
 
 
+    def notify_nearby_alliance_for_target(self, target):
+        for sp in self.allsprites:
+            if sp.setting.ROLE == cfg.SpriteRole.ENEMY and sp is not self \
+                and sp.brain.target is None \
+                and sp.pos.get_distance_to(self.pos) <= sp.setting.NEARBY_ALLIANCE_RANGE:
+                sp.set_target(target)
+
+
     def event_handle(self, external_event=None):
         # perception and belief control level
         if external_event is not None and external_event != cfg.GameStatus.IN_PROGRESS:
@@ -1075,7 +1083,7 @@ class Enemy(GameSprite):
             elif action == cfg.EnemyAction.STEER:
                 self.action = cfg.EnemyAction.WALK
                 self.check_reachable = False
-                #self.allsprites.notify_nearby_alliance_for_target(self, self.brain.target)
+                self.notify_nearby_alliance_for_target(self, self.brain.target)
 
             elif action == cfg.EnemyAction.LOOKOUT:
                 # tell its brain the current target found(or None if no target in view scope)
@@ -1805,16 +1813,6 @@ class EnemyGroup(pygame.sprite.LayeredDirty):
             monster.activate(monster_ai_setting, allsprites, hero, static_objects, game_map)
 
             self.add(monster)
-
-
-    def notify_nearby_alliance_for_target(self, sprite, target):
-        for other in self.sprites():
-            if other is target or other is sprite or \
-                sprite.pos.get_distance_to(other.pos) > sprite.setting.NEARBY_ALLIANCE_RANGE or \
-                other.brain.target is not None:
-                continue
-
-            other.brain.set_target(target)
 
 
 
