@@ -559,7 +559,7 @@ class HeroStatus(object):
         # panel first, other things over it
         camera.screen.blit(self.status_panel, sfg.SpriteStatus.HERO_PANEL_BLIT_POS)
 
-        # Renne's head, showing her status
+        # hero's head, showing her status
         camera.screen.blit(self.get_current_head(self.hero.hp_status), sfg.SpriteStatus.HERO_HEAD_BLIT_POS)
 
         # hp, mp, sp words

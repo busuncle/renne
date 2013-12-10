@@ -884,11 +884,13 @@ class Joshua(Hero):
 
 
     def x3(self, passed_seconds):
-        pass
+        #TODO
+        self.reset_action()
 
 
     def x4(self, passed_seconds):
-        pass
+        #TODO
+        self.reset_action()
 
 
 

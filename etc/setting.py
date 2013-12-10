@@ -434,10 +434,12 @@ class Joshua(object):
             "ice_fog_life": 1,
         },
         "x3": {
-
+            "mana": 30,
+            "cd": 10,
         },
         "x4": {
-
+            "mana": 30,
+            "cd": 10,
         },
     }
 

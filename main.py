@@ -15,12 +15,6 @@ import sys
 
 
 
-renne_dirlock = util.DirLock("renne_running.lock")
-if not renne_dirlock.lock():
-    print "renne is already running"
-    sys.exit(0)
-
-
 screen = sfg.Screen.DEFAULT_SCREEN
 pygame.display.set_caption("Renne")
 pygame.display.set_icon(pygame.image.load(sfg.RENNE_IMAGE_FILENAME).convert_alpha())
