@@ -47,6 +47,7 @@ def main(args):
 
     res = start_game(screen)
     i = -1
+
     while i < len(sfg.Chapter.ALL):
         status = res["status"]
 
@@ -63,7 +64,7 @@ def main(args):
 
         elif status == cfg.GameControl.AGAIN:
             hero.recover()
-            res = enter_chapter(screen, chapter, hero)
+            res = enter_chapter(screen, res["chapter"], hero)
 
         elif status == cfg.GameControl.MAIN:
             hero.exp = 0
@@ -158,7 +159,7 @@ def enter_chapter(screen, chapter, hero):
                         util.auto_save(dat)
                         return {"status": cfg.GameControl.NEXT}
                     elif game_director.status == cfg.GameStatus.HERO_LOSE:
-                        return {"status": cfg.GameControl.AGAIN}
+                        return {"status": cfg.GameControl.AGAIN, "chapter": chapter}
                     elif game_director.status == cfg.GameStatus.PAUSE:
                         mark = game_director.menu.get_current_mark()
                         if mark == "continue":

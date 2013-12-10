@@ -271,6 +271,7 @@ class Hero(GameSprite):
         self.dfs = self.setting.DFS = self.setting.LEVEL_DFS[idx]
         self.attacker.cal_real_attack_damage()
         self.attacker.refresh_skill()
+        self.hp_status = self.cal_sprite_status(self.hp, self.setting.HP)
         self.status = {}
 
 
