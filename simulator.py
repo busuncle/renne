@@ -1310,21 +1310,27 @@ class Attacker(object):
         if status_id == cfg.SpriteStatus.UNDER_THUMP:
             for reject_status in cfg.SpriteStatus.REJECT_THUMP_STATUS_LIST:
                 if sp.status.get(reject_status) is not None:
-                    return
+                    return False
 
             sp.direction = cal_face_direct(sp.pos + status_object["key_vec"], sp.pos)
 
         elif status_id == cfg.SpriteStatus.CRICK:
             for reject_status in cfg.SpriteStatus.REJECT_CRICK_STATUS_LIST:
                 if sp.status.get(reject_status) is not None:
-                    return
+                    return False
 
         elif status_id == cfg.SpriteStatus.DIZZY:
             for reject_status in cfg.SpriteStatus.REJECT_DIZZY_STATUS_LIST:
                 if sp.status.get(reject_status) is not None:
-                    return 
+                    return False
+
+        elif status_id == cfg.SpriteStatus.STUN:
+            for reject_status in cfg.SpriteStatus.REJECT_STUN_STATUS_LIST:
+                if sp.status.get(reject_status) is not None:
+                    return False
 
         sp.status[status_id] = status_object
+        return True
 
 
     def is_static_object_block(self, target):
@@ -1817,9 +1823,10 @@ class JoshuaAttacker(AngleAttacker):
                     "acceleration": self.magic_skill_1_params["thump_acceleration"],
                     "key_vec": Vector2.from_points(sp.pos, target.pos)})
 
-                target.attacker.handle_additional_status(cfg.SpriteStatus.STUN,
+                is_stun = target.attacker.handle_additional_status(cfg.SpriteStatus.STUN,
                     {"time": self.magic_skill_1_params["stun_time"]})
-                target.set_emotion(cfg.SpriteEmotion.STUN)
+                if is_stun:
+                    target.set_emotion(cfg.SpriteEmotion.STUN)
 
                 hit_count += 1
 
