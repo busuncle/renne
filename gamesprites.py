@@ -738,7 +738,7 @@ class Joshua(Hero):
             self.sound_box.play(sfg.Sound.JOSHUA_ATTACKS[1])
         elif self.attacker.method == "run_attack":
             self.sound_box.play(sfg.Sound.JOSHUA_ATTACKS[2])
-        elif self.attacker.method == "magic_skill_2":
+        elif self.attacker.method in ("magic_skill_1", "magic_skill_2"):
             self.sound_box.play(sfg.Sound.JOSHUA_ATTACKS[3])
 
 
@@ -1083,7 +1083,7 @@ class Enemy(GameSprite):
             elif action == cfg.EnemyAction.STEER:
                 self.action = cfg.EnemyAction.WALK
                 self.check_reachable = False
-                self.notify_nearby_alliance_for_target(self, self.brain.target)
+                self.notify_nearby_alliance_for_target(self.brain.target)
 
             elif action == cfg.EnemyAction.LOOKOUT:
                 # tell its brain the current target found(or None if no target in view scope)

@@ -691,7 +691,9 @@ class SwordRobber(Enemy):
             "offset_time": 0.08,
             "self_stun_prob": 0.9,
             "self_stun_time": 3,
-            "crick_time": 0.3,
+            "thump_crick_time": 0.3,
+            "thump_acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
+            "thump_out_speed": 1000,
         }
     }
 

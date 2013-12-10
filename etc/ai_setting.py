@@ -124,7 +124,7 @@ class LeonHardtAI(AIBase):
 
 class CastleWarriorAI(ShortNormalAI):
     # attack method
-    ATTACK_THUMP_PROB = 0.9
+    ATTACK_THUMP_PROB = 0.7
 
 
 
@@ -132,7 +132,7 @@ class SwordRobberAI(ShortNormalAI):
     STAY_CHANGE_DIRECTION_PROB = 0.1
     STAY_TO_PATROL_PROB = 0.01
 
-    ATTACK_WHIRLWIND_PROB = 0.9
+    ATTACK_WHIRLWIND_PROB = 0.7
 
 
 
@@ -140,7 +140,7 @@ class ArmouredShooterAI(LongNormalAI):
     STAY_CHANGE_DIRECTION_PROB = 0.01
     STAY_TO_PATROL_PROB = 0.01
 
-    ATTACK_GRENADE_PROB = 0.9
+    ATTACK_GRENADE_PROB = 0.7
 
 
 
@@ -148,14 +148,14 @@ class WerwolfAI(ShortNormalAI):
     STAY_CHANGE_DIRECTION_PROB = 0.001
     STAY_TO_PATROL_PROB = 0
 
-    ATTACK_CATCH_PROB = 0.9
+    ATTACK_CATCH_PROB = 0.7
 
 
 
 class TwoHeadSkeletonAI(ShortNormalAI):
     STAY_CHANGE_DIRECTION_PROB = 0.001
     STAY_TO_PATROL_PROB = 0
-    ATTACK_FALL_PROB = 0.9
+    ATTACK_FALL_PROB = 0.7
 
 
 
@@ -187,7 +187,7 @@ class RobotAI(ShortNormalAI):
 
 
 class GanDieAI(ShortNormalAI):
-    ATTACK_SPIT_POISON = 0.9
+    ATTACK_SPIT_POISON = 0.7
     STAY_CHANGE_DIRECTION_PROB = 0
 
     STAY_TO_PATROL_PROB = 0
@@ -204,7 +204,6 @@ class GhostAI(ShortNormalAI):
 
 AI_MAPPING = {
     sfg.SkeletonWarrior.ID: ShortNormalAI,
-    #sfg.CastleWarrior.ID: ShortNormalAI,
     sfg.CastleWarrior.ID: CastleWarriorAI,
     sfg.SkeletonArcher.ID: LongNormalAI,
     sfg.LeonHardt.ID: LeonHardtAI,

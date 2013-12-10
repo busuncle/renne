@@ -2248,7 +2248,9 @@ class SwordRobberAttacker(EnemyShortAttacker):
     def __init__(self, sprite, attacker_params):
         super(SwordRobberAttacker, self).__init__(sprite, attacker_params)
         self.params = attacker_params
-        self.crick_time = attacker_params["whirlwind"]["crick_time"]
+        self.thump_crick_time = attacker_params["whirlwind"]["thump_crick_time"]
+        self.thump_acceleration = attacker_params["whirlwind"]["thump_acceleration"]
+        self.thump_out_speed = attacker_params["whirlwind"]["thump_out_speed"]
 
 
     def whirlwind_chance(self, target):
@@ -2284,8 +2286,11 @@ class SwordRobberAttacker(EnemyShortAttacker):
         if self.whirlwind_hit(target):
             sp = self.sprite
             target.attacker.handle_under_attack(sp, sp.atk)
-            target.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
-                {"time": self.crick_time, "old_action": target.action})
+            target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                {"crick_time": self.thump_crick_time, 
+                "out_speed": self.thump_out_speed,
+                "acceleration": self.thump_acceleration, 
+                "key_vec": Vector2.from_points(sp.pos, target.pos)})
 
 
     def finish(self):
