@@ -1374,6 +1374,13 @@ class SpriteStatus(object):
     MP_SP_DOWN_WORDS_BLIT_Y_SIGMA = 10
     MP_SP_DOWN_WORDS_POS_MOVE_RATE = (0, 20)
 
+    AGL_UP_IMAGE_KEY = "status"
+    AGL_UP_RECT = (128, 240, 16, 16)
+
+    AGL_DOWN_IMAGE_KEY = "status"
+    AGL_DOWN_RECT = (144, 240, 16, 16)
+
+
 
 class Achievement(object):
     KILL_ICON_IMAGE_KEY = "status5"

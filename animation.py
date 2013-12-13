@@ -382,11 +382,22 @@ class SpriteAnimator(object):
         if self.sprite.status.get(cfg.SpriteStatus.WEAK) is not None:
             weak_icon = battle_images.get(sfg.SpriteStatus.DEBUFF_WEAK_IMAGE_KEY).subsurface(
                 sfg.SpriteStatus.DEBUFF_WEAK_RECT).convert_alpha()
-            sp = self.sprite
             dy = self.sprite.status[cfg.SpriteStatus.WEAK]["y"]
             camera.screen.blit(weak_icon, (sp.pos.x - camera.rect.x - weak_icon.get_width() * 0.5, 
                 sp.pos.y * 0.5 - camera.rect.y - sp.setting.HEIGHT - \
                     sfg.SpriteStatus.DEBUFF_WEAK_BLIT_HEIGHT_DELTA + dy))
+
+        if self.sprite.status.get(cfg.SpriteStatus.ACTION_RATE_SCALE) is not None:
+            scale = self.sprite.status[cfg.SpriteStatus.ACTION_RATE_SCALE]["ratio"]
+            if scale < 1:
+                scale_icon = battle_images.get(sfg.SpriteStatus.AGL_DOWN_IMAGE_KEY).subsurface(
+                    sfg.SpriteStatus.AGL_DOWN_RECT).convert_alpha()
+            else:
+                scale_icon = battle_images.get(sfg.SpriteStatus.AGL_UP_IMAGE_KEY).subsurface(
+                    sfg.SpriteStatus.AGL_UP_RECT).convert_alpha()
+
+            camera.screen.blit(scale_icon, (sp.pos.x - camera.rect.x - scale_icon.get_width() * 0.5,
+                sp.pos.y * 0.5 - camera.rect.y - sp.setting.HEIGHT))
 
         if self.sprite.hp_status != cfg.HpStatus.VANISH:
             self.words_renderer.draw(camera)
