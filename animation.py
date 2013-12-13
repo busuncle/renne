@@ -399,6 +399,12 @@ class SpriteAnimator(object):
             camera.screen.blit(scale_icon, (sp.pos.x - camera.rect.x - scale_icon.get_width() * 0.5,
                 sp.pos.y * 0.5 - camera.rect.y - sp.setting.HEIGHT))
 
+        if self.sprite.status.get(cfg.SpriteStatus.POISON) is not None:
+            poison_icon = battle_images.get(sfg.SpriteStatus.POISON_IMAGE_KEY).subsurface(
+                sfg.SpriteStatus.POISON_RECT).convert_alpha()
+            camera.screen.blit(poison_icon, (sp.pos.x - camera.rect.x - poison_icon.get_width() * 0.5,
+                sp.pos.y * 0.5 - camera.rect.y - sp.setting.HEIGHT))
+
         if self.sprite.hp_status != cfg.HpStatus.VANISH:
             self.words_renderer.draw(camera)
 

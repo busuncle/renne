@@ -1380,6 +1380,9 @@ class SpriteStatus(object):
     AGL_DOWN_IMAGE_KEY = "status"
     AGL_DOWN_RECT = (144, 240, 16, 16)
 
+    POISON_IMAGE_KEY = "status"
+    POISON_RECT = (0, 224, 16, 16)
+
 
 
 class Achievement(object):
