@@ -312,6 +312,10 @@ class Hero(GameSprite):
         # try x and y direction move, go back to the old position when collided with something unwalkable
         k_vec = key_vec or self.key_vec
         k_vec.normalize()
+
+        if self.status.get(cfg.SpriteStatus.ACTION_RATE_SCALE) is not None:
+            speed *= self.status[cfg.SpriteStatus.ACTION_RATE_SCALE]["ratio"]
+
         for coord in ("x", "y"):
             key_vec_coord = getattr(k_vec, coord)
             if key_vec_coord != 0:
@@ -346,7 +350,7 @@ class Hero(GameSprite):
     def rest(self, passed_seconds):
         self.sp = min(self.setting.SP, self.sp + self.setting.SP_RECOVERY_RATE * 2 * passed_seconds)
         self.mp = min(self.setting.MP, self.mp + self.setting.MP_RECOVERY_RATE * 2 * passed_seconds)
-        self.animation.run_circle_frame(cfg.RenneAction.REST, passed_seconds)
+        self.animation.run_circle_frame(cfg.HeroAction.REST, passed_seconds)
 
 
     def walk(self, passed_seconds):
@@ -730,6 +734,7 @@ class Joshua(Hero):
     def reset_vars(self):
         self.run_attack_speed = self.setting.RUN_SPEED * 1.5
         self.x1_slide_time = self.attacker.magic_skill_1_params["slide_time"]
+        self.x3_slide_time = self.attacker.magic_skill_3_params["slide_time"]
 
 
     def play_related_sound(self):
@@ -885,8 +890,20 @@ class Joshua(Hero):
 
 
     def x3(self, passed_seconds):
-        #TODO
-        self.reset_action()
+        self.frame_action = cfg.JoshuaAction.KNEEL
+        current_frame_add = self.animation.get_current_frame_add(self.frame_action)
+        if current_frame_add < self.attacker.magic_skill_3_params["end_frame"]:
+            self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+
+        self.move(self.attacker.magic_skill_3_params["slide_speed"], passed_seconds, 
+            Vector2(cfg.Direction.DIRECT_TO_VEC[self.direction]))
+        self.attacker.x3()
+        self.x3_slide_time -= passed_seconds
+        if self.x3_slide_time <= 0:
+            self.attacker.handle_additional_status(cfg.SpriteStatus.ACTION_RATE_SCALE,
+                {"ratio": self.attacker.magic_skill_3_params["self_action_rate_scale_ratio"],
+                "time": self.attacker.magic_skill_3_params["action_rate_scale_time"]})
+            self.reset_action()
 
 
     def x4(self, passed_seconds):

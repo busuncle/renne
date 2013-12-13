@@ -1807,6 +1807,7 @@ class JoshuaAttacker(AngleAttacker):
         sp = self.sprite
         if self.current_magic is None:
             sp.mp -= self.magic_skill_1_params["mana"]
+            self.magic_cds["magic_skill_1"] = self.magic_skill_1_params["cd"]
             self.current_magic = "x1"
 
         hit_count = 0
@@ -1815,7 +1816,7 @@ class JoshuaAttacker(AngleAttacker):
                 self.magic_skill_1_params["key_frames"], self.attack3_params["range"],
                 self.attack3_params["cos_min"]):
                 
-                damage = self.magic_skill_1_params["damage"]
+                damage = sp.atk * self.magic_skill_1_params["damage_ratio"]
                 target.attacker.handle_under_attack(sp, damage)
                 target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
                     {"crick_time": self.magic_skill_1_params["thump_crick_time"],
@@ -1831,8 +1832,6 @@ class JoshuaAttacker(AngleAttacker):
                 hit_count += 1
 
 
-
-
     def x2(self, current_frame_add):
         sp = self.sprite
         if self.current_magic is None and int(current_frame_add) in self.magic_skill_2_params["key_frames"]:
@@ -1840,12 +1839,23 @@ class JoshuaAttacker(AngleAttacker):
             self.magic_cds["magic_skill_2"] = self.magic_skill_2_params["cd"]
             self.current_magic = IceColumnBomb(sp, sp.enemies, self.magic_skill_2_params)
             self.magic_list.append(self.current_magic)
-            # change mana into sp the same time
-            sp.sp = min(sp.sp + self.magic_skill_2_params["mana"] * 2, sp.setting.SP)
 
 
-    def x3(self, current_frame_add):
-        pass
+    def x3(self, current_frame_add=None):
+        sp = self.sprite
+        if self.current_magic is None:
+            sp.mp -= self.magic_skill_3_params["mana"]
+            self.magic_cds["magic_skill_3"] = self.magic_skill_3_params["cd"]
+            self.current_magic = "x3"
+
+        for target in sp.enemies:
+            if target.status.get(cfg.SpriteStatus.ACTION_RATE_SCALE) is not None:
+                continue
+
+            if sp.pos.get_distance_to(target.pos) < self.magic_skill_3_params["action_rate_scale_radius"]:
+                target.attacker.handle_additional_status(cfg.SpriteStatus.ACTION_RATE_SCALE,
+                    {"ratio": self.magic_skill_3_params["action_rate_scale_ratio"], 
+                    "time": self.magic_skill_3_params["action_rate_scale_time"]})
 
 
     def x4(self, current_frame_add):
