@@ -1703,8 +1703,6 @@ class JoshuaAttacker(AngleAttacker):
         self.reset_vars()
         self.cal_real_attack_damage()
 
-        self.attack3_delay_hits = set()
-
 
     def cal_real_attack_damage(self):
         sp = self.sprite
@@ -1727,6 +1725,8 @@ class JoshuaAttacker(AngleAttacker):
         # a lock, only one magic is running in an attack
         self.method = None
         self.current_magic = None
+        self.attack3_delay_hits = set()
+        self.x4_tag_hits = {}   # key:value is frame: target
 
 
     def attack1(self, target, current_frame_add):
@@ -1859,12 +1859,51 @@ class JoshuaAttacker(AngleAttacker):
 
 
     def x4(self, current_frame_add):
-        pass
+        sp = self.sprite
+        if self.current_magic is None:
+            sp.mp -= self.magic_skill_4_params["mana"]
+            self.magic_cds["magic_skill_4"] = self.magic_skill_4_params["cd"]
+            self.handle_additional_status(cfg.SpriteStatus.SUPER_BODY, True)
+            self.current_magic = "x4"
+
+        frm = int(current_frame_add)
+
+        for target in sp.enemies:
+            if sp.pos.get_distance_to(target.pos) > self.magic_skill_4_params["lock_distance"]:
+                continue
+
+            if target.status.get(cfg.SpriteStatus.CRICK) is None:
+                target.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
+                    {"time": 2, "old_action": target.action})
+
+            if frm not in self.magic_skill_4_params["key_frames"]:
+                continue
+
+            self.x4_tag_hits.setdefault(frm, set())
+            if target in self.x4_tag_hits[frm]:
+                continue
+
+            self.x4_tag_hits[frm].add(target)
+            self.has_hits.add(target)
+
+            damage = sp.atk * self.magic_skill_4_params["damage_ratio"]
+            target.attacker.handle_under_attack(sp, damage)
+
+
+    def x4_thump_out(self):
+        for target in self.has_hits:
+            cfg.SpriteStatus.CRICK in target.status and target.status.pop(cfg.SpriteStatus.CRICK)
+            target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                {"crick_time": self.magic_skill_4_params["thump_crick_time"],
+                "out_speed": self.magic_skill_4_params["thump_out_speed"],
+                "acceleration": self.magic_skill_4_params["thump_acceleration"],
+                "key_vec": Vector2.from_points(self.sprite.pos, target.pos)})
+            blood_set = BloodSet(self.sprite, target.pos, target.setting.HEIGHT, 6)
+            self.magic_list.append(blood_set)
 
 
     def finish(self):
         self.has_hits.clear()
-        self.attack3_delay_hits.clear()
         self.reset_vars()
 
 

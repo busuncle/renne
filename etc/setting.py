@@ -445,8 +445,17 @@ class Joshua(object):
             "end_frame": 3,
         },
         "x4": {
-            "mana": 30,
-            "cd": 10,
+            "mana": 60,
+            "cd": 60,
+            "damage_ratio": 5,
+            "lock_distance": 380,
+            "key_frames": (12, 20, 36),
+            "end_frame": 37,
+            "post_kneel_time": 0.8,
+            "post_kneel_frame": 3,
+            "thump_out_speed": 1200,
+            "thump_crick_time": 1,
+            "thump_acceleration": -Physics.SPRITE_FLOOR_FRICTION_ACCELERATION,
         },
     }
 
@@ -1374,11 +1383,11 @@ class SpriteStatus(object):
     MP_SP_DOWN_WORDS_BLIT_Y_SIGMA = 10
     MP_SP_DOWN_WORDS_POS_MOVE_RATE = (0, 20)
 
-    AGL_UP_IMAGE_KEY = "status"
-    AGL_UP_RECT = (128, 240, 16, 16)
+    SPD_UP_IMAGE_KEY = "status"
+    SPD_UP_RECT = (64, 240, 16, 16)
 
-    AGL_DOWN_IMAGE_KEY = "status"
-    AGL_DOWN_RECT = (144, 240, 16, 16)
+    SPD_DOWN_IMAGE_KEY = "status"
+    SPD_DOWN_RECT = (80, 240, 16, 16)
 
     POISON_IMAGE_KEY = "status"
     POISON_RECT = (0, 224, 16, 16)

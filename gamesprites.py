@@ -735,6 +735,7 @@ class Joshua(Hero):
         self.run_attack_speed = self.setting.RUN_SPEED * 1.5
         self.x1_slide_time = self.attacker.magic_skill_1_params["slide_time"]
         self.x3_slide_time = self.attacker.magic_skill_3_params["slide_time"]
+        self.x4_post_kneel_time = self.attacker.magic_skill_4_params["post_kneel_time"]
 
 
     def play_related_sound(self):
@@ -907,8 +908,25 @@ class Joshua(Hero):
 
 
     def x4(self, passed_seconds):
-        #TODO
-        self.reset_action()
+        if self.x4_post_kneel_time == self.attacker.magic_skill_4_params["post_kneel_time"]:
+            self.frame_action = cfg.JoshuaAction.BIG_SKILL
+            is_finish = self.animation.run_sequence_frame(self.frame_action, passed_seconds)
+            if is_finish:
+                self.x4_post_kneel_time -= passed_seconds
+
+            current_frame_add = self.animation.get_current_frame_add(self.frame_action)
+            self.attacker.x4(current_frame_add)
+        else:
+            self.frame_action = cfg.JoshuaAction.KNEEL
+            self.animation.set_frame_add(cfg.JoshuaAction.KNEEL, 
+                self.attacker.magic_skill_4_params["post_kneel_frame"])
+            self.direction = cfg.Direction.SOUTH
+            self.x4_post_kneel_time -= passed_seconds
+            if self.x4_post_kneel_time < 0:
+                self.attacker.x4_thump_out()
+                self.reset_action()
+                cfg.SpriteStatus.SUPER_BODY in self.status and self.status.pop(cfg.SpriteStatus.SUPER_BODY)
+
 
 
 
@@ -1345,7 +1363,7 @@ class CastleWarrior(Enemy):
             if self.animation.get_current_frame_add(cfg.EnemyAction.ATTACK) \
                 > self.thump_pre_frames[-1]:
                 # pre -> pre_freeze
-                self.animation.set_frame_add(cfg.EnemyAction, self.thump_pre_frames[-1]) 
+                self.animation.set_frame_add(cfg.EnemyAction.ATTACK, self.thump_pre_frames[-1]) 
                 self.thump_pre_freeze_time_add += passed_seconds
 
         elif self.thump_pre_freeze_time_add < self.thump_pre_freeze_time:
