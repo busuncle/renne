@@ -1299,6 +1299,9 @@ class Attacker(object):
 
     def handle_under_attack(self, from_who, cost_hp, attack_method=cfg.Attack.METHOD_REGULAR):
         sp = self.sprite
+        if sp.status.get(cfg.SpriteStatus.GOD) is not None:
+            return
+
         cost_hp = int(cost_hp)
         sp.hp = max(sp.hp - cost_hp, 0)
         sp.hp_status = sp.cal_sprite_status(sp.hp, sp.setting.HP)
@@ -1873,7 +1876,7 @@ class JoshuaAttacker(HeroAttacker):
         if self.current_magic is None:
             sp.mp -= self.magic_skill_4_params["mana"]
             self.magic_cds["magic_skill_4"] = self.magic_skill_4_params["cd"]
-            self.handle_additional_status(cfg.SpriteStatus.SUPER_BODY, True)
+            self.handle_additional_status(cfg.SpriteStatus.GOD, True)
             self.current_magic = "x4"
 
         frm = int(current_frame_add)
@@ -1902,7 +1905,7 @@ class JoshuaAttacker(HeroAttacker):
 
     def x4_thump_out(self):
         for target in self.has_hits:
-            cfg.SpriteStatus.CRICK in target.status and target.status.pop(cfg.SpriteStatus.CRICK)
+            #cfg.SpriteStatus.CRICK in target.status and target.status.pop(cfg.SpriteStatus.CRICK)
             if target.hp_status in cfg.HpStatus.ALIVE:
                 target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
                     {"crick_time": self.magic_skill_4_params["thump_crick_time"],
@@ -2392,16 +2395,19 @@ class EnemyImpaleShortAttacker(EnemyShortAttacker):
             super(EnemyImpaleShortAttacker, self).handle_under_attack(from_who, cost_hp * 2, attack_method)
 
 
-    #def handle_additional_status(self, status_id, status_object):
-    #    if status_id == cfg.SpriteStatus.UNDER_THUMP:
-    #        # anti under_thump
-    #        from_who = status_object["from_who"]
-    #        from_who.attacker.finish()
-    #        from_who.animation.set_init_frame(cfg.SpriteAction.STAND)
-    #        status_object["key_vec"] = Vector2.from_points(self.sprite.pos, from_who.pos)
-    #        from_who.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP, status_object)
-    #    else:
-    #        super(EnemyImpaleShortAttacker, self).handle_additional_status(status_id, status_object)
+    def handle_additional_status(self, status_id, status_object):
+        if status_id == cfg.SpriteStatus.UNDER_THUMP:
+            # anti under_thump
+            from_who = status_object["from_who"]
+            if from_who.status.get(cfg.SpriteStatus.GOD) is not None:
+                return
+
+            from_who.attacker.finish()
+            from_who.animation.set_init_frame(cfg.SpriteAction.STAND)
+            status_object["key_vec"] = Vector2.from_points(self.sprite.pos, from_who.pos)
+            from_who.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP, status_object)
+        else:
+            super(EnemyImpaleShortAttacker, self).handle_additional_status(status_id, status_object)
 
 
 

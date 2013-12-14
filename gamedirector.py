@@ -681,7 +681,7 @@ class Achievement(object):
                     if self.kill_time_list[-1] - self.kill_time_list[-2] <= sfg.Achievement.N_KILL_TIMEDELTA:
                         n_kill = self.n_kill_list[-1] + 1
                         self.n_kill_list.append(n_kill)
-                        score = sfg.Achievement.SCORE["per_n_kill"] * pow(2, n_kill)
+                        score = sfg.Achievement.SCORE["per_n_kill"] * 2 * n_kill
                         self.n_kill_score.incr_next_value(score)
                     else:
                         self.n_kill_list.append(1)

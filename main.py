@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from time import time
-from random import choice
+from random import choice, gauss
 from gamesprites import Renne, Joshua, GameSpritesGroup, enemy_in_one_screen
 from gamesprites import EnemyGroup, ENEMY_CLASS_MAPPING
 from base import constant as cfg
@@ -273,8 +273,13 @@ def enter_dead_mode(screen, hero):
     game_director = GameDirector(sfg.DeadMode.MAP_CHAPTER, hero, enemies)
 
     add_enemy_timer = util.Timer(sfg.DeadMode.ADD_ENEMY_TIME_DELTA)
-    enemy_add_num = 10
-    enemy_add_delta = 5
+    enemy_add_num = sfg.DeadMode.ENEMY_ADD_INIT_NUM
+    enemy_add_delta = sfg.DeadMode.ENEMY_ADD_DELTA
+
+    # pre_loading sprite
+    for mnstr_id in sfg.COMMON_MONSTER_ID_LIST:
+        mnstr_sfg = sfg.SPRITE_SETTING_MAPPING[mnstr_id]
+        mnstr = ENEMY_CLASS_MAPPING[mnstr_id](mnstr_sfg, (0, 0), cfg.Direction.SOUTH)
 
     clock = pygame.time.Clock()
     running = True
@@ -366,7 +371,8 @@ def enter_dead_mode(screen, hero):
                         monster_id = choice(sfg.COMMON_MONSTER_ID_LIST)
                         monster_setting = sfg.SPRITE_SETTING_MAPPING[monster_id]
                         monster = ENEMY_CLASS_MAPPING[monster_id](monster_setting, 
-                            (400, 500), cfg.Direction.EAST)
+                            (gauss(game_map.size[0] * 0.5, 300), gauss(game_map.size[1] * 0.5, 100)), 
+                            choice(cfg.Direction.ALL))
                         monster_ai_setting = ai.AI_MAPPING[monster_id]
                         monster.activate(monster_ai_setting, allsprites, hero, static_objects, game_map)
                         monster.brain.set_target(hero)
@@ -376,19 +382,18 @@ def enter_dead_mode(screen, hero):
 
                     allsprites.add(enemies)
 
-                    enemy_add_num += enemy_add_delta
+                    enemy_add_num = min(enemy_add_num + enemy_add_delta, sfg.DeadMode.ENEMY_ADD_MAX)
+
             else:
                 add_enemy_timer.begin()
                 
-                new_foods = [StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[
-                    choice(sfg.FOOD_ID_LIST)], (200, 300)),
-                    StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[
-                    choice(sfg.FOOD_ID_LIST)], (200, 500)),
-                    StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[
-                    choice(sfg.FOOD_ID_LIST)], (200, 700))]
-
-                for food in new_foods:
+                new_foods = []
+                for _is_a_useless_var in xrange(3):
+                    food = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[
+                        choice(sfg.FOOD_ID_LIST)], (gauss(400, 100), gauss(game_map.size[1] * 0.5, 100)))
+                    new_foods.append(food)
                     static_objects.add(food)
+
                 game_world.batch_add(new_foods)
 
 

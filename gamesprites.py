@@ -925,7 +925,7 @@ class Joshua(Hero):
             if self.x4_post_kneel_time < 0:
                 self.attacker.x4_thump_out()
                 self.reset_action()
-                cfg.SpriteStatus.SUPER_BODY in self.status and self.status.pop(cfg.SpriteStatus.SUPER_BODY)
+                cfg.SpriteStatus.GOD in self.status and self.status.pop(cfg.SpriteStatus.GOD)
 
 
 

@@ -1440,9 +1440,9 @@ class Achievement(object):
     }
 
     SCORE = {
-        "per_hit": 10,
-        "per_kill": 100,
-        "per_n_kill": 20,
+        "per_hit": 5,
+        "per_kill": 50,
+        "per_n_kill": 10,
     }
 
 
@@ -1555,6 +1555,9 @@ class EndGame(object):
 class DeadMode(object):
     MAP_CHAPTER = "deadmode"
     ADD_ENEMY_TIME_DELTA = 2
+    ENEMY_ADD_INIT_NUM = 10
+    ENEMY_ADD_DELTA = 5
+    ENEMY_ADD_MAX = 50
 
 
 
