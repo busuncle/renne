@@ -1,8 +1,9 @@
 import pygame
 from pygame.locals import *
 from time import time
+from random import choice
 from gamesprites import Renne, Joshua, GameSpritesGroup, enemy_in_one_screen
-from gamesprites import EnemyGroup
+from gamesprites import EnemyGroup, ENEMY_CLASS_MAPPING
 from base import constant as cfg
 from etc import setting as sfg
 from etc import ai_setting as ai
@@ -271,6 +272,10 @@ def enter_dead_mode(screen, hero):
 
     game_director = GameDirector(sfg.DeadMode.MAP_CHAPTER, hero, enemies)
 
+    add_enemy_timer = util.Timer(sfg.DeadMode.ADD_ENEMY_TIME_DELTA)
+    enemy_add_num = 10
+    enemy_add_delta = 5
+
     clock = pygame.time.Clock()
     running = True
 
@@ -351,12 +356,59 @@ def enter_dead_mode(screen, hero):
 
         game_director.update(passed_seconds)
 
+        # judge enenmy nums
+        if len(enemies) == 0:
+            if add_enemy_timer.is_begin():
+                if add_enemy_timer.exceed():
+                    add_enemy_timer.clear()
+                    hero.set_emotion(cfg.SpriteEmotion.ALERT)
+                    for _a_useless_var in xrange(enemy_add_num):
+                        monster_id = choice(sfg.COMMON_MONSTER_ID_LIST)
+                        monster_setting = sfg.SPRITE_SETTING_MAPPING[monster_id]
+                        monster = ENEMY_CLASS_MAPPING[monster_id](monster_setting, 
+                            (400, 500), cfg.Direction.EAST)
+                        monster_ai_setting = ai.AI_MAPPING[monster_id]
+                        monster.activate(monster_ai_setting, allsprites, hero, static_objects, game_map)
+                        monster.brain.set_target(hero)
+                        monster.brain.set_active_state(cfg.SpriteState.CHASE)
+                        enemies.add(monster)
+                        game_world.add_object(monster)
+
+                    allsprites.add(enemies)
+
+                    enemy_add_num += enemy_add_delta
+            else:
+                add_enemy_timer.begin()
+                
+                new_foods = [StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[
+                    choice(sfg.FOOD_ID_LIST)], (200, 300)),
+                    StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[
+                    choice(sfg.FOOD_ID_LIST)], (200, 500)),
+                    StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[
+                    choice(sfg.FOOD_ID_LIST)], (200, 700))]
+
+                for food in new_foods:
+                    static_objects.add(food)
+                game_world.batch_add(new_foods)
+
+
+
         camera.screen_follow(hero.pos)
 
         # 3 layers from bottom to top: floor -> sprites in the playground -> game info(player hp, ep etc)
         game_map.draw(camera)
         game_world.draw(camera)
         game_director.draw(camera)
+
+        if COMMAND_DEBUG_MODE or sfg.DEBUG_MODE:
+            debug_tools.run_debug_by_option_list(COMMAND_DEBUG_OPTIONS,
+                camera, game_world, game_map, clock)
+            if COMMAND_DEBUG_OPTIONS["god"]:
+                hero.hp = hero.setting.HP
+                hero.mp = hero.setting.MP
+                hero.sp = hero.setting.SP
+                hero.hp_status = hero.cal_sprite_status(hero.hp, hero.setting.HP)
+                hero.attacker.refresh_skill()
 
         pygame.display.update()
 

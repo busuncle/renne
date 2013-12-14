@@ -92,7 +92,7 @@ class Menu(object):
             {"name": u"ÍË³ö", "mark": "quit", "display": True},
         ],
         "option_rect": (0, 0, 256, 48),
-        "blit_y": 540,
+        "blit_y": 520,
         "font_on": Font.MSYH_48,
         "font_off": Font.MSYH_32,
         "color_on": pygame.Color("white"),
@@ -1554,6 +1554,7 @@ class EndGame(object):
 
 class DeadMode(object):
     MAP_CHAPTER = "deadmode"
+    ADD_ENEMY_TIME_DELTA = 2
 
 
 
@@ -1820,6 +1821,12 @@ for i, cls in enumerate(STATIC_OBJECT_SETTING_LIST):
 
 SPRITE_SETTING_MAPPING = dict((cls.ID, cls) for cls in SPRITE_SETTING_LIST)
 STATIC_OBJECT_SETTING_MAPPING = dict((cls.ID, cls) for cls in STATIC_OBJECT_SETTING_LIST)
+
+COMMON_MONSTER_ID_LIST = [k for k in SPRITE_SETTING_MAPPING if k not in \
+    (Renne.ID, Joshua.ID, LeonHardt.ID)]
+
+FOOD_ID_LIST = [v.ID for v in STATIC_OBJECT_SETTING_LIST \
+    if v.IS_ELIMINABLE and v.ELIMINATION_TYPE == cfg.StaticObject.ELIMINATION_TYPE_FOOD]
 
 
 

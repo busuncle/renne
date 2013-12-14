@@ -394,6 +394,7 @@ class SelfDestruction(MagicSkill):
                         {"crick_time": self.thump_crick_time, 
                         "out_speed": self.thump_out_speed, 
                         "acceleration": self.thump_acceleration,
+                        "from_who": self.sprite,
                         "key_vec": Vector2.from_points(self.sprite.pos, sp.pos)})
 
         if len(self.trigger_times) == 0 and len(self.magic_sprites) == 0:
@@ -515,6 +516,7 @@ class GrenadeBomb(MagicSkill):
                         {"crick_time": self.thump_crick_time, 
                         "out_speed": self.thump_out_speed, 
                         "acceleration": self.thump_acceleration,
+                        "from_who": self.sprite,
                         "key_vec": Vector2.from_points(bomb.pos, sp.pos).normalize()})
 
         if len(self.grenades) == 0 and len(self.bombs) == 0:
@@ -1619,6 +1621,7 @@ class RenneAttacker(HeroAttacker):
                 {"crick_time": self.attack2_params["thump_crick_time"], 
                 "out_speed": self.attack2_params["thump_out_speed"], 
                 "acceleration": self.attack2_params["thump_acceleration"],
+                "from_who": self.sprite,
                 "key_vec": Vector2.from_points(self.sprite.pos, target.pos)})
             self.handle_additional_status(cfg.SpriteStatus.CRICK,
                 {"time": self.attack2_params["self_crick_time"], "old_action": self.sprite.action})
@@ -1777,6 +1780,7 @@ class JoshuaAttacker(HeroAttacker):
                     {"crick_time": self.attack3_params["thump_crick_time"], 
                     "out_speed": self.attack3_params["thump_out_speed"], 
                     "acceleration": self.attack3_params["thump_acceleration"],
+                    "from_who": self.sprite,
                     "key_vec": Vector2.from_points(self.sprite.pos, target.pos)})
                 blood_set = BloodSet(self.sprite, target.pos, target.setting.HEIGHT, 4)
                 self.magic_list.append(blood_set)
@@ -1827,6 +1831,7 @@ class JoshuaAttacker(HeroAttacker):
                     {"crick_time": self.magic_skill_1_params["thump_crick_time"],
                     "out_speed": self.magic_skill_1_params["thump_out_speed"],
                     "acceleration": self.magic_skill_1_params["thump_acceleration"],
+                    "from_who": self.sprite,
                     "key_vec": Vector2.from_points(sp.pos, target.pos)})
 
                 is_stun = target.attacker.handle_additional_status(cfg.SpriteStatus.STUN,
@@ -1903,6 +1908,7 @@ class JoshuaAttacker(HeroAttacker):
                     {"crick_time": self.magic_skill_4_params["thump_crick_time"],
                     "out_speed": self.magic_skill_4_params["thump_out_speed"],
                     "acceleration": self.magic_skill_4_params["thump_acceleration"],
+                    "from_who": self.sprite,
                     "key_vec": Vector2.from_points(self.sprite.pos, target.pos)})
                 blood_set = BloodSet(self.sprite, target.pos, target.setting.HEIGHT, 6)
                 self.magic_list.append(blood_set)
@@ -2134,6 +2140,7 @@ class EnemyThumpShortAttacker(EnemyShortAttacker):
                     {"crick_time": self.thump_crick_time, 
                     "out_speed": self.thump_out_speed, 
                     "acceleration": self.thump_acceleration,
+                    "from_who": self.sprite,
                     "key_vec": Vector2.from_points(sp.pos, target.pos)})
 
             damage = max(0, atk - target.dfs)
@@ -2238,6 +2245,7 @@ class TwoHeadSkeletonAttacker(EnemyShortAttacker):
                 target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP, 
                     {"crick_time": self.fall_thump_crick_time, "out_speed": self.fall_thump_out_speed,
                     "acceleration": self.fall_thump_acceleration, 
+                    "from_who": self.sprite,
                     "key_vec": Vector2.from_points(sp.pos, target.pos)})
 
                 blood_set = BloodSet(sp, target.pos, target.setting.HEIGHT)
@@ -2347,6 +2355,7 @@ class SwordRobberAttacker(EnemyShortAttacker):
                 {"crick_time": self.thump_crick_time, 
                 "out_speed": self.thump_out_speed,
                 "acceleration": self.thump_acceleration, 
+                "from_who": self.sprite,
                 "key_vec": Vector2.from_points(sp.pos, target.pos)})
 
 
@@ -2383,16 +2392,16 @@ class EnemyImpaleShortAttacker(EnemyShortAttacker):
             super(EnemyImpaleShortAttacker, self).handle_under_attack(from_who, cost_hp * 2, attack_method)
 
 
-    def handle_additional_status(self, status_id, status_object):
-        if status_id == cfg.SpriteStatus.UNDER_THUMP:
-            # anti under_thump
-            from_who = status_object["from_who"]
-            from_who.attacker.finish()
-            from_who.animation.set_init_frame(cfg.SpriteAction.STAND)
-            status_object["key_vec"] = Vector2.from_points(self.sprite.pos, from_who.pos)
-            from_who.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP, status_object)
-        else:
-            super(EnemyImpaleShortAttacker, self).handle_additional_status(status_id, status_object)
+    #def handle_additional_status(self, status_id, status_object):
+    #    if status_id == cfg.SpriteStatus.UNDER_THUMP:
+    #        # anti under_thump
+    #        from_who = status_object["from_who"]
+    #        from_who.attacker.finish()
+    #        from_who.animation.set_init_frame(cfg.SpriteAction.STAND)
+    #        status_object["key_vec"] = Vector2.from_points(self.sprite.pos, from_who.pos)
+    #        from_who.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP, status_object)
+    #    else:
+    #        super(EnemyImpaleShortAttacker, self).handle_additional_status(status_id, status_object)
 
 
 
@@ -2608,6 +2617,7 @@ class WerwolfAttacker(EnemyShortAttacker):
         target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
             {"crick_time": self.thump_crick_time, "out_speed": self.thump_out_speed,
             "acceleration": self.thump_acceleration, 
+            "from_who": self.sprite,
             "key_vec": -sp.key_vec})
 
 
