@@ -1551,6 +1551,11 @@ class EndGame(object):
 
 
 
+class DeadMode(object):
+    MAP_CHAPTER = "deadmode"
+
+
+
 class MapEditor(object):
     STEP_WIDTH = 8
     SCREEN_MOVE_SPEED = 400

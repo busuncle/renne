@@ -234,6 +234,22 @@ def enter_chapter(screen, chapter, hero):
 
 
 
+def enter_dead_mode(screen, hero):
+    map_setting = util.load_map_setting(sfg.DeadMode.MAP_CHAPTER)
+
+    camera = Camera(screen, map_size=map_setting["size"])
+    game_map = GameMap(chapter, map_setting)
+    static_objects = StaticObjectGroup()
+    allsprites = GameSpritesGroup()
+    enemies = EnemyGroup(map_setting["monsters"], allsprites, hero, static_objects, game_map)
+    game_world = GameWorld()
+
+    # load hero
+    hero.place(map_setting["hero"]["pos"], map_setting["hero"]["direction"])
+    hero.activate(allsprites, enemies, static_objects, game_map)
+
+
+
 if __name__ == "__main__":
     args = util.parse_command_line([
         (["-d", "--debug"], {"dest": "debug", "action": "store_true"}),

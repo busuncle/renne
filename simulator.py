@@ -1532,12 +1532,29 @@ class ArrowSet(MagicSkill):
 
 
 
-class RenneAttacker(AngleAttacker):
+class HeroAttacker(AngleAttacker):
+    def __init__(self, sprite, atk_range, atk_angle, key_frames):
+        super(HeroAttacker, self).__init__(sprite, atk_range, atk_angle, key_frames)
+        self.hit_record = []
+        self.kill_record = []
+
+
+    def finish(self):
+        if len(self.has_hits) > 0:
+            self.hit_record.append({"time": time(), "n_hit": len(self.has_hits)})
+            for sp in self.has_hits:
+                if sp.hp_status == cfg.HpStatus.DIE:
+                    self.kill_record.append({"time": time()})
+            self.has_hits.clear()
+
+        self.reset_vars()
+
+
+
+class RenneAttacker(HeroAttacker):
     def __init__(self, sprite, attacker_params):
         super(RenneAttacker, self).__init__(sprite, attacker_params["attack1"]["range"], 
             attacker_params["attack1"]["angle"], attacker_params["key_frames"])
-        self.hit_record = []
-        self.kill_record = []
         self.attack1_params = attacker_params["attack1"]
         self.attack2_params = attacker_params["attack2"]
 
@@ -1665,24 +1682,12 @@ class RenneAttacker(AngleAttacker):
             self.magic_list.append(self.current_magic)
 
 
-    def finish(self):
-        if len(self.has_hits) > 0:
-            self.hit_record.append({"time": time(), "n_hit": len(self.has_hits)})
-            for sp in self.has_hits:
-                if sp.hp_status == cfg.HpStatus.DIE:
-                    self.kill_record.append({"time": time()})
-            self.has_hits.clear()
-
-        self.reset_vars()
 
 
-
-class JoshuaAttacker(AngleAttacker):
+class JoshuaAttacker(HeroAttacker):
     def __init__(self, sprite, attacker_params):
         super(JoshuaAttacker, self).__init__(sprite, attacker_params["attack1"]["range"],
             attacker_params["attack1"]["angle"], attacker_params["attack1"]["key_frames"])
-        self.hit_record = []
-        self.kill_record = []
         self.attack1_params = attacker_params["attack1"]
         self.attack2_params = attacker_params["attack2"]
         self.attack3_params = attacker_params["attack3"]
@@ -1900,11 +1905,6 @@ class JoshuaAttacker(AngleAttacker):
                 "key_vec": Vector2.from_points(self.sprite.pos, target.pos)})
             blood_set = BloodSet(self.sprite, target.pos, target.setting.HEIGHT, 6)
             self.magic_list.append(blood_set)
-
-
-    def finish(self):
-        self.has_hits.clear()
-        self.reset_vars()
 
 
 
