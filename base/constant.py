@@ -201,6 +201,7 @@ class GameControl(object):
     QUIT = 3
     CONTINUE = 4
     SUB_CHAPTER = 5
+    DEAD_MODE = 6
 
 
 class Achievement(object):

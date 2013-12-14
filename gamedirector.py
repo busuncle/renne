@@ -176,6 +176,8 @@ def start_game(screen):
                         return {"status": cfg.GameControl.CONTINUE, "save": autosave}
                     elif mark == "start":
                         return {"status": cfg.GameControl.NEXT}
+                    elif mark == "dead_mode":
+                        return {"status": cfg.GameControl.DEAD_MODE}
                     elif mark == "quit":
                         return {"status": cfg.GameControl.QUIT}
                 elif event.key == K_ESCAPE:

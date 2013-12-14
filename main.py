@@ -45,10 +45,12 @@ def main(args):
             enter_chapter(screen, args.chapter, hero)
         return
 
-    res = start_game(screen)
+    res = {"status": cfg.GameControl.MAIN}
     i = -1
+    while True:
+        if i >= len(sfg.Chapter.ALL):
+            break
 
-    while i < len(sfg.Chapter.ALL):
         status = res["status"]
 
         if status == cfg.GameControl.NEXT:
@@ -84,6 +86,12 @@ def main(args):
                 hero.recover(res["save"]["level"])
                 chapter = sfg.Chapter.ALL[i]
                 res = enter_chapter(screen, chapter, hero)
+
+        elif status == cfg.GameControl.DEAD_MODE:
+            loading_chapter_picture(screen)
+            hero.exp = 0
+            hero.recover(level=1)
+            res = enter_dead_mode(screen, hero)
 
     end_game(screen)
 
@@ -238,7 +246,7 @@ def enter_dead_mode(screen, hero):
     map_setting = util.load_map_setting(sfg.DeadMode.MAP_CHAPTER)
 
     camera = Camera(screen, map_size=map_setting["size"])
-    game_map = GameMap(chapter, map_setting)
+    game_map = GameMap(sfg.DeadMode.MAP_CHAPTER, map_setting)
     static_objects = StaticObjectGroup()
     allsprites = GameSpritesGroup()
     enemies = EnemyGroup(map_setting["monsters"], allsprites, hero, static_objects, game_map)
@@ -248,6 +256,109 @@ def enter_dead_mode(screen, hero):
     hero.place(map_setting["hero"]["pos"], map_setting["hero"]["direction"])
     hero.activate(allsprites, enemies, static_objects, game_map)
 
+    # load static objects
+    chapter_static_objects = map_setting["static_objects"]
+    for static_obj_init in chapter_static_objects:
+        t, p = static_obj_init["id"], static_obj_init["pos"]
+        static_obj = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[t], p)
+        static_objects.add(static_obj)
+
+    allsprites.add(hero)
+    allsprites.add(enemies)
+
+    game_world.batch_add(allsprites)
+    game_world.batch_add(static_objects)
+
+    game_director = GameDirector(sfg.DeadMode.MAP_CHAPTER, hero, enemies)
+
+    clock = pygame.time.Clock()
+    running = True
+
+    battle_keys= {}
+    for k in sfg.UserKey.ONE_PRESSED_KEYS:
+        battle_keys[k] = {"pressed": False, "cd": 0, "full_cd": sfg.UserKey.ONE_PRESSED_KEY_CD}
+    for k in sfg.UserKey.CONTINUE_PRESSED_KEYS:
+        battle_keys[k] = {"pressed": False}
+    battle_keys["last_direct_key_up"] = {"key": None, "time": None}
+
+    while running:
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT: 
+                return {"status": cfg.GameControl.QUIT}
+
+            if event.type == KEYDOWN:
+                if event.key == sfg.UserKey.PAUSE:
+                    if game_director.status == cfg.GameStatus.IN_PROGRESS:
+                        game_director.status = cfg.GameStatus.PAUSE
+                        bg_box.pause()
+                        game_director.menu.index = 0
+                    elif game_director.status == cfg.GameStatus.PAUSE:
+                        game_director.status = cfg.GameStatus.IN_PROGRESS
+                        bg_box.unpause()
+
+                if event.key == sfg.UserKey.OK:
+                    if game_director.status == cfg.GameStatus.HERO_WIN:
+                        pass
+                    elif game_director.status == cfg.GameStatus.HERO_LOSE:
+                        return {"status": cfg.GameControl.DEAD_MODE}
+                    elif game_director.status == cfg.GameStatus.PAUSE:
+                        mark = game_director.menu.get_current_mark()
+                        if mark == "continue":
+                            game_director.status = cfg.GameStatus.IN_PROGRESS
+                            bg_box.unpause()
+                        elif mark == "main":
+                            return {"status": cfg.GameControl.MAIN}
+                        elif mark == "quit":
+                            return {"status": cfg.GameControl.QUIT}
+
+                if event.key in sfg.UserKey.ONE_PRESSED_KEYS and battle_keys[event.key]["cd"] == 0:
+                    battle_keys[event.key]["pressed"] = True
+                    battle_keys[event.key]["cd"] = battle_keys[event.key]["full_cd"]
+
+                if game_director.status == cfg.GameStatus.PAUSE:
+                    game_director.menu.update(event.key)
+
+            if event.type == KEYUP:
+                if event.key in sfg.UserKey.DIRECTION_KEYS:
+                    battle_keys["last_direct_key_up"]["key"] = event.key
+                    battle_keys["last_direct_key_up"]["time"] = time()
+
+        pressed_keys = pygame.key.get_pressed()
+        for k in sfg.UserKey.CONTINUE_PRESSED_KEYS:
+            battle_keys[k]["pressed"] = pressed_keys[k]
+
+        hero.event_handle(battle_keys, external_event=game_director.status)
+        for enemy in enemies:
+            if enemy_in_one_screen(hero, enemy):
+                enemy.event_handle(external_event=game_director.status)
+
+        time_passed = clock.tick(sfg.FPS)
+        passed_seconds = time_passed * 0.001
+
+        for k in sfg.UserKey.ONE_PRESSED_KEYS:
+            battle_keys[k]["pressed"] = False
+            battle_keys[k]["cd"] = max(battle_keys[k]["cd"] - passed_seconds, 0)
+        for k in sfg.UserKey.CONTINUE_PRESSED_KEYS:
+            battle_keys[k]["pressed"] = False
+
+        # update hero, enemies, game_director in sequence
+        hero.update(passed_seconds, external_event=game_director.status)
+        for enemy in enemies:
+            if enemy_in_one_screen(hero, enemy):
+                enemy.update(passed_seconds, external_event=game_director.status)
+
+        game_world.update(passed_seconds, game_director.status)
+
+        game_director.update(passed_seconds)
+
+        camera.screen_follow(hero.pos)
+
+        # 3 layers from bottom to top: floor -> sprites in the playground -> game info(player hp, ep etc)
+        game_map.draw(camera)
+        game_world.draw(camera)
+        game_director.draw(camera)
+
+        pygame.display.update()
 
 
 if __name__ == "__main__":

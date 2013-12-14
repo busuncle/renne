@@ -1898,13 +1898,14 @@ class JoshuaAttacker(HeroAttacker):
     def x4_thump_out(self):
         for target in self.has_hits:
             cfg.SpriteStatus.CRICK in target.status and target.status.pop(cfg.SpriteStatus.CRICK)
-            target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
-                {"crick_time": self.magic_skill_4_params["thump_crick_time"],
-                "out_speed": self.magic_skill_4_params["thump_out_speed"],
-                "acceleration": self.magic_skill_4_params["thump_acceleration"],
-                "key_vec": Vector2.from_points(self.sprite.pos, target.pos)})
-            blood_set = BloodSet(self.sprite, target.pos, target.setting.HEIGHT, 6)
-            self.magic_list.append(blood_set)
+            if target.hp_status in cfg.HpStatus.ALIVE:
+                target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                    {"crick_time": self.magic_skill_4_params["thump_crick_time"],
+                    "out_speed": self.magic_skill_4_params["thump_out_speed"],
+                    "acceleration": self.magic_skill_4_params["thump_acceleration"],
+                    "key_vec": Vector2.from_points(self.sprite.pos, target.pos)})
+                blood_set = BloodSet(self.sprite, target.pos, target.setting.HEIGHT, 6)
+                self.magic_list.append(blood_set)
 
 
 

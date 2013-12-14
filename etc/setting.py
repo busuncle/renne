@@ -87,7 +87,8 @@ class Menu(object):
     START_GAME = {
         "options": [
             {"name": u"读取存档", "mark": "load", "display": False},
-            {"name": u"开始", "mark": "start", "display": True}, 
+            {"name": u"闯关模式", "mark": "start", "display": True}, 
+            {"name": u"无限模式", "mark": "dead_mode", "display": True}, 
             {"name": u"退出", "mark": "quit", "display": True},
         ],
         "option_rect": (0, 0, 256, 48),
