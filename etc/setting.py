@@ -1,4 +1,5 @@
 # -*- coding: gbk -*-
+
 import os
 from base import constant as cfg
 import pygame
@@ -1558,6 +1559,7 @@ class DeadMode(object):
     ENEMY_ADD_INIT_NUM = 10
     ENEMY_ADD_DELTA = 5
     ENEMY_ADD_MAX = 50
+    ENEMY_LEFT_INFO_BLIT_POS = (780, 720)
 
 
 

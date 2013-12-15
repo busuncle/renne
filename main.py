@@ -1,3 +1,5 @@
+# -*- coding: gbk -*-
+
 import pygame
 from pygame.locals import *
 from time import time
@@ -401,13 +403,16 @@ def enter_dead_mode(screen, hero):
                 game_world.batch_add(new_foods)
 
 
-
         camera.screen_follow(hero.pos)
 
         # 3 layers from bottom to top: floor -> sprites in the playground -> game info(player hp, ep etc)
         game_map.draw(camera)
         game_world.draw(camera)
         game_director.draw(camera)
+
+        # say how many enemies left
+        enemy_left_info = sfg.Font.MSYH_32.render(u"สฃำเนึฮ๏สýฃบ%s" % len(enemies), True, pygame.Color("white"))
+        screen.blit(enemy_left_info, sfg.DeadMode.ENEMY_LEFT_INFO_BLIT_POS)
 
         if COMMAND_DEBUG_MODE or sfg.DEBUG_MODE:
             debug_tools.run_debug_by_option_list(COMMAND_DEBUG_OPTIONS,
