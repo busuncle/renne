@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from time import time
-from random import choice, gauss
+from random import choice, gauss, randint
 from gamesprites import Renne, Joshua, GameSpritesGroup, enemy_in_one_screen
 from gamesprites import EnemyGroup, ENEMY_CLASS_MAPPING
 from base import constant as cfg
@@ -371,7 +371,8 @@ def enter_dead_mode(screen, hero):
                         monster_id = choice(sfg.COMMON_MONSTER_ID_LIST)
                         monster_setting = sfg.SPRITE_SETTING_MAPPING[monster_id]
                         monster = ENEMY_CLASS_MAPPING[monster_id](monster_setting, 
-                            (gauss(game_map.size[0] * 0.5, 300), gauss(game_map.size[1] * 0.5, 100)), 
+                            (randint(int(game_map.size[0] * 0.3), int(game_map.size[0] * 0.7)),
+                                randint(int(game_map.size[1] * 0.3), int(game_map.size[1] * 0.7))),
                             choice(cfg.Direction.ALL))
                         monster_ai_setting = ai.AI_MAPPING[monster_id]
                         monster.activate(monster_ai_setting, allsprites, hero, static_objects, game_map)
@@ -390,7 +391,10 @@ def enter_dead_mode(screen, hero):
                 new_foods = []
                 for _is_a_useless_var in xrange(3):
                     food = StaticObject(sfg.STATIC_OBJECT_SETTING_MAPPING[
-                        choice(sfg.FOOD_ID_LIST)], (gauss(400, 100), gauss(game_map.size[1] * 0.5, 100)))
+                        choice(sfg.FOOD_ID_LIST)], 
+                        (randint(int(game_map.size[0] * 0.2), int(game_map.size[0] * 0.5)),
+                            randint(int(game_map.size[1] * 0.3), int(game_map.size[1] * 0.6)))
+                    )
                     new_foods.append(food)
                     static_objects.add(food)
 
