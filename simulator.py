@@ -1209,7 +1209,7 @@ class IceColumnBomb(MagicSkill):
         self.center_rect = sprite.area.copy()
         self.trigger_times = list(params["trigger_times"])
         self.trigger_ranges = list(params["trigger_ranges"])
-        self.ice_column_damage = params["ice_column_damage"]
+        self.ice_column_damage_ratio = params["ice_column_damage_ratio"]
         self.ice_column_life = params["ice_column_life"]
         self.frozen_time = params["frozen_time"]
         self.action_rate_scale_ratio = params["action_rate_scale_ratio"]
@@ -1232,7 +1232,8 @@ class IceColumnBomb(MagicSkill):
                 delta_vec.x *= rng
                 delta_vec.y *= rng
                 pos = self.init_pos + delta_vec
-                ice_column = IceColumn(pos, self.ice_column_damage, self.ice_column_life)
+                ice_column = IceColumn(pos, self.sprite.atk * self.ice_column_damage_ratio, 
+                    self.ice_column_life)
                 self.magic_sprites.append(ice_column)
                 for _i in xrange(self.ice_fog_per_column_gen_num):
                     x = randint(int(pos.x - self.ice_fog_pos_shake_x),
@@ -1252,7 +1253,8 @@ class IceColumnBomb(MagicSkill):
                     target.status.get(cfg.SpriteStatus.IN_AIR) is None and \
                     (ice_column.area.colliderect(target.area) or self.center_rect.colliderect(target.area)):
                     self.has_hits.add(target)
-                    target.attacker.handle_under_attack(self.sprite, self.ice_column_damage, 
+                    target.attacker.handle_under_attack(self.sprite, 
+                        self.sprite.atk * self.ice_column_damage_ratio, 
                         cfg.Attack.METHOD_MAGIC)
                     target.attacker.handle_additional_status(cfg.SpriteStatus.ACTION_RATE_SCALE,
                         {"ratio": self.action_rate_scale_ratio, "time": self.frozen_time})

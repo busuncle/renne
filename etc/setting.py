@@ -425,7 +425,7 @@ class Joshua(object):
             "trigger_ranges": (80, 120, 160),
             "cd": 10,
             "frozen_time": 3,
-            "ice_column_damage": 30,
+            "ice_column_damage_ratio": 3,
             "ice_column_life": 0.8,
             "action_rate_scale_ratio": 0.2,
             "ice_block_gen_num": 6,
@@ -1598,6 +1598,7 @@ class Sound(object):
     RENNE_WIN = "renne_win"
 
     JOSHUA_ATTACKS = ("joshua_attack1", "joshua_attack2", "joshua_attack3", "joshua_attack4")
+    JOSHUA_BIG_SKILL = "joshua_big_skill"
 
     SWORD_HITS = ("attack_hit", "attack_hit2", "attack_hit5")
 

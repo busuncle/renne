@@ -739,7 +739,7 @@ class Joshua(Hero):
 
 
     def play_related_sound(self):
-        if self.attacker.method == "attack2":
+        if self.attacker.method in ("attack2", "magic_skill_3"):
             self.sound_box.play(sfg.Sound.JOSHUA_ATTACKS[0])
         elif self.attacker.method == "attack3":
             self.sound_box.play(sfg.Sound.JOSHUA_ATTACKS[1])
@@ -747,6 +747,8 @@ class Joshua(Hero):
             self.sound_box.play(sfg.Sound.JOSHUA_ATTACKS[2])
         elif self.attacker.method in ("magic_skill_1", "magic_skill_2"):
             self.sound_box.play(sfg.Sound.JOSHUA_ATTACKS[3])
+        elif self.attacker.method == "magic_skill_4":
+            self.sound_box.play(sfg.Sound.JOSHUA_BIG_SKILL)
 
 
     def attack(self, passed_seconds):
