@@ -1555,11 +1555,12 @@ class EndGame(object):
 
 class DeadMode(object):
     MAP_CHAPTER = "deadmode"
-    ADD_ENEMY_TIME_DELTA = 2
+    ADD_ENEMY_TIME_DELTA = 3
     ENEMY_ADD_INIT_NUM = 10
     ENEMY_ADD_DELTA = 5
     ENEMY_ADD_MAX = 50
     ENEMY_LEFT_INFO_BLIT_POS = (780, 720)
+    CURRENT_ROUND_INFO_BLIT_POS = (40, 720)
 
 
 

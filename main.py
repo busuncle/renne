@@ -277,6 +277,7 @@ def enter_dead_mode(screen, hero):
     add_enemy_timer = util.Timer(sfg.DeadMode.ADD_ENEMY_TIME_DELTA)
     enemy_add_num = sfg.DeadMode.ENEMY_ADD_INIT_NUM
     enemy_add_delta = sfg.DeadMode.ENEMY_ADD_DELTA
+    current_round = 1
 
     # pre_loading sprite
     for mnstr_id in sfg.COMMON_MONSTER_ID_LIST:
@@ -389,6 +390,7 @@ def enter_dead_mode(screen, hero):
 
             else:
                 add_enemy_timer.begin()
+                current_round += 1
                 
                 new_foods = []
                 for _is_a_useless_var in xrange(3):
@@ -413,6 +415,13 @@ def enter_dead_mode(screen, hero):
         # say how many enemies left
         enemy_left_info = sfg.Font.MSYH_32.render(u"Ê£Óà¹ÖÎïÊý£º%s" % len(enemies), True, pygame.Color("white"))
         screen.blit(enemy_left_info, sfg.DeadMode.ENEMY_LEFT_INFO_BLIT_POS)
+
+        # say current round
+        current_round_info = sfg.Font.MSYH_32.render(u"µÚ%s²¨" % current_round, True, pygame.Color("white"))
+        screen.blit(current_round_info, sfg.DeadMode.CURRENT_ROUND_INFO_BLIT_POS)
+
+        if len(enemies) == 0 and add_enemy_timer.is_begin() and (not add_enemy_timer.exceed()):
+            game_director.draw_count_down_number(camera, add_enemy_timer, sfg.DeadMode.ADD_ENEMY_TIME_DELTA)
 
         if COMMAND_DEBUG_MODE or sfg.DEBUG_MODE:
             debug_tools.run_debug_by_option_list(COMMAND_DEBUG_OPTIONS,

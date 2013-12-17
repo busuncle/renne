@@ -418,6 +418,12 @@ class GameDirector(object):
         self.achievement.update(passed_seconds)
 
 
+    def draw_count_down_number(self, camera, timer, persist_time):
+        left_time = persist_time - timer.passed_time()
+        number_to_draw = self.numbers1[int(left_time)+1]
+        camera.screen.blit(number_to_draw, sfg.GameStatus.BEGIN_NUMBER_BLIT_POS)
+
+
     def draw(self, camera):
         # hero status draw here
         self.hero_status.draw(camera)
@@ -434,9 +440,7 @@ class GameDirector(object):
                 self.status = cfg.GameStatus.IN_PROGRESS
             else:
                 # count down for game begin, draw corresponding count-down numbers
-                left_time = sfg.GameStatus.INIT_PERSIST_TIME - self.begin_timer.passed_time()
-                number_to_draw = self.numbers1[int(left_time)+1]
-                camera.screen.blit(number_to_draw, sfg.GameStatus.BEGIN_NUMBER_BLIT_POS)
+                self.draw_count_down_number(camera, self.begin_timer, sfg.GameStatus.INIT_PERSIST_TIME)
 
         elif self.status in cfg.GameStatus.STATUS_WITH_MASK:
             self.mask.fill(sfg.Stuff.MASK_ALPHA_128)
