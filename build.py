@@ -31,7 +31,7 @@ class BuildExe:
         self.script = "main.py"
         self.project_name = "Renne"
         self.project_url = "https://github.com/busuncle/renne"
-        self.project_version = "0.7"
+        self.project_version = "0.71"
         self.license = "Free"
         self.author_name = "busuncle"
         self.author_email = "lizhij2@gmail.com"
