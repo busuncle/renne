@@ -1740,6 +1740,7 @@ class JoshuaAttacker(HeroAttacker):
         self.current_magic = None
         self.attack3_delay_hits = set()
         self.x4_tag_hits = {}   # key:value is frame: target
+        self.x4_thump_out_list = set()
 
 
     def attack1(self, target, current_frame_add):
@@ -1891,32 +1892,25 @@ class JoshuaAttacker(HeroAttacker):
                 target.attacker.handle_additional_status(cfg.SpriteStatus.CRICK,
                     {"time": 2, "old_action": target.action})
 
-            if frm not in self.magic_skill_4_params["key_frames"]:
-                continue
+            if frm in self.magic_skill_4_params["key_frames"]:
+                self.x4_tag_hits.setdefault(frm, set())
+                if target not in self.x4_tag_hits[frm]:
+                    self.x4_tag_hits[frm].add(target)
+                    self.has_hits.add(target)
 
-            self.x4_tag_hits.setdefault(frm, set())
-            if target in self.x4_tag_hits[frm]:
-                continue
+                    damage = sp.atk * self.magic_skill_4_params["damage_ratio"]
+                    target.attacker.handle_under_attack(sp, damage)
 
-            self.x4_tag_hits[frm].add(target)
-            self.has_hits.add(target)
-
-            damage = sp.atk * self.magic_skill_4_params["damage_ratio"]
-            target.attacker.handle_under_attack(sp, damage)
-
-
-    def x4_thump_out(self):
-        for target in self.has_hits:
-            #cfg.SpriteStatus.CRICK in target.status and target.status.pop(cfg.SpriteStatus.CRICK)
-            if target.hp_status in cfg.HpStatus.ALIVE:
-                target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
-                    {"crick_time": self.magic_skill_4_params["thump_crick_time"],
-                    "out_speed": self.magic_skill_4_params["thump_out_speed"],
-                    "acceleration": self.magic_skill_4_params["thump_acceleration"],
-                    "from_who": self.sprite,
-                    "key_vec": Vector2.from_points(self.sprite.pos, target.pos)})
-                blood_set = BloodSet(self.sprite, target.pos, target.setting.HEIGHT, 6)
-                self.magic_list.append(blood_set)
+            if frm == self.magic_skill_4_params["end_frame"] \
+                and target not in self.x4_thump_out_list:
+                    target.attacker.handle_additional_status(cfg.SpriteStatus.UNDER_THUMP,
+                        {"crick_time": self.magic_skill_4_params["thump_crick_time"],
+                        "out_speed": self.magic_skill_4_params["thump_out_speed"],
+                        "acceleration": self.magic_skill_4_params["thump_acceleration"],
+                        "from_who": self.sprite,
+                        "key_vec": Vector2.from_points(self.sprite.pos, target.pos)})
+                    blood_set = BloodSet(self.sprite, target.pos, target.setting.HEIGHT, 6)
+                    self.magic_list.append(blood_set)
 
 
 

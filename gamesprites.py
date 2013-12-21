@@ -925,7 +925,6 @@ class Joshua(Hero):
             self.direction = cfg.Direction.SOUTH
             self.x4_post_kneel_time -= passed_seconds
             if self.x4_post_kneel_time < 0:
-                self.attacker.x4_thump_out()
                 self.reset_action()
                 cfg.SpriteStatus.GOD in self.status and self.status.pop(cfg.SpriteStatus.GOD)
 
