@@ -874,9 +874,9 @@ class RenneDizzy(MagicSkill):
                 and target not in self.dizzy_targets:
                 self.dizzy_targets.add(target)
                 if happen(self.prob):
-                    target.attacker.handle_additional_status(cfg.SpriteStatus.DIZZY, 
-                        {"time": self.dizzy_time})
-                    target.set_emotion(cfg.SpriteEmotion.DIZZY)
+                    if target.attacker.handle_additional_status(cfg.SpriteStatus.DIZZY, 
+                        {"time": self.dizzy_time}):
+                        target.set_emotion(cfg.SpriteEmotion.DIZZY)
 
         self.effective_time -= passed_seconds
         if self.effective_time <= 0:

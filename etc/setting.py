@@ -448,7 +448,7 @@ class Joshua(object):
         },
         "x4": {
             "mana": 60,
-            "cd": 60,
+            "cd": 50,
             "damage_ratio": 5,
             "lock_distance": 380,
             "key_frames": (12, 20, 36),
