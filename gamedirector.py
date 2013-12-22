@@ -1,3 +1,5 @@
+# -*- coding: gbk -*-
+
 from time import time
 import pygame
 from pygame.locals import *
@@ -187,6 +189,10 @@ def start_game(screen):
 
         if pic_alpha == 255:
             menu.draw(screen)
+            
+        if sfg.CONFIG["hero"] == "joshua":
+            joshua_info = sfg.Font.MSYH_16.render(u"Joshua½ÇÉ«¿ªÆô", True, pygame.Color("white"))
+            screen.blit(joshua_info, (10, 10))
 
         pygame.display.flip()
 

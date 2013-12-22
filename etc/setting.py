@@ -1534,8 +1534,8 @@ class Chapter(object):
 
 
 class StartGame(object):
-    PICTURE_IMAGE_KEY = "start_game"
-    PICTURE_FADE_IN_TIME = 3 # in second unit, show up the picture
+    PICTURE_IMAGE_KEY = "start_game_%s" % CONFIG["hero"]
+    PICTURE_FADE_IN_TIME = 2 # in second unit, show up the picture
     PICTURE_BLIT_Y = 30
 
 
