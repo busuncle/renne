@@ -570,8 +570,8 @@ class LeonHardt(Enemy):
 
     IS_BOSS = True
     NAME = "LeonHardt"
-    HP = 2000
-    MP = 1000
+    HP = 10000
+    MP = 2000
     ATK = 60
     DFS = 5
     MP_RECOVERY_RATE = 10
