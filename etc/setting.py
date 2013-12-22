@@ -167,9 +167,17 @@ class Sprite(object):
 
 
 
-class Renne(object):
-    NAME = "Renne"
+class Hero(object):
     ROLE = cfg.SpriteRole.HERO
+    LEVEL_EXP = (0, 100, 300, 600, 1200, 2000, 3000, 4500, 6500, 9000)
+    #LEVEL_EXP = tuple(range(0, 28, 3))
+    MAX_LEVEL = len(LEVEL_EXP)
+    MAX_EXP = LEVEL_EXP[MAX_LEVEL - 1]
+
+
+
+class Renne(Hero):
+    NAME = "Renne"
 
     HP = 150
     MP = 80
@@ -204,10 +212,6 @@ class Renne(object):
     LEVEL_ATK = (10, 12, 14, 16, 18, 20, 24, 28, 32, 36)
     LEVEL_MAGIC_SKILL_DAMAGE_RATIO = (1, 1.1, 1.2, 1.5, 1.8, 2.0, 2.2, 2.5, 2.8, 3.0)
     LEVEL_DFS = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-    LEVEL_EXP = (0, 100, 300, 700, 1500, 2800, 4600, 7000, 10000, 15000)
-    #LEVEL_EXP = tuple(range(0, 28, 3))
-    MAX_LEVEL = len(LEVEL_EXP)
-    MAX_EXP = LEVEL_EXP[MAX_LEVEL - 1]
 
     ATTACKER_PARAMS = {
         "attack1":{
@@ -312,9 +316,8 @@ class Renne(object):
 
 
 
-class Joshua(object):
+class Joshua(Hero):
     NAME = "Joshua"
-    ROLE = cfg.SpriteRole.HERO
 
     HP = 200
     MP = 60
@@ -349,10 +352,6 @@ class Joshua(object):
     LEVEL_ATK = (12, 15, 18, 20, 25, 30, 35, 40, 45, 50)
     LEVEL_MAGIC_SKILL_DAMAGE_RATIO = (1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 2.0)
     LEVEL_DFS = (2, 3, 5, 8, 10, 12, 15, 18, 20, 22)
-    LEVEL_EXP = (0, 100, 300, 700, 1500, 2800, 4600, 7000, 10000, 15000)
-    #LEVEL_EXP = tuple(range(0, 28, 3))
-    MAX_LEVEL = len(LEVEL_EXP)
-    MAX_EXP = LEVEL_EXP[MAX_LEVEL - 1]
 
     ATTACKER_PARAMS = {
         "attack1": {
@@ -618,9 +617,10 @@ class LeonHardt(Enemy):
             "last_freeze_time": 2.2,
         },
         "death_domain": {
-            "damage": 10,
+            "damage": 30,
             "hit_cd": 1,
             "radius": 300,
+            "range": 400,
             "pre_run_time": 2,
             "run_time": 6,
             "post_run_time": 2,
