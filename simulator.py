@@ -1939,7 +1939,7 @@ class EnemyShortAttacker(EnemyAngleAttacker):
         # totally for ai, because player can judge whether it's a good attack chance himself
         sp = self.sprite
         distance_to_target = sp.pos.get_distance_to(target.pos)
-        if distance_to_target <= self.attack_range:
+        if distance_to_target <= self.attack_range + target.setting.RADIUS:
             return True
         return False
 
@@ -2485,7 +2485,9 @@ class ArrowAttacker(EnemyLongAttacker):
 
     def chance(self, target):
         sp = self.sprite
-        if self.is_static_object_block(target):
+        distance_to_target = sp.pos.get_distance_to(target.pos)
+        if distance_to_target > self.attack_range + target.setting.RADIUS \
+            or self.is_static_object_block(target):
             return False
         return True
 
@@ -2669,7 +2671,7 @@ class LeonhardtAttacker(EnemyAngleAttacker):
         distance_to_target = sp.pos.get_distance_to(target.pos)
         blocked = self.is_target_blocked(target)
         if happen(sp.brain.ai.ATTACK_REGULAR_PROB) \
-            and distance_to_target <= self.attack_range:
+            and distance_to_target <= self.attack_range + target.setting.RADIUS:
             self.method = "regular"
             return True
 
