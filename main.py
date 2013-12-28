@@ -246,6 +246,12 @@ def enter_chapter(screen, chapter, hero):
 
 
 def enter_dead_mode(screen, hero):
+
+    # pre_loading sprite
+    for mnstr_id in sfg.COMMON_MONSTER_ID_LIST:
+        mnstr_sfg = sfg.SPRITE_SETTING_MAPPING[mnstr_id]
+        mnstr = ENEMY_CLASS_MAPPING[mnstr_id](mnstr_sfg, (0, 0), cfg.Direction.SOUTH)
+
     map_setting = util.load_map_setting(sfg.DeadMode.MAP_CHAPTER)
 
     camera = Camera(screen, map_size=map_setting["size"])
@@ -278,11 +284,6 @@ def enter_dead_mode(screen, hero):
     enemy_add_num = sfg.DeadMode.ENEMY_ADD_INIT_NUM
     enemy_add_delta = sfg.DeadMode.ENEMY_ADD_DELTA
     current_round = 1
-
-    # pre_loading sprite
-    for mnstr_id in sfg.COMMON_MONSTER_ID_LIST:
-        mnstr_sfg = sfg.SPRITE_SETTING_MAPPING[mnstr_id]
-        mnstr = ENEMY_CLASS_MAPPING[mnstr_id](mnstr_sfg, (0, 0), cfg.Direction.SOUTH)
 
     clock = pygame.time.Clock()
     running = True

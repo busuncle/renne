@@ -169,7 +169,7 @@ class Sprite(object):
 
 class Hero(object):
     ROLE = cfg.SpriteRole.HERO
-    LEVEL_EXP = (0, 100, 300, 600, 1200, 2000, 3000, 4500, 6500, 9000)
+    LEVEL_EXP = (0, 100, 300, 600, 1000, 1500, 2200, 3000, 4000, 5000)
     #LEVEL_EXP = tuple(range(0, 28, 3))
     MAX_LEVEL = len(LEVEL_EXP)
     MAX_EXP = LEVEL_EXP[MAX_LEVEL - 1]
@@ -641,7 +641,7 @@ class ArmouredShooter(Enemy):
     HP = 300
     ATK = 38
     DFS = 4
-    EXP = 30
+    EXP = 50
 
     # overwrite
     VIEW_RANGE = 500
@@ -682,7 +682,7 @@ class SwordRobber(Enemy):
     HP = 400
     ATK = 45
     DFS = 4
-    EXP = 40
+    EXP = 60
 
     RADIUS = 24
     HEIGHT = 75
@@ -724,7 +724,7 @@ class GanDie(Enemy):
     HP = 250
     ATK = 30
     DFS = 2
-    EXP = 35
+    EXP = 55
 
     RADIUS = 24
     HEIGHT = 75
@@ -763,7 +763,7 @@ class Ghost(Enemy):
     HP = 300
     ATK = 45
     DFS = 3
-    EXP = 40
+    EXP = 80
 
     RADIUS = 24
     HEIGHT = 90
@@ -793,7 +793,7 @@ class TwoHeadSkeleton(Enemy):
     HP = 800
     ATK = 52
     DFS = 5
-    EXP = 80
+    EXP = 120
 
     RADIUS = 24
     HEIGHT = 120
@@ -829,7 +829,7 @@ class Werwolf(Enemy):
     HP = 700
     ATK = 50
     DFS = 4
-    EXP = 70
+    EXP = 150
 
     RADIUS = 24
     HEIGHT = 85 
@@ -872,7 +872,7 @@ class SilverTentacle(Enemy):
     HP = 300
     ATK = 40
     DFS = 4
-    EXP = 40
+    EXP = 70
 
     RADIUS = 24
     HEIGHT = 75
@@ -896,7 +896,7 @@ class Robot(Enemy):
     HP = 200
     ATK = 10
     DFS = 1
-    EXP = 30
+    EXP = 80
 
     RADIUS = 24
     HEIGHT = 60
