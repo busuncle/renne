@@ -360,6 +360,7 @@ class SpriteAnimator(object):
             return 
 
         sp = self.sprite
+        in_air_height = 0 # some sprite will "fly", awesome!
         if self.image_mix is not None:
             # image_mix will overwrite image if it is not none
             image_blit_pos = (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top)
@@ -368,8 +369,9 @@ class SpriteAnimator(object):
         elif self.image is not None:
             # don't modify rect itself, but pass the relative topleft point to the blit function
             if sp.status.get(cfg.SpriteStatus.IN_AIR) is not None:
+                in_air_height = sp.status[cfg.SpriteStatus.IN_AIR]["height"]
                 image_blit_pos = (self.rect.left - camera.rect.left, 
-                    self.rect.top - camera.rect.top - sp.status[cfg.SpriteStatus.IN_AIR]["height"])
+                    self.rect.top - camera.rect.top - in_air_height)
             else:
                 image_blit_pos = (self.rect.left - camera.rect.left, self.rect.top - camera.rect.top)
 
@@ -397,7 +399,7 @@ class SpriteAnimator(object):
                     sfg.SpriteStatus.SPD_UP_RECT).convert_alpha()
 
             camera.screen.blit(scale_icon, (sp.pos.x - camera.rect.x - scale_icon.get_width() * 0.5,
-                sp.pos.y * 0.5 - camera.rect.y - sp.setting.HEIGHT))
+                sp.pos.y * 0.5 - camera.rect.y - sp.setting.HEIGHT - in_air_height))
 
         if self.sprite.status.get(cfg.SpriteStatus.POISON) is not None:
             poison_icon = battle_images.get(sfg.SpriteStatus.POISON_IMAGE_KEY).subsurface(

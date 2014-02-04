@@ -258,6 +258,10 @@ class SpriteImageController(ImageController):
         return self.surfaces_mapping[name]
 
 
+    def clear(self):
+        self.surfaces_mapping = {}
+
+
 
 class Point(object):
     def __init__(self, x, y):

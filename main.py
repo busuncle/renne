@@ -57,10 +57,10 @@ def main(args):
         status = res["status"]
 
         if status == cfg.GameControl.NEXT:
-            loading_chapter_picture(screen)
-            hero.recover()
             i += 1
             if i < len(sfg.Chapter.ALL):
+                loading_chapter_picture(screen)
+                hero.recover()
                 chapter = sfg.Chapter.ALL[i]
                 res = enter_chapter(screen, chapter, hero)
 
