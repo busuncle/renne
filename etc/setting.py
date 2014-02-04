@@ -73,9 +73,9 @@ class Menu(object):
     RENNE_CURSOR_RECT = (224, 64, 32, 32)
     PAUSE = {
         "options": [
-            {"name": u"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·", "mark": "continue", "display": True},
-            {"name": u"ï¿½ï¿½ï¿½Ëµï¿½", "mark": "main", "display": True}, 
-            {"name": u"ï¿½ë¿ªï¿½ï¿½Ï·", "mark": "quit", "display": True},
+            {"name": u"¼ÌÐøÓÎÏ·", "mark": "continue", "display": True},
+            {"name": u"Ö÷²Ëµ¥", "mark": "main", "display": True}, 
+            {"name": u"Àë¿ªÓÎÏ·", "mark": "quit", "display": True},
         ],
         "option_rect": (0, 0, 224, 32),
         "blit_y": 320,
@@ -87,10 +87,10 @@ class Menu(object):
 
     START_GAME = {
         "options": [
-            {"name": u"ï¿½ï¿½È¡ï¿½æµµ", "mark": "load", "display": False},
-            {"name": u"ï¿½ï¿½ï¿½ï¿½Ä£Ê½", "mark": "start", "display": True}, 
-            {"name": u"ï¿½ï¿½ï¿½ï¿½Ä£Ê½", "mark": "dead_mode", "display": True}, 
-            {"name": u"ï¿½Ë³ï¿½", "mark": "quit", "display": True},
+            {"name": u"¶ÁÈ¡´æµµ", "mark": "load", "display": False},
+            {"name": u"´³¹ØÄ£Ê½", "mark": "start", "display": True}, 
+            {"name": u"ÎÞÏÞÄ£Ê½", "mark": "dead_mode", "display": True}, 
+            {"name": u"ÍË³ö", "mark": "quit", "display": True},
         ],
         "option_rect": (0, 0, 256, 48),
         "blit_y": 520,
@@ -1494,10 +1494,10 @@ class GameStatus(object):
     CHAPTER_SCORE_FONT = Font.HOLLOW_48
     CHAPTER_SCORE_COLOR = pygame.Color("white")
 
-    CHAPTER_NEXT = Font.MSYH_32.render(u"ï¿½ë°´ ï¿½Ø³ï¿½ ï¿½ï¿½ï¿½ï¿½", True, pygame.Color("gray"))
+    CHAPTER_NEXT = Font.MSYH_32.render(u"°´»Ø³µ¼ÌÐø", True, pygame.Color("gray"))
     CHAPTER_NEXT_BLIT_Y = 500
 
-    CHAPTER_AGAIN = Font.MSYH_32.render(u"ï¿½ë°´ ï¿½Ø³ï¿½ ï¿½ï¿½ï¿½ï¿½", True, pygame.Color("gray"))
+    CHAPTER_AGAIN = Font.MSYH_32.render(u"°´»Ø³µÖØÀ´", True, pygame.Color("gray"))
     CHAPTER_AGAIN_BLIT_Y = 460
 
     CHAPTER_SCORE = {
@@ -1512,7 +1512,7 @@ class Chapter(object):
     LOADING_PICTURE_IMAGE_KEY = "loading_chapter"
     LOADING_PICTURE_RECT = (0, 0, 640, 480)
     LOADING_PICTURE_FADE_IN_TIME = 1    # in second unit, show up the picture
-    LOADING_WORD = Font.MSYH_24.render(u"ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½...", True, pygame.Color("white"))
+    LOADING_WORD = Font.MSYH_24.render(u"ÓÎÏ·¼ÓÔØÖÐ...", True, pygame.Color("white"))
     LOADING_WORD_BLIT_POS = (840, 700)
 
     ALL = ("1", "2", "3", "4", "5")
@@ -1720,25 +1720,25 @@ class Effect(object):
     WHITE_CIRCLE_VEC_Z_MEAN = 40
     WHITE_CIRCLE_VEC_Z_SIGMA = 10
 
-    THUMP_WORD = u"ï¿½Ø»ï¿½!"
+    THUMP_WORD = u"ÖØ»÷!"
     THUMP_WORD_FONT = Font.MSYH_24
     THUMP_WORD_COLOR = pygame.Color("gold")
     THUMP_WORD_SHOW_TIME = 0.5
     THUMP_WORD_DY = 50
 
-    MP_BURN_WORD = u"ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½!"
+    MP_BURN_WORD = u"·¨Á¦È¼ÉÕ!"
     MP_BURN_WORD_FONT = Font.MSYH_24
     MP_BURN_WORD_COLOR = pygame.Color("black")
     MP_BURN_WORD_SHOW_TIME = 0.5
     MP_BURN_WORD_DY = 50
 
-    POISON_WORD = u"ï¿½ï¿½ï¿½ï¿½ï¿½×¹ï¿½×¥!"
+    POISON_WORD = u"¾ÅÒõ°×¹Ç×¦!"
     POISON_WORD_FONT = Font.MSYH_24
     POISON_WORD_COLOR = pygame.Color("green")
     POISON_WORD_SHOW_TIME = 0.5
     POISON_WORD_DY = 50
 
-    WHIRLWIND_WORD = u"ï¿½ï¿½ï¿½ï¿½Õ¶!"
+    WHIRLWIND_WORD = u"Ðý·çÕ¶!"
     WHIRLWIND_WORD_FONT = Font.MSYH_24
     WHIRLWIND_WORD_COLOR = pygame.Color("blue")
     WHIRLWIND_WORD_SHOW_TIME = 0.8
