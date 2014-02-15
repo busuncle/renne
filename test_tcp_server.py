@@ -3,32 +3,22 @@ import select
 import pygame
 from pygame.locals import *
 
+
 FPS = 60
-
-pygame.init()
-screen = pygame.display.set_mode([800, 600])
-
-
 
 
 def run():
-    img = pygame.image.load("renne.png").convert_alpha()
     address = ("127.0.0.1", 2012)
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(address)
     s.listen(1)
+    print "listening for connect"
 
     already_accept = False
     x, y = 0, 0
     clock = pygame.time.Clock()
     conn = None
     while True:
-        for event in pygame.event.get(): 
-            if event.type == pygame.QUIT: 
-                return conn
-            if event.type == KEYDOWN and event.key == K_ESCAPE:
-                return conn
-
         if not already_accept:
             rlist, wlist, elist = select.select([s], [], [], 0)
             if len(rlist) > 0 and rlist[0] == s:
@@ -45,6 +35,7 @@ def run():
                 pass
 
         if data:
+            print "recieve data %s" % data
             data = eval(data)
             for k in data:
                 if k == K_a:
@@ -56,15 +47,14 @@ def run():
                 elif k == K_s:
                     y += 1
 
-        screen.fill(pygame.Color("black"))
-        screen.blit(img, (x, y))
-        pygame.display.update()
+            conn.send(repr({"x": x, "y": y}))
+
         clock.tick(FPS)
 
 
 
 if __name__ == "__main__":
     conn = run()
-    conn.close()
-    pygame.quit()
+    if conn:
+        conn.close()
 

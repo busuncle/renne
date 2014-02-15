@@ -4,7 +4,7 @@ from pygame.locals import *
 
 
 pygame.init()
-pygame.display.set_mode([400, 300])
+screen = pygame.display.set_mode([400, 300])
 
 FPS = 60
 
@@ -15,9 +15,12 @@ s.setblocking(0)
 
 
 def run():
+    img = pygame.image.load("renne.png").convert_alpha()
     clock = pygame.time.Clock()
     data = {}
+    x, y = 0, 0
     while True:
+        recv_data = None
         data.clear()
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 
@@ -36,6 +39,18 @@ def run():
             except socket.error, ex:
                 pass
 
+        try:
+            recv_data = s.recv(1024*1024)
+        except socket.error, ex:
+            pass
+
+        if recv_data:
+            recv_data = eval(recv_data)
+            x = recv_data["x"]
+            y = recv_data["y"]
+
+        screen.fill(pygame.Color("black"))
+        screen.blit(img, (x, y))
         pygame.display.update()
         clock.tick(FPS)
 
