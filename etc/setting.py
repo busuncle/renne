@@ -1376,6 +1376,16 @@ class SpriteStatus(object):
     LEVEL_UP_WORDS_SHOW_TIME = 1.5
     LEVEL_UP_WORDS_VEC_Z = 60
 
+    NO_MANA_WORDS_COLOR = pygame.Color("blue")
+    NO_MANA_WORDS_FONT = Font.MSYH_16
+    NO_MANA_WORDS_SHOW_TIME = 0.8
+    NO_MANA_WORDS_VEC_Z = 20
+
+    NO_CD_WORDS_COLOR = pygame.Color("blue")
+    NO_CD_WORDS_FONT = Font.MSYH_16
+    NO_CD_WORDS_SHOW_TIME = 0.8
+    NO_CD_WORDS_VEC_Z = 20
+
     # weaken status
     MP_SP_DOWN_WORDS_COLOR = pygame.Color("black")
     MP_SP_DOWN_WORDS_FONT = Font.ARIAL_BLACK_16

@@ -401,6 +401,24 @@ class Hero(GameSprite):
         return False
 
 
+    def check_skill(self, mana, cd):
+        if self.mp < mana:
+            words = sfg.SpriteStatus.NO_MANA_WORDS_FONT.render(u"魔法不足", True, 
+                sfg.SpriteStatus.NO_MANA_WORDS_COLOR)
+            self.animation.show_follow_sprite_words(words, self.pos, 
+                sfg.SpriteStatus.NO_MANA_WORDS_SHOW_TIME,
+                self.setting.HEIGHT, sfg.SpriteStatus.NO_MANA_WORDS_VEC_Z, self)
+            return False
+        if cd > 0:
+            words = sfg.SpriteStatus.NO_CD_WORDS_FONT.render(u"技能冷却中", True, 
+                sfg.SpriteStatus.NO_CD_WORDS_COLOR)
+            self.animation.show_follow_sprite_words(words, self.pos, 
+                sfg.SpriteStatus.NO_CD_WORDS_SHOW_TIME,
+                self.setting.HEIGHT, sfg.SpriteStatus.NO_CD_WORDS_VEC_Z, self)
+            return False
+        return True
+
+
     def event_handle(self, battle_keys, external_event=None):
         if external_event is not None:
             if external_event == cfg.GameStatus.INIT:
@@ -449,29 +467,29 @@ class Hero(GameSprite):
             self.action = cfg.HeroAction.ATTACK
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_1]["pressed"]:
-            if self.mp >= self.attacker.magic_skill_1_params["mana"] \
-                and self.attacker.magic_cds["magic_skill_1"] == 0:
+            if self.check_skill(self.attacker.magic_skill_1_params["mana"], 
+                self.attacker.magic_cds["magic_skill_1"]):
                 self.action = cfg.HeroAction.ATTACK
                 self.attacker.method = "magic_skill_1"
                 self.play_related_sound()
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_2]["pressed"]:
-            if self.mp >= self.attacker.magic_skill_2_params["mana"] \
-                and self.attacker.magic_cds["magic_skill_2"] == 0:
+            if self.check_skill(self.attacker.magic_skill_2_params["mana"],
+                self.attacker.magic_cds["magic_skill_2"]):
                 self.action = cfg.HeroAction.ATTACK
                 self.attacker.method = "magic_skill_2"
                 self.play_related_sound()
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_3]["pressed"]:
-            if self.mp >= self.attacker.magic_skill_3_params["mana"] \
-                and self.attacker.magic_cds["magic_skill_3"] == 0:
+            if self.check_skill(self.attacker.magic_skill_3_params["mana"],
+                self.attacker.magic_cds["magic_skill_3"]):
                 self.action = cfg.HeroAction.ATTACK
                 self.attacker.method = "magic_skill_3"
                 self.play_related_sound()
 
         elif battle_keys[sfg.UserKey.MAGIC_SKILL_4]["pressed"]:
-            if self.mp >= self.attacker.magic_skill_4_params["mana"] \
-                and self.attacker.magic_cds["magic_skill_4"] == 0:
+            if self.check_skill(self.attacker.magic_skill_4_params["mana"],
+                self.attacker.magic_cds["magic_skill_4"]):
                 self.action = cfg.HeroAction.ATTACK
                 self.attacker.method = "magic_skill_4"
                 self.play_related_sound()
