@@ -1591,7 +1591,8 @@ class GanDie(Enemy):
         elif self.spit_poison_ready_time_add < self.spit_poison_ready_time:
             self.spit_poison_ready_time_add += passed_seconds
             self.frame_action = cfg.EnemyAction.UNDER_THUMP
-            if self.spit_poison_ready_time_add >= self.spit_poison_ready_time:
+            if self.spit_poison_ready_time_add >= self.spit_poison_ready_time \
+                and cfg.SpriteStatus.BODY_SHAKE in self.status:
                 self.status.pop(cfg.SpriteStatus.BODY_SHAKE)
 
         elif self.spit_poison_hold_time_add < self.spit_poison_hold_time:
