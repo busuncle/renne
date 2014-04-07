@@ -38,6 +38,18 @@ effect_image_controller.add_from_list(sfg.EFFECT[1])
 shadow_images = basic_image_controller.get(sfg.Sprite.SHADOW_IMAGE_KEY).convert_alpha()
 
 
+status_icons = {
+    "speed_down": battle_images.get(sfg.SpriteStatus.SPD_DOWN_IMAGE_KEY).subsurface(
+        sfg.SpriteStatus.SPD_DOWN_RECT).convert_alpha(),
+    "speed_up": battle_images.get(sfg.SpriteStatus.SPD_UP_IMAGE_KEY).subsurface(
+        sfg.SpriteStatus.SPD_UP_RECT).convert_alpha(),
+    "weak": battle_images.get(sfg.SpriteStatus.DEBUFF_WEAK_IMAGE_KEY).subsurface(
+        sfg.SpriteStatus.DEBUFF_WEAK_RECT).convert_alpha(),
+    "poison": battle_images.get(sfg.SpriteStatus.POISON_IMAGE_KEY).subsurface(
+        sfg.SpriteStatus.POISON_RECT).convert_alpha()
+}
+
+
 
 def get_shadow_image(shadow_index):
     return shadow_images.subsurface(
@@ -382,8 +394,7 @@ class SpriteAnimator(object):
             camera.screen.blit(self.image, image_blit_pos)
 
         if self.sprite.status.get(cfg.SpriteStatus.WEAK) is not None:
-            weak_icon = battle_images.get(sfg.SpriteStatus.DEBUFF_WEAK_IMAGE_KEY).subsurface(
-                sfg.SpriteStatus.DEBUFF_WEAK_RECT).convert_alpha()
+            weak_icon = status_icons["weak"]
             dy = self.sprite.status[cfg.SpriteStatus.WEAK]["y"]
             camera.screen.blit(weak_icon, (sp.pos.x - camera.rect.x - weak_icon.get_width() * 0.5, 
                 sp.pos.y * 0.5 - camera.rect.y - sp.setting.HEIGHT - \
@@ -392,18 +403,15 @@ class SpriteAnimator(object):
         if self.sprite.status.get(cfg.SpriteStatus.ACTION_RATE_SCALE) is not None:
             scale = self.sprite.status[cfg.SpriteStatus.ACTION_RATE_SCALE]["ratio"]
             if scale < 1:
-                scale_icon = battle_images.get(sfg.SpriteStatus.SPD_DOWN_IMAGE_KEY).subsurface(
-                    sfg.SpriteStatus.SPD_DOWN_RECT).convert_alpha()
+                scale_icon = status_icons["speed_down"]
             else:
-                scale_icon = battle_images.get(sfg.SpriteStatus.SPD_UP_IMAGE_KEY).subsurface(
-                    sfg.SpriteStatus.SPD_UP_RECT).convert_alpha()
+                scale_icon = status_icons["speed_up"]
 
             camera.screen.blit(scale_icon, (sp.pos.x - camera.rect.x - scale_icon.get_width() * 0.5,
                 sp.pos.y * 0.5 - camera.rect.y - sp.setting.HEIGHT - in_air_height))
 
         if self.sprite.status.get(cfg.SpriteStatus.POISON) is not None:
-            poison_icon = battle_images.get(sfg.SpriteStatus.POISON_IMAGE_KEY).subsurface(
-                sfg.SpriteStatus.POISON_RECT).convert_alpha()
+            poison_icon = status_icons["poison"]
             camera.screen.blit(poison_icon, (sp.pos.x - camera.rect.x - poison_icon.get_width() * 0.5,
                 sp.pos.y * 0.5 - camera.rect.y - sp.setting.HEIGHT))
 
@@ -413,20 +421,20 @@ class SpriteAnimator(object):
 
 
 class HeroAnimator(SpriteAnimator):
+    white_circle_image = effect_image_controller.get(
+        sfg.Effect.WHITE_CIRCLE_IMAGE_KEY).subsurface(sfg.Effect.WHITE_CIRCLE_RECT).convert_alpha()
     def __init__(self, sprite):
         super(HeroAnimator, self).__init__(sprite)
 
 
     def add_level_up_effect(self):
-        white_circle_image = effect_image_controller.get(
-            sfg.Effect.WHITE_CIRCLE_IMAGE_KEY).subsurface(sfg.Effect.WHITE_CIRCLE_RECT).convert_alpha()
-        width = white_circle_image.get_width()
+        width = self.white_circle_image.get_width()
         pos = self.sprite.pos
         delta = sfg.Effect.WHITE_CIRCLE_POS_DELTA
         for i in xrange(sfg.Effect.WHITE_CIRCLE_GEN_NUM):
             x = randint(int(pos.x - delta), int(pos.x + delta))
             y = randint(int(pos.y - delta), int(pos.y + delta))
-            circle = Particle(white_circle_image, Vector2(x, y), width * 0.5, width * 0.5, width * 0.5, 
+            circle = Particle(self.white_circle_image, Vector2(x, y), width * 0.5, width * 0.5, width * 0.5, 
                 Vector2(0, 0), Vector2(0, 0), 
                 gauss(sfg.Effect.WHITE_CIRCLE_LIFE_MEAN, sfg.Effect.WHITE_CIRCLE_LIFE_SIGMA), 
                 gauss(sfg.Effect.WHITE_CIRCLE_Z_MEAN, sfg.Effect.WHITE_CIRCLE_Z_SIGMA), 
