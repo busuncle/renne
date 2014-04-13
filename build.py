@@ -31,14 +31,14 @@ class BuildExe:
         self.script = "main.py"
         self.project_name = "Renne"
         self.project_url = "https://github.com/busuncle/renne"
-        self.project_version = "0.8"
+        self.project_version = "0.8.1"
         self.license = "Free"
         self.author_name = "busuncle"
         self.author_email = "lizhij2@gmail.com"
         self.copyright = "Copyright (c) 2014 Busuncle."
         self.project_description = "Renne, a fan-works ARPG"
         self.icon_file = "renne.ico"
-        self.extra_datas = ["res", "renne.png", "etc\maps", "config.txt"]
+        self.extra_datas = ["res", "renne.png", "etc\maps", "config.txt", "readme.txt"]
         self.extra_modules = ["pygame", "gameobjects", "etc.setting", 
             "etc.ai_setting", "base"]
         self.exclude_modules = []
